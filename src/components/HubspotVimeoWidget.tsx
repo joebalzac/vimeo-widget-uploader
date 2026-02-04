@@ -910,7 +910,7 @@ const styles: Record<string, React.CSSProperties> = {
     overflow: "hidden", // <- helps enforce truncation boundary
   },
 
-  // ✅ ellipsis will now reliably trigger
+
   fileName: {
     fontFamily: "Inter",
     fontSize: 14,
@@ -919,9 +919,9 @@ const styles: Record<string, React.CSSProperties> = {
     overflow: "hidden",
     textOverflow: "ellipsis",
     whiteSpace: "nowrap",
-    minWidth: 0,
-    maxWidth: "100%",
+    maxWidth: 300, // 👈 desktop cap
   },
+
 
   fileSize: {
     fontFamily: "Inter",
