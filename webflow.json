@@ -1,0 +1,15 @@
+{
+  "library": {
+    "name": "HubSpot + Vimeo Upload",
+    "components": ["./src/**/*.webflow.@(js|jsx|mjs|ts|tsx)"],
+    "description": "Webpage Components ",
+    "id": "custom-webflow-components"
+  },
+  "telemetry": {
+    "global": {
+      "allowTelemetry": true,
+      "lastPrompted": 1761591063194,
+      "version": "1.8.47"
+    }
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "name": "elise-video-widget",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "lint": "eslint .",
+    "preview": "vite preview",
+    "webflow:share": "NODE_TLS_REJECT_UNAUTHORIZED=0 npx webflow library share",
+    "webflow:bundle": "npx webflow library bundle --public-path ./"
+  },
+  "dependencies": {
+    "@types/tus-js-client": "^1.8.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "tus-js-client": "^4.3.1"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.1",
+    "@types/node": "^24.10.1",
+    "@types/react": "^19.2.5",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^5.1.1",
+    "@webflow/data-types": "^1.2.0",
+    "@webflow/react": "^1.2.0",
+    "@webflow/webflow-cli": "^1.11.1",
+    "eslint": "^9.39.1",
+    "eslint-plugin-react-hooks": "^7.0.1",
+    "eslint-plugin-react-refresh": "^0.4.24",
+    "globals": "^16.5.0",
+    "typescript": "~5.9.3",
+    "typescript-eslint": "^8.46.4",
+    "vite": "^7.2.4"
+  }
+}
