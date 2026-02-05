@@ -83,32 +83,32 @@ export default function HubSpotVimeoWidget({
 
   // Add this new useEffect near your other useEffects
   // Add this right after your other useEffects, around line 290
+  // Continuously monitor and disable submit button until video is uploaded
   useEffect(() => {
-    // Aggressively disable submit button when component mounts and when video changes
     const intervalId = setInterval(() => {
-      const formEl = formHostRef.current?.querySelector(
-        "form"
-      ) as HTMLFormElement | null;
-      if (formEl) {
-        const submits = formEl.querySelectorAll<
-          HTMLButtonElement | HTMLInputElement
-        >('button[type="submit"], input[type="submit"]');
+      if (!video?.id && !submitted) {
+        const formEl = formHostRef.current?.querySelector(
+          "form"
+        ) as HTMLFormElement | null;
+        if (formEl) {
+          const submits = formEl.querySelectorAll<
+            HTMLButtonElement | HTMLInputElement
+          >('button[type="submit"], input[type="submit"]');
 
-        if (submits.length > 0) {
-          syncSubmitButtonState();
-          clearInterval(intervalId);
+          submits.forEach((el) => {
+            (el as any).disabled = true;
+            el.setAttribute("disabled", "true");
+            el.setAttribute("aria-disabled", "true");
+            (el as HTMLElement).style.opacity = "0.6";
+            (el as HTMLElement).style.cursor = "not-allowed";
+            (el as HTMLElement).style.pointerEvents = "none";
+          });
         }
       }
-    }, 100);
+    }, 200); // Check every 200ms
 
-    // Clear interval after 5 seconds to avoid running forever
-    const timeoutId = setTimeout(() => clearInterval(intervalId), 5000);
-
-    return () => {
-      clearInterval(intervalId);
-      clearTimeout(timeoutId);
-    };
-  }, []); // Run once on mount
+    return () => clearInterval(intervalId);
+  }, [video?.id, submitted]);
 
   // -------------------------
   // Submit button control
@@ -609,12 +609,17 @@ export default function HubSpotVimeoWidget({
         },
 
         onBeforeFormSubmit: ($form: any) => {
+          console.log("onBeforeFormSubmit called", {
+            hasVideo: !!videoRef.current?.id,
+          });
+
           const v = videoRef.current;
 
           // CRITICAL: Return false to block HubSpot submission
           if (!v?.id) {
             setSubmitEnabled(false);
             alert("Please upload a video before submitting the form.");
+            console.log("BLOCKING submission - no video");
             return false; // This prevents HubSpot from submitting
           }
 
@@ -627,6 +632,7 @@ export default function HubSpotVimeoWidget({
             applyVideoToForm(formEl, v);
           }
 
+          console.log("Allowing form submission with video:", v.id);
           return true; // Allow submission
         },
 
