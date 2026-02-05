@@ -85,14 +85,25 @@ export default function HubSpotVimeoWidget({
     const formEl = formHostRef.current?.querySelector(
       "form"
     ) as HTMLFormElement | null;
-    const submit = formEl?.querySelector<HTMLInputElement>(
-      'input[type="submit"],button[type="submit"]'
+    if (!formEl) return;
+
+    const submits = Array.from(
+      formEl.querySelectorAll<HTMLButtonElement | HTMLInputElement>(
+        'button[type="submit"], input[type="submit"]'
+      )
     );
-    if (submit) {
-      submit.disabled = !enabled;
-      submit.style.opacity = enabled ? "1" : "0.6";
-      submit.style.cursor = enabled ? "pointer" : "not-allowed";
-    }
+
+    submits.forEach((el) => {
+      // hard disable
+      (el as any).disabled = !enabled;
+      el.setAttribute("disabled", enabled ? "false" : "true"); // helps some HubSpot skins
+      el.setAttribute("aria-disabled", enabled ? "false" : "true");
+
+      // visual + click safety
+      (el as HTMLElement).style.opacity = enabled ? "1" : "0.6";
+      (el as HTMLElement).style.cursor = enabled ? "pointer" : "not-allowed";
+      (el as HTMLElement).style.pointerEvents = enabled ? "auto" : "none";
+    });
   }
 
   function syncSubmitButtonState() {
@@ -556,12 +567,14 @@ export default function HubSpotVimeoWidget({
         target: `#${lightMountId}`,
 
         onFormReady: () => {
+          setSubmitEnabled(false);
           moveRenderedFormIntoHost();
         },
 
         onBeforeFormSubmit: (formEl: HTMLFormElement) => {
           const v = videoRef.current;
           if (!v?.id) {
+            setSubmitEnabled(false);
             alert("Please upload your video before submitting.");
             return false;
           }
