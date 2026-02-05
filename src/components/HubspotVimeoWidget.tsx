@@ -334,6 +334,7 @@ export default function HubSpotVimeoWidget({
 
   function openFilePicker() {
     if (submitted || isUploading) return;
+    setSubmitEnabled(false);
     fileInputRef.current?.click();
   }
 
@@ -632,6 +633,10 @@ export default function HubSpotVimeoWidget({
       document.getElementById(lightMountId)?.remove();
     };
   }, [portalId, formId, region, lightMountId]);
+
+  useEffect(() => {
+    syncSubmitButtonState();
+  }, [isUploading, submitted, video?.id]);
 
   function formatMB(bytes: number) {
     const mb = bytes / (1024 * 1024);
