@@ -82,15 +82,31 @@ export default function HubSpotVimeoWidget({
   }, [pendingToken]);
 
   // Add this new useEffect near your other useEffects
-  useEffect(() => {
-    // Ensure submit button is disabled on initial mount
-    const formEl = formHostRef.current?.querySelector(
-      "form"
-    ) as HTMLFormElement | null;
+  // Add this right after your other useEffects, around line 290
+useEffect(() => {
+  // Aggressively disable submit button when component mounts and when video changes
+  const intervalId = setInterval(() => {
+    const formEl = formHostRef.current?.querySelector("form") as HTMLFormElement | null;
     if (formEl) {
-      setSubmitEnabled(false);
+      const submits = formEl.querySelectorAll<HTMLButtonElement | HTMLInputElement>(
+        'button[type="submit"], input[type="submit"]'
+      );
+      
+      if (submits.length > 0) {
+        syncSubmitButtonState();
+        clearInterval(intervalId);
+      }
     }
-  }, []);
+  }, 100);
+
+  // Clear interval after 5 seconds to avoid running forever
+  const timeoutId = setTimeout(() => clearInterval(intervalId), 5000);
+
+  return () => {
+    clearInterval(intervalId);
+    clearTimeout(timeoutId);
+  };
+}, []); // Run once on mount
 
   // -------------------------
   // Submit button control
@@ -107,12 +123,22 @@ export default function HubSpotVimeoWidget({
       )
     );
 
+    if (submits.length === 0) {
+      // Button doesn't exist yet, try again in a moment
+      setTimeout(() => setSubmitEnabled(enabled), 50);
+      return;
+    }
+
     submits.forEach((el) => {
+      // Set the disabled property
       (el as any).disabled = !enabled;
 
       // IMPORTANT: disabled is a boolean attribute (presence disables)
-      if (enabled) el.removeAttribute("disabled");
-      else el.setAttribute("disabled", "disabled");
+      if (enabled) {
+        el.removeAttribute("disabled");
+      } else {
+        el.setAttribute("disabled", "true");
+      }
 
       el.setAttribute("aria-disabled", enabled ? "false" : "true");
 
