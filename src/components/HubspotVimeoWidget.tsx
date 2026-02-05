@@ -95,6 +95,12 @@ export default function HubSpotVimeoWidget({
     }
   }
 
+  function syncSubmitButtonState() {
+    // disable if: uploading OR no video OR already submitted
+    const shouldEnable = !!videoRef.current?.id && !isUploading && !submitted;
+    setSubmitEnabled(shouldEnable);
+  }
+
   // -------------------------
   // HubSpot hidden fields
   // -------------------------
@@ -359,6 +365,7 @@ export default function HubSpotVimeoWidget({
 
     setSubmitEnabled(false);
     setIsUploading(true);
+    syncSubmitButtonState();
     setStatus("Preparing upload…");
     setPct(null);
 
@@ -435,13 +442,14 @@ export default function HubSpotVimeoWidget({
       if (f) applyVideoToForm(f, v);
 
       setPct(null);
-      setSubmitEnabled(true);
+      syncSubmitButtonState();
     } catch (e: any) {
       const message = String(e?.message || e);
       setStatus(`Upload failed: ${message}`);
-      setSubmitEnabled(false);
+      syncSubmitButtonState();
     } finally {
       setIsUploading(false);
+      syncSubmitButtonState();
       tusUploadRef.current = null;
       if (fileInputRef.current) fileInputRef.current.value = "";
     }
@@ -495,7 +503,7 @@ export default function HubSpotVimeoWidget({
         const detachForForm = attachStickySync(f);
 
         if (videoRef.current?.id) applyVideoToForm(f, videoRef.current);
-        setSubmitEnabled(!!videoRef.current?.id);
+        syncSubmitButtonState();
 
         const hostObs = new MutationObserver(() => {
           const newForm = host.querySelector("form") as HTMLFormElement | null;
@@ -514,7 +522,7 @@ export default function HubSpotVimeoWidget({
           };
 
           if (videoRef.current?.id) applyVideoToForm(newForm, videoRef.current);
-          setSubmitEnabled(!!videoRef.current?.id);
+          syncSubmitButtonState();
         });
 
         hostObs.observe(host, { childList: true, subtree: true });
