@@ -81,6 +81,17 @@ export default function HubSpotVimeoWidget({
     pendingTokenRef.current = pendingToken;
   }, [pendingToken]);
 
+  // Add this new useEffect near your other useEffects
+  useEffect(() => {
+    // Ensure submit button is disabled on initial mount
+    const formEl = formHostRef.current?.querySelector(
+      "form"
+    ) as HTMLFormElement | null;
+    if (formEl) {
+      setSubmitEnabled(false);
+    }
+  }, []);
+
   // -------------------------
   // Submit button control
   // -------------------------
@@ -536,6 +547,9 @@ export default function HubSpotVimeoWidget({
           // disable immediately, then move form into host and attach listeners
           setSubmitEnabled(false);
           moveRenderedFormIntoHost();
+
+          // Extra safety: disable again after a short delay
+          setTimeout(() => setSubmitEnabled(false), 100);
         },
 
         onBeforeFormSubmit: (formEl: HTMLFormElement) => {
