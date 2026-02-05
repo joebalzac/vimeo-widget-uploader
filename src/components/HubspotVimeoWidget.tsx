@@ -83,30 +83,32 @@ export default function HubSpotVimeoWidget({
 
   // Add this new useEffect near your other useEffects
   // Add this right after your other useEffects, around line 290
-useEffect(() => {
-  // Aggressively disable submit button when component mounts and when video changes
-  const intervalId = setInterval(() => {
-    const formEl = formHostRef.current?.querySelector("form") as HTMLFormElement | null;
-    if (formEl) {
-      const submits = formEl.querySelectorAll<HTMLButtonElement | HTMLInputElement>(
-        'button[type="submit"], input[type="submit"]'
-      );
-      
-      if (submits.length > 0) {
-        syncSubmitButtonState();
-        clearInterval(intervalId);
+  useEffect(() => {
+    // Aggressively disable submit button when component mounts and when video changes
+    const intervalId = setInterval(() => {
+      const formEl = formHostRef.current?.querySelector(
+        "form"
+      ) as HTMLFormElement | null;
+      if (formEl) {
+        const submits = formEl.querySelectorAll<
+          HTMLButtonElement | HTMLInputElement
+        >('button[type="submit"], input[type="submit"]');
+
+        if (submits.length > 0) {
+          syncSubmitButtonState();
+          clearInterval(intervalId);
+        }
       }
-    }
-  }, 100);
+    }, 100);
 
-  // Clear interval after 5 seconds to avoid running forever
-  const timeoutId = setTimeout(() => clearInterval(intervalId), 5000);
+    // Clear interval after 5 seconds to avoid running forever
+    const timeoutId = setTimeout(() => clearInterval(intervalId), 5000);
 
-  return () => {
-    clearInterval(intervalId);
-    clearTimeout(timeoutId);
-  };
-}, []); // Run once on mount
+    return () => {
+      clearInterval(intervalId);
+      clearTimeout(timeoutId);
+    };
+  }, []); // Run once on mount
 
   // -------------------------
   // Submit button control
@@ -282,12 +284,10 @@ useEffect(() => {
         if (e) {
           e.preventDefault();
           e.stopPropagation();
-          // @ts-ignore
-          e.stopImmediatePropagation?.();
+          (e as any).stopImmediatePropagation?.();
         }
-        // keep submit locked
         setSubmitEnabled(false);
-        alert("Please upload your video before submitting.");
+        alert("Please upload a video before submitting the form.");
         return false;
       }
 
@@ -296,16 +296,23 @@ useEffect(() => {
     };
 
     const onSubmitCapture = (e: Event) => {
-      // DO NOT call any fallback submission here
       const ok = ensureUploadPresentOrBlock(e);
-      if (!ok) return;
-      // let HubSpot submit normally
+      if (!ok) {
+        e.preventDefault();
+        e.stopPropagation();
+        (e as any).stopImmediatePropagation?.();
+        return false;
+      }
     };
 
     const onClickCapture = (e: Event) => {
       const ok = ensureUploadPresentOrBlock(e);
-      if (!ok) return;
-      // let HubSpot submit normally
+      if (!ok) {
+        e.preventDefault();
+        e.stopPropagation();
+        (e as any).stopImmediatePropagation?.();
+        return false;
+      }
     };
 
     formEl.addEventListener("submit", onSubmitCapture, true);
@@ -314,14 +321,32 @@ useEffect(() => {
       formEl.querySelector<HTMLButtonElement>('button[type="submit"]') ||
       formEl.querySelector<HTMLInputElement>('input[type="submit"]');
 
-    if (submitBtn) submitBtn.addEventListener("click", onClickCapture, true);
+    if (submitBtn) {
+      submitBtn.addEventListener("click", onClickCapture, true);
+
+      // Additional blocking on regular click phase
+      submitBtn.addEventListener(
+        "click",
+        (e) => {
+          if (!videoRef.current?.id) {
+            e.preventDefault();
+            e.stopPropagation();
+            (e as any).stopImmediatePropagation?.();
+            alert("Please upload a video before submitting the form.");
+            return false;
+          }
+        },
+        false
+      );
+    }
 
     const obs = new MutationObserver(() => {
-      // keep hidden fields in sync if HubSpot mutates DOM
       if (videoRef.current?.id) applyVideoToForm(formEl, videoRef.current);
       syncSubmitButtonState();
     });
     obs.observe(formEl, { subtree: true, childList: true, attributes: true });
+
+    syncSubmitButtonState();
 
     return () => {
       formEl.removeEventListener("submit", onSubmitCapture, true);
@@ -570,24 +595,39 @@ useEffect(() => {
         target: `#${lightMountId}`,
 
         onFormReady: () => {
-          // disable immediately, then move form into host and attach listeners
           setSubmitEnabled(false);
-          moveRenderedFormIntoHost();
 
-          // Extra safety: disable again after a short delay
+          setTimeout(() => {
+            setSubmitEnabled(false);
+            moveRenderedFormIntoHost();
+          }, 0);
+
+          setTimeout(() => setSubmitEnabled(false), 50);
           setTimeout(() => setSubmitEnabled(false), 100);
+          setTimeout(() => setSubmitEnabled(false), 200);
+          setTimeout(() => setSubmitEnabled(false), 300);
         },
 
-        onBeforeFormSubmit: (formEl: HTMLFormElement) => {
+        onBeforeFormSubmit: ($form: any) => {
           const v = videoRef.current;
+
+          // CRITICAL: Return false to block HubSpot submission
           if (!v?.id) {
             setSubmitEnabled(false);
-            alert("Please upload your video before submitting.");
-            return false;
+            alert("Please upload a video before submitting the form.");
+            return false; // This prevents HubSpot from submitting
           }
 
-          applyVideoToForm(formEl, v);
-          return true; // let HubSpot submit normally
+          // Get the actual form element from jQuery object or from ref
+          const formEl =
+            $form?.[0] ||
+            (formHostRef.current?.querySelector("form") as HTMLFormElement);
+
+          if (formEl) {
+            applyVideoToForm(formEl, v);
+          }
+
+          return true; // Allow submission
         },
 
         onFormSubmitted: async () => {
