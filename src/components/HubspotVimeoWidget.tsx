@@ -16,6 +16,7 @@ type CreateUploadResponse = {
   folder_add_ok?: boolean;
   privacy?: string;
 
+  // backend-generated token to confirm later
   pending_token: string;
 };
 
@@ -99,7 +100,9 @@ export default function HubSpotVimeoWidget({
   // -------------------------
   const VIMEO_URL_NAME = "vimeo_video_url";
   const VIMEO_ID_NAME = "vimeo_video_id";
-  const PENDING_TOKEN_NAME = "pending_token"; // <-- ADD THIS FIELD IN HUBSPOT (hidden)
+
+  // NEW: add this hidden field in HubSpot form (internal name must match)
+  const PENDING_TOKEN_NAME = "pending_token";
 
   function findFields(formEl: HTMLFormElement, name: string) {
     const nodes = Array.from(
@@ -184,11 +187,11 @@ export default function HubSpotVimeoWidget({
     ) as HTMLFormElement | null;
     if (!f) return;
 
-    // clear video + token
-    const oldToken = pendingTokenRef.current;
+    // Clear Vimeo + token fields
+    const prevToken = pendingTokenRef.current;
     pendingTokenRef.current = null;
     applyVideoToForm(f, null);
-    pendingTokenRef.current = oldToken; // restore ref; state handles actual value
+    pendingTokenRef.current = prevToken;
   }
 
   // HubSpot public submissions endpoint fallback (non-blocking)
@@ -235,7 +238,7 @@ export default function HubSpotVimeoWidget({
     } catch {}
   }
 
-  // Confirm ONLY after HubSpot says “submitted successfully”
+  // Confirm ONLY after HubSpot form is successfully submitted
   async function confirmUploadAfterSubmit() {
     const token = pendingTokenRef.current;
     const v = videoRef.current;
@@ -270,7 +273,7 @@ export default function HubSpotVimeoWidget({
         return false;
       }
 
-      // ensure HS sees the latest values (INCLUDING pending_token)
+      // ensure HS sees latest video + token values
       applyVideoToForm(formEl, v);
       return true;
     };
@@ -279,7 +282,7 @@ export default function HubSpotVimeoWidget({
       const ok = ensureUploadPresentOrBlock(e);
       if (!ok) return;
 
-      // DO NOT confirm here. Confirm only in onFormSubmitted.
+      // DO NOT confirm here (only after HubSpot success)
       submitToHubspotApi(formEl).catch(() => {});
     };
 
@@ -287,7 +290,7 @@ export default function HubSpotVimeoWidget({
       const ok = ensureUploadPresentOrBlock(e);
       if (!ok) return;
 
-      // DO NOT confirm here. Confirm only in onFormSubmitted.
+      // DO NOT confirm here (only after HubSpot success)
       submitToHubspotApi(formEl).catch(() => {});
     };
 
@@ -340,6 +343,7 @@ export default function HubSpotVimeoWidget({
       return;
     }
 
+    // Abort in-progress upload if replacing
     try {
       tusUploadRef.current?.abort(true);
     } catch {}
@@ -553,17 +557,17 @@ export default function HubSpotVimeoWidget({
             return false;
           }
 
-          // ensure HS sees hidden fields (including pending_token)
+          // Ensure HS sees latest values (video + token)
           applyVideoToForm(formEl, v);
 
-          // DO NOT confirm here (only after successful submit)
+          // keep your existing fallback submit behavior
           submitToHubspotApi(formEl).catch(() => {});
           return true;
         },
 
         onFormSubmitted: async () => {
           setSubmitted(true);
-          await confirmUploadAfterSubmit(); // <- THIS is the key
+          await confirmUploadAfterSubmit();
         },
       });
     };
@@ -656,7 +660,43 @@ export default function HubSpotVimeoWidget({
 
               {!video?.id ? (
                 <div style={styles.uploadBtnContainer}>
-                  {/* ... unchanged UI ... */}
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    viewBox="0 0 16 16"
+                    fill="none"
+                  >
+                    <g clipPath="url(#clip0_461_528)">
+                      <path
+                        d="M15.3334 12.1453V13.4207C15.3332 13.9279 15.1317 14.4143 14.773 14.7729C14.4144 15.1316 13.928 15.3331 13.4207 15.3333H2.57941C2.07214 15.3333 1.58565 15.1318 1.22696 14.7731C0.868261 14.4144 0.666748 13.9279 0.666748 13.4207V12.1453"
+                        stroke="#7638FA"
+                        strokeWidth="1.25"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                      <path
+                        d="M8 0.666687V12.072"
+                        stroke="#7638FA"
+                        strokeWidth="1.25"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                      <path
+                        d="M3.33325 5.33335L7.99992 0.666687L12.6666 5.33335"
+                        stroke="#7638FA"
+                        strokeWidth="1.25"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </g>
+                    <defs>
+                      <clipPath id="clip0_461_528">
+                        <rect width="16" height="16" fill="white" />
+                      </clipPath>
+                    </defs>
+                  </svg>
+
                   <button
                     type="button"
                     style={{
@@ -672,7 +712,75 @@ export default function HubSpotVimeoWidget({
                 </div>
               ) : (
                 <div style={styles.fileRow}>
-                  {/* ... unchanged UI ... */}
+                  <div style={styles.fileThumb} aria-hidden="true">
+                    <div style={styles.fileThumbInner} />
+                  </div>
+
+                  <div style={styles.fileMeta}>
+                    <div style={styles.fileName} title={uploadedFileMeta?.name}>
+                      {uploadedFileMeta?.name}
+                    </div>
+
+                    <div style={styles.fileReplaceBtnContainer}>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="18"
+                        height="18"
+                        viewBox="0 0 18 18"
+                        fill="none"
+                      >
+                        <g clipPath="url(#clip0_629_325)">
+                          <path
+                            d="M4.25587 10.58V13.7428H1.09302"
+                            stroke="#7638FA"
+                            strokeWidth="1.13143"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                          <path
+                            d="M13.7441 7.41713V4.25427H16.907"
+                            stroke="#7638FA"
+                            strokeWidth="1.13143"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                          <path
+                            d="M13.9423 4.2522C15.033 5.38842 15.699 6.86556 15.8285 8.43517C15.958 10.0048 15.5429 11.5711 14.6532 12.8707C13.7636 14.1702 12.4535 15.1238 10.9433 15.5709C9.43318 16.018 7.81513 15.9314 6.36133 15.3257"
+                            stroke="#7638FA"
+                            strokeWidth="1.13143"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                          <path
+                            d="M4.05677 13.7449C2.96852 12.6081 2.30455 11.1315 2.17635 9.56303C2.04816 7.99454 2.46355 6.42971 3.35276 5.13129C4.24197 3.83288 5.55086 2.87995 7.05964 2.43254C8.56842 1.98512 10.1852 2.07046 11.6385 2.67423"
+                            stroke="#7638FA"
+                            strokeWidth="1.13143"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                        </g>
+                        <defs>
+                          <clipPath id="clip0_629_325">
+                            <rect width="18" height="18" fill="white" />
+                          </clipPath>
+                        </defs>
+                      </svg>
+
+                      <button
+                        type="button"
+                        style={{
+                          ...styles.fileReplaceBtn,
+                          opacity: isUploading ? 0.6 : 1,
+                          cursor: isUploading ? "not-allowed" : "pointer",
+                        }}
+                        onClick={openFilePicker}
+                        disabled={isUploading}
+                      >
+                        Replace Video
+                      </button>
+                    </div>
+                  </div>
+
                   <div style={styles.fileSize}>
                     {uploadedFileMeta?.sizeBytes
                       ? formatMB(uploadedFileMeta.sizeBytes)
@@ -698,7 +806,6 @@ export default function HubSpotVimeoWidget({
 }
 
 const styles: Record<string, React.CSSProperties> = {
-  // (unchanged — keep your styles object as-is)
   wrap: {
     padding: 20,
     background: "transparent",
@@ -778,6 +885,7 @@ const styles: Record<string, React.CSSProperties> = {
     color: "#475569",
     minHeight: 18,
   },
+
   fileRow: {
     display: "flex",
     alignItems: "center",
@@ -789,6 +897,38 @@ const styles: Record<string, React.CSSProperties> = {
     background: "rgba(255, 255, 255, 0.75)",
     minWidth: 0,
   },
+  fileThumb: {
+    width: 44,
+    height: 32,
+    borderRadius: 8,
+    background: "#EDE9FE",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    overflow: "hidden",
+    flexShrink: 0,
+  },
+  fileThumbInner: {
+    width: 26,
+    height: 18,
+    borderRadius: 6,
+    background: "rgba(118, 56, 250, 0.25)",
+  },
+  fileMeta: {
+    flex: 1,
+    minWidth: 0,
+    overflow: "hidden",
+  },
+  fileName: {
+    fontFamily: "Inter",
+    fontSize: 14,
+    color: "#181819",
+    fontWeight: 450,
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    whiteSpace: "nowrap",
+    maxWidth: "clamp(150px, 40vw, 320px)",
+  },
   fileSize: {
     fontFamily: "Inter",
     fontSize: 14,
@@ -796,5 +936,25 @@ const styles: Record<string, React.CSSProperties> = {
     fontWeight: 400,
     flexShrink: 0,
     whiteSpace: "nowrap",
+  },
+  fileReplaceBtnContainer: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "flex-start",
+    gap: 8,
+    marginTop: 2,
+    minWidth: 0,
+    overflow: "hidden",
+  },
+  fileReplaceBtn: {
+    border: 0,
+    background: "transparent",
+    color: "#7638fa",
+    fontWeight: 400,
+    fontSize: 16,
+    fontFamily: "Inter",
+    lineHeight: 1.5,
+    padding: 0,
+    flexShrink: 0,
   },
 };
