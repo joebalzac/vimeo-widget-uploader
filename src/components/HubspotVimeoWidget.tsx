@@ -81,6 +81,9 @@ export default function HubSpotVimeoWidget({
     pendingTokenRef.current = pendingToken;
   }, [pendingToken]);
 
+  // -------------------------
+  // Submit button control
+  // -------------------------
   function setSubmitEnabled(enabled: boolean) {
     const formEl = formHostRef.current?.querySelector(
       "form"
@@ -94,9 +97,12 @@ export default function HubSpotVimeoWidget({
     );
 
     submits.forEach((el) => {
-      // hard disable
       (el as any).disabled = !enabled;
-      el.setAttribute("disabled", enabled ? "false" : "true"); // helps some HubSpot skins
+
+      // IMPORTANT: disabled is a boolean attribute (presence disables)
+      if (enabled) el.removeAttribute("disabled");
+      else el.setAttribute("disabled", "disabled");
+
       el.setAttribute("aria-disabled", enabled ? "false" : "true");
 
       // visual + click safety
@@ -107,18 +113,21 @@ export default function HubSpotVimeoWidget({
   }
 
   function syncSubmitButtonState() {
-    // disable if: uploading OR no video OR already submitted
+    // enable only when we have a video AND we're not uploading AND not already submitted
     const shouldEnable = !!videoRef.current?.id && !isUploading && !submitted;
     setSubmitEnabled(shouldEnable);
   }
+
+  useEffect(() => {
+    syncSubmitButtonState();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isUploading, submitted, video?.id]);
 
   // -------------------------
   // HubSpot hidden fields
   // -------------------------
   const VIMEO_URL_NAME = "vimeo_video_url";
   const VIMEO_ID_NAME = "vimeo_video_id";
-
-  // NEW: add this hidden field in HubSpot form (internal name must match)
   const PENDING_TOKEN_NAME = "pending_token";
 
   function findFields(formEl: HTMLFormElement, name: string) {
@@ -187,14 +196,12 @@ export default function HubSpotVimeoWidget({
     if (idFields.length === 0)
       idFields = ensureHiddenField(formEl, VIMEO_ID_NAME);
 
-    urlFields.forEach((f) => setFieldValueAndNotify(f, url));
-    idFields.forEach((f) => setFieldValueAndNotify(f, id));
-
-    // NEW: pending_token hidden field
     let tokenFields = findFields(formEl, PENDING_TOKEN_NAME);
     if (tokenFields.length === 0)
       tokenFields = ensureHiddenField(formEl, PENDING_TOKEN_NAME);
 
+    urlFields.forEach((f) => setFieldValueAndNotify(f, url));
+    idFields.forEach((f) => setFieldValueAndNotify(f, id));
     tokenFields.forEach((f) => setFieldValueAndNotify(f, token));
   }
 
@@ -204,58 +211,13 @@ export default function HubSpotVimeoWidget({
     ) as HTMLFormElement | null;
     if (!f) return;
 
-    // Clear Vimeo + token fields
     const prevToken = pendingTokenRef.current;
     pendingTokenRef.current = null;
     applyVideoToForm(f, null);
     pendingTokenRef.current = prevToken;
   }
 
-  // HubSpot public submissions endpoint fallback (non-blocking)
-  async function submitToHubspotApi(formEl: HTMLFormElement) {
-    if (!portalId || !formId) return;
-
-    try {
-      const fd = new FormData(formEl);
-      const fields: Array<{ name: string; value: any }> = [];
-
-      for (const [k, v] of fd.entries()) {
-        if (v == null || String(v).trim() === "") continue;
-        fields.push({ name: k, value: String(v) });
-      }
-
-      const hubspotutk = (document.cookie || "")
-        .split("; ")
-        .find((c) => c.startsWith("hubspotutk="))
-        ?.split("=")[1];
-
-      const body: any = {
-        fields,
-        context: {
-          hutk: hubspotutk || undefined,
-          pageUri: window.location.href,
-          pageName: document.title,
-        },
-      };
-
-      const controller = new AbortController();
-      const timeout = window.setTimeout(() => controller.abort(), 2500);
-
-      const endpoint = `https://api.hsforms.com/submissions/v3/integration/submit/${portalId}/${formId}`;
-
-      await fetch(endpoint, {
-        method: "POST",
-        mode: "cors",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
-        signal: controller.signal,
-      }).catch(() => {});
-
-      window.clearTimeout(timeout);
-    } catch {}
-  }
-
-  // Confirm ONLY after HubSpot form is successfully submitted
+  // Confirm ONLY after HubSpot says the form was submitted
   async function confirmUploadAfterSubmit() {
     const token = pendingTokenRef.current;
     const v = videoRef.current;
@@ -286,29 +248,27 @@ export default function HubSpotVimeoWidget({
           // @ts-ignore
           e.stopImmediatePropagation?.();
         }
+        // keep submit locked
+        setSubmitEnabled(false);
         alert("Please upload your video before submitting.");
         return false;
       }
 
-      // ensure HS sees latest video + token values
       applyVideoToForm(formEl, v);
       return true;
     };
 
     const onSubmitCapture = (e: Event) => {
+      // DO NOT call any fallback submission here
       const ok = ensureUploadPresentOrBlock(e);
       if (!ok) return;
-
-      // DO NOT confirm here (only after HubSpot success)
-      submitToHubspotApi(formEl).catch(() => {});
+      // let HubSpot submit normally
     };
 
     const onClickCapture = (e: Event) => {
       const ok = ensureUploadPresentOrBlock(e);
       if (!ok) return;
-
-      // DO NOT confirm here (only after HubSpot success)
-      submitToHubspotApi(formEl).catch(() => {});
+      // let HubSpot submit normally
     };
 
     formEl.addEventListener("submit", onSubmitCapture, true);
@@ -320,7 +280,9 @@ export default function HubSpotVimeoWidget({
     if (submitBtn) submitBtn.addEventListener("click", onClickCapture, true);
 
     const obs = new MutationObserver(() => {
+      // keep hidden fields in sync if HubSpot mutates DOM
       if (videoRef.current?.id) applyVideoToForm(formEl, videoRef.current);
+      syncSubmitButtonState();
     });
     obs.observe(formEl, { subtree: true, childList: true, attributes: true });
 
@@ -345,7 +307,10 @@ export default function HubSpotVimeoWidget({
 
   function openFilePicker() {
     if (submitted || isUploading) return;
+
+    // prevent submit while choosing a file
     setSubmitEnabled(false);
+
     fileInputRef.current?.click();
   }
 
@@ -367,6 +332,7 @@ export default function HubSpotVimeoWidget({
     } catch {}
     tusUploadRef.current = null;
 
+    // Reset state (replace flow)
     setVideo(null);
     videoRef.current = null;
     setPendingToken(null);
@@ -375,11 +341,10 @@ export default function HubSpotVimeoWidget({
 
     setUploadedFileMeta({ name: file.name, sizeBytes: file.size });
 
-    setSubmitEnabled(false);
     setIsUploading(true);
-    syncSubmitButtonState();
     setStatus("Preparing upload…");
     setPct(null);
+    syncSubmitButtonState();
 
     try {
       const resp = await fetch(`${base}/api/vimeo/create-upload`, {
@@ -454,11 +419,10 @@ export default function HubSpotVimeoWidget({
       if (f) applyVideoToForm(f, v);
 
       setPct(null);
-      syncSubmitButtonState();
+      setStatus("");
     } catch (e: any) {
       const message = String(e?.message || e);
       setStatus(`Upload failed: ${message}`);
-      syncSubmitButtonState();
     } finally {
       setIsUploading(false);
       syncSubmitButtonState();
@@ -515,6 +479,8 @@ export default function HubSpotVimeoWidget({
         const detachForForm = attachStickySync(f);
 
         if (videoRef.current?.id) applyVideoToForm(f, videoRef.current);
+
+        // lock/unlock based on video presence
         syncSubmitButtonState();
 
         const hostObs = new MutationObserver(() => {
@@ -567,6 +533,7 @@ export default function HubSpotVimeoWidget({
         target: `#${lightMountId}`,
 
         onFormReady: () => {
+          // disable immediately, then move form into host and attach listeners
           setSubmitEnabled(false);
           moveRenderedFormIntoHost();
         },
@@ -579,12 +546,8 @@ export default function HubSpotVimeoWidget({
             return false;
           }
 
-          // Ensure HS sees latest values (video + token)
           applyVideoToForm(formEl, v);
-
-          // keep your existing fallback submit behavior
-          submitToHubspotApi(formEl).catch(() => {});
-          return true;
+          return true; // let HubSpot submit normally
         },
 
         onFormSubmitted: async () => {
@@ -646,10 +609,6 @@ export default function HubSpotVimeoWidget({
       document.getElementById(lightMountId)?.remove();
     };
   }, [portalId, formId, region, lightMountId]);
-
-  useEffect(() => {
-    syncSubmitButtonState();
-  }, [isUploading, submitted, video?.id]);
 
   function formatMB(bytes: number) {
     const mb = bytes / (1024 * 1024);
@@ -911,7 +870,6 @@ const styles: Record<string, React.CSSProperties> = {
     color: "#475569",
     minHeight: 18,
   },
-
   fileRow: {
     display: "flex",
     alignItems: "center",
