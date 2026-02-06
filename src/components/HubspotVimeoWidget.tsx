@@ -730,50 +730,32 @@ export default function HubSpotVimeoWidget({
         region,
         target: `#${lightMountId}`,
 
-        onFormReady: () => {
-          syncSubmitButtonState();
+        onFormReady: ($form: any) => {
+          console.log("onFormReady", "This is called when the form is ready");
+
+          const formEl = $form[0];
+
+          // Intercept form submission
+          formEl.addEventListener("submit", function (e: Event) {
+            console.log("Submit intercepted, video ID:", videoRef.current?.id);
+
+            if (!videoRef.current?.id) {
+              e.preventDefault();
+              e.stopPropagation();
+              alert("Please upload a video before submitting the form.");
+              return false;
+            }
+
+            // If we have video, apply fields and let it submit normally
+            applyVideoToForm(formEl, videoRef.current);
+            // Don't prevent default - let HubSpot handle it
+          });
 
           setTimeout(() => {
             moveRenderedFormIntoHost();
-            syncSubmitButtonState(); 
           }, 0);
         },
-        onBeforeFormSubmit: ($form: any) => {
-          // EASIEST FIX: Just block immediately if no video
-          if (!videoRef.current?.id) return false;
 
-          const v = videoRef.current;
-
-          if (!v?.id) {
-            setSubmitEnabled(false);
-            alert("Please upload a video before submitting the form.");
-
-            // CRITICAL: Stop the form submission event
-            const formEl =
-              $form?.[0] || formHostRef.current?.querySelector("form");
-            if (formEl) {
-              // Prevent the native submit
-              formEl.addEventListener(
-                "submit",
-                (e: Event) => {
-                  e.preventDefault();
-                  e.stopImmediatePropagation();
-                },
-                { once: true, capture: true }
-              );
-            }
-
-            return false;
-          }
-
-          const formEl =
-            $form?.[0] || formHostRef.current?.querySelector("form");
-          if (formEl) {
-            applyVideoToForm(formEl, v);
-          }
-
-          return true;
-        },
         onFormSubmitted: async () => {
           setSubmitted(true);
           await confirmUploadAfterSubmit();
