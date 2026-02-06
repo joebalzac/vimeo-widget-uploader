@@ -121,7 +121,7 @@ export default function HubSpotVimeoWidget({
 
     const submits = Array.from(
       formEl.querySelectorAll<HTMLInputElement | HTMLButtonElement>(
-        'button[type="submit"], input[type="submit"]'
+        'input[type="submit"], button[type="submit"]'
       )
     );
 
@@ -131,47 +131,42 @@ export default function HubSpotVimeoWidget({
     }
 
     submits.forEach((el) => {
-      const isInput = el.tagName.toLowerCase() === "input";
-
-      // Functional disable
       (el as any).disabled = !enabled;
 
       if (enabled) {
         el.removeAttribute("disabled");
-        el.removeAttribute("title");
         el.setAttribute("aria-disabled", "false");
+        el.removeAttribute("title");
+        el.removeAttribute("data-video-required");
 
-        // restore styles
-        (el as HTMLElement).style.opacity = "1";
-        (el as HTMLElement).style.cursor = "pointer";
-        (el as HTMLElement).style.pointerEvents = "auto";
-        (el as HTMLElement).style.filter = "none";
-
-        // restore text color
-        if (isInput) {
-          (el as HTMLInputElement).style.color = "";
-        } else {
-          (el as HTMLElement).style.color = "";
-        }
+        // clear inline overrides so HubSpot CSS wins again
+        (el as HTMLElement).style.background = "";
+        (el as HTMLElement).style.borderColor = "";
+        (el as HTMLElement).style.color = "";
+        (el as HTMLElement).style.opacity = "";
+        (el as HTMLElement).style.cursor = "";
+        (el as HTMLElement).style.pointerEvents = "";
+        (el as HTMLElement).style.filter = "";
       } else {
         el.setAttribute("disabled", "true");
         el.setAttribute("aria-disabled", "true");
 
-        // Tooltip text (native browser tooltip)
+        // for CSS targeting + clarity
+        el.setAttribute("data-video-required", "true");
+
+        // tooltip + blocked cursor
         el.setAttribute("title", "Please upload a video before submitting");
-
-        // Visual disabled state
-        (el as HTMLElement).style.opacity = "0.5";
         (el as HTMLElement).style.cursor = "not-allowed";
-        (el as HTMLElement).style.pointerEvents = "auto"; // allow hover tooltip
-        (el as HTMLElement).style.filter = "grayscale(100%)";
 
-        // Force black text
-        if (isInput) {
-          (el as HTMLInputElement).style.color = "#000";
-        } else {
-          (el as HTMLElement).style.color = "#000";
-        }
+        // IMPORTANT: allow hover so tooltip shows
+        (el as HTMLElement).style.pointerEvents = "auto";
+
+        // inline visual overrides (beats HubSpot button CSS)
+        (el as HTMLElement).style.background = "#e5e7eb"; // light gray
+        (el as HTMLElement).style.borderColor = "#e5e7eb";
+        (el as HTMLElement).style.color = "#000000"; // black text
+        (el as HTMLElement).style.opacity = "1"; // keep readable
+        (el as HTMLElement).style.filter = "grayscale(100%)";
       }
     });
   }
