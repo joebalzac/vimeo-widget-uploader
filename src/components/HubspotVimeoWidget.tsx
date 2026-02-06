@@ -120,34 +120,59 @@ export default function HubSpotVimeoWidget({
     if (!formEl) return;
 
     const submits = Array.from(
-      formEl.querySelectorAll<HTMLButtonElement | HTMLInputElement>(
+      formEl.querySelectorAll<HTMLInputElement | HTMLButtonElement>(
         'button[type="submit"], input[type="submit"]'
       )
     );
 
     if (submits.length === 0) {
-      // Button doesn't exist yet, try again in a moment
       setTimeout(() => setSubmitEnabled(enabled), 50);
       return;
     }
 
     submits.forEach((el) => {
-      // Set the disabled property
+      const isInput = el.tagName.toLowerCase() === "input";
+
+      // Functional disable
       (el as any).disabled = !enabled;
 
-      // IMPORTANT: disabled is a boolean attribute (presence disables)
       if (enabled) {
         el.removeAttribute("disabled");
+        el.removeAttribute("title");
+        el.setAttribute("aria-disabled", "false");
+
+        // restore styles
+        (el as HTMLElement).style.opacity = "1";
+        (el as HTMLElement).style.cursor = "pointer";
+        (el as HTMLElement).style.pointerEvents = "auto";
+        (el as HTMLElement).style.filter = "none";
+
+        // restore text color
+        if (isInput) {
+          (el as HTMLInputElement).style.color = "";
+        } else {
+          (el as HTMLElement).style.color = "";
+        }
       } else {
         el.setAttribute("disabled", "true");
+        el.setAttribute("aria-disabled", "true");
+
+        // Tooltip text (native browser tooltip)
+        el.setAttribute("title", "Please upload a video before submitting");
+
+        // Visual disabled state
+        (el as HTMLElement).style.opacity = "0.5";
+        (el as HTMLElement).style.cursor = "not-allowed";
+        (el as HTMLElement).style.pointerEvents = "auto"; // allow hover tooltip
+        (el as HTMLElement).style.filter = "grayscale(100%)";
+
+        // Force black text
+        if (isInput) {
+          (el as HTMLInputElement).style.color = "#000";
+        } else {
+          (el as HTMLElement).style.color = "#000";
+        }
       }
-
-      el.setAttribute("aria-disabled", enabled ? "false" : "true");
-
-      // visual + click safety
-      (el as HTMLElement).style.opacity = enabled ? "1" : "0.6";
-      (el as HTMLElement).style.cursor = enabled ? "pointer" : "not-allowed";
-      (el as HTMLElement).style.pointerEvents = enabled ? "auto" : "none";
     });
   }
 
