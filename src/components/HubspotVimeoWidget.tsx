@@ -276,83 +276,228 @@ export default function HubSpotVimeoWidget({
   }
 
   function attachStickySync(formEl: HTMLFormElement) {
-    let submitBtn: HTMLButtonElement | HTMLInputElement | null = null;
-
+    // Helper: block or allow submission; returns true if allowed
     const ensureUploadPresentOrBlock = (e?: Event) => {
       const v = videoRef.current;
       if (!v?.id) {
         if (e) {
-          e.preventDefault();
-          e.stopPropagation();
-          (e as any).stopImmediatePropagation?.();
+          try {
+            e.preventDefault();
+            e.stopPropagation();
+            (e as any).stopImmediatePropagation?.();
+          } catch {}
         }
+
+        // Keep UI disabled and show message
         setSubmitEnabled(false);
+
+        // Use alert for now (you can swap for inline banner)
+        // Throttle alerts if you want less spam in testing
         alert("Please upload a video before submitting the form.");
         return false;
       }
 
+      // inject the hidden fields before submit
       applyVideoToForm(formEl, v);
       return true;
     };
 
+    // Capture-phase submit listener (blocks submit events)
     const onSubmitCapture = (e: Event) => {
       const ok = ensureUploadPresentOrBlock(e);
       if (!ok) {
-        e.preventDefault();
-        e.stopPropagation();
-        (e as any).stopImmediatePropagation?.();
+        // ensure we stop everything
+        try {
+          e.preventDefault();
+          e.stopPropagation();
+          (e as any).stopImmediatePropagation?.();
+        } catch {}
         return false;
       }
+      return true;
     };
 
-    const onClickCapture = (e: Event) => {
-      const ok = ensureUploadPresentOrBlock(e);
-      if (!ok) {
-        e.preventDefault();
-        e.stopPropagation();
-        (e as any).stopImmediatePropagation?.();
-        return false;
-      }
-    };
+    // Capture-phase click listener for clicks on submit-like controls
+    const onClickCapture = (e: MouseEvent) => {
+      // If already have video, nothing to block
+      if (videoRef.current?.id) return;
 
-    formEl.addEventListener("submit", onSubmitCapture, true);
-
-    submitBtn =
-      formEl.querySelector<HTMLButtonElement>('button[type="submit"]') ||
-      formEl.querySelector<HTMLInputElement>('input[type="submit"]');
-
-    if (submitBtn) {
-      submitBtn.addEventListener("click", onClickCapture, true);
-
-      // Additional blocking on regular click phase
-      submitBtn.addEventListener(
-        "click",
-        (e) => {
-          if (!videoRef.current?.id) {
-            e.preventDefault();
-            e.stopPropagation();
-            (e as any).stopImmediatePropagation?.();
+      let el = e.target as Element | null;
+      while (el) {
+        const tag = el.tagName?.toLowerCase();
+        if (tag === "input") {
+          const type = (el as HTMLInputElement).type?.toLowerCase() || "";
+          if (type === "submit" || type === "image") {
+            try {
+              e.preventDefault();
+              e.stopPropagation();
+              (e as any).stopImmediatePropagation?.();
+            } catch {}
+            setSubmitEnabled(false);
             alert("Please upload a video before submitting the form.");
-            return false;
+            return;
           }
-        },
-        false
-      );
+        } else if (tag === "button") {
+          const tAttr = (el as HTMLButtonElement).getAttribute("type");
+          const isImplicitSubmit =
+            !tAttr && (el as HTMLElement).closest("form");
+          if (tAttr === "submit" || isImplicitSubmit) {
+            try {
+              e.preventDefault();
+              e.stopPropagation();
+              (e as any).stopImmediatePropagation?.();
+            } catch {}
+            setSubmitEnabled(false);
+            alert("Please upload a video before submitting the form.");
+            return;
+          }
+        } else {
+          // catch common vendor attributes that indicate submit triggers
+          if (
+            (el as HTMLElement).hasAttribute &&
+            (el as HTMLElement).hasAttribute("data-hs-submit")
+          ) {
+            try {
+              e.preventDefault();
+              e.stopPropagation();
+              (e as any).stopImmediatePropagation?.();
+            } catch {}
+            setSubmitEnabled(false);
+            alert("Please upload a video before submitting the form.");
+            return;
+          }
+        }
+        el = el.parentElement;
+      }
+    };
+
+    // Additional click-phase fallback handler for the found submit button(s)
+    const onSubmitBtnClickFallback = (e: Event) => {
+      if (!videoRef.current?.id) {
+        try {
+          e.preventDefault();
+          e.stopPropagation();
+          (e as any).stopImmediatePropagation?.();
+        } catch {}
+        alert("Please upload a video before submitting the form.");
+        setSubmitEnabled(false);
+        return false;
+      }
+      return true;
+    };
+
+    // --- Guard programmatic submissions by patching HTMLFormElement.prototype.submit ---
+    const originalFormSubmit = (HTMLFormElement.prototype as any).submit;
+    function wrappedSubmit(this: HTMLFormElement, ...args: any[]) {
+      if (!videoRef.current?.id) {
+        console.warn(
+          "Blocked programmatic form.submit() because video is not uploaded."
+        );
+        setSubmitEnabled(false);
+        // Do not call original
+        return;
+      }
+      return originalFormSubmit.apply(this, args);
     }
 
+    // Install listeners / patch
+    try {
+      formEl.addEventListener("submit", onSubmitCapture, true);
+    } catch {}
+    try {
+      document.addEventListener("click", onClickCapture, true);
+    } catch {}
+    try {
+      (HTMLFormElement.prototype as any).submit = wrappedSubmit;
+    } catch (err) {
+      // If patching fails (CSP or readonly prototype), we still rely on capture handlers
+      console.warn("Could not monkeypatch HTMLFormElement.submit:", err);
+    }
+
+    // Find the visible submit controls (handle your `.actions input[type="submit"]` case)
+    // This looks for common cases including buttons without type (implicit submit).
+    const refreshSubmitControls = () => {
+      const found = Array.from(
+        formEl.querySelectorAll<HTMLInputElement | HTMLButtonElement>(
+          'input[type="submit"], input[type="image"], button[type="submit"], button'
+        )
+      );
+
+      // include `.actions input[type="submit"]` if outside form (HubSpot sometimes places it nearby)
+      const actionsSubmit = document.querySelectorAll<HTMLInputElement>(
+        ".actions input[type='submit']"
+      );
+      actionsSubmit.forEach((n) => {
+        if (!found.includes(n)) found.push(n);
+      });
+
+      // annotate and disable each control
+      found.forEach((el) => {
+        try {
+          (el as any).__hs_controlled_by_video_guard = true;
+        } catch {}
+        // disable visually and functionally
+        (el as any).disabled = true;
+        el.setAttribute("disabled", "true");
+        el.setAttribute("aria-disabled", "true");
+        (el as HTMLElement).style.opacity = "0.6";
+        (el as HTMLElement).style.cursor = "not-allowed";
+        (el as HTMLElement).style.pointerEvents = "none";
+
+        // add fallback listeners
+        el.addEventListener("click", onSubmitBtnClickFallback, true);
+      });
+    };
+
+    // run once now
+    refreshSubmitControls();
+
+    // Watch for HubSpot re-rendering / new buttons
     const obs = new MutationObserver(() => {
       if (videoRef.current?.id) applyVideoToForm(formEl, videoRef.current);
+      refreshSubmitControls();
       syncSubmitButtonState();
     });
+
     obs.observe(formEl, { subtree: true, childList: true, attributes: true });
 
+    // Ensure state right away
     syncSubmitButtonState();
 
+    // Return detach to restore original state
     return () => {
-      formEl.removeEventListener("submit", onSubmitCapture, true);
-      if (submitBtn)
-        submitBtn.removeEventListener("click", onClickCapture, true);
-      obs.disconnect();
+      try {
+        formEl.removeEventListener("submit", onSubmitCapture, true);
+      } catch {}
+      try {
+        document.removeEventListener("click", onClickCapture, true);
+      } catch {}
+      try {
+        // find all previously annotated controls and remove our listeners + re-enable
+        const controlled = formEl.querySelectorAll<HTMLElement>(
+          "[__hs_controlled_by_video_guard], .actions input[type='submit']"
+        );
+        controlled.forEach((el) => {
+          try {
+            el.removeEventListener("click", onSubmitBtnClickFallback, true);
+          } catch {}
+          try {
+            (el as any).disabled = false;
+            el.removeAttribute("disabled");
+            el.setAttribute("aria-disabled", "false");
+            (el as HTMLElement).style.opacity = "1";
+            (el as HTMLElement).style.cursor = "pointer";
+            (el as HTMLElement).style.pointerEvents = "auto";
+          } catch {}
+        });
+      } catch (err) {}
+      try {
+        obs.disconnect();
+      } catch {}
+      // restore original submit implementation
+      try {
+        (HTMLFormElement.prototype as any).submit = originalFormSubmit;
+      } catch {}
     };
   }
 
