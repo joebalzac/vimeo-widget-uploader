@@ -81,35 +81,6 @@ export default function HubSpotVimeoWidget({
     pendingTokenRef.current = pendingToken;
   }, [pendingToken]);
 
-  // Add this new useEffect near your other useEffects
-  // Add this right after your other useEffects, around line 290
-  // Continuously monitor and disable submit button until video is uploaded
-  useEffect(() => {
-    const intervalId = setInterval(() => {
-      if (!video?.id && !submitted) {
-        const formEl = formHostRef.current?.querySelector(
-          "form"
-        ) as HTMLFormElement | null;
-        if (formEl) {
-          const submits = formEl.querySelectorAll<
-            HTMLButtonElement | HTMLInputElement
-          >('button[type="submit"], input[type="submit"]');
-
-          submits.forEach((el) => {
-            (el as any).disabled = true;
-            el.setAttribute("disabled", "true");
-            el.setAttribute("aria-disabled", "true");
-            (el as HTMLElement).style.opacity = "0.6";
-            (el as HTMLElement).style.cursor = "not-allowed";
-            (el as HTMLElement).style.pointerEvents = "none";
-          });
-        }
-      }
-    }, 200); // Check every 200ms
-
-    return () => clearInterval(intervalId);
-  }, [video?.id, submitted]);
-
   // -------------------------
   // Submit button control
   // -------------------------
@@ -760,47 +731,49 @@ export default function HubSpotVimeoWidget({
         target: `#${lightMountId}`,
 
         onFormReady: () => {
-          setSubmitEnabled(false);
+          syncSubmitButtonState();
 
           setTimeout(() => {
-            setSubmitEnabled(false);
             moveRenderedFormIntoHost();
+            syncSubmitButtonState(); 
           }, 0);
-
-          setTimeout(() => setSubmitEnabled(false), 50);
-          setTimeout(() => setSubmitEnabled(false), 100);
-          setTimeout(() => setSubmitEnabled(false), 200);
-          setTimeout(() => setSubmitEnabled(false), 300);
         },
-
         onBeforeFormSubmit: ($form: any) => {
-          console.log("onBeforeFormSubmit called", {
-            hasVideo: !!videoRef.current?.id,
-          });
+          // EASIEST FIX: Just block immediately if no video
+          if (!videoRef.current?.id) return false;
 
           const v = videoRef.current;
 
-          // CRITICAL: Return false to block HubSpot submission
           if (!v?.id) {
             setSubmitEnabled(false);
             alert("Please upload a video before submitting the form.");
-            console.log("BLOCKING submission - no video");
-            return false; // This prevents HubSpot from submitting
+
+            // CRITICAL: Stop the form submission event
+            const formEl =
+              $form?.[0] || formHostRef.current?.querySelector("form");
+            if (formEl) {
+              // Prevent the native submit
+              formEl.addEventListener(
+                "submit",
+                (e: Event) => {
+                  e.preventDefault();
+                  e.stopImmediatePropagation();
+                },
+                { once: true, capture: true }
+              );
+            }
+
+            return false;
           }
 
-          // Get the actual form element from jQuery object or from ref
           const formEl =
-            $form?.[0] ||
-            (formHostRef.current?.querySelector("form") as HTMLFormElement);
-
+            $form?.[0] || formHostRef.current?.querySelector("form");
           if (formEl) {
             applyVideoToForm(formEl, v);
           }
 
-          console.log("Allowing form submission with video:", v.id);
-          return true; // Allow submission
+          return true;
         },
-
         onFormSubmitted: async () => {
           setSubmitted(true);
           await confirmUploadAfterSubmit();
