@@ -46,12 +46,12 @@ export default function HubSpotVimeoWidget({
       `hs-light-mount-${portalId}-${formId}-${Math.random()
         .toString(36)
         .slice(2, 9)}`,
-    [portalId, formId]
+    [portalId, formId],
   );
 
   const base = useMemo(
     () => (backendBase || "").replace(/\/$/, ""),
-    [backendBase]
+    [backendBase],
   );
 
   const [status, setStatus] = useState<string>("");
@@ -70,8 +70,11 @@ export default function HubSpotVimeoWidget({
   const videoRef = useRef<{ id: string } | null>(null);
   const pendingTokenRef = useRef<string | null>(null);
 
-  const detachStickySyncRef = useRef<null | (() => void)>(null);
   const [isUploading, setIsUploading] = useState(false);
+
+  const [videoErrorMessage, setVideoErrorMessage] = useState<string | null>(
+    null,
+  );
 
   useEffect(() => {
     videoRef.current = video;
@@ -82,78 +85,6 @@ export default function HubSpotVimeoWidget({
   }, [pendingToken]);
 
   // -------------------------
-  // Submit button control
-  // -------------------------
-  function setSubmitEnabled(enabled: boolean) {
-    const formEl = formHostRef.current?.querySelector(
-      "form"
-    ) as HTMLFormElement | null;
-    if (!formEl) return;
-
-    const submits = Array.from(
-      formEl.querySelectorAll<HTMLInputElement | HTMLButtonElement>(
-        'input[type="submit"], button[type="submit"]'
-      )
-    );
-
-    if (submits.length === 0) {
-      setTimeout(() => setSubmitEnabled(enabled), 50);
-      return;
-    }
-
-    submits.forEach((el) => {
-      (el as any).disabled = !enabled;
-
-      if (enabled) {
-        el.removeAttribute("disabled");
-        el.setAttribute("aria-disabled", "false");
-        el.removeAttribute("title");
-        el.removeAttribute("data-video-required");
-
-        // clear inline overrides so HubSpot CSS wins again
-        (el as HTMLElement).style.background = "";
-        (el as HTMLElement).style.borderColor = "";
-        (el as HTMLElement).style.color = "";
-        (el as HTMLElement).style.opacity = "";
-        (el as HTMLElement).style.cursor = "";
-        (el as HTMLElement).style.pointerEvents = "";
-        (el as HTMLElement).style.filter = "";
-      } else {
-        el.setAttribute("disabled", "true");
-        el.setAttribute("aria-disabled", "true");
-
-        // for CSS targeting + clarity
-        el.setAttribute("data-video-required", "true");
-
-        // tooltip + blocked cursor
-        el.setAttribute("title", "Please upload a video before submitting");
-        (el as HTMLElement).style.cursor = "not-allowed";
-
-        // IMPORTANT: allow hover so tooltip shows
-        (el as HTMLElement).style.pointerEvents = "auto";
-
-        // inline visual overrides (beats HubSpot button CSS)
-        (el as HTMLElement).style.background = "#e5e7eb"; // light gray
-        (el as HTMLElement).style.borderColor = "#e5e7eb";
-        (el as HTMLElement).style.color = "#000000"; // black text
-        (el as HTMLElement).style.opacity = "1"; // keep readable
-        (el as HTMLElement).style.filter = "grayscale(100%)";
-      }
-    });
-  }
-
-  function syncSubmitButtonState() {
-    // enable only when we have a video AND we're not uploading AND not already submitted
-    const shouldEnable = !!videoRef.current?.id && !isUploading && !submitted;
-    setSubmitEnabled(shouldEnable);
-  }
-
-  useEffect(() => {
-    syncSubmitButtonState();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isUploading, submitted, video?.id]);
-
-  // -------------------------
   // HubSpot hidden fields
   // -------------------------
   const VIMEO_URL_NAME = "vimeo_video_url";
@@ -162,7 +93,7 @@ export default function HubSpotVimeoWidget({
 
   function findFields(formEl: HTMLFormElement, name: string) {
     const nodes = Array.from(
-      formEl.querySelectorAll<HTMLInputElement>(`input[name="${name}"]`)
+      formEl.querySelectorAll<HTMLInputElement>(`input[name="${name}"]`),
     );
     if (nodes.length === 0) {
       const byId = formEl.querySelector<HTMLInputElement>(`#${name}`);
@@ -173,7 +104,7 @@ export default function HubSpotVimeoWidget({
 
   function ensureHiddenField(formEl: HTMLFormElement, name: string) {
     let nodes = Array.from(
-      formEl.querySelectorAll<HTMLInputElement>(`input[name="${name}"]`)
+      formEl.querySelectorAll<HTMLInputElement>(`input[name="${name}"]`),
     );
     if (nodes.length === 0) {
       const hidden = document.createElement("input");
@@ -235,18 +166,6 @@ export default function HubSpotVimeoWidget({
     tokenFields.forEach((f) => setFieldValueAndNotify(f, token));
   }
 
-  function clearVideoFieldsOnForm() {
-    const f = formHostRef.current?.querySelector(
-      "form"
-    ) as HTMLFormElement | null;
-    if (!f) return;
-
-    const prevToken = pendingTokenRef.current;
-    pendingTokenRef.current = null;
-    applyVideoToForm(f, null);
-    pendingTokenRef.current = prevToken;
-  }
-
   // Confirm ONLY after HubSpot says the form was submitted
   async function confirmUploadAfterSubmit() {
     const token = pendingTokenRef.current;
@@ -266,232 +185,6 @@ export default function HubSpotVimeoWidget({
     } catch {}
   }
 
-  function attachStickySync(formEl: HTMLFormElement) {
-    // Helper: block or allow submission; returns true if allowed
-    const ensureUploadPresentOrBlock = (e?: Event) => {
-      const v = videoRef.current;
-      if (!v?.id) {
-        if (e) {
-          try {
-            e.preventDefault();
-            e.stopPropagation();
-            (e as any).stopImmediatePropagation?.();
-          } catch {}
-        }
-
-        // Keep UI disabled and show message
-        setSubmitEnabled(false);
-
-        // Use alert for now (you can swap for inline banner)
-        // Throttle alerts if you want less spam in testing
-        alert("Please upload a video before submitting the form.");
-        return false;
-      }
-
-      // inject the hidden fields before submit
-      applyVideoToForm(formEl, v);
-      return true;
-    };
-
-    // Capture-phase submit listener (blocks submit events)
-    const onSubmitCapture = (e: Event) => {
-      const ok = ensureUploadPresentOrBlock(e);
-      if (!ok) {
-        // ensure we stop everything
-        try {
-          e.preventDefault();
-          e.stopPropagation();
-          (e as any).stopImmediatePropagation?.();
-        } catch {}
-        return false;
-      }
-      return true;
-    };
-
-    // Capture-phase click listener for clicks on submit-like controls
-    const onClickCapture = (e: MouseEvent) => {
-      // If already have video, nothing to block
-      if (videoRef.current?.id) return;
-
-      let el = e.target as Element | null;
-      while (el) {
-        const tag = el.tagName?.toLowerCase();
-        if (tag === "input") {
-          const type = (el as HTMLInputElement).type?.toLowerCase() || "";
-          if (type === "submit" || type === "image") {
-            try {
-              e.preventDefault();
-              e.stopPropagation();
-              (e as any).stopImmediatePropagation?.();
-            } catch {}
-            setSubmitEnabled(false);
-            alert("Please upload a video before submitting the form.");
-            return;
-          }
-        } else if (tag === "button") {
-          const tAttr = (el as HTMLButtonElement).getAttribute("type");
-          const isImplicitSubmit =
-            !tAttr && (el as HTMLElement).closest("form");
-          if (tAttr === "submit" || isImplicitSubmit) {
-            try {
-              e.preventDefault();
-              e.stopPropagation();
-              (e as any).stopImmediatePropagation?.();
-            } catch {}
-            setSubmitEnabled(false);
-            alert("Please upload a video before submitting the form.");
-            return;
-          }
-        } else {
-          // catch common vendor attributes that indicate submit triggers
-          if (
-            (el as HTMLElement).hasAttribute &&
-            (el as HTMLElement).hasAttribute("data-hs-submit")
-          ) {
-            try {
-              e.preventDefault();
-              e.stopPropagation();
-              (e as any).stopImmediatePropagation?.();
-            } catch {}
-            setSubmitEnabled(false);
-            alert("Please upload a video before submitting the form.");
-            return;
-          }
-        }
-        el = el.parentElement;
-      }
-    };
-
-    // Additional click-phase fallback handler for the found submit button(s)
-    const onSubmitBtnClickFallback = (e: Event) => {
-      if (!videoRef.current?.id) {
-        try {
-          e.preventDefault();
-          e.stopPropagation();
-          (e as any).stopImmediatePropagation?.();
-        } catch {}
-        alert("Please upload a video before submitting the form.");
-        setSubmitEnabled(false);
-        return false;
-      }
-      return true;
-    };
-
-    // --- Guard programmatic submissions by patching HTMLFormElement.prototype.submit ---
-    const originalFormSubmit = (HTMLFormElement.prototype as any).submit;
-    function wrappedSubmit(this: HTMLFormElement, ...args: any[]) {
-      if (!videoRef.current?.id) {
-        console.warn(
-          "Blocked programmatic form.submit() because video is not uploaded."
-        );
-        setSubmitEnabled(false);
-        // Do not call original
-        return;
-      }
-      return originalFormSubmit.apply(this, args);
-    }
-
-    // Install listeners / patch
-    try {
-      formEl.addEventListener("submit", onSubmitCapture, true);
-    } catch {}
-    try {
-      document.addEventListener("click", onClickCapture, true);
-    } catch {}
-    try {
-      (HTMLFormElement.prototype as any).submit = wrappedSubmit;
-    } catch (err) {
-      // If patching fails (CSP or readonly prototype), we still rely on capture handlers
-      console.warn("Could not monkeypatch HTMLFormElement.submit:", err);
-    }
-
-    // Find the visible submit controls (handle your `.actions input[type="submit"]` case)
-    // This looks for common cases including buttons without type (implicit submit).
-    const refreshSubmitControls = () => {
-      const found = Array.from(
-        formEl.querySelectorAll<HTMLInputElement | HTMLButtonElement>(
-          'input[type="submit"], input[type="image"], button[type="submit"], button'
-        )
-      );
-
-      // include `.actions input[type="submit"]` if outside form (HubSpot sometimes places it nearby)
-      const actionsSubmit = document.querySelectorAll<HTMLInputElement>(
-        ".actions input[type='submit']"
-      );
-      actionsSubmit.forEach((n) => {
-        if (!found.includes(n)) found.push(n);
-      });
-
-      // annotate and disable each control
-      found.forEach((el) => {
-        try {
-          (el as any).__hs_controlled_by_video_guard = true;
-        } catch {}
-        // disable visually and functionally
-        (el as any).disabled = true;
-        el.setAttribute("disabled", "true");
-        el.setAttribute("aria-disabled", "true");
-        (el as HTMLElement).style.opacity = "0.6";
-        (el as HTMLElement).style.cursor = "not-allowed";
-        (el as HTMLElement).style.pointerEvents = "none";
-
-        // add fallback listeners
-        el.addEventListener("click", onSubmitBtnClickFallback, true);
-      });
-    };
-
-    // run once now
-    refreshSubmitControls();
-
-    // Watch for HubSpot re-rendering / new buttons
-    const obs = new MutationObserver(() => {
-      if (videoRef.current?.id) applyVideoToForm(formEl, videoRef.current);
-      refreshSubmitControls();
-      syncSubmitButtonState();
-    });
-
-    obs.observe(formEl, { subtree: true, childList: true, attributes: true });
-
-    // Ensure state right away
-    syncSubmitButtonState();
-
-    // Return detach to restore original state
-    return () => {
-      try {
-        formEl.removeEventListener("submit", onSubmitCapture, true);
-      } catch {}
-      try {
-        document.removeEventListener("click", onClickCapture, true);
-      } catch {}
-      try {
-        // find all previously annotated controls and remove our listeners + re-enable
-        const controlled = formEl.querySelectorAll<HTMLElement>(
-          "[__hs_controlled_by_video_guard], .actions input[type='submit']"
-        );
-        controlled.forEach((el) => {
-          try {
-            el.removeEventListener("click", onSubmitBtnClickFallback, true);
-          } catch {}
-          try {
-            (el as any).disabled = false;
-            el.removeAttribute("disabled");
-            el.setAttribute("aria-disabled", "false");
-            (el as HTMLElement).style.opacity = "1";
-            (el as HTMLElement).style.cursor = "pointer";
-            (el as HTMLElement).style.pointerEvents = "auto";
-          } catch {}
-        });
-      } catch (err) {}
-      try {
-        obs.disconnect();
-      } catch {}
-      // restore original submit implementation
-      try {
-        (HTMLFormElement.prototype as any).submit = originalFormSubmit;
-      } catch {}
-    };
-  }
-
   async function checkUploadLinkCors(uploadLink: string) {
     try {
       const resp = await fetch(uploadLink, { method: "OPTIONS", mode: "cors" });
@@ -504,11 +197,6 @@ export default function HubSpotVimeoWidget({
   }
 
   function openFilePicker() {
-    if (submitted || isUploading) return;
-
-    // prevent submit while choosing a file
-    setSubmitEnabled(false);
-
     fileInputRef.current?.click();
   }
 
@@ -535,14 +223,13 @@ export default function HubSpotVimeoWidget({
     videoRef.current = null;
     setPendingToken(null);
     pendingTokenRef.current = null;
-    clearVideoFieldsOnForm();
 
     setUploadedFileMeta({ name: file.name, sizeBytes: file.size });
 
     setIsUploading(true);
+    setVideoErrorMessage(null);
     setStatus("Preparing upload…");
     setPct(null);
-    syncSubmitButtonState();
 
     try {
       const resp = await fetch(`${base}/api/vimeo/create-upload`, {
@@ -557,7 +244,7 @@ export default function HubSpotVimeoWidget({
 
       if (!resp.ok) {
         const text = await resp.text().catch(() => "");
-        setStatus(`Couldn’t start upload: ${text}`);
+        setStatus(`Couldn't start upload: ${text}`);
         return;
       }
 
@@ -565,7 +252,7 @@ export default function HubSpotVimeoWidget({
 
       if (!data.upload_link || !data.video_id || !data.pending_token) {
         setStatus(
-          "Backend response missing upload_link/video_id/pending_token."
+          "Backend response missing upload_link/video_id/pending_token.",
         );
         return;
       }
@@ -575,7 +262,7 @@ export default function HubSpotVimeoWidget({
 
       if (!/^https:\/\//i.test(data.upload_link)) {
         setStatus(
-          "Upload link returned by backend is not an absolute HTTPS URL."
+          "Upload link returned by backend is not an absolute HTTPS URL.",
         );
         return;
       }
@@ -611,10 +298,25 @@ export default function HubSpotVimeoWidget({
       setVideo(v);
       videoRef.current = v;
 
-      const f = formHostRef.current?.querySelector(
-        "form"
-      ) as HTMLFormElement | null;
-      if (f) applyVideoToForm(f, v);
+      // Apply to iframe form instead of regular form
+      const iframe = formHostRef.current?.querySelector(
+        "iframe.hs-form-iframe",
+      ) as HTMLIFrameElement;
+      if (iframe) {
+        const iframeDoc =
+          iframe.contentDocument || iframe.contentWindow?.document;
+        const formInIframe = iframeDoc?.querySelector(
+          "form",
+        ) as HTMLFormElement;
+        if (formInIframe) {
+          applyVideoToForm(formInIframe, v);
+          console.log("✅ Applied video to iframe form");
+        } else {
+          console.warn("⚠️ Could not find form in iframe");
+        }
+      } else {
+        console.warn("⚠️ Could not find iframe");
+      }
 
       setPct(null);
       setStatus("");
@@ -623,7 +325,6 @@ export default function HubSpotVimeoWidget({
       setStatus(`Upload failed: ${message}`);
     } finally {
       setIsUploading(false);
-      syncSubmitButtonState();
       tusUploadRef.current = null;
       if (fileInputRef.current) fileInputRef.current.value = "";
     }
@@ -649,7 +350,7 @@ export default function HubSpotVimeoWidget({
 
     const ensureScript = () => {
       const existing = document.querySelector(
-        `script[src="${src}"]`
+        `script[src="${src}"]`,
       ) as HTMLScriptElement | null;
       if (existing) return existing;
 
@@ -674,43 +375,20 @@ export default function HubSpotVimeoWidget({
 
       const f = host.querySelector("form") as HTMLFormElement | null;
       if (f) {
-        const detachForForm = attachStickySync(f);
-
         if (videoRef.current?.id) applyVideoToForm(f, videoRef.current);
-
-        // lock/unlock based on video presence
-        syncSubmitButtonState();
 
         const hostObs = new MutationObserver(() => {
           const newForm = host.querySelector("form") as HTMLFormElement | null;
           if (!newForm) return;
 
           try {
-            detachForForm();
+            hostObs.disconnect();
           } catch {}
 
-          const newDetach = attachStickySync(newForm);
-          detachStickySyncRef.current = () => {
-            try {
-              newDetach();
-            } catch {}
-            hostObs.disconnect();
-          };
-
           if (videoRef.current?.id) applyVideoToForm(newForm, videoRef.current);
-          syncSubmitButtonState();
         });
 
         hostObs.observe(host, { childList: true, subtree: true });
-
-        detachStickySyncRef.current = () => {
-          try {
-            detachForForm();
-          } catch {}
-          try {
-            hostObs.disconnect();
-          } catch {}
-        };
       }
 
       return true;
@@ -730,30 +408,70 @@ export default function HubSpotVimeoWidget({
         region,
         target: `#${lightMountId}`,
 
-        onFormReady: ($form: any) => {
-          console.log("onFormReady", "This is called when the form is ready");
-
-          const formEl = $form[0];
-
-          // Intercept form submission
-          formEl.addEventListener("submit", function (e: Event) {
-            console.log("Submit intercepted, video ID:", videoRef.current?.id);
-
-            if (!videoRef.current?.id) {
-              e.preventDefault();
-              e.stopPropagation();
-              alert("Please upload a video before submitting the form.");
-              return false;
-            }
-
-            // If we have video, apply fields and let it submit normally
-            applyVideoToForm(formEl, videoRef.current);
-            // Don't prevent default - let HubSpot handle it
-          });
-
+        onFormReady: () => {
           setTimeout(() => {
             moveRenderedFormIntoHost();
-          }, 0);
+
+            // Find the iframe
+            const iframe = formHostRef.current?.querySelector(
+              "iframe.hs-form-iframe",
+            ) as HTMLIFrameElement;
+
+            if (iframe) {
+              console.log("Found iframe:", iframe);
+
+              // Access the form inside the iframe
+              const iframeDoc =
+                iframe.contentDocument || iframe.contentWindow?.document;
+              const formInIframe = iframeDoc?.querySelector("form");
+
+              console.log("Form in iframe:", formInIframe);
+
+              if (formInIframe) {
+                // Apply video to the iframe form when video uploads
+                if (videoRef.current?.id) {
+                  applyVideoToForm(formInIframe, videoRef.current);
+                }
+
+                formInIframe.addEventListener(
+                  "submit",
+                  function (e: Event) {
+                    console.log("🔴 SUBMIT INTERCEPTED IN IFRAME!");
+
+                    const vimeoIdField = formInIframe.querySelector(
+                      'input[name="vimeo_video_id"]',
+                    ) as HTMLInputElement;
+                    const vimeoUrlField = formInIframe.querySelector(
+                      'input[name="vimeo_video_url"]',
+                    ) as HTMLInputElement;
+
+                    console.log("Vimeo ID:", vimeoIdField?.value);
+                    console.log("Vimeo URL:", vimeoUrlField?.value);
+
+                    const hasVideo =
+                      vimeoIdField?.value?.trim() &&
+                      vimeoUrlField?.value?.trim();
+
+                    if (!hasVideo) {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      e.stopImmediatePropagation();
+                      setVideoErrorMessage(
+                        "Please upload a video before submitting!",
+                      );
+                      return false;
+                    } else {
+                      setVideoErrorMessage(null);
+                    }
+
+                    // Video exists, allow submission
+                    console.log("✅ Video present, allowing submission");
+                  },
+                  true,
+                );
+              }
+            }
+          }, 500);
         },
 
         onFormSubmitted: async () => {
@@ -788,7 +506,7 @@ export default function HubSpotVimeoWidget({
           if (pollInterval) window.clearInterval(pollInterval);
           pollInterval = null;
           console.error(
-            "[HubSpot] Timeout waiting for window.hbspt.forms.create"
+            "[HubSpot] Timeout waiting for window.hbspt.forms.create",
           );
         }
       }, interval);
@@ -809,8 +527,6 @@ export default function HubSpotVimeoWidget({
 
     return () => {
       cancelled = true;
-      detachStickySyncRef.current?.();
-      detachStickySyncRef.current = null;
       if (pollInterval) window.clearInterval(pollInterval);
       document.getElementById(lightMountId)?.remove();
     };
@@ -835,7 +551,9 @@ export default function HubSpotVimeoWidget({
               </div>
               <div style={styles.promptQuestion}>{questionText}</div>
             </div>
-
+            {videoErrorMessage && (
+              <div style={styles.errorMessage}>{videoErrorMessage}</div>
+            )}
             <div style={styles.uploadBox}>
               <input
                 ref={fileInputRef}
@@ -1146,5 +864,14 @@ const styles: Record<string, React.CSSProperties> = {
     lineHeight: 1.5,
     padding: 0,
     flexShrink: 0,
+  },
+  errorMessage: {
+    color: "#f2545b",
+    fontSize: 14,
+    fontFamily: "Inter",
+    fontWeight: 400,
+    lineHeight: 1.5,
+    marginBottom: 10,
+    textAlign: "center",
   },
 };
