@@ -698,9 +698,15 @@ export default function HubSpotVimeoWidget({
                 </div>
               )}
 
-              <div style={styles.uploadStatus}>
-                {status}
-                {pct !== null ? ` (${pct}%)` : ""}
+              <div style={styles.uploadStatusContainer}>
+                {isUploading && pct !== null && (
+                  <div style={styles.loadingBarContainer}>
+                    <div style={{ ...styles.loadingBar, width: `${pct}%` }} />
+                  </div>
+                )}
+                <div style={styles.uploadStatus}>
+                  {pct !== null ? ` ${pct}%` : ""}
+                </div>
               </div>
             </div>
           </div>
@@ -723,6 +729,7 @@ const styles: Record<string, React.CSSProperties> = {
   },
   card: {
     maxWidth: 720,
+    minHeight: 400,
     margin: "0 auto",
     background: "#fff",
     border: "1px solid #eee",
@@ -735,7 +742,9 @@ const styles: Record<string, React.CSSProperties> = {
     justifyContent: "space-between",
     gap: 12,
   },
-  uploadSection: { marginBottom: 24 },
+  uploadSection: {
+    marginBottom: 24,
+  },
   formSection: { borderTop: "1px solid #e5e7eb", paddingTop: 24 },
   prompt: { marginBottom: 12 },
   promptLabel: {
@@ -788,11 +797,19 @@ const styles: Record<string, React.CSSProperties> = {
     justifyContent: "center",
     gap: 8,
   },
-  uploadStatus: {
+  uploadStatusContainer: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 8,
     marginTop: 10,
-    fontSize: 13,
-    color: "#475569",
-    minHeight: 18,
+  },
+  uploadStatus: {
+    fontSize: 18,
+    fontFamily: "Inter Tight",
+    color: "#181819",
+    fontWeight: 450,
+    lineHeight: 1.3,
   },
   fileRow: {
     display: "flex",
@@ -873,5 +890,19 @@ const styles: Record<string, React.CSSProperties> = {
     lineHeight: 1.5,
     marginBottom: 10,
     textAlign: "center",
+  },
+
+  loadingBarContainer: {
+    width: "100%",
+    height: 10,
+    backgroundColor: "#f5f5f7",
+    borderRadius: 100,
+    overflow: "hidden",
+  },
+  loadingBar: {
+    height: "100%",
+    backgroundColor: "#7638FA",
+    borderRadius: 100,
+    transition: "width 0.3s ease",
   },
 };
