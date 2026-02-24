@@ -585,6 +585,21 @@ const VimeoVideoGrid = ({ backendBase, perPage = 9 }: Props) => {
                     return next;
                   })
                 }
+                style={{
+                  marginTop: 40,
+                  padding: "12px 24px",
+                  background: "#ffffff",
+                  color: "#181819",
+                  borderRadius: 4,
+                  cursor: "pointer",
+                  fontFamily: "Inter, sans-serif",
+                  fontSize: 16,
+                  fontWeight: 450,
+                  lineHeight: 1.5,
+                  textAlign: "center",
+                  width: "100%",
+                  letterSpacing: "-0.16px",
+                }}
               >
                 Load more
               </button>
