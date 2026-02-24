@@ -36,32 +36,40 @@ const fmtDate = (iso: string) => {
 };
 
 const parseDescription = (desc: string) => {
-  if (!desc) return { name: "", jobTitle: "", company: "" };
-  const [name = "", jobTitle = "", company = ""] = desc.split(",").map(s => s.trim());
-  return { name, jobTitle, company };
+  if (!desc) return { company: "", jobTitle: "" };
+  const [company = "", jobTitle = ""] = desc.split(",").map((s) => s.trim());
+  return { company, jobTitle };
 };
 
-const LIKES_KEY = (id: string) => `likes:${id}`;
 const LIKED_KEY = (id: string) => `liked:${id}`;
 
 // ── spinner ───────────────────────────────────────────────────────────────────
 
 const Spinner = () => (
   <div style={{ display: "flex", justifyContent: "center", padding: "60px 0" }}>
-    <div style={{
-      width: 36, height: 36,
-      border: "3px solid rgba(255,255,255,0.1)",
-      borderTop: "3px solid #7638fa",
-      borderRadius: "50%",
-      animation: "vg-spin 0.8s linear infinite",
-    }} />
+    <div
+      style={{
+        width: 36,
+        height: 36,
+        border: "3px solid rgba(255,255,255,0.1)",
+        borderTop: "3px solid #7638fa",
+        borderRadius: "50%",
+        animation: "vg-spin 0.8s linear infinite",
+      }}
+    />
     <style>{`@keyframes vg-spin { to { transform: rotate(360deg); } }`}</style>
   </div>
 );
 
 // ── heart button ──────────────────────────────────────────────────────────────
 
-const HeartButton = ({ videoId, backendBase }: { videoId: string; backendBase: string }) => {
+const HeartButton = ({
+  videoId,
+  backendBase,
+}: {
+  videoId: string;
+  backendBase: string;
+}) => {
   const [liked, setLiked] = useState(false);
   const [count, setCount] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
@@ -72,7 +80,9 @@ const HeartButton = ({ videoId, backendBase }: { videoId: string; backendBase: s
 
     const fetchCount = async () => {
       try {
-        const res = await fetch(`${backendBase}/api/vimeo/likes?video_id=${videoId}`);
+        const res = await fetch(
+          `${backendBase}/api/vimeo/likes?video_id=${videoId}`,
+        );
         const data = await res.json();
         setCount(data.count ?? 0);
       } catch {}
@@ -87,19 +97,21 @@ const HeartButton = ({ videoId, backendBase }: { videoId: string; backendBase: s
 
     const next = !liked;
     setLiked(next);
-    setCount(c => (c ?? 0) + (next ? 1 : -1));
+    setCount((c) => (c ?? 0) + (next ? 1 : -1));
     localStorage.setItem(LIKED_KEY(videoId), next ? "1" : "0");
 
     try {
       await fetch(`${backendBase}/api/vimeo/likes`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ video_id: videoId, action: next ? "like" : "unlike" }),
+        body: JSON.stringify({
+          video_id: videoId,
+          action: next ? "like" : "unlike",
+        }),
       });
     } catch {
-      // rollback
       setLiked(!next);
-      setCount(c => (c ?? 0) + (next ? -1 : 1));
+      setCount((c) => (c ?? 0) + (next ? -1 : 1));
       localStorage.setItem(LIKED_KEY(videoId), next ? "0" : "1");
     } finally {
       setLoading(false);
@@ -123,7 +135,12 @@ const HeartButton = ({ videoId, backendBase }: { videoId: string; backendBase: s
         transition: "opacity 0.15s",
       }}
     >
-      <svg xmlns="http://www.w3.org/2000/svg" width="29" height="24" viewBox="0 0 29 24" fill="none"
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="29"
+        height="24"
+        viewBox="0 0 29 24"
+        fill="none"
         style={{ transition: "fill 0.2s", flexShrink: 0 }}
       >
         <path
@@ -134,14 +151,16 @@ const HeartButton = ({ videoId, backendBase }: { videoId: string; backendBase: s
         />
       </svg>
       {count !== null && (
-        <span style={{
-          fontFamily: "Inter, sans-serif",
-          fontSize: 14,
-          fontWeight: 400,
-          color: liked ? "#FF3040" : "rgba(255,255,255,0.6)",
-          transition: "color 0.2s",
-          lineHeight: 1,
-        }}>
+        <span
+          style={{
+            fontFamily: "Inter, sans-serif",
+            fontSize: 14,
+            fontWeight: 400,
+            color: liked ? "#FF3040" : "rgba(255,255,255,0.6)",
+            transition: "color 0.2s",
+            lineHeight: 1,
+          }}
+        >
           {count}
         </span>
       )}
@@ -151,9 +170,19 @@ const HeartButton = ({ videoId, backendBase }: { videoId: string; backendBase: s
 
 // ── lightbox ──────────────────────────────────────────────────────────────────
 
-const Lightbox = ({ video, onClose, backendBase }: { video: VimeoVideo; onClose: () => void; backendBase: string }) => {
+const Lightbox = ({
+  video,
+  onClose,
+  backendBase,
+}: {
+  video: VimeoVideo;
+  onClose: () => void;
+  backendBase: string;
+}) => {
   useEffect(() => {
-    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
     window.addEventListener("keydown", onKey);
     document.body.style.overflow = "hidden";
     return () => {
@@ -162,65 +191,137 @@ const Lightbox = ({ video, onClose, backendBase }: { video: VimeoVideo; onClose:
     };
   }, [onClose]);
 
-  const { name, jobTitle, company } = parseDescription(video.description);
+  const { company, jobTitle } = parseDescription(video.description);
 
   return (
     <div
       onClick={onClose}
       style={{
-        position: "fixed", inset: 0, zIndex: 1000,
+        position: "fixed",
+        inset: 0,
+        zIndex: 1000,
         background: "rgba(24,24,25,0.85)",
-        display: "flex", alignItems: "center", justifyContent: "center", padding: 16,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: 16,
       }}
     >
       <div
-        onClick={e => e.stopPropagation()}
+        onClick={(e) => e.stopPropagation()}
         style={{
-          background: "#1a1a1b", borderRadius: 16, width: "100%", maxWidth: 840,
-          overflow: "hidden", position: "relative",
+          background: "#1a1a1b",
+          borderRadius: 16,
+          width: "100%",
+          maxWidth: 840,
+          overflow: "hidden",
+          position: "relative",
           boxShadow: "0 24px 80px rgba(0,0,0,0.5)",
         }}
       >
         <button
           onClick={onClose}
           style={{
-            position: "absolute", top: 12, right: 12, zIndex: 10,
-            background: "rgba(255,255,255,0.1)", border: "1px solid rgba(255,255,255,0.15)",
-            borderRadius: 8, width: 36, height: 36,
-            display: "flex", alignItems: "center", justifyContent: "center",
-            cursor: "pointer", padding: 0,
+            position: "absolute",
+            top: 12,
+            right: 12,
+            zIndex: 10,
+            background: "rgba(255,255,255,0.1)",
+            border: "1px solid rgba(255,255,255,0.15)",
+            borderRadius: 8,
+            width: 36,
+            height: 36,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            cursor: "pointer",
+            padding: 0,
           }}
           aria-label="Close"
         >
           <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-            <path d="M4 4L16 16M16 4L4 16" stroke="rgba(255,255,255,0.7)" strokeWidth="2" strokeLinecap="round" />
+            <path
+              d="M4 4L16 16M16 4L4 16"
+              stroke="rgba(255,255,255,0.7)"
+              strokeWidth="2"
+              strokeLinecap="round"
+            />
           </svg>
         </button>
 
-        <div style={{ position: "relative", paddingBottom: "56.25%", background: "#000" }}>
+        <div
+          style={{
+            position: "relative",
+            paddingBottom: "56.25%",
+            background: "#000",
+          }}
+        >
           <iframe
             src={`${video.embed_url}?autoplay=1&title=0&byline=0&portrait=0`}
-            style={{ position: "absolute", inset: 0, width: "100%", height: "100%", border: "none" }}
+            style={{
+              position: "absolute",
+              inset: 0,
+              width: "100%",
+              height: "100%",
+              border: "none",
+            }}
             allow="autoplay; fullscreen; picture-in-picture"
             allowFullScreen
             title={video.title}
           />
         </div>
 
-        <div style={{ padding: "16px 20px", display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 16 }}>
+        <div
+          style={{
+            padding: "16px 20px",
+            display: "flex",
+            alignItems: "flex-start",
+            justifyContent: "space-between",
+            gap: 16,
+          }}
+        >
           <div>
-            <div style={{ fontFamily: "Inter Tight, Inter, sans-serif", fontSize: 16, fontWeight: 500, color: "#FAFAFB", marginBottom: 4 }}>
+            <div
+              style={{
+                fontFamily: "Inter Tight, Inter, sans-serif",
+                fontSize: 16,
+                fontWeight: 500,
+                color: "#FAFAFB",
+                marginBottom: 4,
+              }}
+            >
               {video.title}
             </div>
-            {name && (
-              <div style={{ fontFamily: "Inter, sans-serif", fontSize: 14, fontWeight: 400, color: "rgba(255,255,255,0.6)" }}>
-                {name}{(jobTitle || company) ? ` · ${[jobTitle, company].filter(Boolean).join(", ")}` : ""}
+            {(company || jobTitle) && (
+              <div
+                style={{
+                  fontFamily: "Inter, sans-serif",
+                  fontSize: 13,
+                  fontWeight: 400,
+                  color: "rgba(255,255,255,0.6)",
+                }}
+              >
+                {[company, jobTitle].filter(Boolean).join(", ")}
               </div>
             )}
           </div>
-          <div style={{ display: "flex", alignItems: "center", gap: 16, flexShrink: 0 }}>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 16,
+              flexShrink: 0,
+            }}
+          >
             <HeartButton videoId={video.id} backendBase={backendBase} />
-            <span style={{ fontFamily: "Inter, sans-serif", fontSize: 13, color: "rgba(255,255,255,0.4)", whiteSpace: "nowrap" }}>
+            <span
+              style={{
+                fontFamily: "Inter, sans-serif",
+                fontSize: 13,
+                color: "rgba(255,255,255,0.4)",
+                whiteSpace: "nowrap",
+              }}
+            >
               {fmtDate(video.created_time)}
               {video.duration ? ` · ${fmtDuration(video.duration)}` : ""}
             </span>
@@ -233,72 +334,110 @@ const Lightbox = ({ video, onClose, backendBase }: { video: VimeoVideo; onClose:
 
 // ── video card ────────────────────────────────────────────────────────────────
 
-const VideoCard = ({ v, onClick, backendBase }: { v: VimeoVideo; onClick: () => void; backendBase: string }) => {
+const VideoCard = ({
+  v,
+  onClick,
+  backendBase,
+}: {
+  v: VimeoVideo;
+  onClick: () => void;
+  backendBase: string;
+}) => {
   const [imgErr, setImgErr] = useState(false);
-  const { name, jobTitle, company } = parseDescription(v.description);
+  const { company, jobTitle } = parseDescription(v.description);
 
   return (
     <div
       style={{
-        display: "flex", flexDirection: "column",
+        display: "flex",
+        flexDirection: "column",
         background: "rgba(255,255,255,0.05)",
-        borderRadius: 8, overflow: "hidden",
+        borderRadius: 8,
+        overflow: "hidden",
         cursor: "pointer",
       }}
       onClick={onClick}
     >
       {/* thumbnail */}
-      <div style={{ position: "relative", width: "100%", paddingBottom: "56.25%", overflow: "hidden" }}>
+      <div
+        style={{
+          position: "relative",
+          width: "100%",
+          paddingBottom: "56.25%",
+          overflow: "hidden",
+        }}
+      >
         {!imgErr && v.thumbnail ? (
           <img
             src={v.thumbnail}
             alt={v.title}
             onError={() => setImgErr(true)}
-            style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }}
+            style={{
+              position: "absolute",
+              inset: 0,
+              width: "100%",
+              height: "100%",
+              objectFit: "cover",
+            }}
           />
         ) : (
-          <div style={{ position: "absolute", inset: 0, background: "linear-gradient(135deg,#2d1f5e 0%,#1a1a2e 100%)" }} />
+          <div
+            style={{
+              position: "absolute",
+              inset: 0,
+              background: "linear-gradient(135deg,#2d1f5e 0%,#1a1a2e 100%)",
+            }}
+          />
         )}
-
-        {/* duration badge */}
-        <div style={{
-          position: "absolute", bottom: 8, right: 8,
-          background: "rgba(24,24,25,0.75)", color: "#fff",
-          fontFamily: "Inter, sans-serif", fontSize: 12, fontWeight: 500,
-          padding: "2px 7px", borderRadius: 6,
-        }}>
+        <div
+          style={{
+            position: "absolute",
+            bottom: 8,
+            right: 8,
+            background: "rgba(24,24,25,0.75)",
+            color: "#fff",
+            fontFamily: "Inter, sans-serif",
+            fontSize: 12,
+            fontWeight: 500,
+            padding: "2px 7px",
+            borderRadius: 6,
+          }}
+        >
           {fmtDuration(v.duration)}
         </div>
       </div>
 
       {/* meta */}
       <div style={{ padding: "16px 16px 20px" }}>
-        {/* heart + count */}
-        <div style={{ marginBottom: 10 }} onClick={e => e.stopPropagation()}>
+        <div style={{ marginBottom: 10 }} onClick={(e) => e.stopPropagation()}>
           <HeartButton videoId={v.id} backendBase={backendBase} />
         </div>
 
-        <div style={{
-          fontFamily: "Inter Tight, Inter, sans-serif",
-          fontSize: 20, fontWeight: 450, color: "#FAFAFB",
-          lineHeight: "140%", marginBottom: 4,
-        }}>
+        <div
+          style={{
+            fontFamily: "Inter Tight, Inter, sans-serif",
+            fontSize: 20,
+            fontWeight: 450,
+            color: "#FAFAFB",
+            lineHeight: "140%",
+            marginBottom: 4,
+          }}
+        >
           {v.title}
         </div>
 
-        {(name || jobTitle || company) && (
-          <div style={{
-            fontFamily: "Inter, sans-serif",
-            fontSize: 18, fontWeight: 400,
-            color: "rgba(255,255,255,0.60)",
-            lineHeight: "140%", letterSpacing: "-0.18px",
-          }}>
-            {name}
-            {(jobTitle || company) && (
-              <span style={{ opacity: 0.8 }}>
-                {name ? ", " : ""}{[jobTitle, company].filter(Boolean).join(", ")}
-              </span>
-            )}
+        {(company || jobTitle) && (
+          <div
+            style={{
+              fontFamily: "Inter, sans-serif",
+              fontSize: 18,
+              fontWeight: 400,
+              color: "rgba(255,255,255,0.60)",
+              lineHeight: "140%",
+              letterSpacing: "-0.18px",
+            }}
+          >
+            {[company, jobTitle].filter(Boolean).join(", ")}
           </div>
         )}
       </div>
@@ -308,7 +447,11 @@ const VideoCard = ({ v, onClick, backendBase }: { v: VimeoVideo; onClick: () => 
 
 // ── main component ────────────────────────────────────────────────────────────
 
-const VimeoVideoGrid = ({ backendBase, perPage = 12, heading = "Customer Stories" }: Props) => {
+const VimeoVideoGrid = ({
+  backendBase,
+  perPage = 12,
+  heading = "Customer Stories",
+}: Props) => {
   const [videos, setVideos] = useState<VimeoVideo[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -318,24 +461,31 @@ const VimeoVideoGrid = ({ backendBase, perPage = 12, heading = "Customer Stories
 
   const base = backendBase.replace(/\/$/, "");
 
-  const load = useCallback(async (p: number) => {
-    setLoading(true);
-    setError(null);
-    try {
-      const res = await fetch(`${base}/api/vimeo/folder-videos?page=${p}&per_page=${perPage}`);
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const data = await res.json();
-      if (data.error) throw new Error(data.error);
-      setVideos(data.videos ?? []);
-      setTotal(data.total ?? 0);
-    } catch (e: any) {
-      setError(String(e?.message || e));
-    } finally {
-      setLoading(false);
-    }
-  }, [base, perPage]);
+  const load = useCallback(
+    async (p: number) => {
+      setLoading(true);
+      setError(null);
+      try {
+        const res = await fetch(
+          `${base}/api/vimeo/folder-videos?page=${p}&per_page=${perPage}`,
+        );
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        if (data.error) throw new Error(data.error);
+        setVideos(data.videos ?? []);
+        setTotal(data.total ?? 0);
+      } catch (e: any) {
+        setError(String(e?.message || e));
+      } finally {
+        setLoading(false);
+      }
+    },
+    [base, perPage],
+  );
 
-  useEffect(() => { load(page); }, [page, load]);
+  useEffect(() => {
+    load(page);
+  }, [page, load]);
 
   const totalPages = Math.ceil(total / perPage);
 
@@ -356,75 +506,132 @@ const VimeoVideoGrid = ({ backendBase, perPage = 12, heading = "Customer Stories
       `}</style>
 
       <div style={{ maxWidth: 1200, margin: "0 auto" }}>
-        <h1 style={{
-          fontFamily: "Inter Tight, Inter, sans-serif",
-          fontSize: 32, fontWeight: 600, color: "#FAFAFB", margin: "0 0 4px",
-        }}>
+        <h1
+          style={{
+            fontFamily: "Inter Tight, Inter, sans-serif",
+            fontSize: 32,
+            fontWeight: 600,
+            color: "#FAFAFB",
+            margin: "0 0 4px",
+          }}
+        >
           {heading}
         </h1>
-        <p style={{ fontFamily: "Inter, sans-serif", fontSize: 15, color: "rgba(255,255,255,0.4)", margin: "0 0 32px" }}>
+        <p
+          style={{
+            fontFamily: "Inter, sans-serif",
+            fontSize: 15,
+            color: "rgba(255,255,255,0.4)",
+            margin: "0 0 32px",
+          }}
+        >
           {total > 0 ? `${total} video${total !== 1 ? "s" : ""}` : ""}
         </p>
 
         {loading ? (
           <Spinner />
         ) : error ? (
-          <div style={{
-            textAlign: "center", padding: 32,
-            background: "rgba(255,48,64,0.08)", borderRadius: 12,
-            border: "1px solid rgba(255,48,64,0.2)", color: "#FF3040",
-          }}>
-            <strong>Failed to load videos.</strong><br />
-            <span style={{ fontSize: 13, color: "rgba(255,255,255,0.4)" }}>{error}</span><br />
+          <div
+            style={{
+              textAlign: "center",
+              padding: 32,
+              background: "rgba(255,48,64,0.08)",
+              borderRadius: 12,
+              border: "1px solid rgba(255,48,64,0.2)",
+              color: "#FF3040",
+            }}
+          >
+            <strong>Failed to load videos.</strong>
+            <br />
+            <span style={{ fontSize: 13, color: "rgba(255,255,255,0.4)" }}>
+              {error}
+            </span>
+            <br />
             <button
               onClick={() => load(page)}
               style={{
-                marginTop: 12, padding: "8px 20px",
-                background: "#7638fa", color: "#fff",
-                border: 0, borderRadius: 8, cursor: "pointer",
-                fontFamily: "Inter, sans-serif", fontSize: 14,
+                marginTop: 12,
+                padding: "8px 20px",
+                background: "#7638fa",
+                color: "#fff",
+                border: 0,
+                borderRadius: 8,
+                cursor: "pointer",
+                fontFamily: "Inter, sans-serif",
+                fontSize: 14,
               }}
             >
               Retry
             </button>
           </div>
         ) : videos.length === 0 ? (
-          <p style={{ textAlign: "center", color: "rgba(255,255,255,0.4)" }}>No videos found.</p>
+          <p style={{ textAlign: "center", color: "rgba(255,255,255,0.4)" }}>
+            No videos found.
+          </p>
         ) : (
           <>
             <div className="vg-grid">
-              {videos.map(v => (
-                <VideoCard key={v.id} v={v} onClick={() => setActive(v)} backendBase={base} />
+              {videos.map((v) => (
+                <VideoCard
+                  key={v.id}
+                  v={v}
+                  onClick={() => setActive(v)}
+                  backendBase={base}
+                />
               ))}
             </div>
 
             {totalPages > 1 && (
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 16, marginTop: 40 }}>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: 16,
+                  marginTop: 40,
+                }}
+              >
                 <button
                   disabled={page === 1}
-                  onClick={() => setPage(p => p - 1)}
+                  onClick={() => setPage((p) => p - 1)}
                   style={{
-                    padding: "8px 20px", background: "rgba(255,255,255,0.05)",
-                    border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8,
+                    padding: "8px 20px",
+                    background: "rgba(255,255,255,0.05)",
+                    border: "1px solid rgba(255,255,255,0.1)",
+                    borderRadius: 8,
                     cursor: page === 1 ? "not-allowed" : "pointer",
-                    fontFamily: "Inter, sans-serif", fontSize: 14,
-                    color: "#7638fa", fontWeight: 500, opacity: page === 1 ? 0.4 : 1,
+                    fontFamily: "Inter, sans-serif",
+                    fontSize: 14,
+                    color: "#7638fa",
+                    fontWeight: 500,
+                    opacity: page === 1 ? 0.4 : 1,
                   }}
                 >
                   ← Prev
                 </button>
-                <span style={{ fontFamily: "Inter, sans-serif", fontSize: 14, color: "rgba(255,255,255,0.4)" }}>
+                <span
+                  style={{
+                    fontFamily: "Inter, sans-serif",
+                    fontSize: 14,
+                    color: "rgba(255,255,255,0.4)",
+                  }}
+                >
                   Page {page} of {totalPages}
                 </span>
                 <button
                   disabled={page === totalPages}
-                  onClick={() => setPage(p => p + 1)}
+                  onClick={() => setPage((p) => p + 1)}
                   style={{
-                    padding: "8px 20px", background: "rgba(255,255,255,0.05)",
-                    border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8,
+                    padding: "8px 20px",
+                    background: "rgba(255,255,255,0.05)",
+                    border: "1px solid rgba(255,255,255,0.1)",
+                    borderRadius: 8,
                     cursor: page === totalPages ? "not-allowed" : "pointer",
-                    fontFamily: "Inter, sans-serif", fontSize: 14,
-                    color: "#7638fa", fontWeight: 500, opacity: page === totalPages ? 0.4 : 1,
+                    fontFamily: "Inter, sans-serif",
+                    fontSize: 14,
+                    color: "#7638fa",
+                    fontWeight: 500,
+                    opacity: page === totalPages ? 0.4 : 1,
                   }}
                 >
                   Next →
@@ -435,7 +642,13 @@ const VimeoVideoGrid = ({ backendBase, perPage = 12, heading = "Customer Stories
         )}
       </div>
 
-      {active && <Lightbox video={active} onClose={() => setActive(null)} backendBase={base} />}
+      {active && (
+        <Lightbox
+          video={active}
+          onClose={() => setActive(null)}
+          backendBase={base}
+        />
+      )}
     </div>
   );
 };
