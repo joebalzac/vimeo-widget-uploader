@@ -36,9 +36,9 @@ const fmtDate = (iso: string) => {
 };
 
 const parseDescription = (desc: string) => {
-  if (!desc) return { company: "", jobTitle: "" };
-  const [company = "", jobTitle = ""] = desc.split(",").map((s) => s.trim());
-  return { company, jobTitle };
+  if (!desc) return {  jobTitle: "", company: "" };
+  const [jobTitle = "", company = ""] = desc.split(",").map((s) => s.trim());
+  return { jobTitle, company };
 };
 
 const LIKED_KEY = (id: string) => `liked:${id}`;
@@ -191,7 +191,7 @@ const Lightbox = ({
     };
   }, [onClose]);
 
-  const { company, jobTitle } = parseDescription(video.description);
+  const { jobTitle, company } = parseDescription(video.description);
 
   return (
     <div
@@ -292,7 +292,7 @@ const Lightbox = ({
             >
               {video.title}
             </div>
-            {(company || jobTitle) && (
+            {(jobTitle|| company) && (
               <div
                 style={{
                   fontFamily: "Inter, sans-serif",
@@ -301,7 +301,7 @@ const Lightbox = ({
                   color: "rgba(255,255,255,0.6)",
                 }}
               >
-                {[company, jobTitle].filter(Boolean).join(", ")}
+                {[jobTitle, company].filter(Boolean).join(", ")}
               </div>
             )}
           </div>
@@ -344,7 +344,7 @@ const VideoCard = ({
   backendBase: string;
 }) => {
   const [imgErr, setImgErr] = useState(false);
-  const { company, jobTitle } = parseDescription(v.description);
+  const { jobTitle, company } = parseDescription(v.description);    
 
   return (
     <div
@@ -422,7 +422,7 @@ const VideoCard = ({
         >
           {v.title}
         </div>
-        {(company || jobTitle) && (
+        {(jobTitle || company) && (
           <div
             style={{
               fontFamily: "Inter, sans-serif",
@@ -433,7 +433,7 @@ const VideoCard = ({
               letterSpacing: "-0.18px",
             }}
           >
-            {[company, jobTitle].filter(Boolean).join(", ")}
+            {[jobTitle, company].filter(Boolean).join(", ")}
           </div>
         )}
       </div>
