@@ -1,5 +1,6 @@
 import "./App.css";
 import HubSpotVimeoWidget from "./components/HubspotVimeoWidget";
+import VimeoVideoGrid from "./components/VimeoVideoGrid";
 
 function App() {
   return (
@@ -14,11 +15,12 @@ function App() {
           maxMB={100}
         />
       </div>
+
+      <div>
+        <VimeoVideoGrid backendBase={import.meta.env.VITE_VIMEO_BACKEND_BASE} />
+      </div>
     </>
   );
 }
 
 export default App;
-
-
-

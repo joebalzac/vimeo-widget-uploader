@@ -729,7 +729,7 @@ const styles: Record<string, React.CSSProperties> = {
   },
   card: {
     maxWidth: 720,
-    minHeight: 400,
+    minHeight: 450,
     margin: "0 auto",
     background: "#fff",
     border: "1px solid #eee",
