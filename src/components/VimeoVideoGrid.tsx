@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 // ── types ────────────────────────────────────────────────────────────────────
 
@@ -451,7 +451,6 @@ const VimeoVideoGrid = ({ backendBase, perPage = 9 }: Props) => {
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [active, setActive] = useState<VimeoVideo | null>(null);
-  const sentinelRef = useRef<HTMLDivElement | null>(null);
 
   const base = backendBase.replace(/\/$/, "");
 
@@ -482,23 +481,6 @@ const VimeoVideoGrid = ({ backendBase, perPage = 9 }: Props) => {
     load(1);
   }, [load]);
 
-  useEffect(() => {
-    if (!sentinelRef.current) return;
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting && hasMore && !loadingMore && !loading) {
-          setPage((p) => {
-            const next = p + 1;
-            load(next);
-            return next;
-          });
-        }
-      },
-      { rootMargin: "200px" },
-    );
-    observer.observe(sentinelRef.current);
-    return () => observer.disconnect();
-  }, [hasMore, loadingMore, loading, load]);
 
   return (
     <div style={{ padding: 20, background: "transparent" }}>
@@ -572,9 +554,6 @@ const VimeoVideoGrid = ({ backendBase, perPage = 9 }: Props) => {
                 />
               ))}
             </div>
-
-            <div ref={sentinelRef} style={{ height: 1 }} />
-
             {loadingMore && <Spinner />}
             {hasMore && !loadingMore && (
               <button
