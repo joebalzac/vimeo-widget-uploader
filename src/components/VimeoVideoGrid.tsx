@@ -481,7 +481,6 @@ const VimeoVideoGrid = ({ backendBase, perPage = 9 }: Props) => {
     load(1);
   }, [load]);
 
-
   return (
     <div style={{ padding: 20, background: "transparent" }}>
       <style>{`
@@ -498,7 +497,15 @@ const VimeoVideoGrid = ({ backendBase, perPage = 9 }: Props) => {
         }
       `}</style>
 
-      <div style={{ maxWidth: 1200, margin: "0 auto" }}>
+      <div
+        style={{
+          maxWidth: 1440,
+          margin: "0 auto",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+        }}
+      >
         {loading ? (
           <Spinner />
         ) : error ? (
