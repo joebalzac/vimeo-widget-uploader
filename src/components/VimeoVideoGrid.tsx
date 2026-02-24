@@ -576,6 +576,19 @@ const VimeoVideoGrid = ({ backendBase, perPage = 9 }: Props) => {
             <div ref={sentinelRef} style={{ height: 1 }} />
 
             {loadingMore && <Spinner />}
+            {hasMore && !loadingMore && (
+              <button
+                onClick={() =>
+                  setPage((p) => {
+                    const next = p + 1;
+                    load(next);
+                    return next;
+                  })
+                }
+              >
+                Load more
+              </button>
+            )}
 
             {!hasMore && videos.length > 0 && (
               <p
