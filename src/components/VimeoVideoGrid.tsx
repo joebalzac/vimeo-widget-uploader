@@ -447,11 +447,7 @@ const VideoCard = ({
 
 // ── main component ────────────────────────────────────────────────────────────
 
-const VimeoVideoGrid = ({
-  backendBase,
-  perPage = 12,
-  heading = "Customer Stories",
-}: Props) => {
+const VimeoVideoGrid = ({ backendBase, perPage = 12 }: Props) => {
   const [videos, setVideos] = useState<VimeoVideo[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -505,29 +501,7 @@ const VimeoVideoGrid = ({
         }
       `}</style>
 
-      <div style={{ maxWidth: 1200, margin: "0 auto" }}>
-        <h1
-          style={{
-            fontFamily: "Inter Tight, Inter, sans-serif",
-            fontSize: 32,
-            fontWeight: 600,
-            color: "#FAFAFB",
-            margin: "0 0 4px",
-          }}
-        >
-          {heading}
-        </h1>
-        <p
-          style={{
-            fontFamily: "Inter, sans-serif",
-            fontSize: 15,
-            color: "rgba(255,255,255,0.4)",
-            margin: "0 0 32px",
-          }}
-        >
-          {total > 0 ? `${total} video${total !== 1 ? "s" : ""}` : ""}
-        </p>
-
+      <div style={{ maxWidth: 1440, margin: "0 auto" }}>
         {loading ? (
           <Spinner />
         ) : error ? (
