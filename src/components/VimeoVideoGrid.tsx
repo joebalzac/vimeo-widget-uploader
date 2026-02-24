@@ -584,6 +584,7 @@ const VimeoVideoGrid = ({ backendBase, perPage = 9 }: Props) => {
                   lineHeight: 1.5,
                   textAlign: "center",
                   letterSpacing: "-0.16px",
+                  border: "none",
                 }}
               >
                 Load more
