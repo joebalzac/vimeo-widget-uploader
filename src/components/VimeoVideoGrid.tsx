@@ -37,7 +37,7 @@ const fmtDate = (iso: string) => {
 
 const parseDescription = (desc: string) => {
   if (!desc) return { name: "", jobTitle: "", company: "" };
-  const [name = "", jobTitle = "", company = ""] = desc.split("|").map(s => s.trim());
+  const [name = "", jobTitle = "", company = ""] = desc.split(",").map(s => s.trim());
   return { name, jobTitle, company };
 };
 
