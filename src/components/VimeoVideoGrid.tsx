@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 // ── types ────────────────────────────────────────────────────────────────────
 
@@ -46,7 +46,7 @@ const LIKED_KEY = (id: string) => `liked:${id}`;
 // ── spinner ───────────────────────────────────────────────────────────────────
 
 const Spinner = () => (
-  <div style={{ display: "flex", justifyContent: "center", padding: "60px 0" }}>
+  <div style={{ display: "flex", justifyContent: "center", padding: "40px 0" }}>
     <div
       style={{
         width: 36,
@@ -358,7 +358,6 @@ const VideoCard = ({
       }}
       onClick={onClick}
     >
-      {/* thumbnail */}
       <div
         style={{
           position: "relative",
@@ -407,12 +406,10 @@ const VideoCard = ({
         </div>
       </div>
 
-      {/* meta */}
       <div style={{ padding: "16px 16px 20px" }}>
-        <div style={{ marginBottom: 12 }} onClick={(e) => e.stopPropagation()}>
+        <div style={{ marginBottom: 10 }} onClick={(e) => e.stopPropagation()}>
           <HeartButton videoId={v.id} backendBase={backendBase} />
         </div>
-
         <div
           style={{
             fontFamily: "Inter Tight, Inter, sans-serif",
@@ -420,12 +417,11 @@ const VideoCard = ({
             fontWeight: 450,
             color: "#FAFAFB",
             lineHeight: "140%",
-            marginBottom: 2,
+            marginBottom: 4,
           }}
         >
           {v.title}
         </div>
-
         {(company || jobTitle) && (
           <div
             style={{
@@ -447,19 +443,21 @@ const VideoCard = ({
 
 // ── main component ────────────────────────────────────────────────────────────
 
-const VimeoVideoGrid = ({ backendBase, perPage = 12 }: Props) => {
+const VimeoVideoGrid = ({ backendBase, perPage = 9 }: Props) => {
   const [videos, setVideos] = useState<VimeoVideo[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState(1);
-  const [total, setTotal] = useState(0);
+  const [hasMore, setHasMore] = useState(true);
   const [active, setActive] = useState<VimeoVideo | null>(null);
+  const sentinelRef = useRef<HTMLDivElement | null>(null);
 
   const base = backendBase.replace(/\/$/, "");
 
   const load = useCallback(
     async (p: number) => {
-      setLoading(true);
+      p === 1 ? setLoading(true) : setLoadingMore(true);
       setError(null);
       try {
         const res = await fetch(
@@ -468,22 +466,39 @@ const VimeoVideoGrid = ({ backendBase, perPage = 12 }: Props) => {
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
         if (data.error) throw new Error(data.error);
-        setVideos(data.videos ?? []);
-        setTotal(data.total ?? 0);
+        const incoming: VimeoVideo[] = data.videos ?? [];
+        setVideos((prev) => (p === 1 ? incoming : [...prev, ...incoming]));
+        setHasMore(incoming.length === perPage);
       } catch (e: any) {
         setError(String(e?.message || e));
       } finally {
-        setLoading(false);
+        p === 1 ? setLoading(false) : setLoadingMore(false);
       }
     },
     [base, perPage],
   );
 
   useEffect(() => {
-    load(page);
-  }, [page, load]);
+    load(1);
+  }, [load]);
 
-  const totalPages = Math.ceil(total / perPage);
+  useEffect(() => {
+    if (!sentinelRef.current) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasMore && !loadingMore && !loading) {
+          setPage((p) => {
+            const next = p + 1;
+            load(next);
+            return next;
+          });
+        }
+      },
+      { rootMargin: "200px" },
+    );
+    observer.observe(sentinelRef.current);
+    return () => observer.disconnect();
+  }, [hasMore, loadingMore, loading, load]);
 
   return (
     <div style={{ padding: 20, background: "transparent" }}>
@@ -501,7 +516,7 @@ const VimeoVideoGrid = ({ backendBase, perPage = 12 }: Props) => {
         }
       `}</style>
 
-      <div style={{ maxWidth: 1440, margin: "0 auto" }}>
+      <div style={{ maxWidth: 1200, margin: "0 auto" }}>
         {loading ? (
           <Spinner />
         ) : error ? (
@@ -522,7 +537,10 @@ const VimeoVideoGrid = ({ backendBase, perPage = 12 }: Props) => {
             </span>
             <br />
             <button
-              onClick={() => load(page)}
+              onClick={() => {
+                setPage(1);
+                load(1);
+              }}
               style={{
                 marginTop: 12,
                 padding: "8px 20px",
@@ -555,62 +573,22 @@ const VimeoVideoGrid = ({ backendBase, perPage = 12 }: Props) => {
               ))}
             </div>
 
-            {totalPages > 1 && (
-              <div
+            <div ref={sentinelRef} style={{ height: 1 }} />
+
+            {loadingMore && <Spinner />}
+
+            {!hasMore && videos.length > 0 && (
+              <p
                 style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  gap: 16,
+                  textAlign: "center",
                   marginTop: 40,
+                  fontFamily: "Inter, sans-serif",
+                  fontSize: 14,
+                  color: "rgba(255,255,255,0.3)",
                 }}
               >
-                <button
-                  disabled={page === 1}
-                  onClick={() => setPage((p) => p - 1)}
-                  style={{
-                    padding: "8px 20px",
-                    background: "rgba(255,255,255,0.05)",
-                    border: "1px solid rgba(255,255,255,0.1)",
-                    borderRadius: 8,
-                    cursor: page === 1 ? "not-allowed" : "pointer",
-                    fontFamily: "Inter, sans-serif",
-                    fontSize: 14,
-                    color: "#7638fa",
-                    fontWeight: 500,
-                    opacity: page === 1 ? 0.4 : 1,
-                  }}
-                >
-                  ← Prev
-                </button>
-                <span
-                  style={{
-                    fontFamily: "Inter, sans-serif",
-                    fontSize: 14,
-                    color: "rgba(255,255,255,0.4)",
-                  }}
-                >
-                  Page {page} of {totalPages}
-                </span>
-                <button
-                  disabled={page === totalPages}
-                  onClick={() => setPage((p) => p + 1)}
-                  style={{
-                    padding: "8px 20px",
-                    background: "rgba(255,255,255,0.05)",
-                    border: "1px solid rgba(255,255,255,0.1)",
-                    borderRadius: 8,
-                    cursor: page === totalPages ? "not-allowed" : "pointer",
-                    fontFamily: "Inter, sans-serif",
-                    fontSize: 14,
-                    color: "#7638fa",
-                    fontWeight: 500,
-                    opacity: page === totalPages ? 0.4 : 1,
-                  }}
-                >
-                  Next →
-                </button>
-              </div>
+                All videos loaded
+              </p>
             )}
           </>
         )}
