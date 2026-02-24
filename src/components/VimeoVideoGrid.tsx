@@ -409,7 +409,7 @@ const VideoCard = ({
 
       {/* meta */}
       <div style={{ padding: "16px 16px 20px" }}>
-        <div style={{ marginBottom: 10 }} onClick={(e) => e.stopPropagation()}>
+        <div style={{ marginBottom: 12 }} onClick={(e) => e.stopPropagation()}>
           <HeartButton videoId={v.id} backendBase={backendBase} />
         </div>
 
@@ -420,7 +420,7 @@ const VideoCard = ({
             fontWeight: 450,
             color: "#FAFAFB",
             lineHeight: "140%",
-            marginBottom: 4,
+            marginBottom: 2,
           }}
         >
           {v.title}
