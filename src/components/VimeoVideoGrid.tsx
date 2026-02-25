@@ -536,6 +536,7 @@ const VimeoVideoGrid = ({ backendBase, perPage = 9 }: Props) => {
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
+            justifyContent: "center",
           }}
         >
           {loading ? (
@@ -545,7 +546,6 @@ const VimeoVideoGrid = ({ backendBase, perPage = 9 }: Props) => {
               style={{
                 textAlign: "center",
                 padding: 32,
-                background: "rgba(255,48,64,0.08)",
                 borderRadius: 12,
                 border: "1px solid rgba(255,48,64,0.2)",
                 color: "#FF3040",

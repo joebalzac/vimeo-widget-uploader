@@ -8,12 +8,12 @@ export const SearchBar = ({ value, onChange, isSticky }: Props) => (
   <div
     style={{
       position: isSticky ? "sticky" : "relative",
-      top: 0,
+      top: 64,
       zIndex: 100,
       display: "flex",
       justifyContent: "center",
       padding: "12px 20px",
-      background: isSticky ? "rgba(18,18,20,0.85)" : "transparent",
+      background: "transparent",
       backdropFilter: isSticky ? "blur(12px)" : "none",
       WebkitBackdropFilter: isSticky ? "blur(12px)" : "none",
       transition: "background 0.3s ease",
