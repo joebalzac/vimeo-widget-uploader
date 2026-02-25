@@ -7,7 +7,8 @@ export const SearchBar = ({ value, onChange }: Props) => (
   <div
     style={{
       width: "100%",
-      maxWidth: 1440,
+      maxWidth: 500,
+      margin: "20px auto",
       padding: 12,
       borderRadius: 8,
       border: "1px solid rgba(255,255,255,0.1)",
