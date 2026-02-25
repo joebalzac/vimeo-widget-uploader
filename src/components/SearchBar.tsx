@@ -1,9 +1,10 @@
 type Props = {
   value: string;
   onChange: (val: string) => void;
+  isSticky: boolean;
 };
 
-export const SearchBar = ({ value, onChange }: Props) => (
+export const SearchBar = ({ value, onChange, isSticky }: Props) => (
   <div
     style={{
       padding: 12,
@@ -14,11 +15,12 @@ export const SearchBar = ({ value, onChange }: Props) => (
       justifyContent: "center",
       alignItems: "center",
       position: "relative",
-      top: 0,
+      top: isSticky ? 0 : -100,
       zIndex: 1000,
       gap: 0,
       maxWidth: 500,
       margin: "0 auto",
+      transition: "top 0.3s ease-in-out",
     }}
   >
     <svg
