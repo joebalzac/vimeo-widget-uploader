@@ -6,14 +6,19 @@ type Props = {
 export const SearchBar = ({ value, onChange }: Props) => (
   <div
     style={{
-      width: "100%",
-      maxWidth: 500,
-      margin: "20px auto",
       padding: 12,
       borderRadius: 8,
       border: "1px solid rgba(255,255,255,0.1)",
       background: "rgba(255,255,255,0.05)",
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
       position: "relative",
+      top: 0,
+      zIndex: 1000,
+      gap: 0,
+      maxWidth: 500,
+      margin: "0 auto",
     }}
   >
     <svg
@@ -49,13 +54,19 @@ export const SearchBar = ({ value, onChange }: Props) => (
       placeholder="Search by name or description"
       style={{
         width: "100%",
-        maxWidth: 1440,
-        padding: 12,
+        height: "100%",
+        maxWidth: 500,
         borderRadius: 8,
-        border: "1px solid rgba(255,255,255,0.1)",
-        background: "rgba(255,255,255,0.05)",
-        paddingLeft: 48,
+        paddingLeft: 32,
+        position: "relative",
+        left: 0,
+        right: 0,
+        background: "transparent",
+        border: "none",
+        color: "#fafafb",
       }}
+      onFocus={(e) => (e.target.style.outline = "none")}
+      onBlur={(e) => (e.target.style.outline = "none")}
     />
   </div>
 );
