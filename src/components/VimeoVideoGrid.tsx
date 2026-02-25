@@ -462,7 +462,6 @@ const VimeoVideoGrid = ({ backendBase, perPage = 9 }: Props) => {
   const [hasMore, setHasMore] = useState(true);
   const [active, setActive] = useState<VimeoVideo | null>(null);
 
-  const gridEndRef = useRef<HTMLDivElement | null>(null);
   const [isSticky, setIsSticky] = useState(true);
 
   const base = backendBase.replace(/\/$/, "");
@@ -496,13 +495,15 @@ const VimeoVideoGrid = ({ backendBase, perPage = 9 }: Props) => {
     setHasMore(filtered.length > perPage);
   }, [searchQuery, perPage]);
 
+  const gridRef = useRef<HTMLDivElement | null>(null);
+
   useEffect(() => {
-    if (!gridEndRef.current) return;
+    if (!gridRef.current) return;
     const observer = new IntersectionObserver(
-      (entries) => setIsSticky(!entries[0].isIntersecting),
+      (entries) => setIsSticky(entries[0].isIntersecting),
       { threshold: 0 },
     );
-    observer.observe(gridEndRef.current);
+    observer.observe(gridRef.current);
     return () => observer.disconnect();
   }, []);
 
@@ -580,7 +581,7 @@ const VimeoVideoGrid = ({ backendBase, perPage = 9 }: Props) => {
               No videos found.
             </p>
           ) : (
-            <>
+            <div ref={gridRef}>
               <div className="vg-grid">
                 {videos.map((v) => (
                   <VideoCard
@@ -635,7 +636,7 @@ const VimeoVideoGrid = ({ backendBase, perPage = 9 }: Props) => {
                   All videos loaded
                 </p>
               )}
-            </>
+            </div>
           )}
         </div>
 
@@ -647,8 +648,6 @@ const VimeoVideoGrid = ({ backendBase, perPage = 9 }: Props) => {
           />
         )}
       </div>
-      {/* after the vg-grid div */}
-      <div ref={gridEndRef} style={{ height: 1 }} />
     </>
   );
 };
