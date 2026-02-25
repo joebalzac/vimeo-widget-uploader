@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { SearchBar } from "./SearchBar";
 
 // ── types ────────────────────────────────────────────────────────────────────
 
@@ -15,7 +16,6 @@ type VimeoVideo = {
 type Props = {
   backendBase: string;
   perPage?: number;
-  heading?: string;
 };
 
 // ── helpers ───────────────────────────────────────────────────────────────────
@@ -36,12 +36,21 @@ const fmtDate = (iso: string) => {
 };
 
 const parseDescription = (desc: string) => {
-  if (!desc) return {  jobTitle: "", company: "" };
+  if (!desc) return { jobTitle: "", company: "" };
   const [jobTitle = "", company = ""] = desc.split(",").map((s) => s.trim());
   return { jobTitle, company };
 };
 
 const LIKED_KEY = (id: string) => `liked:${id}`;
+
+const matchesSearch = (v: VimeoVideo, q: string) => {
+  if (!q) return true;
+  const lower = q.toLowerCase();
+  return (
+    v.title.toLowerCase().includes(lower) ||
+    v.description.toLowerCase().includes(lower)
+  );
+};
 
 // ── spinner ───────────────────────────────────────────────────────────────────
 
@@ -292,7 +301,7 @@ const Lightbox = ({
             >
               {video.title}
             </div>
-            {(jobTitle|| company) && (
+            {(jobTitle || company) && (
               <div
                 style={{
                   fontFamily: "Inter, sans-serif",
@@ -344,7 +353,7 @@ const VideoCard = ({
   backendBase: string;
 }) => {
   const [imgErr, setImgErr] = useState(false);
-  const { jobTitle, company } = parseDescription(v.description);    
+  const { jobTitle, company } = parseDescription(v.description);
 
   return (
     <div
@@ -445,45 +454,49 @@ const VideoCard = ({
 
 const VimeoVideoGrid = ({ backendBase, perPage = 9 }: Props) => {
   const [videos, setVideos] = useState<VimeoVideo[]>([]);
+  const allVideos = useRef<VimeoVideo[]>([]);
+  const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
-  const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [active, setActive] = useState<VimeoVideo | null>(null);
 
   const base = backendBase.replace(/\/$/, "");
 
-  const load = useCallback(
-    async (p: number) => {
-      p === 1 ? setLoading(true) : setLoadingMore(true);
-      setError(null);
-      try {
-        const res = await fetch(
-          `${base}/api/vimeo/folder-videos?page=${p}&per_page=${perPage}`,
-        );
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const data = await res.json();
-        if (data.error) throw new Error(data.error);
-        const incoming: VimeoVideo[] = data.videos ?? [];
-        setVideos((prev) => (p === 1 ? incoming : [...prev, ...incoming]));
-        setHasMore(incoming.length === perPage);
-      } catch (e: any) {
-        setError(String(e?.message || e));
-      } finally {
-        p === 1 ? setLoading(false) : setLoadingMore(false);
-      }
-    },
-    [base, perPage],
-  );
+  const loadAll = useCallback(async () => {
+    setLoading(true);
+    try {
+      const res = await fetch(
+        `${base}/api/vimeo/folder-videos?page=1&per_page=100`,
+      );
+      const data = await res.json();
+      allVideos.current = data.videos ?? [];
+      setHasMore(allVideos.current.length > perPage);
+      setVideos(allVideos.current.slice(0, perPage));
+    } catch (e: any) {
+      setError(String(e?.message || e));
+    } finally {
+      setLoading(false);
+    }
+  }, [base, perPage]);
 
   useEffect(() => {
-    load(1);
-  }, [load]);
+    loadAll();
+  }, [loadAll]);
+
+  useEffect(() => {
+    const filtered = allVideos.current.filter((v) =>
+      matchesSearch(v, searchQuery),
+    );
+    setVideos(filtered.slice(0, perPage));
+    setHasMore(filtered.length > perPage);
+  }, [searchQuery, perPage]);
 
   return (
-    <div style={{ padding: 20, background: "transparent" }}>
-      <style>{`
+    <>
+      <SearchBar value={searchQuery} onChange={setSearchQuery} />
+      <div style={{ padding: 20, background: "transparent" }}>
+        <style>{`
         .vg-grid {
           display: grid;
           grid-template-columns: repeat(3, 1fr);
@@ -497,125 +510,111 @@ const VimeoVideoGrid = ({ backendBase, perPage = 9 }: Props) => {
         }
       `}</style>
 
-      <div
-        style={{
-          maxWidth: 1440,
-          margin: "0 auto",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-        }}
-      >
-        {loading ? (
-          <Spinner />
-        ) : error ? (
-          <div
-            style={{
-              textAlign: "center",
-              padding: 32,
-              background: "rgba(255,48,64,0.08)",
-              borderRadius: 12,
-              border: "1px solid rgba(255,48,64,0.2)",
-              color: "#FF3040",
-            }}
-          >
-            <strong>Failed to load videos.</strong>
-            <br />
-            <span style={{ fontSize: 13, color: "rgba(255,255,255,0.4)" }}>
-              {error}
-            </span>
-            <br />
-            <button
-              onClick={() => {
-                setPage(1);
-                load(1);
-              }}
+        <div
+          style={{
+            maxWidth: 1440,
+            margin: "0 auto",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+          }}
+        >
+          {loading ? (
+            <Spinner />
+          ) : error ? (
+            <div
               style={{
-                marginTop: 12,
-                padding: "8px 20px",
-                background: "#7638fa",
-                color: "#fff",
-                border: 0,
-                borderRadius: 8,
-                cursor: "pointer",
-                fontFamily: "Inter, sans-serif",
-                fontSize: 14,
+                textAlign: "center",
+                padding: 32,
+                background: "rgba(255,48,64,0.08)",
+                borderRadius: 12,
+                border: "1px solid rgba(255,48,64,0.2)",
+                color: "#FF3040",
               }}
             >
-              Retry
-            </button>
-          </div>
-        ) : videos.length === 0 ? (
-          <p style={{ textAlign: "center", color: "rgba(255,255,255,0.4)" }}>
-            No videos found.
-          </p>
-        ) : (
-          <>
-            <div className="vg-grid">
-              {videos.map((v) => (
-                <VideoCard
-                  key={v.id}
-                  v={v}
-                  onClick={() => setActive(v)}
-                  backendBase={base}
-                />
-              ))}
-            </div>
-            {loadingMore && <Spinner />}
-            {hasMore && !loadingMore && (
+              <strong>Failed to load videos.</strong>
+              <br />
+              <span style={{ fontSize: 13, color: "rgba(255,255,255,0.4)" }}>
+                {error}
+              </span>
+              <br />
               <button
-                onClick={() =>
-                  setPage((p) => {
-                    const next = p + 1;
-                    load(next);
-                    return next;
-                  })
-                }
+                onClick={() => {
+                  loadAll();
+                }}
                 style={{
-                  marginTop: 64,
-                  padding: "12px 24px",
-                  background: "#ffffff",
-                  color: "#181819",
-                  borderRadius: 4,
+                  marginTop: 12,
+                  padding: "8px 20px",
+                  background: "#7638fa",
+                  color: "#fff",
+                  border: 0,
+                  borderRadius: 8,
                   cursor: "pointer",
                   fontFamily: "Inter, sans-serif",
-                  fontSize: 16,
-                  fontWeight: 450,
-                  lineHeight: 1.5,
-                  textAlign: "center",
-                  letterSpacing: "-0.16px",
-                  border: "none",
-                }}
-              >
-                Load more
-              </button>
-            )}
-
-            {!hasMore && videos.length > 0 && (
-              <p
-                style={{
-                  textAlign: "center",
-                  marginTop: 40,
-                  fontFamily: "Inter, sans-serif",
                   fontSize: 14,
-                  color: "rgba(255,255,255,0.3)",
                 }}
               >
-                All videos loaded
-              </p>
-            )}
-          </>
+                Retry
+              </button>
+            </div>
+          ) : videos.length === 0 ? (
+            <p style={{ textAlign: "center", color: "rgba(255,255,255,0.4)" }}>
+              No videos found.
+            </p>
+          ) : (
+            <>
+              <div className="vg-grid">
+                {videos.map((v) => (
+                  <VideoCard
+                    key={v.id}
+                    v={v}
+                    onClick={() => setActive(v)}
+                    backendBase={base}
+                  />
+                ))}
+              </div>
+
+              {hasMore && (
+                <button
+                  onClick={() => {
+                    const next = videos.length + perPage;
+                    const filtered = allVideos.current.filter((v) =>
+                      matchesSearch(v, searchQuery),
+                    );
+                    setVideos(filtered.slice(0, next));
+                    setHasMore(filtered.length > next);
+                  }}
+                >
+                  Load more
+                </button>
+              )}
+
+              {!hasMore && videos.length > 0 && (
+                <p
+                  style={{
+                    textAlign: "center",
+                    marginTop: 40,
+                    fontFamily: "Inter, sans-serif",
+                    fontSize: 14,
+                    color: "rgba(255,255,255,0.3)",
+                  }}
+                >
+                  All videos loaded
+                </p>
+              )}
+            </>
+          )}
+        </div>
+
+        {active && (
+          <Lightbox
+            video={active}
+            onClose={() => setActive(null)}
+            backendBase={base}
+          />
         )}
       </div>
-
-      {active && (
-        <Lightbox
-          video={active}
-          onClose={() => setActive(null)}
-          backendBase={base}
-        />
-      )}
-    </div>
+    </>
   );
 };
 
