@@ -2,9 +2,10 @@ type Props = {
   value: string;
   onChange: (val: string) => void;
   isSticky: boolean;
+  isMobile: boolean;
 };
 
-export const SearchBar = ({ value, onChange, isSticky }: Props) => (
+export const SearchBar = ({ value, onChange, isSticky, isMobile }: Props) => (
   <div
     style={{
       position: isSticky ? "sticky" : "relative",
@@ -12,7 +13,7 @@ export const SearchBar = ({ value, onChange, isSticky }: Props) => (
       zIndex: 100,
       display: "flex",
       justifyContent: "center",
-
+      padding: isMobile ? "0" : 20,
       background: "#000000",
       backdropFilter: "blur(12px)",
       transition: "background 0.3s ease",
@@ -65,8 +66,11 @@ export const SearchBar = ({ value, onChange, isSticky }: Props) => (
           border: "none",
           outline: "none",
           color: "#fafafb",
-          fontSize: 14,
+          fontSize: 18,
           fontFamily: "Inter, sans-serif",
+          fontWeight: 400,
+          lineHeight: 1.4,
+          letterSpacing: -0.18,
         }}
       />
     </div>

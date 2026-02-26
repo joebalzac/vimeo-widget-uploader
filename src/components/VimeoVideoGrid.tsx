@@ -16,6 +16,7 @@ type VimeoVideo = {
 type Props = {
   backendBase: string;
   perPage?: number;
+  isMobile: boolean;
 };
 
 // ── helpers ───────────────────────────────────────────────────────────────────
@@ -532,7 +533,7 @@ const VideoCard = ({
 };
 // ── main component ────────────────────────────────────────────────────────────
 
-const VimeoVideoGrid = ({ backendBase, perPage = 9 }: Props) => {
+const VimeoVideoGrid = ({ backendBase, perPage = 9, isMobile }: Props) => {
   const [videos, setVideos] = useState<VimeoVideo[]>([]);
   const allVideos = useRef<VimeoVideo[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -593,6 +594,7 @@ const VimeoVideoGrid = ({ backendBase, perPage = 9 }: Props) => {
         value={searchQuery}
         onChange={setSearchQuery}
         isSticky={isSticky}
+        isMobile={isMobile}
       />
       <div style={{ marginTop: 64, background: "transparent" }}>
         <style>{`
