@@ -499,7 +499,7 @@ const VideoCard = ({
         )}
       </div>
 
-      <div style={{ padding: "16px 16px 20px", background: "#000000" }}>
+      <div style={{ padding: "12px 0px 0px", background: "#000000", borderBottomLeftRadius: 8, borderBottomRightRadius: 8}}>
         <div style={{ marginBottom: 12 }} onClick={(e) => e.stopPropagation()}>
           <HeartButton videoId={v.id} backendBase={backendBase} />
         </div>
