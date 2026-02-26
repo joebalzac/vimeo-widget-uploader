@@ -9,7 +9,7 @@ export const SearchBar = ({ value, onChange, isSticky, isMobile }: Props) => (
   <div
     style={{
       position: isSticky ? "sticky" : "relative",
-      top: isMobile ? 0 : 24,
+      top: isMobile ? 0 : 56,
       zIndex: 100,
       display: "flex",
       justifyContent: "center",
