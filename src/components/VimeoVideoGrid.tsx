@@ -266,6 +266,7 @@ const Lightbox = ({
           }}
         >
           <iframe
+            data-vimeo
             src={`${video.embed_url}?autoplay=1&title=0&byline=0&portrait=0`}
             style={{
               position: "absolute",
@@ -388,16 +389,26 @@ const VideoCard = ({
     if (!isMobile || !cardRef.current) return;
     const observer = new IntersectionObserver(
       (entries) => {
-        if (entries[0].isIntersecting) {
+        const entry = entries[0];
+        if (entry.intersectionRatio >= 0.7) {
+          // pause all other iframes on the page first
+          document.querySelectorAll("iframe[data-vimeo]").forEach((el) => {
+            if (el !== iframeRef.current) {
+              (el as HTMLIFrameElement).contentWindow?.postMessage(
+                JSON.stringify({ method: "pause" }),
+                "https://player.vimeo.com",
+              );
+            }
+          });
           sendCmd("play");
-        } else {
+        } else if (entry.intersectionRatio < 0.3) {
           sendCmd("pause");
-          // seek back to start after a short delay so pause registers first
           setTimeout(() => sendCmd("play", 0), 50);
           setTimeout(() => sendCmd("pause"), 100);
         }
+        // between 0.3–0.7 → do nothing, let it keep playing
       },
-      { threshold: 0.5 },
+      { threshold: [0.3, 0.7] },
     );
     observer.observe(cardRef.current);
     return () => observer.disconnect();
@@ -421,13 +432,14 @@ const VideoCard = ({
         style={{
           position: "relative",
           width: "100%",
-          paddingBottom: "56.25%",
+          paddingBottom: isMobile ? "100%" : "56.25%",
           overflow: "hidden",
         }}
       >
         {isMobile ? (
           <iframe
             ref={iframeRef}
+            data-vimeo
             src={`${v.embed_url}?autoplay=0&muted=1&title=0&byline=0&portrait=0&muted=1`}
             style={{
               position: "absolute",
@@ -504,7 +516,7 @@ const VideoCard = ({
           <div
             style={{
               fontFamily: "Inter, sans-serif",
-              fontSize: 18,
+              fontSize: isMobile ? 16 : 18,
               fontWeight: 400,
               color: "rgba(255,255,255,0.60)",
               lineHeight: "140%",
@@ -591,10 +603,10 @@ const VimeoVideoGrid = ({ backendBase, perPage = 9 }: Props) => {
           
         }
         @media (max-width: 900px) {
-          .vg-grid { grid-template-columns: repeat(2, 1fr); }
+          .vg-grid { grid-template-columns: repeat(2, 1fr); align-items: start; }
         }
         @media (max-width: 540px) {
-          .vg-grid { grid-template-columns: 1fr; }
+          .vg-grid { grid-template-columns: 1fr; align-items: start; gap: 24px; }
         }
       `}</style>
 

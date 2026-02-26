@@ -12,12 +12,10 @@ export const SearchBar = ({ value, onChange, isSticky }: Props) => (
       zIndex: 100,
       display: "flex",
       justifyContent: "center",
-      padding: "12px 20px",
+
       background: "#000000",
       backdropFilter: "blur(12px)",
       transition: "background 0.3s ease",
-      
-
     }}
   >
     <div
@@ -59,7 +57,7 @@ export const SearchBar = ({ value, onChange, isSticky }: Props) => (
         type="text"
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        placeholder="Search by name or description"
+        placeholder="Search by name..."
         style={{
           width: "100%",
           paddingLeft: 36,
