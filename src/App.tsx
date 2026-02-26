@@ -17,7 +17,10 @@ function App() {
       </div>
 
       <div>
-        <VimeoVideoGrid backendBase={import.meta.env.VITE_VIMEO_BACKEND_BASE} />
+        <VimeoVideoGrid
+          backendBase={import.meta.env.VITE_VIMEO_BACKEND_BASE}
+          isMobile={false}
+        />
       </div>
     </>
   );

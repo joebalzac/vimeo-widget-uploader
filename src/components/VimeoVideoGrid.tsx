@@ -164,11 +164,13 @@ const HeartButton = ({
         <span
           style={{
             fontFamily: "Inter, sans-serif",
-            fontSize: 14,
-            fontWeight: 400,
-            color: liked ? "#FF3040" : "rgba(255,255,255,0.6)",
+            fontSize: 20,
+            fontWeight: 450,
+            color: liked ? "#FF3040" : "#FFFFFF",
             transition: "color 0.2s",
-            lineHeight: 1,
+            lineHeight: 1.4,
+            letterSpacing: -0.2,
+            textTransform: "uppercase",
           }}
         >
           {count}
@@ -473,7 +475,7 @@ const VideoCard = ({
                 style={{
                   position: "absolute",
                   inset: 0,
-                  background: "linear-gradient(135deg,#2d1f5e 0%,#1a1a2e 100%)",
+                  background: "#000000",
                 }}
               />
             )}
@@ -482,7 +484,7 @@ const VideoCard = ({
                 position: "absolute",
                 bottom: 8,
                 right: 8,
-                background: "rgba(24,24,25,0.75)",
+                background: "#000000",
                 color: "#fff",
                 fontFamily: "Inter, sans-serif",
                 fontSize: 12,
@@ -497,8 +499,8 @@ const VideoCard = ({
         )}
       </div>
 
-      <div style={{ padding: "16px 16px 20px" }}>
-        <div style={{ marginBottom: 10 }} onClick={(e) => e.stopPropagation()}>
+      <div style={{ padding: "16px 16px 20px", background: "#000000" }}>
+        <div style={{ marginBottom: 12 }} onClick={(e) => e.stopPropagation()}>
           <HeartButton videoId={v.id} backendBase={backendBase} />
         </div>
         <div
@@ -508,7 +510,7 @@ const VideoCard = ({
             fontWeight: 450,
             color: "#FAFAFB",
             lineHeight: "140%",
-            marginBottom: 4,
+            marginBottom: 2,
           }}
         >
           {v.title}
@@ -616,10 +618,6 @@ const VimeoVideoGrid = ({ backendBase, perPage = 9, isMobile }: Props) => {
           style={{
             maxWidth: 1440,
             margin: "0 auto",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
           }}
         >
           {loading ? (
@@ -635,11 +633,11 @@ const VimeoVideoGrid = ({ backendBase, perPage = 9, isMobile }: Props) => {
               }}
             >
               <strong>Failed to load videos.</strong>
-              <br />
+
               <span style={{ fontSize: 13, color: "rgba(255,255,255,0.4)" }}>
                 {error}
               </span>
-              <br />
+
               <button
                 onClick={() => {
                   loadAll();
@@ -664,7 +662,15 @@ const VimeoVideoGrid = ({ backendBase, perPage = 9, isMobile }: Props) => {
               No videos found.
             </p>
           ) : (
-            <div ref={gridRef}>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+              ref={gridRef}
+            >
               <div className="vg-grid">
                 {videos.map((v) => (
                   <VideoCard
