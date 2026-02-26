@@ -16,12 +16,14 @@ export const SearchBar = ({ value, onChange, isSticky }: Props) => (
       background: "#000000",
       backdropFilter: "blur(12px)",
       transition: "background 0.3s ease",
+      
+
     }}
   >
     <div
       style={{
         padding: 12,
-        borderRadius: 8,
+        borderRadius: 999,
         border: "1px solid rgba(255,255,255,0.1)",
         background: "rgba(255,255,255,0.05)",
         display: "flex",
@@ -60,7 +62,6 @@ export const SearchBar = ({ value, onChange, isSticky }: Props) => (
         placeholder="Search by name or description"
         style={{
           width: "100%",
-          borderRadius: 8,
           paddingLeft: 36,
           background: "transparent",
           border: "none",

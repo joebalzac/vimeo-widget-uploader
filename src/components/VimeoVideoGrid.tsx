@@ -341,6 +341,23 @@ const Lightbox = ({
   );
 };
 
+// ── mobile hook ───────────────────────────────────────────────────────────────
+
+const useIsMobile = () => {
+  const [isMobile, setIsMobile] = useState(
+    () => window.matchMedia("(max-width: 540px)").matches,
+  );
+
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 540px)");
+    const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches);
+    mq.addEventListener("change", handler);
+    return () => mq.removeEventListener("change", handler);
+  }, []);
+
+  return isMobile;
+};
+
 // ── video card ────────────────────────────────────────────────────────────────
 
 const VideoCard = ({
@@ -354,19 +371,52 @@ const VideoCard = ({
 }) => {
   const [imgErr, setImgErr] = useState(false);
   const { jobTitle, company } = parseDescription(v.description);
+  const isMobile = useIsMobile();
+  const cardRef = useRef<HTMLDivElement | null>(null);
+  const iframeRef = useRef<HTMLIFrameElement | null>(null);
+
+  // send postMessage commands to Vimeo iframe
+  const sendCmd = (cmd: "play" | "pause", value?: number) => {
+    if (!iframeRef.current?.contentWindow) return;
+    iframeRef.current.contentWindow.postMessage(
+      JSON.stringify({ method: cmd, value }),
+      "https://player.vimeo.com",
+    );
+  };
+
+  useEffect(() => {
+    if (!isMobile || !cardRef.current) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          sendCmd("play");
+        } else {
+          sendCmd("pause");
+          // seek back to start after a short delay so pause registers first
+          setTimeout(() => sendCmd("play", 0), 50);
+          setTimeout(() => sendCmd("pause"), 100);
+        }
+      },
+      { threshold: 0.5 },
+    );
+    observer.observe(cardRef.current);
+    return () => observer.disconnect();
+  }, [isMobile]);
 
   return (
     <div
+      ref={cardRef}
       style={{
         display: "flex",
         flexDirection: "column",
         background: "rgba(255,255,255,0.05)",
         borderRadius: 8,
         overflow: "hidden",
-        cursor: "pointer",
+        cursor: isMobile ? "default" : "pointer",
       }}
-      onClick={onClick}
+      onClick={isMobile ? undefined : onClick}
     >
+      {/* thumbnail (desktop) / inline player (mobile) */}
       <div
         style={{
           position: "relative",
@@ -375,44 +425,63 @@ const VideoCard = ({
           overflow: "hidden",
         }}
       >
-        {!imgErr && v.thumbnail ? (
-          <img
-            src={v.thumbnail}
-            alt={v.title}
-            onError={() => setImgErr(true)}
+        {isMobile ? (
+          <iframe
+            ref={iframeRef}
+            src={`${v.embed_url}?autoplay=0&muted=1&title=0&byline=0&portrait=0&muted=1`}
             style={{
               position: "absolute",
               inset: 0,
               width: "100%",
               height: "100%",
-              objectFit: "cover",
+              border: "none",
             }}
+            allow="autoplay; fullscreen; picture-in-picture"
+            allowFullScreen
+            title={v.title}
           />
         ) : (
-          <div
-            style={{
-              position: "absolute",
-              inset: 0,
-              background: "linear-gradient(135deg,#2d1f5e 0%,#1a1a2e 100%)",
-            }}
-          />
+          <>
+            {!imgErr && v.thumbnail ? (
+              <img
+                src={v.thumbnail}
+                alt={v.title}
+                onError={() => setImgErr(true)}
+                style={{
+                  position: "absolute",
+                  inset: 0,
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "cover",
+                }}
+              />
+            ) : (
+              <div
+                style={{
+                  position: "absolute",
+                  inset: 0,
+                  background: "linear-gradient(135deg,#2d1f5e 0%,#1a1a2e 100%)",
+                }}
+              />
+            )}
+            <div
+              style={{
+                position: "absolute",
+                bottom: 8,
+                right: 8,
+                background: "rgba(24,24,25,0.75)",
+                color: "#fff",
+                fontFamily: "Inter, sans-serif",
+                fontSize: 12,
+                fontWeight: 500,
+                padding: "2px 7px",
+                borderRadius: 6,
+              }}
+            >
+              {fmtDuration(v.duration)}
+            </div>
+          </>
         )}
-        <div
-          style={{
-            position: "absolute",
-            bottom: 8,
-            right: 8,
-            background: "rgba(24,24,25,0.75)",
-            color: "#fff",
-            fontFamily: "Inter, sans-serif",
-            fontSize: 12,
-            fontWeight: 500,
-            padding: "2px 7px",
-            borderRadius: 6,
-          }}
-        >
-          {fmtDuration(v.duration)}
-        </div>
       </div>
 
       <div style={{ padding: "16px 16px 20px" }}>
@@ -449,7 +518,6 @@ const VideoCard = ({
     </div>
   );
 };
-
 // ── main component ────────────────────────────────────────────────────────────
 
 const VimeoVideoGrid = ({ backendBase, perPage = 9 }: Props) => {
@@ -508,18 +576,19 @@ const VimeoVideoGrid = ({ backendBase, perPage = 9 }: Props) => {
   }, []);
 
   return (
-    <>
+    <div>
       <SearchBar
         value={searchQuery}
         onChange={setSearchQuery}
         isSticky={isSticky}
       />
-      <div style={{ padding: 20, background: "transparent" }}>
+      <div style={{ marginTop: 64, background: "transparent" }}>
         <style>{`
         .vg-grid {
           display: grid;
           grid-template-columns: repeat(3, 1fr);
           gap: 64px;
+          
         }
         @media (max-width: 900px) {
           .vg-grid { grid-template-columns: repeat(2, 1fr); }
@@ -648,7 +717,7 @@ const VimeoVideoGrid = ({ backendBase, perPage = 9 }: Props) => {
           />
         )}
       </div>
-    </>
+    </div>
   );
 };
 
