@@ -264,7 +264,7 @@ const Lightbox = ({
         <div
           style={{
             position: "relative",
-            paddingBottom: "56.25%",
+            paddingBottom: "100%",
             background: "#000",
           }}
         >
