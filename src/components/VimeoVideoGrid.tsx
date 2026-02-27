@@ -16,7 +16,6 @@ type VimeoVideo = {
 type Props = {
   backendBase: string;
   perPage?: number;
-  isMobile: boolean;
 };
 
 // ── helpers ───────────────────────────────────────────────────────────────────
@@ -349,11 +348,11 @@ const Lightbox = ({
 
 const useIsMobile = () => {
   const [isMobile, setIsMobile] = useState(
-    () => window.matchMedia("(max-width: 540px)").matches,
+    () => window.matchMedia("(max-width: 768px)").matches,
   );
 
   useEffect(() => {
-    const mq = window.matchMedia("(max-width: 540px)");
+    const mq = window.matchMedia("(max-width: 768px)");
     const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches);
     mq.addEventListener("change", handler);
     return () => mq.removeEventListener("change", handler);
@@ -435,7 +434,7 @@ const VideoCard = ({
         style={{
           position: "relative",
           width: "100%",
-          paddingBottom: isMobile ? "100%" : "56.25%",
+          paddingBottom: "100%",
           overflow: "hidden",
         }}
       >
@@ -499,7 +498,14 @@ const VideoCard = ({
         )}
       </div>
 
-      <div style={{ padding: "12px 0px 0px", background: "#000000", borderBottomLeftRadius: 8, borderBottomRightRadius: 8}}>
+      <div
+        style={{
+          padding: "12px 0px 0px",
+          background: "#000000",
+          borderBottomLeftRadius: 8,
+          borderBottomRightRadius: 8,
+        }}
+      >
         <div style={{ marginBottom: 12 }} onClick={(e) => e.stopPropagation()}>
           <HeartButton videoId={v.id} backendBase={backendBase} />
         </div>
@@ -535,7 +541,7 @@ const VideoCard = ({
 };
 // ── main component ────────────────────────────────────────────────────────────
 
-const VimeoVideoGrid = ({ backendBase, perPage = 9, isMobile }: Props) => {
+const VimeoVideoGrid = ({ backendBase, perPage = 9 }: Props) => {
   const [videos, setVideos] = useState<VimeoVideo[]>([]);
   const allVideos = useRef<VimeoVideo[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -544,8 +550,6 @@ const VimeoVideoGrid = ({ backendBase, perPage = 9, isMobile }: Props) => {
   const [error, setError] = useState<string | null>(null);
   const [hasMore, setHasMore] = useState(true);
   const [active, setActive] = useState<VimeoVideo | null>(null);
-
-  const [isSticky, setIsSticky] = useState(true);
 
   const base = backendBase.replace(/\/$/, "");
 
@@ -580,24 +584,9 @@ const VimeoVideoGrid = ({ backendBase, perPage = 9, isMobile }: Props) => {
 
   const gridRef = useRef<HTMLDivElement | null>(null);
 
-  useEffect(() => {
-    if (!gridRef.current) return;
-    const observer = new IntersectionObserver(
-      (entries) => setIsSticky(entries[0].isIntersecting),
-      { threshold: 0 },
-    );
-    observer.observe(gridRef.current);
-    return () => observer.disconnect();
-  }, []);
-
   return (
     <div>
-      <SearchBar
-        value={searchQuery}
-        onChange={setSearchQuery}
-        isSticky={isSticky}
-        isMobile={isMobile}
-      />
+      <SearchBar value={searchQuery} onChange={setSearchQuery} />
       <div style={{ marginTop: 64, background: "transparent" }}>
         <style>{`
         .vg-grid {
