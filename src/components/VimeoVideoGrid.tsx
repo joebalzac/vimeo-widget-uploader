@@ -363,37 +363,102 @@ const useIsMobile = () => {
 
 // ── video card ────────────────────────────────────────────────────────────────
 
+const MuteIcon = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 200 200"
+    width="20"
+    height="20"
+  >
+    <g>
+      <path
+        d="M122.33333333333334 50.5a2.4166666666666665 2.4166666666666665 0 0 0 0.5833333333333335 -1.5V31.250000000000004a8.333333333333334 8.333333333333334 0 0 0 -14.583333333333334 -5.833333333333333L59.333333333333336 75a2.0833333333333335 2.0833333333333335 0 0 1 -1.5 0.6666666666666667H39.583333333333336a16.666666666666668 16.666666666666668 0 0 0 -16.666666666666668 16.666666666666668v28.41666666666667a16.666666666666668 16.666666666666668 0 0 0 11.833333333333334 15.916666666666668 1.916666666666667 1.916666666666667 0 0 0 2.0833333333333335 -0.5Z"
+        fill="#ffffff"
+        strokeWidth="8.3333"
+      />
+      <path
+        d="M197.58333333333334 14.25a8.333333333333334 8.333333333333334 0 0 0 0 -11.75 8.333333333333334 8.333333333333334 0 0 0 -11.833333333333334 0l-183.33333333333334 183.33333333333334a8.333333333333334 8.333333333333334 0 0 0 0 11.75 6.583333333333334 6.583333333333334 0 0 0 1.25 1 8.333333333333334 8.333333333333334 0 0 0 10.583333333333334 -1l50.91666666666667 -51.00000000000001a2.2500000000000004 2.2500000000000004 0 0 1 3 0L108.33333333333334 187.16666666666669a8.333333333333334 8.333333333333334 0 0 0 14.25 -5.916666666666667v-91.66666666666667a2.4166666666666665 2.4166666666666665 0 0 1 0.5833333333333335 -1.5Z"
+        fill="#ffffff"
+        strokeWidth="8.3333"
+      />
+    </g>
+  </svg>
+);
+
+const UnmuteIcon = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 200 200"
+    width="20"
+    height="20"
+  >
+    <g>
+      <path
+        d="M114.91666666666667 19.083333333333336 65.58333333333334 68.50000000000001a2.4166666666666665 2.4166666666666665 0 0 1 -1.5 0.5833333333333335H45.833333333333336a16.666666666666668 16.666666666666668 0 0 0 -16.666666666666668 16.666666666666668v28.5a16.666666666666668 16.666666666666668 0 0 0 16.666666666666668 16.666666666666668h18.25a2 2 0 0 1 1.5 0.5833333333333335l49.333333333333336 49.333333333333336a8.333333333333334 8.333333333333334 0 0 0 14.25 -5.833333333333333V25a8.333333333333334 8.333333333333334 0 0 0 -14.25 -5.916666666666667Z"
+        fill="#ffffff"
+        strokeWidth="8.3333"
+      />
+      <path
+        d="M155.33333333333334 62.50000000000001a8.333333333333334 8.333333333333334 0 1 0 -11.833333333333334 11.75 36.5 36.5 0 0 1 0 51.5 8.333333333333334 8.333333333333334 0 0 0 0 11.75 8.333333333333334 8.333333333333334 0 0 0 11.833333333333334 0 53.083333333333336 53.083333333333336 0 0 0 0 -75Z"
+        fill="#ffffff"
+        strokeWidth="8.3333"
+      />
+    </g>
+  </svg>
+);
+
 const VideoCard = ({
   v,
   onClick,
   backendBase,
+  isActive,
 }: {
   v: VimeoVideo;
   onClick: () => void;
   backendBase: string;
+  isActive: boolean;
 }) => {
-  const [imgErr, setImgErr] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [muted, setMuted] = useState(true);
   const { jobTitle, company } = parseDescription(v.description);
   const isMobile = useIsMobile();
   const cardRef = useRef<HTMLDivElement | null>(null);
   const iframeRef = useRef<HTMLIFrameElement | null>(null);
 
-  // send postMessage commands to Vimeo iframe
-  const sendCmd = (cmd: "play" | "pause", value?: number) => {
+  const sendCmd = (cmd: "play" | "pause" | "setVolume", value?: number) => {
     if (!iframeRef.current?.contentWindow) return;
     iframeRef.current.contentWindow.postMessage(
       JSON.stringify({ method: cmd, value }),
       "https://player.vimeo.com",
     );
+    if (cmd === "play" && value === undefined) setIsPlaying(true);
+    if (cmd === "pause") setIsPlaying(false);
   };
 
+  const toggleMute = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const next = !muted;
+    setMuted(next);
+    sendCmd("setVolume", next ? 0 : 1);
+  };
+
+  // reset mute when video stops playing
+  useEffect(() => {
+    if (!isPlaying) setMuted(true);
+  }, [isPlaying]);
+
+  // reset thumbnail when lightbox closes on desktop
+  useEffect(() => {
+    if (!isMobile && !isActive) setIsPlaying(false);
+  }, [isActive, isMobile]);
+
+  // mobile autoplay observer
   useEffect(() => {
     if (!isMobile || !cardRef.current) return;
     const observer = new IntersectionObserver(
       (entries) => {
         const entry = entries[0];
         if (entry.intersectionRatio >= 0.7) {
-          // pause all other iframes on the page first
           document.querySelectorAll("iframe[data-vimeo]").forEach((el) => {
             if (el !== iframeRef.current) {
               (el as HTMLIFrameElement).contentWindow?.postMessage(
@@ -403,18 +468,48 @@ const VideoCard = ({
             }
           });
           sendCmd("play");
-        } else if (entry.intersectionRatio < 0.3) {
+        } else if (entry.intersectionRatio < 0.1) {
           sendCmd("pause");
           setTimeout(() => sendCmd("play", 0), 50);
           setTimeout(() => sendCmd("pause"), 100);
+          setIsPlaying(false);
+          setMuted(true);
         }
-        // between 0.3–0.7 → do nothing, let it keep playing
       },
-      { threshold: [0.3, 0.7] },
+      { threshold: [0.1, 0.7] },
     );
     observer.observe(cardRef.current);
     return () => observer.disconnect();
   }, [isMobile]);
+
+  const handleClick = () => {
+    if (isMobile) return;
+    setIsPlaying(true);
+    onClick();
+  };
+
+  const ThumbnailOverlay = () => (
+    <div
+      style={{
+        position: "absolute",
+        inset: 0,
+        opacity: isPlaying ? 0 : 1,
+        transition: "opacity 0.35s ease",
+        pointerEvents: isPlaying ? "none" : "auto",
+        zIndex: 2,
+      }}
+    >
+      {v.thumbnail ? (
+        <img
+          src={v.thumbnail}
+          alt={v.title}
+          style={{ width: "100%", height: "100%", objectFit: "cover" }}
+        />
+      ) : (
+        <div style={{ position: "absolute", inset: 0, background: "#000" }} />
+      )}
+    </div>
+  );
 
   return (
     <div
@@ -422,14 +517,13 @@ const VideoCard = ({
       style={{
         display: "flex",
         flexDirection: "column",
-        background: "rgba(255,255,255,0.05)",
+        background: "#000000",
         borderRadius: 8,
         overflow: "hidden",
         cursor: isMobile ? "default" : "pointer",
       }}
-      onClick={isMobile ? undefined : onClick}
+      onClick={handleClick}
     >
-      {/* thumbnail (desktop) / inline player (mobile) */}
       <div
         style={{
           position: "relative",
@@ -439,45 +533,54 @@ const VideoCard = ({
         }}
       >
         {isMobile ? (
-          <iframe
-            ref={iframeRef}
-            data-vimeo
-            src={`${v.embed_url}?autoplay=0&muted=1&title=0&byline=0&portrait=0&muted=1`}
-            style={{
-              position: "absolute",
-              inset: 0,
-              width: "100%",
-              height: "100%",
-              border: "none",
-            }}
-            allow="autoplay; fullscreen; picture-in-picture"
-            allowFullScreen
-            title={v.title}
-          />
+          <>
+            <iframe
+              ref={iframeRef}
+              data-vimeo
+              src={`${v.embed_url}?autoplay=0&muted=1&title=0&byline=0&portrait=0&controls=1`}
+              style={{
+                position: "absolute",
+                inset: 0,
+                width: "100%",
+                height: "100%",
+                border: "none",
+                zIndex: 1,
+              }}
+              allow="autoplay; fullscreen; picture-in-picture"
+              allowFullScreen
+              title={v.title}
+            />
+            <ThumbnailOverlay />
+
+            {/* mute button — only visible when playing */}
+            {isPlaying && (
+              <button
+                onClick={toggleMute}
+                style={{
+                  position: "absolute",
+                  bottom: 12,
+                  right: 12,
+                  zIndex: 10,
+                  background: "rgba(0,0,0,0.5)",
+                  border: "none",
+                  borderRadius: "50%",
+                  width: 40,
+                  height: 40,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  cursor: "pointer",
+                  padding: 0,
+                  transition: "opacity 0.2s",
+                }}
+              >
+                {muted ? <MuteIcon /> : <UnmuteIcon />}
+              </button>
+            )}
+          </>
         ) : (
           <>
-            {!imgErr && v.thumbnail ? (
-              <img
-                src={v.thumbnail}
-                alt={v.title}
-                onError={() => setImgErr(true)}
-                style={{
-                  position: "absolute",
-                  inset: 0,
-                  width: "100%",
-                  height: "100%",
-                  objectFit: "cover",
-                }}
-              />
-            ) : (
-              <div
-                style={{
-                  position: "absolute",
-                  inset: 0,
-                  background: "#000000",
-                }}
-              />
-            )}
+            <ThumbnailOverlay />
             <div
               style={{
                 position: "absolute",
@@ -490,6 +593,7 @@ const VideoCard = ({
                 fontWeight: 500,
                 padding: "2px 7px",
                 borderRadius: 6,
+                zIndex: 3,
               }}
             >
               {fmtDuration(v.duration)}
@@ -667,6 +771,7 @@ const VimeoVideoGrid = ({ backendBase, perPage = 9 }: Props) => {
                     v={v}
                     onClick={() => setActive(v)}
                     backendBase={base}
+                    isActive={active?.id === v.id}
                   />
                 ))}
               </div>

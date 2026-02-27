@@ -29,7 +29,7 @@ export const SearchBar = ({ value, onChange }: Props) => {
         zIndex: 100,
         display: "flex",
         justifyContent: "center",
-        padding: 20,
+        padding: isMobile ? 0 : 20,
         background: "#000000",
         backdropFilter: "blur(12px)",
         transition: "top 0.2s ease",
