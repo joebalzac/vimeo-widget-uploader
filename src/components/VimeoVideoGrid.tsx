@@ -442,9 +442,27 @@ const VideoCard = ({
     sendCmd("setVolume", next ? 0 : 1);
   };
 
+  // sync muted state back from Vimeo's own volume changes
+  useEffect(() => {
+    const onMessage = (e: MessageEvent) => {
+      if (e.origin !== "https://player.vimeo.com") return;
+      try {
+        const data = JSON.parse(e.data);
+        if (data.event === "volumechange") {
+          setMuted(data.data.volume === 0);
+        }
+      } catch {}
+    };
+    window.addEventListener("message", onMessage);
+    return () => window.removeEventListener("message", onMessage);
+  }, []);
+
   // reset mute when video stops playing
   useEffect(() => {
-    if (!isPlaying) setMuted(true);
+    if (!isPlaying) {
+      setMuted(true);
+      sendCmd("setVolume", 0);
+    }
   }, [isPlaying]);
 
   // reset thumbnail when lightbox closes on desktop
@@ -452,9 +470,10 @@ const VideoCard = ({
     if (!isMobile && !isActive) setIsPlaying(false);
   }, [isActive, isMobile]);
 
-  // mobile autoplay observer
+  // mobile autoplay observer + register volumechange listener
   useEffect(() => {
     if (!isMobile || !cardRef.current) return;
+
     const observer = new IntersectionObserver(
       (entries) => {
         const entry = entries[0];
@@ -479,6 +498,15 @@ const VideoCard = ({
       { threshold: [0.1, 0.7] },
     );
     observer.observe(cardRef.current);
+
+    // register for volumechange events from this iframe
+    setTimeout(() => {
+      iframeRef.current?.contentWindow?.postMessage(
+        JSON.stringify({ method: "addEventListener", value: "volumechange" }),
+        "https://player.vimeo.com",
+      );
+    }, 1000);
+
     return () => observer.disconnect();
   }, [isMobile]);
 
@@ -517,7 +545,7 @@ const VideoCard = ({
       style={{
         display: "flex",
         flexDirection: "column",
-        background: "#000000",
+        background: "rgba(255,255,255,0.05)",
         borderRadius: 8,
         overflow: "hidden",
         cursor: isMobile ? "default" : "pointer",
@@ -537,7 +565,7 @@ const VideoCard = ({
             <iframe
               ref={iframeRef}
               data-vimeo
-              src={`${v.embed_url}?autoplay=0&muted=1&title=0&byline=0&portrait=0&controls=1`}
+              src={`${v.embed_url}?autoplay=0&muted=1&title=0&byline=0&portrait=0&controls=0`}
               style={{
                 position: "absolute",
                 inset: 0,
