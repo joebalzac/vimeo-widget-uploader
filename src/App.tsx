@@ -1,5 +1,6 @@
 import "./App.css";
 import HubSpotVimeoWidget from "./components/HubspotVimeoWidget";
+import MultiStepForm from "./components/MultiStepForm";
 import VimeoVideoGrid from "./components/VimeoVideoGrid";
 
 function App() {
@@ -17,9 +18,9 @@ function App() {
       </div>
 
       <div>
-        <VimeoVideoGrid
-          backendBase={import.meta.env.VITE_VIMEO_BACKEND_BASE}
-          isMobile={false}
+        <MultiStepForm
+          portalId="45321630"
+          formGuid="a68880cf-aa3e-4845-9822-f863608bed1f"
         />
       </div>
     </>
