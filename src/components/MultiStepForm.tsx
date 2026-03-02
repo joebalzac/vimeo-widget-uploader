@@ -39,15 +39,24 @@ interface Props {
 const PORTAL_ID = "45321630";
 const FORM_GUID = "a68880cf-aa3e-4845-9822-f863608bed1f";
 
-const UNITS_MANAGED_OPTIONS = ["1-50", "51-100", "101-250", "251-500", "500+"];
+const UNITS_MANAGED_OPTIONS = [
+  "<450",
+  "450-999",
+  "1,000-4,999",
+  "5,000-15,999",
+  "16,000+",
+];
 
 const PMS_OPTIONS = [
-  "Yardi",
-  "RealPage",
-  "AppFolio",
+  "Appfolio",
   "Buildium",
   "Entrata",
+  "MRI",
+  "Propertyware",
+  "RealPage",
   "ResMan",
+  "Yardi",
+  "More than one",
   "Other",
 ];
 
@@ -108,9 +117,7 @@ export default function MultiStepForm({
   const [step, setStep] = useState<number>(1);
   const [dir, setDir] = useState<number>(1);
   const [form, setForm] = useState<FormData>(INITIAL_FORM);
-  const [errors, setErrors] = useState<Partial<Record<keyof FormData, string>>>(
-    {},
-  );
+  const [errors, setErrors] = useState<Partial<Record<keyof FormData, string>>>({});
   const [submitted, setSubmitted] = useState<boolean>(false);
   const [submitting, setSubmitting] = useState<boolean>(false);
   const [apiError, setApiError] = useState<string>("");
@@ -119,10 +126,10 @@ export default function MultiStepForm({
 
   const set = useCallback(
     <K extends keyof FormData>(key: K, val: FormData[K]) => {
-      setForm((prev) => ({ ...prev, [key]: val }));
-      setErrors((prev) => ({ ...prev, [key]: "" }));
+      setForm(prev => ({ ...prev, [key]: val }));
+      setErrors(prev => ({ ...prev, [key]: "" }));
     },
-    [],
+    []
   );
 
   // ── Validation per step ─────────────────────────────────────────────────────
@@ -144,13 +151,10 @@ export default function MultiStepForm({
     }
     if (step === 4) {
       if (!form.units_managed) errs.units_managed = "Please select an option.";
-      if (!form.pms_compatability)
-        errs.pms_compatability = "Please select an option.";
+      if (!form.pms_compatability) errs.pms_compatability = "Please select an option.";
     }
     if (step === 5) {
-      if (
-        !form.in_which_areas_of_your_operations_are_you_looking_to_implement_ai_
-      )
+      if (!form.in_which_areas_of_your_operations_are_you_looking_to_implement_ai_)
         errs.in_which_areas_of_your_operations_are_you_looking_to_implement_ai_ =
           "Please tell us a bit about your operations.";
     }
@@ -164,12 +168,12 @@ export default function MultiStepForm({
   const next = useCallback(() => {
     if (!validateStep()) return;
     setDir(1);
-    setStep((s) => Math.min(s + 1, TOTAL_STEPS));
+    setStep(s => Math.min(s + 1, TOTAL_STEPS));
   }, [validateStep]);
 
   const prev = useCallback(() => {
     setDir(-1);
-    setStep((s) => Math.max(s - 1, 1));
+    setStep(s => Math.max(s - 1, 1));
   }, []);
 
   // ── Submit ──────────────────────────────────────────────────────────────────
@@ -180,22 +184,21 @@ export default function MultiStepForm({
     setApiError("");
 
     const fields: HubSpotField[] = [
-      { name: "email", value: form.email },
-      { name: "firstname", value: form.firstname },
-      { name: "lastname", value: form.lastname },
-      { name: "company", value: form.company },
-      { name: "phone", value: form.phone },
-      { name: "units_managed", value: form.units_managed },
+      { name: "email",      value: form.email },
+      { name: "firstname",  value: form.firstname },
+      { name: "lastname",   value: form.lastname },
+      { name: "company",    value: form.company },
+      { name: "phone",      value: form.phone },
+      { name: "units_managed",     value: form.units_managed },
       { name: "pms_compatability", value: form.pms_compatability },
       {
         name: "in_which_areas_of_your_operations_are_you_looking_to_implement_ai_",
-        value:
-          form.in_which_areas_of_your_operations_are_you_looking_to_implement_ai_,
+        value: form.in_which_areas_of_your_operations_are_you_looking_to_implement_ai_,
       },
     ];
 
     // Hidden UTM fields — only append if present
-    (["utm_source", "utm_medium", "utm_campaign"] as const).forEach((p) => {
+    (["utm_source", "utm_medium", "utm_campaign"] as const).forEach(p => {
       const v = getParam(p);
       if (v) fields.push({ name: p, value: v });
     });
@@ -203,9 +206,9 @@ export default function MultiStepForm({
     const payload: HubSpotPayload = {
       fields,
       context: {
-        pageUri: window.location.href,
+        pageUri:  window.location.href,
         pageName: document.title,
-        hutk: getCookie("hubspotutk"),
+        hutk:     getCookie("hubspotutk"),
       },
     };
 
@@ -213,10 +216,10 @@ export default function MultiStepForm({
       const res = await fetch(
         `https://api.hsforms.com/submissions/v3/integration/submit/${portalId}/${formGuid}`,
         {
-          method: "POST",
+          method:  "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
-        },
+          body:    JSON.stringify(payload),
+        }
       );
       if (!res.ok) throw new Error(`HubSpot responded with ${res.status}`);
       setSubmitted(true);
@@ -234,7 +237,7 @@ export default function MultiStepForm({
     (e: React.KeyboardEvent) => {
       if (e.key === "Enter") step < TOTAL_STEPS ? next() : submit();
     },
-    [step, next, submit],
+    [step, next, submit]
   );
 
   // ── Progress ────────────────────────────────────────────────────────────────
@@ -262,14 +265,9 @@ export default function MultiStepForm({
 
   return (
     <div className={`hsf ${className}`} onKeyDown={onKeyDown}>
+
       {/* Progress bar */}
-      <div
-        className="hsf__progress-track"
-        role="progressbar"
-        aria-valuenow={progress}
-        aria-valuemin={0}
-        aria-valuemax={100}
-      >
+      <div className="hsf__progress-track" role="progressbar" aria-valuenow={progress} aria-valuemin={0} aria-valuemax={100}>
         <motion.div
           className="hsf__progress-fill"
           initial={false}
@@ -279,9 +277,7 @@ export default function MultiStepForm({
       </div>
 
       {/* Step counter */}
-      <p className="hsf__step-count">
-        {step} / {TOTAL_STEPS}
-      </p>
+      <p className="hsf__step-count">{step} / {TOTAL_STEPS}</p>
 
       {/* Slide area */}
       <div className="hsf__slide-wrap">
@@ -295,6 +291,7 @@ export default function MultiStepForm({
             animate="center"
             exit="exit"
           >
+
             {/* ── Step 1: Email ── */}
             {step === 1 && (
               <div className="hsf__fields">
@@ -303,18 +300,14 @@ export default function MultiStepForm({
                 </label>
                 <input
                   id="hsf-email"
-                  className={`hsf__input ${
-                    errors.email ? "hsf__input--error" : ""
-                  }`}
+                  className={`hsf__input ${errors.email ? "hsf__input--error" : ""}`}
                   type="email"
                   placeholder="you@company.com"
                   value={form.email}
-                  onChange={(e) => set("email", e.target.value)}
+                  onChange={e => set("email", e.target.value)}
                   autoFocus
                 />
-                {errors.email && (
-                  <span className="hsf__error">{errors.email}</span>
-                )}
+                {errors.email && <span className="hsf__error">{errors.email}</span>}
               </div>
             )}
 
@@ -325,32 +318,24 @@ export default function MultiStepForm({
                 <div className="hsf__row">
                   <div className="hsf__col">
                     <input
-                      className={`hsf__input ${
-                        errors.firstname ? "hsf__input--error" : ""
-                      }`}
+                      className={`hsf__input ${errors.firstname ? "hsf__input--error" : ""}`}
                       type="text"
                       placeholder="First name"
                       value={form.firstname}
-                      onChange={(e) => set("firstname", e.target.value)}
+                      onChange={e => set("firstname", e.target.value)}
                       autoFocus
                     />
-                    {errors.firstname && (
-                      <span className="hsf__error">{errors.firstname}</span>
-                    )}
+                    {errors.firstname && <span className="hsf__error">{errors.firstname}</span>}
                   </div>
                   <div className="hsf__col">
                     <input
-                      className={`hsf__input ${
-                        errors.lastname ? "hsf__input--error" : ""
-                      }`}
+                      className={`hsf__input ${errors.lastname ? "hsf__input--error" : ""}`}
                       type="text"
                       placeholder="Last name"
                       value={form.lastname}
-                      onChange={(e) => set("lastname", e.target.value)}
+                      onChange={e => set("lastname", e.target.value)}
                     />
-                    {errors.lastname && (
-                      <span className="hsf__error">{errors.lastname}</span>
-                    )}
+                    {errors.lastname && <span className="hsf__error">{errors.lastname}</span>}
                   </div>
                 </div>
               </div>
@@ -359,34 +344,24 @@ export default function MultiStepForm({
             {/* ── Step 3: Company + Phone ── */}
             {step === 3 && (
               <div className="hsf__fields">
-                <label className="hsf__label">
-                  Tell us about your company.
-                </label>
+                <label className="hsf__label">Tell us about your company.</label>
                 <input
-                  className={`hsf__input ${
-                    errors.company ? "hsf__input--error" : ""
-                  }`}
+                  className={`hsf__input ${errors.company ? "hsf__input--error" : ""}`}
                   type="text"
                   placeholder="Company name"
                   value={form.company}
-                  onChange={(e) => set("company", e.target.value)}
+                  onChange={e => set("company", e.target.value)}
                   autoFocus
                 />
-                {errors.company && (
-                  <span className="hsf__error">{errors.company}</span>
-                )}
+                {errors.company && <span className="hsf__error">{errors.company}</span>}
                 <input
-                  className={`hsf__input ${
-                    errors.phone ? "hsf__input--error" : ""
-                  }`}
+                  className={`hsf__input ${errors.phone ? "hsf__input--error" : ""}`}
                   type="tel"
                   placeholder="Phone number"
                   value={form.phone}
-                  onChange={(e) => set("phone", e.target.value)}
+                  onChange={e => set("phone", e.target.value)}
                 />
-                {errors.phone && (
-                  <span className="hsf__error">{errors.phone}</span>
-                )}
+                {errors.phone && <span className="hsf__error">{errors.phone}</span>}
               </div>
             )}
 
@@ -395,40 +370,28 @@ export default function MultiStepForm({
               <div className="hsf__fields">
                 <label className="hsf__label">A couple quick questions.</label>
                 <select
-                  className={`hsf__select ${
-                    errors.units_managed ? "hsf__input--error" : ""
-                  }`}
+                  className={`hsf__select ${errors.units_managed ? "hsf__input--error" : ""}`}
                   value={form.units_managed}
-                  onChange={(e) => set("units_managed", e.target.value)}
+                  onChange={e => set("units_managed", e.target.value)}
                 >
                   <option value="">Units managed — please select</option>
-                  {UNITS_MANAGED_OPTIONS.map((o) => (
-                    <option key={o} value={o}>
-                      {o}
-                    </option>
+                  {UNITS_MANAGED_OPTIONS.map(o => (
+                    <option key={o} value={o}>{o}</option>
                   ))}
                 </select>
-                {errors.units_managed && (
-                  <span className="hsf__error">{errors.units_managed}</span>
-                )}
+                {errors.units_managed && <span className="hsf__error">{errors.units_managed}</span>}
 
                 <select
-                  className={`hsf__select ${
-                    errors.pms_compatability ? "hsf__input--error" : ""
-                  }`}
+                  className={`hsf__select ${errors.pms_compatability ? "hsf__input--error" : ""}`}
                   value={form.pms_compatability}
-                  onChange={(e) => set("pms_compatability", e.target.value)}
+                  onChange={e => set("pms_compatability", e.target.value)}
                 >
                   <option value="">PMS compatibility — please select</option>
-                  {PMS_OPTIONS.map((o) => (
-                    <option key={o} value={o}>
-                      {o}
-                    </option>
+                  {PMS_OPTIONS.map(o => (
+                    <option key={o} value={o}>{o}</option>
                   ))}
                 </select>
-                {errors.pms_compatability && (
-                  <span className="hsf__error">{errors.pms_compatability}</span>
-                )}
+                {errors.pms_compatability && <span className="hsf__error">{errors.pms_compatability}</span>}
               </div>
             )}
 
@@ -436,38 +399,30 @@ export default function MultiStepForm({
             {step === 5 && (
               <div className="hsf__fields">
                 <label className="hsf__label" htmlFor="hsf-ai">
-                  In which areas of your operations are you looking to implement
-                  AI?
+                  In which areas of your operations are you looking to implement AI?
                 </label>
                 <textarea
                   id="hsf-ai"
-                  className={`hsf__textarea ${
-                    errors.in_which_areas_of_your_operations_are_you_looking_to_implement_ai_
-                      ? "hsf__input--error"
-                      : ""
-                  }`}
+                  className={`hsf__textarea ${errors.in_which_areas_of_your_operations_are_you_looking_to_implement_ai_ ? "hsf__input--error" : ""}`}
                   placeholder="Tell us a bit about your goals..."
                   rows={4}
-                  value={
-                    form.in_which_areas_of_your_operations_are_you_looking_to_implement_ai_
-                  }
-                  onChange={(e) =>
+                  value={form.in_which_areas_of_your_operations_are_you_looking_to_implement_ai_}
+                  onChange={e =>
                     set(
                       "in_which_areas_of_your_operations_are_you_looking_to_implement_ai_",
-                      e.target.value,
+                      e.target.value
                     )
                   }
                   autoFocus
                 />
                 {errors.in_which_areas_of_your_operations_are_you_looking_to_implement_ai_ && (
                   <span className="hsf__error">
-                    {
-                      errors.in_which_areas_of_your_operations_are_you_looking_to_implement_ai_
-                    }
+                    {errors.in_which_areas_of_your_operations_are_you_looking_to_implement_ai_}
                   </span>
                 )}
               </div>
             )}
+
           </motion.div>
         </AnimatePresence>
       </div>
@@ -475,20 +430,12 @@ export default function MultiStepForm({
       {/* Navigation */}
       <div className="hsf__nav">
         {step > 1 && (
-          <button
-            className="hsf__btn hsf__btn--back"
-            type="button"
-            onClick={prev}
-          >
+          <button className="hsf__btn hsf__btn--back" type="button" onClick={prev}>
             Back
           </button>
         )}
         {step < TOTAL_STEPS ? (
-          <button
-            className="hsf__btn hsf__btn--next"
-            type="button"
-            onClick={next}
-          >
+          <button className="hsf__btn hsf__btn--next" type="button" onClick={next}>
             Next
           </button>
         ) : (
@@ -504,6 +451,7 @@ export default function MultiStepForm({
       </div>
 
       {apiError && <p className="hsf__api-error">{apiError}</p>}
+
     </div>
   );
 }

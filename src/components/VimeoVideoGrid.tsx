@@ -184,11 +184,9 @@ const HeartButton = ({
 const Lightbox = ({
   video,
   onClose,
-  backendBase,
 }: {
   video: VimeoVideo;
   onClose: () => void;
-  backendBase: string;
 }) => {
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -325,7 +323,6 @@ const Lightbox = ({
               flexShrink: 0,
             }}
           >
-            <HeartButton videoId={video.id} backendBase={backendBase} />
             <span
               style={{
                 fontFamily: "Inter, sans-serif",
@@ -826,13 +823,7 @@ const VimeoVideoGrid = ({ backendBase, perPage = 9 }: Props) => {
           )}
         </div>
 
-        {active && (
-          <Lightbox
-            video={active}
-            onClose={() => setActive(null)}
-            backendBase={base}
-          />
-        )}
+        {active && <Lightbox video={active} onClose={() => setActive(null)} />}
       </div>
     </div>
   );

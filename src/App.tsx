@@ -1,7 +1,6 @@
 import "./App.css";
 import HubSpotVimeoWidget from "./components/HubspotVimeoWidget";
 import MultiStepForm from "./components/MultiStepForm";
-import VimeoVideoGrid from "./components/VimeoVideoGrid";
 
 function App() {
   return (
