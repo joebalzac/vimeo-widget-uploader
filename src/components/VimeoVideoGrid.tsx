@@ -550,8 +550,6 @@ const VideoCard = ({
               allowFullScreen
               title={v.title}
             />
-            <ThumbnailOverlay />
-
             {/* mute button — only visible when playing */}
             {isPlaying && (
               <button
