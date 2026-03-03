@@ -1,3 +1,5 @@
+/* ─── Buttons ──────────────────────────────────────────────────────────────── */
+
 .defaultButton {
   background-color: #7638fa;
   color: #fafafb;
@@ -12,11 +14,23 @@
   border: none;
   text-align: center;
   height: 48px;
+  width: 100%;
 }
+
+.defaultButton:hover {
+  background-color: #5e2bd4;
+}
+
+.defaultButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ─── Email input (Step 1) ─────────────────────────────────────────────────── */
 
 .defaultEmailInput {
   display: flex;
-  width: 500px;
+  width: 100%;
   padding: 4px 4px 4px 20px;
   justify-content: space-between;
   align-items: center;
@@ -27,6 +41,244 @@
   font-size: 18px;
   font-style: normal;
   font-weight: 400;
-  line-height: 150%; /* 27px */
+  line-height: 150%;
   letter-spacing: -0.18px;
+  box-sizing: border-box;
+}
+
+.defaultEmailInput:focus {
+  outline: none;
+  border-color: #7638fa;
+}
+
+/* ─── Eyebrow ──────────────────────────────────────────────────────────────── */
+
+.above-eye-brow {
+  color: #7638fa;
+  text-align: center;
+  font-family: Inter;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 150%;
+  letter-spacing: -0.16px;
+  text-transform: uppercase;
+}
+
+/* ─── Step heading ─────────────────────────────────────────────────────────── */
+
+.step-heading {
+  color: #181819;
+  text-align: center;
+  font-family: "Inter Tight";
+  font-size: 48px;
+  font-style: normal;
+  font-weight: 450;
+  line-height: 110%;
+  margin: 0 0 8px;
+}
+
+/* ─── Field labels ─────────────────────────────────────────────────────────── */
+
+.field-label {
+  color: #181819;
+  font-family: Inter;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 150%;
+  letter-spacing: -0.14px;
+  margin-bottom: 4px;
+}
+
+.field-label-required::after {
+  content: " *";
+  color: #d7234a;
+}
+
+/* ─── Inputs (Steps 2 & 3) ─────────────────────────────────────────────────── */
+
+.formInput,
+.formSelect,
+.formTextarea {
+  display: flex;
+  width: 100%;
+  padding: 10px 12px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  align-self: stretch;
+  border-radius: 4px;
+  border: 1px solid #eaeaed;
+  background: #fff;
+  color: #6a6a6b;
+  font-family: Inter;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 150%;
+  letter-spacing: -0.16px;
+  box-sizing: border-box;
+  appearance: none;
+}
+
+.formInput:focus,
+.formSelect:focus,
+.formTextarea:focus {
+  outline: none;
+  border-color: #7638fa;
+  color: #181819;
+}
+
+.formTextarea {
+  resize: vertical;
+}
+
+/* ─── Error state ──────────────────────────────────────────────────────────── */
+
+.formInput--error,
+.formSelect--error,
+.formTextarea--error {
+  border-color: #d7234a;
+}
+
+.fieldError {
+  color: #d7234a;
+  font-family: Inter;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 150%;
+  letter-spacing: -0.16px;
+  margin-top: 2px;
+}
+
+/* ─── Form wrapper ─────────────────────────────────────────────────────────── */
+
+.hsf {
+  width: 100%;
+  max-width: 560px;
+  margin: 0 auto;
+  box-sizing: border-box;
+  font-family: Inter, sans-serif;
+}
+
+/* ─── Slide area ───────────────────────────────────────────────────────────── */
+
+.hsf__slide-wrap {
+  position: relative;
+  overflow: hidden;
+  min-height: 200px;
+}
+
+.hsf__slide {
+  width: 100%;
+}
+
+/* ─── Fields stack ─────────────────────────────────────────────────────────── */
+
+.hsf__fields {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.hsf__row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.hsf__col {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* ─── Progress bar ─────────────────────────────────────────────────────────── */
+
+.hsf__progress-track {
+  height: 4px;
+  background: #eaeaed;
+  border-radius: 99px;
+  overflow: hidden;
+  margin-bottom: 6px;
+}
+
+.hsf__progress-fill {
+  height: 100%;
+  background: #7638fa;
+  border-radius: 99px;
+}
+
+.hsf__step-count {
+  font-size: 0.8rem;
+  color: #6a6a6b;
+  text-align: right;
+  margin: 0 0 1.5rem;
+  font-family: Inter;
+}
+
+/* ─── Navigation ───────────────────────────────────────────────────────────── */
+
+.hsf__nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 24px;
+  gap: 12px;
+}
+
+.hsf__btn--back {
+  background: transparent !important;
+  color: #6a6a6b !important;
+  border: 1px solid #eaeaed !important;
+  width: auto !important;
+}
+
+.hsf__btn--back:hover {
+  background: #f5f5f5 !important;
+}
+
+/* ─── API error ────────────────────────────────────────────────────────────── */
+
+.hsf__api-error {
+  color: #d7234a;
+  font-family: Inter;
+  font-size: 14px;
+  text-align: center;
+  margin-top: 12px;
+}
+
+/* ─── Success ──────────────────────────────────────────────────────────────── */
+
+.hsf--success {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+}
+
+.hsf__success-message {
+  font-size: 1.25rem;
+  font-weight: 600;
+  text-align: center;
+  color: #7638fa;
+  font-family: Inter;
+}
+
+/* ─── Mobile ───────────────────────────────────────────────────────────────── */
+
+@media (max-width: 480px) {
+  .hsf__row {
+    grid-template-columns: 1fr;
+  }
+
+  .step-heading {
+    font-size: 32px;
+  }
+
+  .defaultEmailInput {
+    width: 100%;
+  }
 }
