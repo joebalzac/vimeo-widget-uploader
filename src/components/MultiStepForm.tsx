@@ -78,7 +78,7 @@ const TOTAL_STEPS = 3;
 
 const STEP_META: Record<number, { eyebrow: string; heading: string }> = {
   2: { eyebrow: "Getting Started", heading: "Let's Start With the Basics" },
-  3: { eyebrow: "Almost There", heading: "Tell Us About Your Operations" },
+  3: { eyebrow: "Almost There",    heading: "Tell Us About Your Operations" },
 };
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -119,25 +119,20 @@ export default function MultiStepForm({
   formGuid = FORM_GUID,
   className = "",
 }: Props) {
-  const [step, setStep] = useState<number>(1);
-  const [dir, setDir] = useState<number>(1);
-  const [form, setForm] = useState<FormData>(INITIAL_FORM);
-  const [errors, setErrors] = useState<Partial<Record<keyof FormData, string>>>(
-    {},
-  );
+  const [step, setStep]           = useState<number>(1);
+  const [dir, setDir]             = useState<number>(1);
+  const [form, setForm]           = useState<FormData>(INITIAL_FORM);
+  const [errors, setErrors]       = useState<Partial<Record<keyof FormData, string>>>({});
   const [submitted, setSubmitted] = useState<boolean>(false);
   const [submitting, setSubmitting] = useState<boolean>(false);
-  const [apiError, setApiError] = useState<string>("");
+  const [apiError, setApiError]   = useState<string>("");
 
   // ── Field update ────────────────────────────────────────────────────────────
 
-  const set = useCallback(
-    <K extends keyof FormData>(key: K, val: FormData[K]) => {
-      setForm((prev) => ({ ...prev, [key]: val }));
-      setErrors((prev) => ({ ...prev, [key]: "" }));
-    },
-    [],
-  );
+  const set = useCallback(<K extends keyof FormData>(key: K, val: FormData[K]) => {
+    setForm(prev => ({ ...prev, [key]: val }));
+    setErrors(prev => ({ ...prev, [key]: "" }));
+  }, []);
 
   // ── Validation ──────────────────────────────────────────────────────────────
 
@@ -150,17 +145,14 @@ export default function MultiStepForm({
     }
     if (step === 2) {
       if (!form.firstname) errs.firstname = "First name is required.";
-      if (!form.lastname) errs.lastname = "Last name is required.";
-      if (!form.phone) errs.phone = "Phone number is required.";
+      if (!form.lastname)  errs.lastname  = "Last name is required.";
+      if (!form.phone)     errs.phone     = "Phone number is required.";
     }
     if (step === 3) {
-      if (!form.company) errs.company = "Company name is required.";
-      if (!form.units_managed) errs.units_managed = "Please select an option.";
-      if (!form.pms_compatability)
-        errs.pms_compatability = "Please select an option.";
-      if (
-        !form.in_which_areas_of_your_operations_are_you_looking_to_implement_ai_
-      )
+      if (!form.company)           errs.company           = "Company name is required.";
+      if (!form.units_managed)     errs.units_managed     = "Please select an option.";
+      if (!form.pms_compatability) errs.pms_compatability = "Please select an option.";
+      if (!form.in_which_areas_of_your_operations_are_you_looking_to_implement_ai_)
         errs.in_which_areas_of_your_operations_are_you_looking_to_implement_ai_ =
           "Please tell us a bit about your operations.";
     }
@@ -174,12 +166,12 @@ export default function MultiStepForm({
   const next = useCallback(() => {
     if (!validateStep()) return;
     setDir(1);
-    setStep((s) => Math.min(s + 1, TOTAL_STEPS));
+    setStep(s => Math.min(s + 1, TOTAL_STEPS));
   }, [validateStep]);
 
   const prev = useCallback(() => {
     setDir(-1);
-    setStep((s) => Math.max(s - 1, 1));
+    setStep(s => Math.max(s - 1, 1));
   }, []);
 
   // ── Submit ──────────────────────────────────────────────────────────────────
@@ -190,21 +182,20 @@ export default function MultiStepForm({
     setApiError("");
 
     const fields: HubSpotField[] = [
-      { name: "email", value: form.email },
-      { name: "firstname", value: form.firstname },
-      { name: "lastname", value: form.lastname },
-      { name: "phone", value: form.phone },
-      { name: "company", value: form.company },
-      { name: "units_managed", value: form.units_managed },
+      { name: "email",             value: form.email },
+      { name: "firstname",         value: form.firstname },
+      { name: "lastname",          value: form.lastname },
+      { name: "phone",             value: form.phone },
+      { name: "company",           value: form.company },
+      { name: "units_managed",     value: form.units_managed },
       { name: "pms_compatability", value: form.pms_compatability },
       {
-        name: "in_which_areas_of_your_operations_are_you_looking_to_implement_ai_",
-        value:
-          form.in_which_areas_of_your_operations_are_you_looking_to_implement_ai_,
+        name:  "in_which_areas_of_your_operations_are_you_looking_to_implement_ai_",
+        value: form.in_which_areas_of_your_operations_are_you_looking_to_implement_ai_,
       },
     ];
 
-    (["utm_source", "utm_medium", "utm_campaign"] as const).forEach((p) => {
+    (["utm_source", "utm_medium", "utm_campaign"] as const).forEach(p => {
       const v = getParam(p);
       if (v) fields.push({ name: p, value: v });
     });
@@ -212,20 +203,16 @@ export default function MultiStepForm({
     const payload: HubSpotPayload = {
       fields,
       context: {
-        pageUri: window.location.href,
+        pageUri:  window.location.href,
         pageName: document.title,
-        hutk: getCookie("hubspotutk"),
+        hutk:     getCookie("hubspotutk"),
       },
     };
 
     try {
       const res = await fetch(
         `https://api.hsforms.com/submissions/v3/integration/submit/${portalId}/${formGuid}`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
-        },
+        { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) }
       );
       if (!res.ok) throw new Error(`HubSpot responded with ${res.status}`);
       setSubmitted(true);
@@ -239,20 +226,17 @@ export default function MultiStepForm({
 
   // ── Key handler ─────────────────────────────────────────────────────────────
 
-  const onKeyDown = useCallback(
-    (e: React.KeyboardEvent) => {
-      if (e.key === "Enter") step < TOTAL_STEPS ? next() : void submit();
-    },
-    [step, next, submit],
-  );
+  const onKeyDown = useCallback((e: React.KeyboardEvent) => {
+    if (e.key === "Enter") step < TOTAL_STEPS ? next() : void submit();
+  }, [step, next, submit]);
 
   // ── Progress ────────────────────────────────────────────────────────────────
 
-  const flowStep = step - 1;
-  const flowTotal = TOTAL_STEPS - 1;
-  const progress = step === 1 ? 0 : Math.round((flowStep / flowTotal) * 100);
+  const flowStep    = step - 1;
+  const flowTotal   = TOTAL_STEPS - 1;
+  const progress    = step === 1 ? 0 : Math.round((flowStep / flowTotal) * 100);
   const showProgress = step > 1;
-  const meta = STEP_META[step];
+  const meta        = STEP_META[step];
 
   // ─── Success ───────────────────────────────────────────────────────────────
 
@@ -276,15 +260,10 @@ export default function MultiStepForm({
 
   return (
     <div className={`hsf ${className}`} onKeyDown={onKeyDown}>
+
       {/* Progress bar — flow steps only */}
       {showProgress && (
-        <div
-          className="hsf__progress-track"
-          role="progressbar"
-          aria-valuenow={progress}
-          aria-valuemin={0}
-          aria-valuemax={100}
-        >
+        <div className="hsf__progress-track" role="progressbar" aria-valuenow={progress} aria-valuemin={0} aria-valuemax={100}>
           <motion.div
             className="hsf__progress-fill"
             initial={false}
@@ -294,9 +273,7 @@ export default function MultiStepForm({
         </div>
       )}
       {showProgress && (
-        <p className="hsf__step-count">
-          {flowStep} / {flowTotal}
-        </p>
+        <p className="hsf__step-count">{flowStep} / {flowTotal}</p>
       )}
 
       {/* Eyebrow + heading — flow steps only */}
@@ -307,117 +284,82 @@ export default function MultiStepForm({
         </div>
       )}
 
-      {/* Slide area */}
-      <div className="hsf__slide-wrap">
-        <AnimatePresence mode="wait" custom={dir}>
-          <motion.div
-            key={step}
-            className="hsf__slide"
-            custom={dir}
-            variants={slideVariants as unknown as Variants}
-            initial="enter"
-            animate="center"
-            exit="exit"
-          >
-            {/* ── Step 1: Email ── */}
-            {step === 1 && (
-              <div className="hsf__fields">
-                <div
-                  className={`emailCapture${
-                    errors.email ? " emailCapture--error" : ""
-                  }`}
-                >
-                  <input
-                    id="hsf-email"
-                    className="emailCapture__input"
-                    type="email"
-                    placeholder="you@company.com"
-                    value={form.email}
-                    onChange={(e) => set("email", e.target.value)}
-                    autoFocus
-                  />
-                  <button
-                    className="defaultButton emailCapture__btn"
-                    type="button"
-                    onClick={next}
-                  >
-                    Get A Demo
-                  </button>
-                </div>
-                {errors.email && (
-                  <span className="fieldError">{errors.email}</span>
-                )}
-              </div>
-            )}
+      {/* ── Step 1: Email — no animation, just renders inline ── */}
+      {step === 1 && (
+        <div className="hsf__fields">
+          <div className={`emailCapture${errors.email ? " emailCapture--error" : ""}`}>
+            <input
+              id="hsf-email"
+              className="emailCapture__input"
+              type="email"
+              placeholder="you@company.com"
+              value={form.email}
+              onChange={e => set("email", e.target.value)}
+              autoFocus
+            />
+            <button className="defaultButton emailCapture__btn" type="button" onClick={next}>
+              Get A Demo
+            </button>
+          </div>
+          {errors.email && <span className="fieldError">{errors.email}</span>}
+        </div>
+      )}
+
+      {/* ── Steps 2 & 3: Framer Motion slides ── */}
+      {step > 1 && (
+        <div className="hsf__slide-wrap">
+          <AnimatePresence mode="wait" custom={dir}>
+            <motion.div
+              key={step}
+              className="hsf__slide"
+              custom={dir}
+              variants={slideVariants as unknown as Variants}
+              initial="enter"
+              animate="center"
+              exit="exit"
+            >
 
             {/* ── Step 2: Name + Phone ── */}
             {step === 2 && (
               <div className="hsf__fields">
                 <div className="hsf__row">
                   <div className="hsf__col">
-                    <label
-                      className="field-label field-label-required"
-                      htmlFor="hsf-firstname"
-                    >
-                      First Name
-                    </label>
+                    <label className="field-label field-label-required" htmlFor="hsf-firstname">First Name</label>
                     <input
                       id="hsf-firstname"
-                      className={`formInput${
-                        errors.firstname ? " formInput--error" : ""
-                      }`}
+                      className={`formInput${errors.firstname ? " formInput--error" : ""}`}
                       type="text"
                       placeholder="First name"
                       value={form.firstname}
-                      onChange={(e) => set("firstname", e.target.value)}
+                      onChange={e => set("firstname", e.target.value)}
                       autoFocus
                     />
-                    {errors.firstname && (
-                      <span className="fieldError">{errors.firstname}</span>
-                    )}
+                    {errors.firstname && <span className="fieldError">{errors.firstname}</span>}
                   </div>
                   <div className="hsf__col">
-                    <label
-                      className="field-label field-label-required"
-                      htmlFor="hsf-lastname"
-                    >
-                      Last Name
-                    </label>
+                    <label className="field-label field-label-required" htmlFor="hsf-lastname">Last Name</label>
                     <input
                       id="hsf-lastname"
-                      className={`formInput${
-                        errors.lastname ? " formInput--error" : ""
-                      }`}
+                      className={`formInput${errors.lastname ? " formInput--error" : ""}`}
                       type="text"
                       placeholder="Last name"
                       value={form.lastname}
-                      onChange={(e) => set("lastname", e.target.value)}
+                      onChange={e => set("lastname", e.target.value)}
                     />
-                    {errors.lastname && (
-                      <span className="fieldError">{errors.lastname}</span>
-                    )}
+                    {errors.lastname && <span className="fieldError">{errors.lastname}</span>}
                   </div>
                 </div>
                 <div className="hsf__col">
-                  <label
-                    className="field-label field-label-required"
-                    htmlFor="hsf-phone"
-                  >
-                    Phone Number
-                  </label>
+                  <label className="field-label field-label-required" htmlFor="hsf-phone">Phone Number</label>
                   <input
                     id="hsf-phone"
-                    className={`formInput${
-                      errors.phone ? " formInput--error" : ""
-                    }`}
+                    className={`formInput${errors.phone ? " formInput--error" : ""}`}
                     type="tel"
                     placeholder="Phone number"
                     value={form.phone}
-                    onChange={(e) => set("phone", e.target.value)}
+                    onChange={e => set("phone", e.target.value)}
                   />
-                  {errors.phone && (
-                    <span className="fieldError">{errors.phone}</span>
-                  )}
+                  {errors.phone && <span className="fieldError">{errors.phone}</span>}
                 </div>
               </div>
             )}
@@ -426,133 +368,77 @@ export default function MultiStepForm({
             {step === 3 && (
               <div className="hsf__fields">
                 <div className="hsf__col">
-                  <label
-                    className="field-label field-label-required"
-                    htmlFor="hsf-company"
-                  >
-                    Company Name
-                  </label>
+                  <label className="field-label field-label-required" htmlFor="hsf-company">Company Name</label>
                   <input
                     id="hsf-company"
-                    className={`formInput${
-                      errors.company ? " formInput--error" : ""
-                    }`}
+                    className={`formInput${errors.company ? " formInput--error" : ""}`}
                     type="text"
                     placeholder="Company name"
                     value={form.company}
-                    onChange={(e) => set("company", e.target.value)}
+                    onChange={e => set("company", e.target.value)}
                     autoFocus
                   />
-                  {errors.company && (
-                    <span className="fieldError">{errors.company}</span>
-                  )}
+                  {errors.company && <span className="fieldError">{errors.company}</span>}
                 </div>
 
                 <div className="hsf__col">
-                  <label
-                    className="field-label field-label-required"
-                    htmlFor="hsf-units"
-                  >
-                    Units Managed
-                  </label>
+                  <label className="field-label field-label-required" htmlFor="hsf-units">Units Managed</label>
                   <select
                     id="hsf-units"
-                    className={`formSelect${
-                      errors.units_managed ? " formSelect--error" : ""
-                    }`}
+                    className={`formSelect${errors.units_managed ? " formSelect--error" : ""}`}
                     value={form.units_managed}
-                    onChange={(e) => set("units_managed", e.target.value)}
+                    onChange={e => set("units_managed", e.target.value)}
                   >
                     <option value="">Please select</option>
-                    {UNITS_MANAGED_OPTIONS.map((o) => (
-                      <option key={o} value={o}>
-                        {o}
-                      </option>
-                    ))}
+                    {UNITS_MANAGED_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
                   </select>
-                  {errors.units_managed && (
-                    <span className="fieldError">{errors.units_managed}</span>
-                  )}
+                  {errors.units_managed && <span className="fieldError">{errors.units_managed}</span>}
                 </div>
 
                 <div className="hsf__col">
-                  <label
-                    className="field-label field-label-required"
-                    htmlFor="hsf-pms"
-                  >
-                    PMS Compatibility
-                  </label>
+                  <label className="field-label field-label-required" htmlFor="hsf-pms">PMS Compatibility</label>
                   <select
                     id="hsf-pms"
-                    className={`formSelect${
-                      errors.pms_compatability ? " formSelect--error" : ""
-                    }`}
+                    className={`formSelect${errors.pms_compatability ? " formSelect--error" : ""}`}
                     value={form.pms_compatability}
-                    onChange={(e) => set("pms_compatability", e.target.value)}
+                    onChange={e => set("pms_compatability", e.target.value)}
                   >
                     <option value="">Please select</option>
-                    {PMS_OPTIONS.map((o) => (
-                      <option key={o} value={o}>
-                        {o}
-                      </option>
-                    ))}
+                    {PMS_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
                   </select>
-                  {errors.pms_compatability && (
-                    <span className="fieldError">
-                      {errors.pms_compatability}
-                    </span>
-                  )}
+                  {errors.pms_compatability && <span className="fieldError">{errors.pms_compatability}</span>}
                 </div>
 
                 <div className="hsf__col">
-                  <label
-                    className="field-label field-label-required"
-                    htmlFor="hsf-ai"
-                  >
-                    In which areas of your operations are you looking to
-                    implement AI?
+                  <label className="field-label field-label-required" htmlFor="hsf-ai">
+                    In which areas of your operations are you looking to implement AI?
                   </label>
                   <textarea
                     id="hsf-ai"
-                    className={`formTextarea${
-                      errors.in_which_areas_of_your_operations_are_you_looking_to_implement_ai_
-                        ? " formTextarea--error"
-                        : ""
-                    }`}
+                    className={`formTextarea${errors.in_which_areas_of_your_operations_are_you_looking_to_implement_ai_ ? " formTextarea--error" : ""}`}
                     placeholder="Tell us about your goals..."
                     rows={4}
-                    value={
-                      form.in_which_areas_of_your_operations_are_you_looking_to_implement_ai_
-                    }
-                    onChange={(e) =>
-                      set(
-                        "in_which_areas_of_your_operations_are_you_looking_to_implement_ai_",
-                        e.target.value,
-                      )
-                    }
+                    value={form.in_which_areas_of_your_operations_are_you_looking_to_implement_ai_}
+                    onChange={e => set("in_which_areas_of_your_operations_are_you_looking_to_implement_ai_", e.target.value)}
                   />
                   {errors.in_which_areas_of_your_operations_are_you_looking_to_implement_ai_ && (
                     <span className="fieldError">
-                      {
-                        errors.in_which_areas_of_your_operations_are_you_looking_to_implement_ai_
-                      }
+                      {errors.in_which_areas_of_your_operations_are_you_looking_to_implement_ai_}
                     </span>
                   )}
                 </div>
               </div>
             )}
-          </motion.div>
-        </AnimatePresence>
-      </div>
+
+            </motion.div>
+          </AnimatePresence>
+        </div>
+      )}
 
       {/* Navigation */}
       <div className="hsf__nav">
         {step > 1 && (
-          <button
-            className="defaultButton hsf__btn--back"
-            type="button"
-            onClick={prev}
-          >
+          <button className="defaultButton hsf__btn--back" type="button" onClick={prev}>
             Back
           </button>
         )}
@@ -563,18 +449,14 @@ export default function MultiStepForm({
             </button>
           )
         ) : (
-          <button
-            className="defaultButton"
-            type="button"
-            onClick={submit}
-            disabled={submitting}
-          >
+          <button className="defaultButton" type="button" onClick={submit} disabled={submitting}>
             {submitting ? "Submitting…" : "Submit"}
           </button>
         )}
       </div>
 
       {apiError && <p className="hsf__api-error">{apiError}</p>}
+
     </div>
   );
 }
