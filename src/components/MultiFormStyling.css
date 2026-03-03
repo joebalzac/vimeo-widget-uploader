@@ -1,0 +1,32 @@
+.defaultButton {
+  background-color: #7638fa;
+  color: #fafafb;
+  padding: 12px 24px;
+  border-radius: 4px;
+  font-size: 16px;
+  font-weight: 450;
+  line-height: 1.5;
+  font-family: "Inter";
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  border: none;
+  text-align: center;
+  height: 48px;
+}
+
+.defaultEmailInput {
+  display: flex;
+  width: 500px;
+  padding: 4px 4px 4px 20px;
+  justify-content: space-between;
+  align-items: center;
+  border-radius: 8px;
+  border: 1px solid #dedee1;
+  background: #fafafb;
+  font-family: Inter;
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 150%; /* 27px */
+  letter-spacing: -0.18px;
+}
