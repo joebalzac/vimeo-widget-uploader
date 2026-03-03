@@ -322,17 +322,28 @@ export default function MultiStepForm({
             {/* ── Step 1: Email ── */}
             {step === 1 && (
               <div className="hsf__fields">
-                <input
-                  id="hsf-email"
-                  className={`defaultEmailInput${
-                    errors.email ? " formInput--error" : ""
+                <div
+                  className={`emailCapture${
+                    errors.email ? " emailCapture--error" : ""
                   }`}
-                  type="email"
-                  placeholder="you@company.com"
-                  value={form.email}
-                  onChange={(e) => set("email", e.target.value)}
-                  autoFocus
-                />
+                >
+                  <input
+                    id="hsf-email"
+                    className="emailCapture__input"
+                    type="email"
+                    placeholder="you@company.com"
+                    value={form.email}
+                    onChange={(e) => set("email", e.target.value)}
+                    autoFocus
+                  />
+                  <button
+                    className="defaultButton emailCapture__btn"
+                    type="button"
+                    onClick={next}
+                  >
+                    Get A Demo
+                  </button>
+                </div>
                 {errors.email && (
                   <span className="fieldError">{errors.email}</span>
                 )}
@@ -546,9 +557,11 @@ export default function MultiStepForm({
           </button>
         )}
         {step < TOTAL_STEPS ? (
-          <button className="defaultButton" type="button" onClick={next}>
-            {step === 1 ? "Get Started" : "Continue"}
-          </button>
+          step === 1 ? null : (
+            <button className="defaultButton" type="button" onClick={next}>
+              Continue
+            </button>
+          )
         ) : (
           <button
             className="defaultButton"

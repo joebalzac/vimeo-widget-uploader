@@ -26,29 +26,47 @@
   cursor: not-allowed;
 }
 
-/* ─── Email input (Step 1) ─────────────────────────────────────────────────── */
+/* ─── Email capture (Step 1) ───────────────────────────────────────────────── */
 
-.defaultEmailInput {
+.emailCapture {
   display: flex;
-  width: 100%;
+  width: 500px;
   padding: 4px 4px 4px 20px;
   justify-content: space-between;
   align-items: center;
   border-radius: 8px;
   border: 1px solid #dedee1;
   background: #fafafb;
-  font-family: Inter;
-  font-size: 18px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: 150%;
-  letter-spacing: -0.18px;
   box-sizing: border-box;
 }
 
-.defaultEmailInput:focus {
+.emailCapture--error {
+  border-color: #d7234a;
+}
+
+.emailCapture__input {
+  flex: 1;
+  border: none;
+  background: transparent;
   outline: none;
-  border-color: #7638fa;
+  font-family: Inter;
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 150%;
+  letter-spacing: -0.18px;
+  color: #181819;
+  min-width: 0;
+}
+
+.emailCapture__input::placeholder {
+  color: #6a6a6b;
+}
+
+.emailCapture__btn {
+  width: auto !important;
+  flex-shrink: 0;
+  height: 40px;
+  padding: 8px 20px;
 }
 
 /* ─── Eyebrow ──────────────────────────────────────────────────────────────── */
