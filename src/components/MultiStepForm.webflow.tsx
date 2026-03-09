@@ -1,11 +1,3 @@
-/**
- * MultiStepForm.webflow.tsx
- *
- * Webflow Designer component wrapper using @webflow/react.
- * Registers MultiStepForm as a Designer Extension component
- * with configurable props editable directly in the Webflow canvas.
- */
-
 import MultiStepForm from "./MultiStepForm";
 import { props } from "@webflow/data-types";
 import { declareComponent } from "@webflow/react";
@@ -25,7 +17,7 @@ export default declareComponent(MultiStepForm, {
 
     formGuid: props.Text({
       name: "HubSpot Form GUID",
-      defaultValue: "a68880cf-aa3e-4845-9822-f863608bed1f",
+      defaultValue: "0b77026b-30dc-4521-afc4-009261739448",
       tooltip: "Your HubSpot formId / GUID (string).",
     }),
 

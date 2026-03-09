@@ -188,6 +188,30 @@
   font-family: Inter, sans-serif;
 }
 
+/* ─── Full screen modal overlay (Steps 2 & 3) ─────────────────────────────── */
+
+.hsf__overlay {
+  position: fixed;
+  inset: 0;
+  background: #ffffff;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow-y: auto;
+}
+
+.hsf__overlay-inner {
+  width: 100%;
+  max-width: 600px;
+  padding: 0 24px 48px;
+  box-sizing: border-box;
+}
+
+.hsf__overlay-inner .hsf__progress-track {
+  margin-top: 80px;
+}
+
 /* ─── Slide area ───────────────────────────────────────────────────────────── */
 
 .hsf__slide-wrap {
