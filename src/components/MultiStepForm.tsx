@@ -278,11 +278,6 @@ export default function MultiStepForm({
     setStep((s) => Math.min(s + 1, TOTAL_STEPS));
   }, [validateStep]);
 
-  const prev = useCallback(() => {
-    setDir(-1);
-    setStep((s) => Math.max(s - 1, 1));
-  }, []);
-
   // ── Submit ──────────────────────────────────────────────────────────────────
 
   const submit = useCallback(async () => {
@@ -626,10 +621,7 @@ export default function MultiStepForm({
                           )}
                         </div>
                         <div className="hsf__col">
-                          <label
-                            className="field-label field-label-required"
-                            htmlFor="hsf-units"
-                          >
+                          <label className="field-label" htmlFor="hsf-units">
                             Units Managed
                           </label>
                           <select
@@ -656,10 +648,7 @@ export default function MultiStepForm({
                           )}
                         </div>
                         <div className="hsf__col">
-                          <label
-                            className="field-label field-label-required"
-                            htmlFor="hsf-pms"
-                          >
+                          <label className="field-label" htmlFor="hsf-pms">
                             PMS Compatibility
                           </label>
                           <select
@@ -688,10 +677,7 @@ export default function MultiStepForm({
                           )}
                         </div>
                         <div className="hsf__col">
-                          <label
-                            className="field-label field-label-required"
-                            htmlFor="hsf-ai"
-                          >
+                          <label className="field-label" htmlFor="hsf-ai">
                             In which areas of your operations are you looking to
                             implement AI?
                           </label>
@@ -730,13 +716,6 @@ export default function MultiStepForm({
 
               {/* Navigation */}
               <div className="hsf__nav">
-                <button
-                  className="defaultButton hsf__btn--back"
-                  type="button"
-                  onClick={prev}
-                >
-                  Back
-                </button>
                 {step < TOTAL_STEPS ? (
                   <button
                     className="defaultButton"
