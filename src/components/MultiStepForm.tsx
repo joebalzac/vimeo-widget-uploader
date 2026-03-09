@@ -227,11 +227,6 @@ export default function MultiStepForm({
   const [submitting, setSubmitting] = useState<boolean>(false);
   const [apiError, setApiError] = useState<string>("");
 
-  // Pre-load Default SDK as soon as component mounts
-  useEffect(() => {
-    loadDefaultSDK().catch((err) => console.warn("[Default SDK]", err));
-  }, []);
-
   // Lock body scroll when overlay is open
   useEffect(() => {
     if (step > 1) {
@@ -239,7 +234,9 @@ export default function MultiStepForm({
     } else {
       document.body.style.overflow = "";
     }
-    return () => { document.body.style.overflow = ""; };
+    return () => {
+      document.body.style.overflow = "";
+    };
   }, [step]);
 
   // ── Field update ────────────────────────────────────────────────────────────
@@ -268,14 +265,6 @@ export default function MultiStepForm({
     }
     if (step === 3) {
       if (!form.company) errs.company = "Company name is required.";
-      if (!form.units_managed) errs.units_managed = "Please select an option.";
-      if (!form.pms_compatability)
-        errs.pms_compatability = "Please select an option.";
-      if (
-        !form.in_which_areas_of_your_operations_are_you_looking_to_implement_ai_
-      )
-        errs.in_which_areas_of_your_operations_are_you_looking_to_implement_ai_ =
-          "Please tell us a bit about your operations.";
     }
     setErrors(errs);
     return Object.keys(errs).length === 0;
