@@ -461,7 +461,7 @@ export default function MultiStepForm({
                 type="button"
                 onClick={next}
               >
-                Get Started
+                Request Demo
               </button>
             </div>
             {errors.email && <span className="fieldError">{errors.email}</span>}
