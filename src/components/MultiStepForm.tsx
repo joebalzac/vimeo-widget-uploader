@@ -227,6 +227,33 @@ export default function MultiStepForm({
   const [submitting, setSubmitting] = useState<boolean>(false);
   const [apiError, setApiError] = useState<string>("");
 
+  // Pre-load Default SDK
+  useEffect(() => {
+    loadDefaultSDK().catch((err) => console.warn("[Default SDK]", err));
+  }, []);
+
+  // Nav button — validates email, shows error or opens overlay
+  useEffect(() => {
+    const navBtn = document.getElementById("requestModalOpenBtn");
+    if (!navBtn) return;
+    const handler = () => {
+      setErrors((prev) => ({
+        ...prev,
+        email: form.email
+          ? validateEmail(form.email)
+            ? ""
+            : "Please use your work email address."
+          : "Email is required.",
+      }));
+      if (form.email && validateEmail(form.email)) {
+        setDir(1);
+        setStep(2);
+      }
+    };
+    navBtn.addEventListener("click", handler);
+    return () => navBtn.removeEventListener("click", handler);
+  }, [form.email]);
+
   // Lock body scroll when overlay is open
   useEffect(() => {
     if (step > 1) {
@@ -316,7 +343,7 @@ export default function MultiStepForm({
     };
 
     try {
-      // ── 1. Submit to HubSpot ───────────────────────────────────────────────
+      // 1. Submit to HubSpot
       const res = await fetch(
         `https://api.hsforms.com/submissions/v3/integration/submit/${portalId}/${formGuid}`,
         {
@@ -327,7 +354,7 @@ export default function MultiStepForm({
       );
       if (!res.ok) throw new Error(`HubSpot responded with ${res.status}`);
 
-      // ── 2. Submit to Default SDK → triggers scheduler ──────────────────────
+      // 2. Submit to Default SDK → triggers scheduler
       await loadDefaultSDK();
 
       const defaultSubmission: DefaultSubmission = {
@@ -345,12 +372,7 @@ export default function MultiStepForm({
             form.in_which_areas_of_your_operations_are_you_looking_to_implement_ai_,
         },
         questions: [
-          {
-            id: "email",
-            name: "Email",
-            type: "email",
-            lead_attribute: undefined,
-          },
+          { id: "email", name: "Email", type: "email" },
           {
             id: "firstname",
             name: "First Name",
@@ -428,17 +450,15 @@ export default function MultiStepForm({
   const progress = step === 1 ? 0 : Math.round((flowStep / flowTotal) * 100);
   const meta = STEP_META[step];
 
-  // ─── Success — close overlay back to original page ───────────────────────
+  // ─── Success — close overlay ───────────────────────────────────────────────
 
-  if (submitted) {
-    return null;
-  }
+  if (submitted) return null;
 
   // ─── Render ────────────────────────────────────────────────────────────────
 
   return (
     <>
-      {/* ── Step 1: Email — sits inline on the page ── */}
+      {/* ── Step 1: Email — inline on page ── */}
       <div className={`hsf ${className}`} onKeyDown={onKeyDown}>
         {step === 1 && (
           <div className="hsf__fields">
@@ -461,7 +481,7 @@ export default function MultiStepForm({
                 type="button"
                 onClick={next}
               >
-                Request Demo
+                Get A Demo
               </button>
             </div>
             {errors.email && <span className="fieldError">{errors.email}</span>}
