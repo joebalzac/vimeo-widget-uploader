@@ -30,10 +30,7 @@ interface DefaultCallbacks {
 declare global {
   interface Window {
     DefaultSDK?: {
-      submit: (
-        submission: DefaultSubmission,
-        callbacks?: DefaultCallbacks,
-      ) => Promise<void>;
+      submit: (submission: DefaultSubmission, callbacks?: DefaultCallbacks) => Promise<void>;
       helloWorld: () => void;
     };
   }
@@ -70,34 +67,23 @@ interface Props {
   portalId?: string;
   formGuid?: string;
   className?: string;
+  enableNavTrigger?: boolean;
 }
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
-const PORTAL_ID = "45321630";
-const FORM_GUID = "0b77026b-30dc-4521-afc4-009261739448";
+const PORTAL_ID       = "45321630";
+const FORM_GUID       = "0b77026b-30dc-4521-afc4-009261739448";
 const DEFAULT_FORM_ID = 539717;
 const DEFAULT_TEAM_ID = 588;
 
 const UNITS_MANAGED_OPTIONS = [
-  "<450",
-  "450-999",
-  "1,000-4,999",
-  "5,000-15,999",
-  "16,000+",
+  "<450", "450-999", "1,000-4,999", "5,000-15,999", "16,000+",
 ];
 
 const PMS_OPTIONS = [
-  "Appfolio",
-  "Buildium",
-  "Entrata",
-  "MRI",
-  "Propertyware",
-  "RealPage",
-  "ResMan",
-  "Yardi",
-  "More than one",
-  "Other",
+  "Appfolio", "Buildium", "Entrata", "MRI", "Propertyware",
+  "RealPage", "ResMan", "Yardi", "More than one", "Other",
 ];
 
 const INITIAL_FORM: FormData = {
@@ -114,53 +100,26 @@ const INITIAL_FORM: FormData = {
 const TOTAL_STEPS = 3;
 
 const STEP_META: Record<number, { eyebrow: string; heading: string }> = {
-  2: { eyebrow: "Getting Started", heading: "Let's Start With the Basics" },
-  3: { eyebrow: "Almost There", heading: "Tell Us About Your Operations" },
+  2: { eyebrow: "Getting Started",  heading: "Let's Start With the Basics" },
+  3: { eyebrow: "Almost There",     heading: "Tell Us About Your Operations" },
 };
 
 // ─── Blocked email domains ────────────────────────────────────────────────────
 
 const BLOCKED_DOMAINS = new Set([
-  "gmail.com",
-  "googlemail.com",
-  "yahoo.com",
-  "yahoo.co.uk",
-  "yahoo.co.in",
-  "yahoo.fr",
-  "yahoo.es",
-  "yahoo.de",
-  "hotmail.com",
-  "hotmail.co.uk",
-  "hotmail.fr",
-  "hotmail.es",
-  "hotmail.de",
-  "outlook.com",
-  "outlook.co.uk",
-  "outlook.fr",
-  "live.com",
-  "live.co.uk",
-  "live.fr",
-  "msn.com",
-  "icloud.com",
-  "me.com",
-  "mac.com",
-  "aol.com",
-  "protonmail.com",
-  "proton.me",
-  "mail.com",
-  "email.com",
-  "zoho.com",
-  "yandex.com",
-  "yandex.ru",
-  "gmx.com",
-  "gmx.de",
-  "gmx.net",
-  "tutanota.com",
-  "tutamail.com",
-  "fastmail.com",
-  "fastmail.fm",
-  "hey.com",
-  "duck.com",
+  "gmail.com", "googlemail.com",
+  "yahoo.com", "yahoo.co.uk", "yahoo.co.in", "yahoo.fr", "yahoo.es", "yahoo.de",
+  "hotmail.com", "hotmail.co.uk", "hotmail.fr", "hotmail.es", "hotmail.de",
+  "outlook.com", "outlook.co.uk", "outlook.fr",
+  "live.com", "live.co.uk", "live.fr", "msn.com",
+  "icloud.com", "me.com", "mac.com", "aol.com",
+  "protonmail.com", "proton.me",
+  "mail.com", "email.com", "zoho.com",
+  "yandex.com", "yandex.ru",
+  "gmx.com", "gmx.de", "gmx.net",
+  "tutanota.com", "tutamail.com",
+  "fastmail.com", "fastmail.fm",
+  "hey.com", "duck.com",
 ]);
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -186,9 +145,9 @@ function loadDefaultSDK(): Promise<void> {
   return new Promise((resolve, reject) => {
     if (window.DefaultSDK) return resolve();
     const script = document.createElement("script");
-    script.src = "https://import-cdn.default.com/sdk.js";
+    script.src   = "https://import-cdn.default.com/sdk.js";
     script.async = true;
-    script.onload = () => resolve();
+    script.onload  = () => resolve();
     script.onerror = () => reject(new Error("Failed to load Default SDK"));
     document.head.appendChild(script);
   });
@@ -197,17 +156,9 @@ function loadDefaultSDK(): Promise<void> {
 // ─── Slide variants ───────────────────────────────────────────────────────────
 
 const slideVariants = {
-  enter: (dir: number) => ({ x: dir > 0 ? 60 : -60, opacity: 0 }),
-  center: {
-    x: 0,
-    opacity: 1,
-    transition: { duration: 0.35, ease: [0.25, 0.46, 0.45, 0.94] },
-  },
-  exit: (dir: number) => ({
-    x: dir > 0 ? -60 : 60,
-    opacity: 0,
-    transition: { duration: 0.25, ease: [0.25, 0.46, 0.45, 0.94] },
-  }),
+  enter:  (dir: number) => ({ x: dir > 0 ? 60 : -60, opacity: 0 }),
+  center: { x: 0, opacity: 1, transition: { duration: 0.35, ease: [0.25, 0.46, 0.45, 0.94] } },
+  exit:   (dir: number) => ({ x: dir > 0 ? -60 : 60, opacity: 0, transition: { duration: 0.25, ease: [0.25, 0.46, 0.45, 0.94] } }),
 };
 
 // ─── Component ────────────────────────────────────────────────────────────────
@@ -216,33 +167,31 @@ export default function MultiStepForm({
   portalId = PORTAL_ID,
   formGuid = FORM_GUID,
   className = "",
+  enableNavTrigger = false,
 }: Props) {
-  const [step, setStep] = useState<number>(1);
-  const [dir, setDir] = useState<number>(1);
-  const [form, setForm] = useState<FormData>(INITIAL_FORM);
-  const [errors, setErrors] = useState<Partial<Record<keyof FormData, string>>>(
-    {},
-  );
-  const [submitted, setSubmitted] = useState<boolean>(false);
+  const [step, setStep]             = useState<number>(1);
+  const [dir, setDir]               = useState<number>(1);
+  const [form, setForm]             = useState<FormData>(INITIAL_FORM);
+  const [errors, setErrors]         = useState<Partial<Record<keyof FormData, string>>>({});
+  const [submitted, setSubmitted]   = useState<boolean>(false);
   const [submitting, setSubmitting] = useState<boolean>(false);
-  const [apiError, setApiError] = useState<string>("");
+  const [apiError, setApiError]     = useState<string>("");
 
   // Pre-load Default SDK
   useEffect(() => {
-    loadDefaultSDK().catch((err) => console.warn("[Default SDK]", err));
+    loadDefaultSDK().catch(err => console.warn("[Default SDK]", err));
   }, []);
 
-  // Nav button — validates email, shows error or opens overlay
+  // Nav button — only on the first instance
   useEffect(() => {
-    const navBtn = document.getElementById("requestModalOpenBtn");
+    if (!enableNavTrigger) return;
+    const navBtn = document.getElementById("open-demo-form");
     if (!navBtn) return;
     const handler = () => {
-      setErrors((prev) => ({
+      setErrors(prev => ({
         ...prev,
         email: form.email
-          ? validateEmail(form.email)
-            ? ""
-            : "Please use your work email address."
+          ? (validateEmail(form.email) ? "" : "Please use your work email address.")
           : "Email is required.",
       }));
       if (form.email && validateEmail(form.email)) {
@@ -252,7 +201,7 @@ export default function MultiStepForm({
     };
     navBtn.addEventListener("click", handler);
     return () => navBtn.removeEventListener("click", handler);
-  }, [form.email]);
+  }, [form.email, enableNavTrigger]);
 
   // Lock body scroll when overlay is open
   useEffect(() => {
@@ -261,20 +210,15 @@ export default function MultiStepForm({
     } else {
       document.body.style.overflow = "";
     }
-    return () => {
-      document.body.style.overflow = "";
-    };
+    return () => { document.body.style.overflow = ""; };
   }, [step]);
 
   // ── Field update ────────────────────────────────────────────────────────────
 
-  const set = useCallback(
-    <K extends keyof FormData>(key: K, val: FormData[K]) => {
-      setForm((prev) => ({ ...prev, [key]: val }));
-      setErrors((prev) => ({ ...prev, [key]: "" }));
-    },
-    [],
-  );
+  const set = useCallback(<K extends keyof FormData>(key: K, val: FormData[K]) => {
+    setForm(prev => ({ ...prev, [key]: val }));
+    setErrors(prev => ({ ...prev, [key]: "" }));
+  }, []);
 
   // ── Validation ──────────────────────────────────────────────────────────────
 
@@ -282,13 +226,12 @@ export default function MultiStepForm({
     const errs: Partial<Record<keyof FormData, string>> = {};
     if (step === 1) {
       if (!form.email) errs.email = "Email is required.";
-      else if (!validateEmail(form.email))
-        errs.email = "Please use your work email address.";
+      else if (!validateEmail(form.email)) errs.email = "Please use your work email address.";
     }
     if (step === 2) {
       if (!form.firstname) errs.firstname = "First name is required.";
-      if (!form.lastname) errs.lastname = "Last name is required.";
-      if (!form.phone) errs.phone = "Phone number is required.";
+      if (!form.lastname)  errs.lastname  = "Last name is required.";
+      if (!form.phone)     errs.phone     = "Phone number is required.";
     }
     if (step === 3) {
       if (!form.company) errs.company = "Company name is required.";
@@ -302,7 +245,7 @@ export default function MultiStepForm({
   const next = useCallback(() => {
     if (!validateStep()) return;
     setDir(1);
-    setStep((s) => Math.min(s + 1, TOTAL_STEPS));
+    setStep(s => Math.min(s + 1, TOTAL_STEPS));
   }, [validateStep]);
 
   // ── Submit ──────────────────────────────────────────────────────────────────
@@ -313,21 +256,20 @@ export default function MultiStepForm({
     setApiError("");
 
     const fields: HubSpotField[] = [
-      { name: "email", value: form.email },
-      { name: "firstname", value: form.firstname },
-      { name: "lastname", value: form.lastname },
-      { name: "phone", value: form.phone },
-      { name: "company", value: form.company },
-      { name: "units_managed", value: form.units_managed },
+      { name: "email",             value: form.email },
+      { name: "firstname",         value: form.firstname },
+      { name: "lastname",          value: form.lastname },
+      { name: "phone",             value: form.phone },
+      { name: "company",           value: form.company },
+      { name: "units_managed",     value: form.units_managed },
       { name: "pms_compatability", value: form.pms_compatability },
       {
-        name: "in_which_areas_of_your_operations_are_you_looking_to_implement_ai_",
-        value:
-          form.in_which_areas_of_your_operations_are_you_looking_to_implement_ai_,
+        name:  "in_which_areas_of_your_operations_are_you_looking_to_implement_ai_",
+        value: form.in_which_areas_of_your_operations_are_you_looking_to_implement_ai_,
       },
     ];
 
-    (["utm_source", "utm_medium", "utm_campaign"] as const).forEach((p) => {
+    (["utm_source", "utm_medium", "utm_campaign"] as const).forEach(p => {
       const v = getParam(p);
       if (v) fields.push({ name: p, value: v });
     });
@@ -336,7 +278,7 @@ export default function MultiStepForm({
     const payload: HubSpotPayload = {
       fields,
       context: {
-        pageUri: window.location.href,
+        pageUri:  window.location.href,
         pageName: document.title,
         ...(hutk && { hutk }),
       },
@@ -346,11 +288,7 @@ export default function MultiStepForm({
       // 1. Submit to HubSpot
       const res = await fetch(
         `https://api.hsforms.com/submissions/v3/integration/submit/${portalId}/${formGuid}`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
-        },
+        { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) }
       );
       if (!res.ok) throw new Error(`HubSpot responded with ${res.status}`);
 
@@ -358,74 +296,40 @@ export default function MultiStepForm({
       await loadDefaultSDK();
 
       const defaultSubmission: DefaultSubmission = {
-        form_id: DEFAULT_FORM_ID,
-        team_id: DEFAULT_TEAM_ID,
+        form_id:   DEFAULT_FORM_ID,
+        team_id:   DEFAULT_TEAM_ID,
         responses: {
-          email: form.email,
-          firstname: form.firstname,
-          lastname: form.lastname,
-          phone: form.phone,
-          company: form.company,
-          units_managed: form.units_managed,
+          email:             form.email,
+          firstname:         form.firstname,
+          lastname:          form.lastname,
+          phone:             form.phone,
+          company:           form.company,
+          units_managed:     form.units_managed,
           pms_compatability: form.pms_compatability,
-          ai_areas:
-            form.in_which_areas_of_your_operations_are_you_looking_to_implement_ai_,
+          ai_areas:          form.in_which_areas_of_your_operations_are_you_looking_to_implement_ai_,
         },
         questions: [
-          { id: "email", name: "Email", type: "email" },
-          {
-            id: "firstname",
-            name: "First Name",
-            type: "input",
-            lead_attribute: "first_name",
-          },
-          {
-            id: "lastname",
-            name: "Last Name",
-            type: "input",
-            lead_attribute: "last_name",
-          },
-          {
-            id: "phone",
-            name: "Phone Number",
-            type: "tel",
-            lead_attribute: "phone",
-          },
-          {
-            id: "company",
-            name: "Company Name",
-            type: "input",
-            lead_attribute: "company",
-          },
-          {
-            id: "units_managed",
-            name: "Units Managed",
-            type: "select",
-            options: UNITS_MANAGED_OPTIONS,
-          },
-          {
-            id: "pms_compatability",
-            name: "PMS Compatibility",
-            type: "select",
-            options: PMS_OPTIONS,
-          },
-          { id: "ai_areas", name: "AI Implementation Areas", type: "textarea" },
+          { id: "email",             name: "Email",           type: "email"    },
+          { id: "firstname",         name: "First Name",      type: "input",    lead_attribute: "first_name" },
+          { id: "lastname",          name: "Last Name",       type: "input",    lead_attribute: "last_name" },
+          { id: "phone",             name: "Phone Number",    type: "tel",      lead_attribute: "phone" },
+          { id: "company",           name: "Company Name",    type: "input",    lead_attribute: "company" },
+          { id: "units_managed",     name: "Units Managed",   type: "select",   options: UNITS_MANAGED_OPTIONS },
+          { id: "pms_compatability", name: "PMS Compatibility", type: "select", options: PMS_OPTIONS },
+          { id: "ai_areas",          name: "AI Implementation Areas", type: "textarea" },
         ],
       };
 
       window.DefaultSDK!.submit(defaultSubmission, {
-        onSuccess: (data) =>
-          console.log("[Default] Submission successful", data),
-        onError: (err) => console.error("[Default] Submission error", err),
-        onSchedulerDisplayed: (data) =>
-          console.log("[Default] Scheduler displayed", data),
-        onSchedulerClosed: (data) =>
-          console.log("[Default] Scheduler closed", data),
-        onMeetingBooked: (data) =>
-          console.log("[Default] Meeting booked", data.payload),
+        onSuccess:            (data) => console.log("[Default] Submission successful", data),
+        onError:              (err)  => console.error("[Default] Submission error", err),
+        onSchedulerDisplayed: (data) => console.log("[Default] Scheduler displayed", data),
+        onSchedulerClosed:    (data) => console.log("[Default] Scheduler closed", data),
+        onMeetingBooked:      (data) => console.log("[Default] Meeting booked", data.payload),
       });
 
       setSubmitted(true);
+
     } catch (err) {
       console.error(err);
       setApiError("Something went wrong. Please try again.");
@@ -436,19 +340,16 @@ export default function MultiStepForm({
 
   // ── Key handler ─────────────────────────────────────────────────────────────
 
-  const onKeyDown = useCallback(
-    (e: React.KeyboardEvent) => {
-      if (e.key === "Enter") step < TOTAL_STEPS ? next() : void submit();
-    },
-    [step, next, submit],
-  );
+  const onKeyDown = useCallback((e: React.KeyboardEvent) => {
+    if (e.key === "Enter") step < TOTAL_STEPS ? next() : void submit();
+  }, [step, next, submit]);
 
   // ── Progress ────────────────────────────────────────────────────────────────
 
-  const flowStep = step - 1;
-  const flowTotal = TOTAL_STEPS - 1;
-  const progress = step === 1 ? 0 : Math.round((flowStep / flowTotal) * 100);
-  const meta = STEP_META[step];
+  const flowStep    = step - 1;
+  const flowTotal   = TOTAL_STEPS - 1;
+  const progress    = step === 1 ? 0 : Math.round((flowStep / flowTotal) * 100);
+  const meta        = STEP_META[step];
 
   // ─── Success — close overlay ───────────────────────────────────────────────
 
@@ -462,25 +363,17 @@ export default function MultiStepForm({
       <div className={`hsf ${className}`} onKeyDown={onKeyDown}>
         {step === 1 && (
           <div className="hsf__fields">
-            <div
-              className={`emailCapture${
-                errors.email ? " emailCapture--error" : ""
-              }`}
-            >
+            <div className={`emailCapture${errors.email ? " emailCapture--error" : ""}`}>
               <input
                 id="hsf-email"
                 className="emailCapture__input"
                 type="email"
                 placeholder="you@company.com"
                 value={form.email}
-                onChange={(e) => set("email", e.target.value)}
+                onChange={e => set("email", e.target.value)}
                 autoFocus
               />
-              <button
-                className="defaultButton emailCapture__btn"
-                type="button"
-                onClick={next}
-              >
+              <button className="defaultButton emailCapture__btn" type="button" onClick={next}>
                 Get A Demo
               </button>
             </div>
@@ -500,24 +393,12 @@ export default function MultiStepForm({
             transition={{ duration: 0.3 }}
           >
             <div className="hsf__overlay-inner" onKeyDown={onKeyDown}>
+
               {/* Progress bar */}
-              <div
-                className="hsf__progress-track"
-                role="progressbar"
-                aria-valuenow={progress}
-                aria-valuemin={0}
-                aria-valuemax={100}
-              >
-                <motion.div
-                  className="hsf__progress-fill"
-                  initial={false}
-                  animate={{ width: `${progress}%` }}
-                  transition={{ duration: 0.4, ease: "easeInOut" }}
-                />
+              <div className="hsf__progress-track" role="progressbar" aria-valuenow={progress} aria-valuemin={0} aria-valuemax={100}>
+                <motion.div className="hsf__progress-fill" initial={false} animate={{ width: `${progress}%` }} transition={{ duration: 0.4, ease: "easeInOut" }} />
               </div>
-              <p className="hsf__step-count">
-                {flowStep} / {flowTotal}
-              </p>
+              <p className="hsf__step-count">{flowStep} / {flowTotal}</p>
 
               {/* Eyebrow + heading */}
               {meta && (
@@ -539,78 +420,48 @@ export default function MultiStepForm({
                     animate="center"
                     exit="exit"
                   >
+
                     {/* ── Step 2: Name + Phone ── */}
                     {step === 2 && (
                       <div className="hsf__fields">
                         <div className="hsf__row">
                           <div className="hsf__col">
-                            <label
-                              className="field-label field-label-required"
-                              htmlFor="hsf-firstname"
-                            >
-                              First Name
-                            </label>
+                            <label className="field-label field-label-required" htmlFor="hsf-firstname">First Name</label>
                             <input
                               id="hsf-firstname"
-                              className={`formInput${
-                                errors.firstname ? " formInput--error" : ""
-                              }`}
+                              className={`formInput${errors.firstname ? " formInput--error" : ""}`}
                               type="text"
                               placeholder="First name"
                               value={form.firstname}
-                              onChange={(e) => set("firstname", e.target.value)}
+                              onChange={e => set("firstname", e.target.value)}
                               autoFocus
                             />
-                            {errors.firstname && (
-                              <span className="fieldError">
-                                {errors.firstname}
-                              </span>
-                            )}
+                            {errors.firstname && <span className="fieldError">{errors.firstname}</span>}
                           </div>
                           <div className="hsf__col">
-                            <label
-                              className="field-label field-label-required"
-                              htmlFor="hsf-lastname"
-                            >
-                              Last Name
-                            </label>
+                            <label className="field-label field-label-required" htmlFor="hsf-lastname">Last Name</label>
                             <input
                               id="hsf-lastname"
-                              className={`formInput${
-                                errors.lastname ? " formInput--error" : ""
-                              }`}
+                              className={`formInput${errors.lastname ? " formInput--error" : ""}`}
                               type="text"
                               placeholder="Last name"
                               value={form.lastname}
-                              onChange={(e) => set("lastname", e.target.value)}
+                              onChange={e => set("lastname", e.target.value)}
                             />
-                            {errors.lastname && (
-                              <span className="fieldError">
-                                {errors.lastname}
-                              </span>
-                            )}
+                            {errors.lastname && <span className="fieldError">{errors.lastname}</span>}
                           </div>
                         </div>
                         <div className="hsf__col">
-                          <label
-                            className="field-label field-label-required"
-                            htmlFor="hsf-phone"
-                          >
-                            Phone Number
-                          </label>
+                          <label className="field-label field-label-required" htmlFor="hsf-phone">Phone Number</label>
                           <input
                             id="hsf-phone"
-                            className={`formInput${
-                              errors.phone ? " formInput--error" : ""
-                            }`}
+                            className={`formInput${errors.phone ? " formInput--error" : ""}`}
                             type="tel"
                             placeholder="Phone number"
                             value={form.phone}
-                            onChange={(e) => set("phone", e.target.value)}
+                            onChange={e => set("phone", e.target.value)}
                           />
-                          {errors.phone && (
-                            <span className="fieldError">{errors.phone}</span>
-                          )}
+                          {errors.phone && <span className="fieldError">{errors.phone}</span>}
                         </div>
                       </div>
                     )}
@@ -619,117 +470,63 @@ export default function MultiStepForm({
                     {step === 3 && (
                       <div className="hsf__fields">
                         <div className="hsf__col">
-                          <label
-                            className="field-label field-label-required"
-                            htmlFor="hsf-company"
-                          >
-                            Company Name
-                          </label>
+                          <label className="field-label field-label-required" htmlFor="hsf-company">Company Name</label>
                           <input
                             id="hsf-company"
-                            className={`formInput${
-                              errors.company ? " formInput--error" : ""
-                            }`}
+                            className={`formInput${errors.company ? " formInput--error" : ""}`}
                             type="text"
                             placeholder="Company name"
                             value={form.company}
-                            onChange={(e) => set("company", e.target.value)}
+                            onChange={e => set("company", e.target.value)}
                             autoFocus
                           />
-                          {errors.company && (
-                            <span className="fieldError">{errors.company}</span>
-                          )}
+                          {errors.company && <span className="fieldError">{errors.company}</span>}
                         </div>
                         <div className="hsf__col">
-                          <label className="field-label" htmlFor="hsf-units">
-                            Units Managed
-                          </label>
+                          <label className="field-label" htmlFor="hsf-units">Units Managed</label>
                           <select
                             id="hsf-units"
-                            className={`formSelect${
-                              errors.units_managed ? " formSelect--error" : ""
-                            }`}
+                            className={`formSelect${errors.units_managed ? " formSelect--error" : ""}`}
                             value={form.units_managed}
-                            onChange={(e) =>
-                              set("units_managed", e.target.value)
-                            }
+                            onChange={e => set("units_managed", e.target.value)}
                           >
                             <option value="">Please select</option>
-                            {UNITS_MANAGED_OPTIONS.map((o) => (
-                              <option key={o} value={o}>
-                                {o}
-                              </option>
-                            ))}
+                            {UNITS_MANAGED_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
                           </select>
-                          {errors.units_managed && (
-                            <span className="fieldError">
-                              {errors.units_managed}
-                            </span>
-                          )}
+                          {errors.units_managed && <span className="fieldError">{errors.units_managed}</span>}
                         </div>
                         <div className="hsf__col">
-                          <label className="field-label" htmlFor="hsf-pms">
-                            PMS Compatibility
-                          </label>
+                          <label className="field-label" htmlFor="hsf-pms">PMS Compatibility</label>
                           <select
                             id="hsf-pms"
-                            className={`formSelect${
-                              errors.pms_compatability
-                                ? " formSelect--error"
-                                : ""
-                            }`}
+                            className={`formSelect${errors.pms_compatability ? " formSelect--error" : ""}`}
                             value={form.pms_compatability}
-                            onChange={(e) =>
-                              set("pms_compatability", e.target.value)
-                            }
+                            onChange={e => set("pms_compatability", e.target.value)}
                           >
                             <option value="">Please select</option>
-                            {PMS_OPTIONS.map((o) => (
-                              <option key={o} value={o}>
-                                {o}
-                              </option>
-                            ))}
+                            {PMS_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
                           </select>
-                          {errors.pms_compatability && (
-                            <span className="fieldError">
-                              {errors.pms_compatability}
-                            </span>
-                          )}
+                          {errors.pms_compatability && <span className="fieldError">{errors.pms_compatability}</span>}
                         </div>
                         <div className="hsf__col">
                           <label className="field-label" htmlFor="hsf-ai">
-                            In which areas of your operations are you looking to
-                            implement AI?
+                            In which areas of your operations are you looking to implement AI?
                           </label>
                           <textarea
                             id="hsf-ai"
-                            className={`formTextarea${
-                              errors.in_which_areas_of_your_operations_are_you_looking_to_implement_ai_
-                                ? " formTextarea--error"
-                                : ""
-                            }`}
+                            className={`formTextarea${errors.in_which_areas_of_your_operations_are_you_looking_to_implement_ai_ ? " formTextarea--error" : ""}`}
                             placeholder="Tell us about your goals..."
                             rows={4}
-                            value={
-                              form.in_which_areas_of_your_operations_are_you_looking_to_implement_ai_
-                            }
-                            onChange={(e) =>
-                              set(
-                                "in_which_areas_of_your_operations_are_you_looking_to_implement_ai_",
-                                e.target.value,
-                              )
-                            }
+                            value={form.in_which_areas_of_your_operations_are_you_looking_to_implement_ai_}
+                            onChange={e => set("in_which_areas_of_your_operations_are_you_looking_to_implement_ai_", e.target.value)}
                           />
                           {errors.in_which_areas_of_your_operations_are_you_looking_to_implement_ai_ && (
-                            <span className="fieldError">
-                              {
-                                errors.in_which_areas_of_your_operations_are_you_looking_to_implement_ai_
-                              }
-                            </span>
+                            <span className="fieldError">{errors.in_which_areas_of_your_operations_are_you_looking_to_implement_ai_}</span>
                           )}
                         </div>
                       </div>
                     )}
+
                   </motion.div>
                 </AnimatePresence>
               </div>
@@ -737,26 +534,16 @@ export default function MultiStepForm({
               {/* Navigation */}
               <div className="hsf__nav">
                 {step < TOTAL_STEPS ? (
-                  <button
-                    className="defaultButton"
-                    type="button"
-                    onClick={next}
-                  >
-                    Continue
-                  </button>
+                  <button className="defaultButton" type="button" onClick={next}>Continue</button>
                 ) : (
-                  <button
-                    className="defaultButton"
-                    type="button"
-                    onClick={submit}
-                    disabled={submitting}
-                  >
+                  <button className="defaultButton" type="button" onClick={submit} disabled={submitting}>
                     {submitting ? "Submitting…" : "Submit"}
                   </button>
                 )}
               </div>
 
               {apiError && <p className="hsf__api-error">{apiError}</p>}
+
             </div>
           </motion.div>
         )}
