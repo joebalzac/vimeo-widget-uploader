@@ -36,6 +36,11 @@ declare global {
   }
 }
 
+function pushEvent(event: string) {
+  (window as any).dataLayer = (window as any).dataLayer || [];
+  (window as any).dataLayer.push({ event });
+}
+
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 interface FormData {
@@ -100,8 +105,8 @@ const INITIAL_FORM: FormData = {
 const TOTAL_STEPS = 3;
 
 const STEP_META: Record<number, { eyebrow: string; heading: string }> = {
-  2: { eyebrow: "Getting Started",  heading: "Let's Start With the Basics" },
-  3: { eyebrow: "Almost There",     heading: "Tell Us About Your Operations" },
+  2: { eyebrow: "Getting Started", heading: "Let's Start With the Basics" },
+  3: { eyebrow: "Almost There",    heading: "Tell Us About Your Operations" },
 };
 
 // ─── Blocked email domains ────────────────────────────────────────────────────
@@ -185,13 +190,13 @@ export default function MultiStepForm({
   // Nav button — only on the first instance
   useEffect(() => {
     if (!enableNavTrigger) return;
-    const navBtn = document.getElementById("open-demo-form");
+    const navBtn = document.getElementById("requestModalOpenBtn");
     if (!navBtn) return;
     const handler = () => {
       setErrors(prev => ({
         ...prev,
         email: form.email
-          ? (validateEmail(form.email) ? "" : "Please use your work email address.")
+          ? validateEmail(form.email) ? "" : "Please use your work email address."
           : "Email is required.",
       }));
       if (form.email && validateEmail(form.email)) {
@@ -309,13 +314,13 @@ export default function MultiStepForm({
           ai_areas:          form.in_which_areas_of_your_operations_are_you_looking_to_implement_ai_,
         },
         questions: [
-          { id: "email",             name: "Email",           type: "email"    },
-          { id: "firstname",         name: "First Name",      type: "input",    lead_attribute: "first_name" },
-          { id: "lastname",          name: "Last Name",       type: "input",    lead_attribute: "last_name" },
-          { id: "phone",             name: "Phone Number",    type: "tel",      lead_attribute: "phone" },
-          { id: "company",           name: "Company Name",    type: "input",    lead_attribute: "company" },
-          { id: "units_managed",     name: "Units Managed",   type: "select",   options: UNITS_MANAGED_OPTIONS },
-          { id: "pms_compatability", name: "PMS Compatibility", type: "select", options: PMS_OPTIONS },
+          { id: "email",             name: "Email",                   type: "email"    },
+          { id: "firstname",         name: "First Name",              type: "input",    lead_attribute: "first_name" },
+          { id: "lastname",          name: "Last Name",               type: "input",    lead_attribute: "last_name" },
+          { id: "phone",             name: "Phone Number",            type: "tel",      lead_attribute: "phone" },
+          { id: "company",           name: "Company Name",            type: "input",    lead_attribute: "company" },
+          { id: "units_managed",     name: "Units Managed",           type: "select",   options: UNITS_MANAGED_OPTIONS },
+          { id: "pms_compatability", name: "PMS Compatibility",       type: "select",   options: PMS_OPTIONS },
           { id: "ai_areas",          name: "AI Implementation Areas", type: "textarea" },
         ],
       };
@@ -329,7 +334,6 @@ export default function MultiStepForm({
       });
 
       setSubmitted(true);
-
     } catch (err) {
       console.error(err);
       setApiError("Something went wrong. Please try again.");
@@ -346,10 +350,10 @@ export default function MultiStepForm({
 
   // ── Progress ────────────────────────────────────────────────────────────────
 
-  const flowStep    = step - 1;
-  const flowTotal   = TOTAL_STEPS - 1;
-  const progress    = step === 1 ? 0 : Math.round((flowStep / flowTotal) * 100);
-  const meta        = STEP_META[step];
+  const flowStep = step - 1;
+  const flowTotal = TOTAL_STEPS - 1;
+  const progress = step === 1 ? 0 : Math.round((flowStep / flowTotal) * 100);
+  const meta = STEP_META[step];
 
   // ─── Success — close overlay ───────────────────────────────────────────────
 
@@ -373,7 +377,11 @@ export default function MultiStepForm({
                 onChange={e => set("email", e.target.value)}
                 autoFocus
               />
-              <button className="defaultButton emailCapture__btn" type="button" onClick={next}>
+              <button
+                className="defaultButton emailCapture__btn"
+                type="button"
+                onClick={() => { pushEvent("multi_form_email_submit"); next(); }}
+              >
                 Get A Demo
               </button>
             </div>
@@ -534,9 +542,20 @@ export default function MultiStepForm({
               {/* Navigation */}
               <div className="hsf__nav">
                 {step < TOTAL_STEPS ? (
-                  <button className="defaultButton" type="button" onClick={next}>Continue</button>
+                  <button
+                    className="defaultButton"
+                    type="button"
+                    onClick={() => { pushEvent("multi_form_step-two"); next(); }}
+                  >
+                    Continue
+                  </button>
                 ) : (
-                  <button className="defaultButton" type="button" onClick={submit} disabled={submitting}>
+                  <button
+                    className="defaultButton"
+                    type="button"
+                    onClick={() => { pushEvent("multi_form_step_three"); void submit(); }}
+                    disabled={submitting}
+                  >
                     {submitting ? "Submitting…" : "Submit"}
                   </button>
                 )}
