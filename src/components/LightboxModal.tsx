@@ -25,13 +25,6 @@ export default function LightboxModal({
 
   return (
     <>
-      {/* ── Preview trigger — remove in Webflow, use your own trigger ── */}
-      <div className="lb-preview-trigger">
-        <button onClick={() => setOpen(true)} className="lb-trigger-btn">
-          Open Lightbox
-        </button>
-      </div>
-
       {open && (
         <>
           {/* Overlay */}
