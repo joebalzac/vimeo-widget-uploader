@@ -1,11 +1,10 @@
 /**
  * LightboxWithForm.tsx
  *
- * Wraps LightboxModal + MultiStepForm.
- * The MultiStepForm lives inside the lightbox on step 1 (email capture).
- * The moment the form advances to step 2 it renders its own full-screen
- * overlay (hsf__overlay) — at that point we just close the lightbox shell
- * so it doesn't sit behind the form.
+ * MultiStepForm is rendered as a sibling to the lightbox, never inside it.
+ * The lightbox shows headline/body/hero. Once the user submits their email,
+ * MultiStepForm advances to step 2 and its own full-screen overlay takes over.
+ * We then close the lightbox shell so nothing sits behind it.
  */
 
 import React, { useState, useEffect, useRef } from "react";
@@ -42,11 +41,11 @@ export default function LightboxWithForm({
 
   const handleClose = (): void => setOpen(false);
 
+  // Watch for hsf__overlay — once it appears the form has gone fullscreen,
+  // dismiss the lightbox shell + overlay behind it.
   useEffect(() => {
     if (!open) return;
 
-    // Watch for hsf__overlay mounting in the DOM —
-    // that means the form has moved past step 1, so we close the lightbox shell.
     observerRef.current = new MutationObserver(() => {
       const overlay = document.querySelector(".hsf__overlay");
       if (overlay) {
@@ -72,7 +71,16 @@ export default function LightboxWithForm({
         </button>
       </div>
 
-      {/* Lightbox shell — dismissed once hsf__overlay mounts */}
+      {/* MultiStepForm always mounted as a sibling — never inside the lightbox.
+          Step 1 (email input) is inline and invisible until lightbox opens.
+          Steps 2+ render their own fullscreen overlay above everything. */}
+      <MultiStepForm
+        portalId={portalId}
+        formGuid={formGuid}
+        enableNavTrigger={enableNavTrigger}
+      />
+
+      {/* Lightbox shell — only the chrome, no form inside */}
       {open && (
         <LightboxModal
           headline={headline}
@@ -82,13 +90,7 @@ export default function LightboxWithForm({
           termsUrl={termsUrl}
           className={className}
           onClose={handleClose}
-        >
-          <MultiStepForm
-            portalId={portalId}
-            formGuid={formGuid}
-            enableNavTrigger={enableNavTrigger}
-          />
-        </LightboxModal>
+        />
       )}
     </>
   );
