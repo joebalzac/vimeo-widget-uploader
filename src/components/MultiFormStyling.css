@@ -320,8 +320,13 @@
 /* ─── Mobile ───────────────────────────────────────────────────────────────── */
 
 @media (max-width: 480px) {
-  .hsf__row {
-    grid-template-columns: 1fr;
+  .hsf__overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #ffffff;
   }
 
   .step-heading {
@@ -331,5 +336,6 @@
   .emailCapture {
     width: 100%;
     max-width: 345px;
+    margin: 0 auto;
   }
 }

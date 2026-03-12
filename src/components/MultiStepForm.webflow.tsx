@@ -25,7 +25,7 @@ export default declareComponent(MultiStepForm, {
 
     formGuid: props.Text({
       name: "HubSpot Form GUID",
-      defaultValue: "a68880cf-aa3e-4845-9822-f863608bed1f",
+      defaultValue: "0b77026b-30dc-4521-afc4-009261739448",
       tooltip: "Your HubSpot formId / GUID (string).",
     }),
 
