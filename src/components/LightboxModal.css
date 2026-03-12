@@ -22,8 +22,8 @@
 }
 
 /* ─────────────────────────────────────────
-     Overlay
-  ───────────────────────────────────────── */
+   Overlay
+───────────────────────────────────────── */
 .lb-overlay {
   position: fixed;
   inset: 0;
@@ -35,8 +35,8 @@
 }
 
 /* ─────────────────────────────────────────
-     Dialog
-  ───────────────────────────────────────── */
+   Dialog
+───────────────────────────────────────── */
 .lb-dialog {
   position: fixed;
   left: 50%;
@@ -61,8 +61,8 @@
 }
 
 /* ─────────────────────────────────────────
-     Grid layout
-  ───────────────────────────────────────── */
+   Grid layout
+───────────────────────────────────────── */
 .lb-grid {
   display: grid;
   grid-template-columns: 1fr;
@@ -77,8 +77,8 @@
 }
 
 /* ─────────────────────────────────────────
-     Copy column
-  ───────────────────────────────────────── */
+   Copy column
+───────────────────────────────────────── */
 .lb-copy {
   order: 2;
   display: flex;
@@ -122,8 +122,8 @@
 }
 
 /* ─────────────────────────────────────────
-     Image / Hero column
-  ───────────────────────────────────────── */
+   Image / Hero column
+───────────────────────────────────────── */
 .lb-img-col {
   order: 1;
   padding: 0;
@@ -147,7 +147,7 @@
   background: linear-gradient(135deg, #fde68a, #f59e0b);
 
   /* Swap background for your image:
-       background: url('your-asset.webp') center / cover no-repeat; */
+     background: url('your-asset.webp') center / cover no-repeat; */
 }
 
 @media (min-width: 768px) {
@@ -161,9 +161,17 @@
   font-size: 72px;
 }
 
+.lb-hero-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top;
+  display: block;
+}
+
 /* ─────────────────────────────────────────
-     Close button
-  ───────────────────────────────────────── */
+   Close button
+───────────────────────────────────────── */
 .lb-close {
   position: absolute;
   top: 20px;
@@ -189,8 +197,22 @@
 }
 
 /* ─────────────────────────────────────────
-     Preview trigger (remove in Webflow)
-  ───────────────────────────────────────── */
+   Full page form (after lightbox dismisses)
+───────────────────────────────────────── */
+.lb-fullpage-form {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  background-color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow-y: auto;
+}
+
+/* ─────────────────────────────────────────
+   Preview trigger (remove in Webflow)
+───────────────────────────────────────── */
 .lb-preview-trigger {
   display: flex;
   align-items: center;
