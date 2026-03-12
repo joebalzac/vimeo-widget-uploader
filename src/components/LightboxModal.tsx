@@ -1,5 +1,6 @@
 import { useState } from "react";
 import "./LightboxModal.css";
+import MultiStepForm from "./MultiStepForm";
 
 interface LightboxModalProps {
   headline?: string;
@@ -57,12 +58,12 @@ export default function LightboxModal({
                   <div className="lb-headline">
                     <h2>{headline}</h2>
                   </div>
-
                   <div className="lb-body">{bodyText}</div>
-
-                  {/* Your multi-step form goes here */}
                   <div className="lb-form-area" />
-
+                  <MultiStepForm
+                    portalId="45321630"
+                    formGuid="5da905fc-5b70-47ed-9f71-e54d166618ff"
+                  />
                   <div className="lb-terms">
                     <a href={termsUrl}>Terms and Conditions</a> apply.
                   </div>
