@@ -1,10 +1,10 @@
 /**
  * LightboxWithForm.tsx
  *
- * MultiStepForm is rendered as a sibling to the lightbox, never inside it.
- * The lightbox shows headline/body/hero. Once the user submits their email,
- * MultiStepForm advances to step 2 and its own full-screen overlay takes over.
- * We then close the lightbox shell so nothing sits behind it.
+ * MultiStepForm is always mounted so it is never unmounted when the lightbox
+ * closes. Step 1 (email input) is hidden until the lightbox is open.
+ * When the user clicks "Get A Demo" we close the lightbox and MultiStepForm
+ * advances to step 2, rendering its own fullscreen overlay independently.
  */
 
 import React, { useState, useEffect, useRef } from "react";
@@ -37,30 +37,26 @@ export default function LightboxWithForm({
   enableNavTrigger,
 }: LightboxWithFormProps): React.ReactElement {
   const [open, setOpen] = useState<boolean>(defaultOpen);
-  const observerRef = useRef<MutationObserver | null>(null);
+  const formWrapperRef = useRef<HTMLDivElement>(null);
 
   const handleClose = (): void => setOpen(false);
 
-  // Watch for hsf__overlay — once it appears the form has gone fullscreen,
-  // dismiss the lightbox shell + overlay behind it.
+  // Intercept "Get A Demo" click — close lightbox before MultiStepForm
+  // advances to step 2 so the lightbox doesn't clip the fullscreen overlay.
   useEffect(() => {
-    if (!open) return;
+    const wrapper = formWrapperRef.current;
+    if (!wrapper) return;
 
-    observerRef.current = new MutationObserver(() => {
-      const overlay = document.querySelector(".hsf__overlay");
-      if (overlay) {
+    const handleCapture = (e: Event): void => {
+      const target = e.target as HTMLElement;
+      if (target.closest(".emailCapture__btn")) {
         setOpen(false);
-        observerRef.current?.disconnect();
       }
-    });
+    };
 
-    observerRef.current.observe(document.body, {
-      childList: true,
-      subtree: true,
-    });
-
-    return () => observerRef.current?.disconnect();
-  }, [open]);
+    wrapper.addEventListener("click", handleCapture, true);
+    return () => wrapper.removeEventListener("click", handleCapture, true);
+  }, []); // mount once — wrapper ref is stable
 
   return (
     <>
@@ -71,16 +67,18 @@ export default function LightboxWithForm({
         </button>
       </div>
 
-      {/* MultiStepForm always mounted as a sibling — never inside the lightbox.
-          Step 1 (email input) is inline and invisible until lightbox opens.
-          Steps 2+ render their own fullscreen overlay above everything. */}
-      <MultiStepForm
-        portalId={portalId}
-        formGuid={formGuid}
-        enableNavTrigger={enableNavTrigger}
-      />
+      {/* MultiStepForm is ALWAYS mounted so closing the lightbox never
+          unmounts it. On step 1 it renders just the email input inline.
+          On steps 2+ it renders its own fullscreen overlay above everything. */}
+      <div ref={formWrapperRef}>
+        <MultiStepForm
+          portalId={portalId}
+          formGuid={formGuid}
+          enableNavTrigger={enableNavTrigger}
+        />
+      </div>
 
-      {/* Lightbox shell — only the chrome, no form inside */}
+      {/* Lightbox shell — conditionally rendered, MultiStepForm is NOT a child */}
       {open && (
         <LightboxModal
           headline={headline}
