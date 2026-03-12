@@ -631,6 +631,8 @@ export default function MultiStepForm({
                               errors.phone ? " formInput--error" : ""
                             }`}
                             type="tel"
+                            inputMode="numeric"
+                            pattern="[0-9]*"
                             placeholder="Phone number"
                             value={form.phone}
                             onChange={(e) => set("phone", e.target.value)}
@@ -768,7 +770,7 @@ export default function MultiStepForm({
                     className="defaultButton"
                     type="button"
                     onClick={() => {
-                      pushEvent("multi_form_step-two");
+                      pushEvent("multi_form_step_two");
                       next();
                     }}
                   >

@@ -182,9 +182,6 @@
 /* ─── Form wrapper ─────────────────────────────────────────────────────────── */
 
 .hsf {
-  width: 100%;
-  max-width: 600px;
-  margin: 0;
   box-sizing: border-box;
   font-family: Inter, sans-serif;
 }
