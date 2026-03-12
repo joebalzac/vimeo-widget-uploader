@@ -1,26 +1,25 @@
 /**
- * LightboxModal.webflow.tsx
+ * LightboxWithForm.webflow.tsx
  *
  * Webflow Designer component wrapper using @webflow/react.
- * Registers LightboxModal as a Designer Extension component
+ * Registers LightboxWithForm as a Designer Extension component
  * with configurable props editable directly in the Webflow canvas.
  */
 
-import LightboxModal from "./LightboxModal";
+import LightboxWithForm from "./LightboxWithForm";
 import { props } from "@webflow/data-types";
 import { declareComponent } from "@webflow/react";
 
-export default declareComponent(LightboxModal, {
-  name: "Ligbox Modal",
+export default declareComponent(LightboxWithForm, {
+  name: "Lightbox With Form",
   description:
-    "A lightbox popup modal that gives users a chance to win a gift card when they request a demo.",
+    "A lightbox popup modal with an embedded multi-step form. The form is portaled outside the lightbox to prevent overflow clipping.",
   group: "Marketing",
 
   props: {
     headline: props.Text({
       name: "Headline",
-      defaultValue:
-        "Limited time: Get a chance to win a gift card when you request a demo.",
+      defaultValue: "Limited time: Get a chance to win a gift card when you request a demo.",
       tooltip: "The main headline displayed inside the lightbox.",
     }),
 
@@ -60,6 +59,25 @@ export default declareComponent(LightboxModal, {
       defaultValue: false,
       tooltip:
         "Force the lightbox open on load. Enable only for canvas preview — use trigger behavior in production.",
+    }),
+
+    portalId: props.Text({
+      name: "HubSpot Portal ID",
+      defaultValue: "45321630",
+      tooltip: "Your HubSpot portalId passed to MultiStepForm.",
+    }),
+
+    formGuid: props.Text({
+      name: "HubSpot Form GUID",
+      defaultValue: "0b77026b-30dc-4521-afc4-009261739448",
+      tooltip: "Your HubSpot formId / GUID passed to MultiStepForm.",
+    }),
+
+    enableNavTrigger: props.Boolean({
+      name: "Enable nav button trigger",
+      defaultValue: false,
+      tooltip:
+        "Enable on the first instance only. Wires the #open-demo-form nav button to this form's email validation.",
     }),
   },
 });
