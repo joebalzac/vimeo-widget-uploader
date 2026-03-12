@@ -86,8 +86,7 @@ export default function LightboxWithForm({
             onClose={handleClose}
           />
 
-          {/* Portal MultiStepForm into the anchor div inside the lightbox.
-              This keeps it visually in-place but outside overflow: hidden. */}
+          
           {anchorReady &&
             portalAnchorRef.current &&
             createPortal(

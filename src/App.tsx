@@ -1,11 +1,19 @@
 import "./App.css";
-import LightboxModal from "./components/LightboxModal";
+import LightboxWithForm from "./components/LightboxWithForm";
 
 function App() {
   return (
     <>
       <div>
-        <LightboxModal />
+        <LightboxWithForm
+          headline="Request a demo"
+          bodyText="Request a demo"
+          heroImageUrl="https://www.google.com"
+          heroImageAlt="Request a demo"
+          termsUrl="https://www.google.com"
+          className="lightbox-with-form"
+          defaultOpen={true}
+        />
       </div>
     </>
   );
