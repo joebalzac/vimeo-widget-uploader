@@ -9,6 +9,7 @@ interface LightboxModalProps {
   termsUrl?: string;
   className?: string;
   onClose: () => void;
+  children?: React.ReactNode;
 }
 
 export default function LightboxModal({
@@ -19,6 +20,7 @@ export default function LightboxModal({
   termsUrl = "/legal/terms",
   className = "",
   onClose,
+  children,
 }: LightboxModalProps): React.ReactElement {
   return (
     <>
@@ -49,8 +51,8 @@ export default function LightboxModal({
 
               <div className="lb-body">{bodyText}</div>
 
-              {/* lb-form-portal-anchor — MultiStepForm renders here via portal */}
-              <div id="lb-form-portal-anchor" className="lb-form-area" />
+              {/* MultiStepForm renders here as children */}
+              <div className="lb-form-area">{children}</div>
 
               <div className="lb-terms">
                 <a href={termsUrl}>Terms and Conditions</a> apply.
