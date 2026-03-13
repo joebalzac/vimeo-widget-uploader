@@ -1,13 +1,14 @@
 /**
  * LightboxWithForm.tsx
  *
- * MultiStepForm is always mounted so it is never unmounted when the lightbox
- * closes. Step 1 (email input) is hidden until the lightbox is open.
- * When the user clicks "Get A Demo" we close the lightbox and MultiStepForm
- * advances to step 2, rendering its own fullscreen overlay independently.
+ * The lightbox shows headline, body, hero image, and a self-contained
+ * email input + CTA button. On submit it validates the email, closes
+ * the lightbox, then programmatically fills + submits the hidden
+ * MultiStepForm (portaled into document.body) so it picks up from step 2.
  */
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useRef } from "react";
+import { createPortal } from "react-dom";
 import LightboxModal from "./LightboxModal";
 import MultiStepForm from "./MultiStepForm";
 
@@ -19,9 +20,36 @@ interface LightboxWithFormProps {
   termsUrl?: string;
   className?: string;
   defaultOpen?: boolean;
+  removeOnSubmit?: boolean;
   portalId?: string;
   formGuid?: string;
   enableNavTrigger?: boolean;
+}
+
+const BLOCKED_DOMAINS = new Set([
+  "gmail.com",
+  "googlemail.com",
+  "yahoo.com",
+  "hotmail.com",
+  "outlook.com",
+  "live.com",
+  "icloud.com",
+  "me.com",
+  "mac.com",
+  "aol.com",
+  "protonmail.com",
+  "proton.me",
+  "mail.com",
+  "zoho.com",
+  "yandex.com",
+  "gmx.com",
+  "fastmail.com",
+]);
+
+function validateEmail(val: string): boolean {
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)) return false;
+  const domain = val.split("@")[1].toLowerCase();
+  return !BLOCKED_DOMAINS.has(domain);
 }
 
 export default function LightboxWithForm({
@@ -32,53 +60,82 @@ export default function LightboxWithForm({
   termsUrl,
   className,
   defaultOpen = false,
+  removeOnSubmit = true,
   portalId,
   formGuid,
   enableNavTrigger,
 }: LightboxWithFormProps): React.ReactElement {
   const [open, setOpen] = useState<boolean>(defaultOpen);
-  const formWrapperRef = useRef<HTMLDivElement>(null);
+  const [email, setEmail] = useState<string>("");
+  const [emailError, setEmailError] = useState<string>("");
+  const hiddenInputRef = useRef<HTMLInputElement | null>(null);
+  const hiddenBtnRef = useRef<HTMLButtonElement | null>(null);
 
   const handleClose = (): void => setOpen(false);
 
-  // Intercept "Get A Demo" click — close lightbox before MultiStepForm
-  // advances to step 2 so the lightbox doesn't clip the fullscreen overlay.
-  useEffect(() => {
-    const wrapper = formWrapperRef.current;
-    if (!wrapper) return;
+  const handleClaim = (): void => {
+    if (!email) {
+      setEmailError("Email is required.");
+      return;
+    }
+    if (!validateEmail(email)) {
+      setEmailError("Please use your work email address.");
+      return;
+    }
+    setEmailError("");
 
-    const handleCapture = (e: Event): void => {
-      const target = e.target as HTMLElement;
-      if (target.closest(".emailCapture__btn")) {
-        setOpen(false);
+    // 1. Close the lightbox
+    if (removeOnSubmit) setOpen(false);
+
+    // 2. Programmatically fill the hidden MultiStepForm email input and click its CTA
+    //    so it advances to step 2 with the email already populated.
+    requestAnimationFrame(() => {
+      if (hiddenInputRef.current && hiddenBtnRef.current) {
+        // Trigger React's synthetic onChange on the hidden input
+        const nativeInputValueSetter = Object.getOwnPropertyDescriptor(
+          window.HTMLInputElement.prototype,
+          "value",
+        )?.set;
+        nativeInputValueSetter?.call(hiddenInputRef.current, email);
+        hiddenInputRef.current.dispatchEvent(
+          new Event("input", { bubbles: true }),
+        );
+        hiddenBtnRef.current.click();
       }
-    };
-
-    wrapper.addEventListener("click", handleCapture, true);
-    return () => wrapper.removeEventListener("click", handleCapture, true);
-  }, []); // mount once — wrapper ref is stable
+    });
+  };
 
   return (
     <>
-      {/* ── Preview trigger — remove in Webflow, use your own trigger ── */}
+      {/* ── Preview trigger — remove in Webflow ── */}
       <div className="lb-preview-trigger">
         <button onClick={() => setOpen(true)} className="lb-trigger-btn">
           Open Lightbox
         </button>
       </div>
 
-      {/* MultiStepForm is ALWAYS mounted so closing the lightbox never
-          unmounts it. On step 1 it renders just the email input inline.
-          On steps 2+ it renders its own fullscreen overlay above everything. */}
-      <div ref={formWrapperRef}>
-        <MultiStepForm
-          portalId={portalId}
-          formGuid={formGuid}
-          enableNavTrigger={enableNavTrigger}
-        />
-      </div>
+      {/* MultiStepForm portaled into document.body — completely outside
+          the lightbox DOM tree, no transform stacking context issues. */}
+      {typeof document !== "undefined" &&
+        createPortal(
+          <div
+            style={{
+              visibility: open ? "hidden" : "visible",
+              pointerEvents: open ? "none" : "auto",
+            }}
+          >
+            <MultiStepForm
+              portalId={portalId}
+              formGuid={formGuid}
+              enableNavTrigger={enableNavTrigger}
+              inputRef={hiddenInputRef as React.RefObject<HTMLInputElement>}
+              btnRef={hiddenBtnRef as React.RefObject<HTMLButtonElement>}
+            />
+          </div>,
+          document.body,
+        )}
 
-      {/* Lightbox shell — conditionally rendered, MultiStepForm is NOT a child */}
+      {/* Lightbox — has its own email input, drives the portaled form on submit */}
       {open && (
         <LightboxModal
           headline={headline}
@@ -88,7 +145,25 @@ export default function LightboxWithForm({
           termsUrl={termsUrl}
           className={className}
           onClose={handleClose}
-        />
+        >
+          <div className="lb-email-capture">
+            <input
+              type="email"
+              className="emailCapture__input"
+              placeholder="you@company.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && handleClaim()}
+            />
+            <button
+              className="defaultButton emailCapture__btn"
+              onClick={handleClaim}
+            >
+              Get A Demo
+            </button>
+            {emailError && <span className="fieldError">{emailError}</span>}
+          </div>
+        </LightboxModal>
       )}
     </>
   );

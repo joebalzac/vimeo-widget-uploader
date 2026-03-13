@@ -41,7 +41,6 @@ export default function LightboxModal({
         className={`lb-dialog${className ? ` ${className}` : ""}`}
       >
         <div className="lb-container">
-          {/* Inner grid */}
           <div className="lb-grid">
             {/* Copy column */}
             <div className="lb-copy">

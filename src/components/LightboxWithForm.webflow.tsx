@@ -19,7 +19,8 @@ export default declareComponent(LightboxWithForm, {
   props: {
     headline: props.Text({
       name: "Headline",
-      defaultValue: "Limited time: Get a chance to win a gift card when you request a demo.",
+      defaultValue:
+        "Limited time: Get a chance to win a gift card when you request a demo.",
       tooltip: "The main headline displayed inside the lightbox.",
     }),
 
@@ -59,6 +60,13 @@ export default declareComponent(LightboxWithForm, {
       defaultValue: false,
       tooltip:
         "Force the lightbox open on load. Enable only for canvas preview — use trigger behavior in production.",
+    }),
+
+    removeOnSubmit: props.Boolean({
+      name: "Remove lightbox on email submit",
+      defaultValue: true,
+      tooltip:
+        "When enabled, the lightbox and overlay close the moment the user submits their email, letting the multi-step form take over fullscreen.",
     }),
 
     portalId: props.Text({
