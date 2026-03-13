@@ -87,22 +87,31 @@ export default function LightboxWithForm({
     // 1. Close the lightbox
     if (removeOnSubmit) setOpen(false);
 
-    // 2. Programmatically fill the hidden MultiStepForm email input and click its CTA
-    //    so it advances to step 2 with the email already populated.
-    requestAnimationFrame(() => {
-      if (hiddenInputRef.current && hiddenBtnRef.current) {
-        // Trigger React's synthetic onChange on the hidden input
+    // 2. Programmatically fill + submit the hidden MultiStepForm.
+    //    Retries up to 20 times (100ms apart) to handle production timing.
+    const triggerHiddenForm = (attempts = 0): void => {
+      console.log(`[LightboxWithForm] triggerHiddenForm attempt ${attempts}`);
+      if (attempts > 20) {
+        console.error("[LightboxWithForm] gave up — refs never resolved");
+        return;
+      }
+      const input = hiddenInputRef.current;
+      const btn = hiddenBtnRef.current;
+      console.log("[LightboxWithForm] input ref:", input, "btn ref:", btn);
+      if (input && btn) {
         const nativeInputValueSetter = Object.getOwnPropertyDescriptor(
           window.HTMLInputElement.prototype,
           "value",
         )?.set;
-        nativeInputValueSetter?.call(hiddenInputRef.current, email);
-        hiddenInputRef.current.dispatchEvent(
-          new Event("input", { bubbles: true }),
-        );
-        hiddenBtnRef.current.click();
+        nativeInputValueSetter?.call(input, email);
+        input.dispatchEvent(new Event("input", { bubbles: true }));
+        console.log("[LightboxWithForm] clicking hidden btn");
+        btn.click();
+      } else {
+        setTimeout(() => triggerHiddenForm(attempts + 1), 100);
       }
-    });
+    };
+    requestAnimationFrame(() => triggerHiddenForm());
   };
 
   return (
