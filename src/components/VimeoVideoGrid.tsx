@@ -41,7 +41,7 @@ const parseDescription = (desc: string) => {
   return { jobTitle, company };
 };
 
-const LIKED_KEY = (id: string) => `liked:${id}`;
+// const LIKED_KEY = (id: string) => `liked:${id}`;
 
 const matchesSearch = (v: VimeoVideo, q: string) => {
   if (!q) return true;
@@ -72,112 +72,112 @@ const Spinner = () => (
 
 // ── heart button ──────────────────────────────────────────────────────────────
 
-const HeartButton = ({
-  videoId,
-  backendBase,
-}: {
-  videoId: string;
-  backendBase: string;
-}) => {
-  const [liked, setLiked] = useState(false);
-  const [count, setCount] = useState<number | null>(null);
-  const [loading, setLoading] = useState(false);
+// const HeartButton = ({
+//   videoId,
+//   backendBase,
+// }: {
+//   videoId: string;
+//   backendBase: string;
+// }) => {
+//   const [liked, setLiked] = useState(false);
+//   const [count, setCount] = useState<number | null>(null);
+//   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    const wasLiked = localStorage.getItem(LIKED_KEY(videoId)) === "1";
-    setLiked(wasLiked);
+//   useEffect(() => {
+//     const wasLiked = localStorage.getItem(LIKED_KEY(videoId)) === "1";
+//     setLiked(wasLiked);
 
-    const fetchCount = async () => {
-      try {
-        const res = await fetch(
-          `${backendBase}/api/vimeo/likes?video_id=${videoId}`,
-        );
-        const data = await res.json();
-        setCount(data.count ?? 0);
-      } catch {}
-    };
-    fetchCount();
-  }, [videoId, backendBase]);
+//     const fetchCount = async () => {
+//       try {
+//         const res = await fetch(
+//           `${backendBase}/api/vimeo/likes?video_id=${videoId}`,
+//         );
+//         const data = await res.json();
+//         setCount(data.count ?? 0);
+//       } catch {}
+//     };
+//     fetchCount();
+//   }, [videoId, backendBase]);
 
-  const toggle = async (e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (loading) return;
-    setLoading(true);
+//   const toggle = async (e: React.MouseEvent) => {
+//     e.stopPropagation();
+//     if (loading) return;
+//     setLoading(true);
 
-    const next = !liked;
-    setLiked(next);
-    setCount((c) => (c ?? 0) + (next ? 1 : -1));
-    localStorage.setItem(LIKED_KEY(videoId), next ? "1" : "0");
+//     const next = !liked;
+//     setLiked(next);
+//     setCount((c) => (c ?? 0) + (next ? 1 : -1));
+//     localStorage.setItem(LIKED_KEY(videoId), next ? "1" : "0");
 
-    try {
-      await fetch(`${backendBase}/api/vimeo/likes`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          video_id: videoId,
-          action: next ? "like" : "unlike",
-        }),
-      });
-    } catch {
-      setLiked(!next);
-      setCount((c) => (c ?? 0) + (next ? -1 : 1));
-      localStorage.setItem(LIKED_KEY(videoId), next ? "0" : "1");
-    } finally {
-      setLoading(false);
-    }
-  };
+//     try {
+//       await fetch(`${backendBase}/api/vimeo/likes`, {
+//         method: "POST",
+//         headers: { "Content-Type": "application/json" },
+//         body: JSON.stringify({
+//           video_id: videoId,
+//           action: next ? "like" : "unlike",
+//         }),
+//       });
+//     } catch {
+//       setLiked(!next);
+//       setCount((c) => (c ?? 0) + (next ? -1 : 1));
+//       localStorage.setItem(LIKED_KEY(videoId), next ? "0" : "1");
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
 
-  return (
-    <button
-      type="button"
-      onClick={toggle}
-      aria-label={liked ? "Unlike" : "Like"}
-      style={{
-        display: "flex",
-        alignItems: "center",
-        gap: 6,
-        background: "none",
-        border: "none",
-        cursor: "pointer",
-        padding: 0,
-        opacity: loading ? 0.6 : 1,
-        transition: "opacity 0.15s",
-      }}
-    >
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width="29"
-        height="24"
-        viewBox="0 0 29 24"
-        fill="none"
-        style={{ transition: "fill 0.2s", flexShrink: 0 }}
-      >
-        <path
-          d="M20.4756 0.786133C21.6118 0.786133 22.7649 1.07212 23.8389 1.67676L24.0527 1.80273C27.5069 3.90607 28.7197 8.60116 26.7021 12.2871C26.3049 13.0127 25.5536 13.9252 24.5566 14.9424C23.57 15.9491 22.3829 17.0177 21.1572 18.0547C19.3191 19.6099 17.4128 21.0775 15.9971 22.1338L14.7656 23.041C14.6082 23.1556 14.4215 23.2139 14.2324 23.2139C14.0431 23.2138 13.8567 23.1551 13.7002 23.041H13.6992C12.3311 22.0457 9.75902 20.1282 7.30859 18.0547C6.08309 17.0177 4.89675 15.949 3.91016 14.9424C2.91304 13.925 2.16094 13.0128 1.76367 12.2871C-0.254184 8.60121 0.958517 3.90611 4.41211 1.80273C5.5462 1.112 6.77755 0.786199 7.98926 0.786133C10.1161 0.786511 12.206 1.7892 13.6074 3.62695L14.2324 4.44727L14.8584 3.62695C16.2607 1.78819 18.3492 0.786136 20.4756 0.786133Z"
-          fill={liked ? "#FF3040" : "none"}
-          stroke={liked ? "#FF3040" : "white"}
-          strokeWidth="1.57296"
-        />
-      </svg>
-      {count !== null && (
-        <span
-          style={{
-            fontFamily: "Inter, sans-serif",
-            fontSize: 20,
-            fontWeight: 450,
-            color: liked ? "#FF3040" : "#FFFFFF",
-            transition: "color 0.2s",
-            lineHeight: 1.4,
-            letterSpacing: -0.2,
-            textTransform: "uppercase",
-          }}
-        >
-          {count}
-        </span>
-      )}
-    </button>
-  );
-};
+//   return (
+//     <button
+//       type="button"
+//       onClick={toggle}
+//       aria-label={liked ? "Unlike" : "Like"}
+//       style={{
+//         display: "flex",
+//         alignItems: "center",
+//         gap: 6,
+//         background: "none",
+//         border: "none",
+//         cursor: "pointer",
+//         padding: 0,
+//         opacity: loading ? 0.6 : 1,
+//         transition: "opacity 0.15s",
+//       }}
+//     >
+//       <svg
+//         xmlns="http://www.w3.org/2000/svg"
+//         width="29"
+//         height="24"
+//         viewBox="0 0 29 24"
+//         fill="none"
+//         style={{ transition: "fill 0.2s", flexShrink: 0 }}
+//       >
+//         <path
+//           d="M20.4756 0.786133C21.6118 0.786133 22.7649 1.07212 23.8389 1.67676L24.0527 1.80273C27.5069 3.90607 28.7197 8.60116 26.7021 12.2871C26.3049 13.0127 25.5536 13.9252 24.5566 14.9424C23.57 15.9491 22.3829 17.0177 21.1572 18.0547C19.3191 19.6099 17.4128 21.0775 15.9971 22.1338L14.7656 23.041C14.6082 23.1556 14.4215 23.2139 14.2324 23.2139C14.0431 23.2138 13.8567 23.1551 13.7002 23.041H13.6992C12.3311 22.0457 9.75902 20.1282 7.30859 18.0547C6.08309 17.0177 4.89675 15.949 3.91016 14.9424C2.91304 13.925 2.16094 13.0128 1.76367 12.2871C-0.254184 8.60121 0.958517 3.90611 4.41211 1.80273C5.5462 1.112 6.77755 0.786199 7.98926 0.786133C10.1161 0.786511 12.206 1.7892 13.6074 3.62695L14.2324 4.44727L14.8584 3.62695C16.2607 1.78819 18.3492 0.786136 20.4756 0.786133Z"
+//           fill={liked ? "#FF3040" : "none"}
+//           stroke={liked ? "#FF3040" : "white"}
+//           strokeWidth="1.57296"
+//         />
+//       </svg>
+//       {count !== null && (
+//         <span
+//           style={{
+//             fontFamily: "Inter, sans-serif",
+//             fontSize: 20,
+//             fontWeight: 450,
+//             color: liked ? "#FF3040" : "#FFFFFF",
+//             transition: "color 0.2s",
+//             lineHeight: 1.4,
+//             letterSpacing: -0.2,
+//             textTransform: "uppercase",
+//           }}
+//         >
+//           {count}
+//         </span>
+//       )}
+//     </button>
+//   );
+// };
 
 // ── lightbox ──────────────────────────────────────────────────────────────────
 
@@ -407,7 +407,7 @@ const UnmuteIcon = () => (
 const VideoCard = ({
   v,
   onClick,
-  backendBase,
+  // backendBase,
   isActive,
 }: {
   v: VimeoVideo;
@@ -609,7 +609,7 @@ const VideoCard = ({
         }}
       >
         <div style={{ marginBottom: 12 }} onClick={(e) => e.stopPropagation()}>
-          <HeartButton videoId={v.id} backendBase={backendBase} />
+          {/* <HeartButton videoId={v.id} backendBase={backendBase} /> */}
         </div>
         <div
           style={{

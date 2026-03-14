@@ -1,14 +1,15 @@
 /**
  * LightboxWithForm.tsx
  *
- * The lightbox shows headline, body, hero image, and a self-contained
- * email input + CTA button. On submit it validates the email, closes
- * the lightbox, then programmatically fills + submits the hidden
- * MultiStepForm (portaled into document.body) so it picks up from step 2.
+ * The lightbox owns the email input. On submit it:
+ * 1. Closes the lightbox
+ * 2. Renders MultiStepForm with initialEmail + autoAdvance=true
+ *
+ * MultiStepForm starts at step 2 directly with the email pre-filled.
+ * No refs, no programmatic clicks, no timing issues.
  */
 
-import React, { useState, useRef } from "react";
-import { createPortal } from "react-dom";
+import React, { useEffect, useState } from "react";
 import LightboxModal from "./LightboxModal";
 import MultiStepForm from "./MultiStepForm";
 
@@ -21,6 +22,9 @@ interface LightboxWithFormProps {
   className?: string;
   defaultOpen?: boolean;
   removeOnSubmit?: boolean;
+  triggerPages?: string;
+  triggerAfter?: number;
+  triggerDelay?: number;
   portalId?: string;
   formGuid?: string;
   enableNavTrigger?: boolean;
@@ -61,6 +65,9 @@ export default function LightboxWithForm({
   className,
   defaultOpen = false,
   removeOnSubmit = true,
+  triggerPages = "",
+  triggerAfter = 2,
+  triggerDelay = 0,
   portalId,
   formGuid,
   enableNavTrigger,
@@ -68,8 +75,38 @@ export default function LightboxWithForm({
   const [open, setOpen] = useState<boolean>(defaultOpen);
   const [email, setEmail] = useState<string>("");
   const [emailError, setEmailError] = useState<string>("");
-  const hiddenInputRef = useRef<HTMLInputElement | null>(null);
-  const hiddenBtnRef = useRef<HTMLButtonElement | null>(null);
+  const [submitted, setSubmitted] = useState<boolean>(false);
+
+  // ── Page visit trigger ──────────────────────────────────────────────────────
+  useEffect(() => {
+    if (localStorage.getItem("lb_shown")) return;
+    if (!triggerPages) return;
+
+    const pages = triggerPages
+      .split(",")
+      .map((p) => p.trim())
+      .filter(Boolean);
+    const currentPath = window.location.pathname;
+
+    // Record this page visit
+    const visited: string[] = JSON.parse(
+      localStorage.getItem("lb_visited") ?? "[]",
+    );
+    if (!visited.includes(currentPath)) {
+      visited.push(currentPath);
+      localStorage.setItem("lb_visited", JSON.stringify(visited));
+    }
+
+    // Count how many qualifying pages have been visited
+    const matchCount = pages.filter((p) => visited.includes(p)).length;
+    if (matchCount >= triggerAfter) {
+      const timer = setTimeout(() => {
+        setOpen(true);
+        localStorage.setItem("lb_shown", "true");
+      }, triggerDelay);
+      return () => clearTimeout(timer);
+    }
+  }, [triggerPages, triggerAfter, triggerDelay]);
 
   const handleClose = (): void => setOpen(false);
 
@@ -83,69 +120,24 @@ export default function LightboxWithForm({
       return;
     }
     setEmailError("");
-
-    // 1. Close the lightbox
+    setSubmitted(true);
     if (removeOnSubmit) setOpen(false);
-
-    // 2. Programmatically fill + submit the hidden MultiStepForm.
-    //    Retries up to 20 times (100ms apart) to handle production timing.
-    const triggerHiddenForm = (attempts = 0): void => {
-      console.log(`[LightboxWithForm] triggerHiddenForm attempt ${attempts}`);
-      if (attempts > 20) {
-        console.error("[LightboxWithForm] gave up — refs never resolved");
-        return;
-      }
-      const input = hiddenInputRef.current;
-      const btn = hiddenBtnRef.current;
-      console.log("[LightboxWithForm] input ref:", input, "btn ref:", btn);
-      if (input && btn) {
-        const nativeInputValueSetter = Object.getOwnPropertyDescriptor(
-          window.HTMLInputElement.prototype,
-          "value",
-        )?.set;
-        nativeInputValueSetter?.call(input, email);
-        input.dispatchEvent(new Event("input", { bubbles: true }));
-        console.log("[LightboxWithForm] clicking hidden btn");
-        btn.click();
-      } else {
-        setTimeout(() => triggerHiddenForm(attempts + 1), 100);
-      }
-    };
-    requestAnimationFrame(() => triggerHiddenForm());
   };
 
   return (
     <>
-      {/* ── Preview trigger — remove in Webflow ── */}
-      <div className="lb-preview-trigger">
-        <button onClick={() => setOpen(true)} className="lb-trigger-btn">
-          Open Lightbox
-        </button>
-      </div>
+      {/* ── Preview trigger — uncomment to use when styling ──
+      {!submitted && (
+        <div className="lb-preview-trigger">
+          <button onClick={() => { setSubmitted(false); setOpen(true); }} className="lb-trigger-btn">
+            Open Lightbox
+          </button>
+        </div>
+      )}
+      ── */}
 
-      {/* MultiStepForm portaled into document.body — completely outside
-          the lightbox DOM tree, no transform stacking context issues. */}
-      {typeof document !== "undefined" &&
-        createPortal(
-          <div
-            style={{
-              visibility: open ? "hidden" : "visible",
-              pointerEvents: open ? "none" : "auto",
-            }}
-          >
-            <MultiStepForm
-              portalId={portalId}
-              formGuid={formGuid}
-              enableNavTrigger={enableNavTrigger}
-              inputRef={hiddenInputRef as React.RefObject<HTMLInputElement>}
-              btnRef={hiddenBtnRef as React.RefObject<HTMLButtonElement>}
-            />
-          </div>,
-          document.body,
-        )}
-
-      {/* Lightbox — has its own email input, drives the portaled form on submit */}
-      {open && (
+      {/* Lightbox with email input */}
+      {open && !submitted && (
         <LightboxModal
           headline={headline}
           bodyText={bodyText}
@@ -156,23 +148,40 @@ export default function LightboxWithForm({
           onClose={handleClose}
         >
           <div className="lb-email-capture">
-            <input
-              type="email"
-              className="emailCapture__input"
-              placeholder="you@company.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && handleClaim()}
-            />
-            <button
-              className="defaultButton emailCapture__btn"
-              onClick={handleClaim}
+            <div
+              className={`emailCapture${
+                emailError ? " emailCapture--error" : ""
+              }`}
             >
-              Get A Demo
-            </button>
+              <input
+                type="email"
+                className="emailCapture__input"
+                placeholder="you@company.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && handleClaim()}
+              />
+              <button
+                className="defaultButton emailCapture__btn"
+                onClick={handleClaim}
+              >
+                Get A Demo
+              </button>
+            </div>
             {emailError && <span className="fieldError">{emailError}</span>}
           </div>
         </LightboxModal>
+      )}
+
+      {/* Once submitted, render MultiStepForm starting at step 2 with email pre-filled */}
+      {submitted && (
+        <MultiStepForm
+          portalId={portalId}
+          formGuid={formGuid}
+          enableNavTrigger={enableNavTrigger}
+          initialEmail={email}
+          initialStep={2}
+        />
       )}
     </>
   );

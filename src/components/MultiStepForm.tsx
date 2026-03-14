@@ -77,8 +77,8 @@ interface Props {
   className?: string;
   enableNavTrigger?: boolean;
   onEmailSubmit?: () => void;
-  inputRef: React.RefObject<HTMLInputElement>; // 👈 add
-  btnRef: React.RefObject<HTMLButtonElement>; // 👈 add
+  initialEmail?: string;
+  initialStep?: number;
 }
 
 // ─── Constants ────────────────────────────────────────────────────────────────
@@ -227,12 +227,15 @@ export default function MultiStepForm({
   className = "",
   enableNavTrigger = false,
   onEmailSubmit,
-  inputRef, // 👈 add
-  btnRef, // 👈 add
+  initialEmail,
+  initialStep,
 }: Props) {
-  const [step, setStep] = useState<number>(1);
+  const [step, setStep] = useState<number>(initialStep || 1);
   const [dir, setDir] = useState<number>(1);
-  const [form, setForm] = useState<FormData>(INITIAL_FORM);
+  const [form, setForm] = useState<FormData>({
+    ...INITIAL_FORM,
+    email: initialEmail || "",
+  });
   const [errors, setErrors] = useState<Partial<Record<keyof FormData, string>>>(
     {},
   );
@@ -498,7 +501,6 @@ export default function MultiStepForm({
               }`}
             >
               <input
-                ref={inputRef}
                 id="hsf-email"
                 className="emailCapture__input"
                 type="email"
@@ -508,7 +510,6 @@ export default function MultiStepForm({
                 autoFocus
               />
               <button
-                ref={btnRef}
                 className="defaultButton emailCapture__btn"
                 type="button"
                 onClick={() => {

@@ -87,5 +87,26 @@ export default declareComponent(LightboxWithForm, {
       tooltip:
         "Enable on the first instance only. Wires the #open-demo-form nav button to this form's email validation.",
     }),
+
+    triggerPages: props.Text({
+      name: "Trigger Pages",
+      defaultValue: "/,/platform-overview",
+      tooltip:
+        "Comma-separated list of qualifying page paths. e.g. /,/platform-overview",
+    }),
+
+    triggerAfter: props.Number({
+      name: "Trigger After (visits)",
+      defaultValue: 2,
+      tooltip:
+        "How many qualifying pages must be visited before the lightbox fires.",
+    }),
+
+    triggerDelay: props.Number({
+      name: "Trigger Delay (ms)",
+      defaultValue: 0,
+      tooltip:
+        "Delay in ms before showing the lightbox once conditions are met. Default is 0.",
+    }),
   },
 });
