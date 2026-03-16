@@ -9,9 +9,11 @@
  * No refs, no programmatic clicks, no timing issues.
  */
 
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useState } from "react";
 import LightboxModal from "./LightboxModal";
 import MultiStepForm from "./MultiStepForm";
+import { useHubSpotContactCheck } from "../hooks/useHubspotContactCheck";
+import { useVisitTrigger } from "../hooks/useVisitTrigger";
 
 interface LightboxWithFormProps {
   headline?: string;
@@ -77,36 +79,18 @@ export default function LightboxWithForm({
   const [emailError, setEmailError] = useState<string>("");
   const [submitted, setSubmitted] = useState<boolean>(false);
 
-  // ── Page visit trigger ──────────────────────────────────────────────────────
-  useEffect(() => {
-    if (localStorage.getItem("lb_shown")) return;
-    if (!triggerPages) return;
+  const { isKnown, isLoading } = useHubSpotContactCheck();
 
-    const pages = triggerPages
-      .split(",")
-      .map((p) => p.trim())
-      .filter(Boolean);
-    const currentPath = window.location.pathname;
+  const handleTrigger = useCallback(() => setOpen(true), []);
 
-    // Record this page visit
-    const visited: string[] = JSON.parse(
-      localStorage.getItem("lb_visited") ?? "[]",
-    );
-    if (!visited.includes(currentPath)) {
-      visited.push(currentPath);
-      localStorage.setItem("lb_visited", JSON.stringify(visited));
-    }
-
-    // Count how many qualifying pages have been visited
-    const matchCount = pages.filter((p) => visited.includes(p)).length;
-    if (matchCount >= triggerAfter) {
-      const timer = setTimeout(() => {
-        setOpen(true);
-        localStorage.setItem("lb_shown", "true");
-      }, triggerDelay);
-      return () => clearTimeout(timer);
-    }
-  }, [triggerPages, triggerAfter, triggerDelay]);
+  useVisitTrigger({
+    triggerPages,
+    triggerAfter,
+    triggerDelay,
+    isKnown,
+    isLoading,
+    onTrigger: handleTrigger,
+  });
 
   const handleClose = (): void => setOpen(false);
 
