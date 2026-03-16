@@ -12,7 +12,7 @@
 import React, { useCallback, useState } from "react";
 import LightboxModal from "./LightboxModal";
 import MultiStepForm from "./MultiStepForm";
-import { useHubSpotContactCheck } from "../hooks/useHubspotContactCheck";
+import { useHubSpotContactCheck } from "../hooks/useHubSpotContactCheck";
 import { useVisitTrigger } from "../hooks/useVisitTrigger";
 
 interface LightboxWithFormProps {
