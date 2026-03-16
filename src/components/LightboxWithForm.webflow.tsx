@@ -39,7 +39,7 @@ export default declareComponent(LightboxWithForm, {
 
     heroImageUrl: props.Text({
       name: "Hero Image URL",
-      defaultValue: "",
+      defaultValue: "https://cdn.prod.website-files.com/63cc1eef179b054a9306598d/69b8508401f0323516b39008_giftcard-image.avif",
       tooltip: "URL of the image displayed on the right side of the lightbox.",
     }),
 

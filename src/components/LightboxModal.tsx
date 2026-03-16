@@ -17,7 +17,7 @@ export default function LightboxModal({
   eyebrow = "Limited time offer",
   headline = "Limited time: Get a chance to win a gift card when you request a demo.",
   bodyText = "See how our product helps you save time, reduce waste, and take control — then walk away with a chance to win a gift card for your time.",
-  heroImageUrl = "",
+  heroImageUrl = "https://cdn.prod.website-files.com/63cc1eef179b054a9306598d/69b8508401f0323516b39008_giftcard-image.avif",
   heroImageAlt = "Gift card",
   termsUrl = "/legal/terms",
   className = "",
