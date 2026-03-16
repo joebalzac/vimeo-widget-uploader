@@ -96,22 +96,33 @@
   }
 }
 
-.lb-headline {
-  margin-bottom: 24px;
+.lb-eyebrow {
+  color: #7638fa;
+  font-family: Inter;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 150%;
+  letter-spacing: -0.16px;
+  text-transform: uppercase;
 }
 
 .lb-headline h2 {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: #111;
-  line-height: 1.3;
+  font-size: 36px;
+  font-weight: 450;
+  color: #181819;
+  line-height: 1.2;
+  font-family: "Inter Tight";
   text-wrap: balance;
-  margin: 0;
+  margin: 8px 0;
 }
 
 .lb-body {
-  font-size: 1rem;
-  color: #6b7280;
+  color: #515152;
+  font-family: Inter;
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 150%;
+  letter-spacing: -0.18px;
   margin-bottom: 32px;
 }
 

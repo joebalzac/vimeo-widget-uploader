@@ -2,6 +2,7 @@ import React from "react";
 import "./LightboxModal.css";
 
 interface LightboxModalProps {
+  eyebrow?: string;
   headline?: string;
   bodyText?: string;
   heroImageUrl?: string;
@@ -13,6 +14,7 @@ interface LightboxModalProps {
 }
 
 export default function LightboxModal({
+  eyebrow = "Limited time offer",
   headline = "Limited time: Get a chance to win a gift card when you request a demo.",
   bodyText = "See how our product helps you save time, reduce waste, and take control — then walk away with a chance to win a gift card for your time.",
   heroImageUrl = "",
@@ -44,6 +46,7 @@ export default function LightboxModal({
           <div className="lb-grid">
             {/* Copy column */}
             <div className="lb-copy">
+              <div className="lb-eyebrow">{eyebrow}</div>
               <div className="lb-headline">
                 <h2>{headline}</h2>
               </div>

@@ -20,6 +20,7 @@ interface LightboxWithFormProps {
   bodyText?: string;
   heroImageUrl?: string;
   heroImageAlt?: string;
+  eyebrow?: string;
   termsUrl?: string;
   className?: string;
   defaultOpen?: boolean;
@@ -63,6 +64,7 @@ export default function LightboxWithForm({
   bodyText,
   heroImageUrl,
   heroImageAlt,
+  eyebrow,
   termsUrl,
   className,
   defaultOpen = false,
@@ -123,6 +125,7 @@ export default function LightboxWithForm({
       {/* Lightbox with email input */}
       {open && !submitted && (
         <LightboxModal
+          eyebrow={eyebrow}
           headline={headline}
           bodyText={bodyText}
           heroImageUrl={heroImageUrl}

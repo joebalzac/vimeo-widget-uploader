@@ -17,6 +17,12 @@ export default declareComponent(LightboxWithForm, {
   group: "Marketing",
 
   props: {
+    eyebrow: props.Text({
+      name: "Eyebrow",
+      defaultValue: "Limited time offer",
+      tooltip: "The eyebrow text displayed above the headline.",
+    }),
+
     headline: props.Text({
       name: "Headline",
       defaultValue:
