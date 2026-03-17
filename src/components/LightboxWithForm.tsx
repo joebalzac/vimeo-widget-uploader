@@ -3,7 +3,7 @@
  *
  * The lightbox owns the email input. On submit it:
  * 1. Closes the lightbox
- * 2. Renders MultiStepForm with initialEmail + autoAdvance=true
+ * 2. Renders MultiStepForm with initialEmail + initialStep=2
  *
  * MultiStepForm starts at step 2 directly with the email pre-filled.
  * No refs, no programmatic clicks, no timing issues.
@@ -34,6 +34,7 @@ interface LightboxWithFormProps {
   eventEmailSubmit?: string;
   eventStepTwo?: string;
   eventStepThree?: string;
+  eventLightboxView?: string;
 }
 
 const BLOCKED_DOMAINS = new Set([
@@ -55,6 +56,11 @@ const BLOCKED_DOMAINS = new Set([
   "gmx.com",
   "fastmail.com",
 ]);
+
+function pushEvent(event: string): void {
+  (window as any).dataLayer = (window as any).dataLayer || [];
+  (window as any).dataLayer.push({ event });
+}
 
 function validateEmail(val: string): boolean {
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)) return false;
@@ -78,6 +84,10 @@ export default function LightboxWithForm({
   portalId,
   formGuid,
   enableNavTrigger,
+  eventEmailSubmit = "multi_form_email_submit",
+  eventStepTwo = "multi_form_step_two",
+  eventStepThree = "multi_form_step_three",
+  eventLightboxView = "incentive_lightbox_viewed",
 }: LightboxWithFormProps): React.ReactElement {
   const [open, setOpen] = useState<boolean>(defaultOpen);
   const [email, setEmail] = useState<string>("");
@@ -86,7 +96,10 @@ export default function LightboxWithForm({
 
   const { isKnown, isLoading } = useHubSpotContactCheck();
 
-  const handleTrigger = useCallback(() => setOpen(true), []);
+  const handleTrigger = useCallback(() => {
+    setOpen(true);
+    pushEvent(eventLightboxView);
+  }, [eventLightboxView]);
 
   useVisitTrigger({
     triggerPages,
@@ -125,7 +138,6 @@ export default function LightboxWithForm({
       )}
       ── */}
 
-      {/* Lightbox with email input */}
       {open && !submitted && (
         <LightboxModal
           eyebrow={eyebrow}
@@ -171,6 +183,9 @@ export default function LightboxWithForm({
           enableNavTrigger={enableNavTrigger}
           initialEmail={email}
           initialStep={2}
+          eventEmailSubmit={eventEmailSubmit}
+          eventStepTwo={eventStepTwo}
+          eventStepThree={eventStepThree}
         />
       )}
     </>
