@@ -31,6 +31,9 @@ interface LightboxWithFormProps {
   portalId?: string;
   formGuid?: string;
   enableNavTrigger?: boolean;
+  eventEmailSubmit?: string;
+  eventStepTwo?: string;
+  eventStepThree?: string;
 }
 
 const BLOCKED_DOMAINS = new Set([

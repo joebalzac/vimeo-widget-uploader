@@ -17,12 +17,6 @@ export default declareComponent(LightboxWithForm, {
   group: "Marketing",
 
   props: {
-    eyebrow: props.Text({
-      name: "Eyebrow",
-      defaultValue: "Limited time offer",
-      tooltip: "The eyebrow text displayed above the headline.",
-    }),
-
     headline: props.Text({
       name: "Headline",
       defaultValue:
@@ -39,7 +33,7 @@ export default declareComponent(LightboxWithForm, {
 
     heroImageUrl: props.Text({
       name: "Hero Image URL",
-      defaultValue: "https://cdn.prod.website-files.com/63cc1eef179b054a9306598d/69b8508401f0323516b39008_giftcard-image.avif",
+      defaultValue: "",
       tooltip: "URL of the image displayed on the right side of the lightbox.",
     }),
 
@@ -75,6 +69,27 @@ export default declareComponent(LightboxWithForm, {
         "When enabled, the lightbox and overlay close the moment the user submits their email, letting the multi-step form take over fullscreen.",
     }),
 
+    triggerPages: props.Text({
+      name: "Trigger Pages",
+      defaultValue: "/,/platform-overview",
+      tooltip:
+        "Comma-separated list of qualifying page paths. e.g. /,/platform-overview",
+    }),
+
+    triggerAfter: props.Number({
+      name: "Trigger After (visits)",
+      defaultValue: 2,
+      tooltip:
+        "How many qualifying pages must be visited before the lightbox fires.",
+    }),
+
+    triggerDelay: props.Number({
+      name: "Trigger Delay (ms)",
+      defaultValue: 0,
+      tooltip:
+        "Delay in ms before showing the lightbox once conditions are met.",
+    }),
+
     portalId: props.Text({
       name: "HubSpot Portal ID",
       defaultValue: "45321630",
@@ -94,25 +109,22 @@ export default declareComponent(LightboxWithForm, {
         "Enable on the first instance only. Wires the #open-demo-form nav button to this form's email validation.",
     }),
 
-    triggerPages: props.Text({
-      name: "Trigger Pages",
-      defaultValue: "/,/platform-overview",
-      tooltip:
-        "Comma-separated list of qualifying page paths. e.g. /,/platform-overview",
+    eventEmailSubmit: props.Text({
+      name: "Event — Email Submit",
+      defaultValue: "multi_form_email_submit",
+      tooltip: "GTM dataLayer event fired when the email is submitted.",
     }),
 
-    triggerAfter: props.Number({
-      name: "Trigger After (visits)",
-      defaultValue: 2,
-      tooltip:
-        "How many qualifying pages must be visited before the lightbox fires.",
+    eventStepTwo: props.Text({
+      name: "Event — Step Two",
+      defaultValue: "multi_form_step_two",
+      tooltip: "GTM dataLayer event fired when step 2 is submitted.",
     }),
 
-    triggerDelay: props.Number({
-      name: "Trigger Delay (ms)",
-      defaultValue: 0,
-      tooltip:
-        "Delay in ms before showing the lightbox once conditions are met. Default is 0.",
+    eventStepThree: props.Text({
+      name: "Event — Step Three",
+      defaultValue: "multi_form_step_three",
+      tooltip: "GTM dataLayer event fired when step 3 is submitted.",
     }),
   },
 });

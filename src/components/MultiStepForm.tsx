@@ -79,6 +79,9 @@ interface Props {
   onEmailSubmit?: () => void;
   initialEmail?: string;
   initialStep?: number;
+  eventEmailSubmit?: string;
+  eventStepTwo?: string;
+  eventStepThree?: string;
 }
 
 // ─── Constants ────────────────────────────────────────────────────────────────
@@ -229,6 +232,9 @@ export default function MultiStepForm({
   onEmailSubmit,
   initialEmail,
   initialStep,
+  eventEmailSubmit = "multi_form_email_submit", 
+  eventStepTwo = "multi_form_step_two", 
+  eventStepThree = "multi_form_step_three", 
 }: Props) {
   const [step, setStep] = useState<number>(initialStep || 1);
   const [dir, setDir] = useState<number>(1);
@@ -513,7 +519,7 @@ export default function MultiStepForm({
                 className="defaultButton emailCapture__btn"
                 type="button"
                 onClick={() => {
-                  pushEvent("multi_form_email_submit");
+                  pushEvent(eventEmailSubmit);
                   next();
                 }}
               >
@@ -779,7 +785,7 @@ export default function MultiStepForm({
                     className="defaultButton"
                     type="button"
                     onClick={() => {
-                      pushEvent("multi_form_step_two");
+                      pushEvent(eventStepTwo);
                       onEmailSubmit?.();
                       next();
                     }}
@@ -791,7 +797,7 @@ export default function MultiStepForm({
                     className="defaultButton"
                     type="button"
                     onClick={() => {
-                      pushEvent("multi_form_step_three");
+                      pushEvent(eventStepThree);
                       void submit();
                     }}
                     disabled={submitting}

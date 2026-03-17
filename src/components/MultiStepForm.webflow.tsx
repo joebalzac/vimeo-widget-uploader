@@ -41,5 +41,23 @@ export default declareComponent(MultiStepForm, {
       tooltip:
         "Enable on the first instance only. Wires the #open-demo-form nav button to this form's email validation.",
     }),
+
+    eventEmailSubmit: props.Text({
+      name: "Event — Email Submit",
+      defaultValue: "multi_form_email_submit",
+      tooltip: "GTM dataLayer event fired when the email is submitted.",
+    }),
+
+    eventStepTwo: props.Text({
+      name: "Event — Step Two",
+      defaultValue: "multi_form_step_two",
+      tooltip: "GTM dataLayer event fired when step 2 is submitted.",
+    }),
+
+    eventStepThree: props.Text({
+      name: "Event — Step Three",
+      defaultValue: "multi_form_step_three",
+      tooltip: "GTM dataLayer event fired when step 3 is submitted.",
+    }),
   },
 });
