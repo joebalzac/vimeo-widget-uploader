@@ -517,7 +517,7 @@ export default function MultiStepForm({
                   next();
                 }}
               >
-                Get A Demo
+                Book a free demo
               </button>
             </div>
             {errors.email && <span className="fieldError">{errors.email}</span>}
