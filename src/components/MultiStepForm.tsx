@@ -232,9 +232,9 @@ export default function MultiStepForm({
   onEmailSubmit,
   initialEmail,
   initialStep,
-  eventEmailSubmit = "multi_form_email_submit", 
-  eventStepTwo = "multi_form_step_two", 
-  eventStepThree = "multi_form_step_three", 
+  eventEmailSubmit = "multi_form_email_submit",
+  eventStepTwo = "multi_form_step_two",
+  eventStepThree = "multi_form_step_three",
 }: Props) {
   const [step, setStep] = useState<number>(initialStep || 1);
   const [dir, setDir] = useState<number>(1);
@@ -650,7 +650,9 @@ export default function MultiStepForm({
                             pattern="[0-9]*"
                             placeholder="Phone number"
                             value={form.phone}
-                            onChange={(e) => set("phone", e.target.value)}
+                            onChange={(e) =>
+                              set("phone", e.target.value.replace(/\D/g, ""))
+                            }
                           />
                           {errors.phone && (
                             <span className="fieldError">{errors.phone}</span>
