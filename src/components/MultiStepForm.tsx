@@ -504,7 +504,7 @@ export default function MultiStepForm({
                 id="hsf-email"
                 className="emailCapture__input"
                 type="email"
-                placeholder="you@company.com"
+                placeholder="What's your work email?"
                 value={form.email}
                 onChange={(e) => set("email", e.target.value)}
                 autoFocus
