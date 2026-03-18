@@ -135,13 +135,13 @@ export default declareComponent(LightboxWithForm, {
 
     emailInputPlaceholder: props.Text({
       name: "Email input placeholder",
-      defaultValue: "What's your work email?",
+      defaultValue: "",
       tooltip: "Placeholder text for the email input.",
     }),
 
     emailCTAText: props.Text({
       name: "Email CTA text",
-      defaultValue: "Book a free demo",
+      defaultValue: "",
       tooltip: "Text for the email CTA button.",
     }),
   },

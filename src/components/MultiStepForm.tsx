@@ -267,8 +267,8 @@ export default function MultiStepForm({
   eventStepTwo = "multi_form_step_two",
   eventStepThree = "multi_form_step_three",
   enableWebflowEvent = false,
-  emailInputPlaceholder = "What's your work email?",
-  emailCTAText = "Book a free demo",
+  emailInputPlaceholder,
+  emailCTAText,
 }: Props) {
   const [step, setStep] = useState<number>(initialStep || 1);
   const [dir, setDir] = useState<number>(1);
@@ -688,7 +688,10 @@ export default function MultiStepForm({
                             placeholder="Phone number"
                             value={form.phone}
                             onChange={(e) =>
-                              set("phone", e.target.value.replace(/\D/g, ""))
+                              set(
+                                "phone",
+                                e.target.value.replace(/[^\d-]/g, ""),
+                              )
                             }
                           />
                           {errors.phone && (
