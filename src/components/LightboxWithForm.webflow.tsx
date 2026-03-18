@@ -17,6 +17,12 @@ export default declareComponent(LightboxWithForm, {
   group: "Marketing",
 
   props: {
+    eyebrow: props.Text({
+      name: "Eyebrow",
+      defaultValue: "Limited time",
+      tooltip: "The eyebrow text displayed above the headline.",
+    }),
+
     headline: props.Text({
       name: "Headline",
       defaultValue:
@@ -45,7 +51,7 @@ export default declareComponent(LightboxWithForm, {
 
     termsUrl: props.Text({
       name: "Terms & Conditions URL",
-      defaultValue: "/legal/terms",
+      defaultValue: "/legal/demo-incentive-program",
       tooltip: "URL for the Terms and Conditions link.",
     }),
 
@@ -71,7 +77,7 @@ export default declareComponent(LightboxWithForm, {
 
     triggerPages: props.Text({
       name: "Trigger Pages",
-      defaultValue: "/,/platform-overview",
+      defaultValue: "/platform-overview",
       tooltip:
         "Comma-separated list of qualifying page paths. e.g. /,/platform-overview",
     }),

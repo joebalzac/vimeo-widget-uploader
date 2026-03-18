@@ -19,7 +19,7 @@ export default function LightboxModal({
   bodyText = "See how our product helps you save time, reduce waste, and take control — then walk away with a chance to win a gift card for your time.",
   heroImageUrl = "https://cdn.prod.website-files.com/63cc1eef179b054a9306598d/69b8508401f0323516b39008_giftcard-image.avif",
   heroImageAlt = "Gift card",
-  termsUrl = "/legal/terms",
+  termsUrl = "/legal/demo-incentive-program",
   className = "",
   onClose,
   children,

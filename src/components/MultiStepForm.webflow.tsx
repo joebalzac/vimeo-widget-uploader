@@ -59,5 +59,12 @@ export default declareComponent(MultiStepForm, {
       defaultValue: "multi_form_step_three",
       tooltip: "GTM dataLayer event fired when step 3 is submitted.",
     }),
+
+    enableWebflowEvent: props.Boolean({
+      name: "Enable Webflow event",
+      defaultValue: false,
+      tooltip:
+        "When enabled, fires the 'housing-hs-form-submit-optimize' Webflow event on final form submission.",
+    }),
   },
 });

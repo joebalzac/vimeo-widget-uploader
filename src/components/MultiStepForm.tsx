@@ -82,12 +82,14 @@ interface Props {
   eventEmailSubmit?: string;
   eventStepTwo?: string;
   eventStepThree?: string;
+  enableWebflowEvent?: boolean;
 }
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 const PORTAL_ID = "45321630";
 const FORM_GUID = "0b77026b-30dc-4521-afc4-009261739448";
+const API_BASE = "https://contact-checker-backend.vercel.app";
 const DEFAULT_FORM_ID = 539717;
 const DEFAULT_TEAM_ID = 588;
 
@@ -206,6 +208,33 @@ function loadDefaultSDK(): Promise<void> {
   });
 }
 
+async function createContact(email: string): Promise<void> {
+  try {
+    await fetch(`${API_BASE}/api/create-contact`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email }),
+    });
+  } catch (err) {
+    console.warn("[createContact] failed silently", err);
+  }
+}
+
+async function updateContact(
+  email: string,
+  properties: Record<string, string>,
+): Promise<void> {
+  try {
+    await fetch(`${API_BASE}/api/update-contact`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, properties }),
+    });
+  } catch (err) {
+    console.warn("[updateContact] failed silently", err);
+  }
+}
+
 // ─── Slide variants ───────────────────────────────────────────────────────────
 
 const slideVariants = {
@@ -235,6 +264,7 @@ export default function MultiStepForm({
   eventEmailSubmit = "multi_form_email_submit",
   eventStepTwo = "multi_form_step_two",
   eventStepThree = "multi_form_step_three",
+  enableWebflowEvent = false,
 }: Props) {
   const [step, setStep] = useState<number>(initialStep || 1);
   const [dir, setDir] = useState<number>(1);
@@ -520,6 +550,9 @@ export default function MultiStepForm({
                 type="button"
                 onClick={() => {
                   pushEvent(eventEmailSubmit);
+                  if (form.email && validateEmail(form.email)) {
+                    void createContact(form.email);
+                  }
                   next();
                 }}
               >
@@ -789,6 +822,13 @@ export default function MultiStepForm({
                     onClick={() => {
                       pushEvent(eventStepTwo);
                       onEmailSubmit?.();
+                      if (validateStep()) {
+                        void updateContact(form.email, {
+                          firstname: form.firstname,
+                          lastname: form.lastname,
+                          phone: form.phone,
+                        });
+                      }
                       next();
                     }}
                   >
@@ -800,6 +840,13 @@ export default function MultiStepForm({
                     type="button"
                     onClick={() => {
                       pushEvent(eventStepThree);
+                      if (enableWebflowEvent && (window as any).wf) {
+                        (window as any).wf.ready(function () {
+                          (window as any).wf.sendEvent(
+                            "housing-hs-form-submit-optimize",
+                          );
+                        });
+                      }
                       void submit();
                     }}
                     disabled={submitting}
