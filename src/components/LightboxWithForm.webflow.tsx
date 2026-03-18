@@ -132,5 +132,17 @@ export default declareComponent(LightboxWithForm, {
       defaultValue: "multi_form_step_three",
       tooltip: "GTM dataLayer event fired when step 3 is submitted.",
     }),
+
+    emailInputPlaceholder: props.Text({
+      name: "Email input placeholder",
+      defaultValue: "What's your work email?",
+      tooltip: "Placeholder text for the email input.",
+    }),
+
+    emailCTAText: props.Text({
+      name: "Email CTA text",
+      defaultValue: "Book a free demo",
+      tooltip: "Text for the email CTA button.",
+    }),
   },
 });
