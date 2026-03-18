@@ -2,8 +2,9 @@
  * LightboxWithForm.tsx
  *
  * The lightbox owns the email input. On submit it:
- * 1. Closes the lightbox
- * 2. Renders MultiStepForm with initialEmail + initialStep=2
+ * 1. Creates a HubSpot contact with the email
+ * 2. Closes the lightbox
+ * 3. Renders MultiStepForm with initialEmail + initialStep=2
  *
  * MultiStepForm starts at step 2 directly with the email pre-filled.
  * No refs, no programmatic clicks, no timing issues.
@@ -39,6 +40,10 @@ interface LightboxWithFormProps {
   emailCTAText?: string;
 }
 
+// ─── Constants ────────────────────────────────────────────────────────────────
+
+const API_BASE = "https://contact-checker-backend.vercel.app";
+
 const BLOCKED_DOMAINS = new Set([
   "gmail.com",
   "googlemail.com",
@@ -59,6 +64,20 @@ const BLOCKED_DOMAINS = new Set([
   "fastmail.com",
 ]);
 
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+
+async function createContact(email: string): Promise<void> {
+  try {
+    await fetch(`${API_BASE}/api/create-contact`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email }),
+    });
+  } catch (err) {
+    console.warn("[createContact] failed silently", err);
+  }
+}
+
 function pushEvent(event: string): void {
   (window as any).dataLayer = (window as any).dataLayer || [];
   (window as any).dataLayer.push({ event });
@@ -69,6 +88,8 @@ function validateEmail(val: string): boolean {
   const domain = val.split("@")[1].toLowerCase();
   return !BLOCKED_DOMAINS.has(domain);
 }
+
+// ─── Component ────────────────────────────────────────────────────────────────
 
 export default function LightboxWithForm({
   headline,
@@ -100,6 +121,7 @@ export default function LightboxWithForm({
 
   const { isKnown, isLoading } = useHubSpotContactCheck();
 
+  // ── Preview mode — ?preview=lightbox bypasses all trigger logic ────────────
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     if (params.get("preview") === "lightbox") {
@@ -133,6 +155,9 @@ export default function LightboxWithForm({
       return;
     }
     setEmailError("");
+    // Create contact in HubSpot as soon as email is submitted
+    void createContact(email);
+    pushEvent(eventEmailSubmit);
     setSubmitted(true);
     if (removeOnSubmit) setOpen(false);
   };
