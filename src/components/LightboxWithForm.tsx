@@ -35,6 +35,8 @@ interface LightboxWithFormProps {
   eventStepTwo?: string;
   eventStepThree?: string;
   eventLightboxView?: string;
+  emailInputPlaceholder?: string;
+  emailCTAText?: string;
 }
 
 const BLOCKED_DOMAINS = new Set([
@@ -88,6 +90,8 @@ export default function LightboxWithForm({
   eventStepTwo = "multi_form_step_two",
   eventStepThree = "multi_form_step_three",
   eventLightboxView = "incentive_lightbox_viewed",
+  emailInputPlaceholder = "What's your work email?",
+  emailCTAText = "Book a free demo",
 }: LightboxWithFormProps): React.ReactElement {
   const [open, setOpen] = useState<boolean>(defaultOpen);
   const [email, setEmail] = useState<string>("");
@@ -158,7 +162,7 @@ export default function LightboxWithForm({
               <input
                 type="email"
                 className="emailCapture__input"
-                placeholder="you@company.com"
+                placeholder={emailInputPlaceholder}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && handleClaim()}
@@ -167,7 +171,7 @@ export default function LightboxWithForm({
                 className="defaultButton emailCapture__btn"
                 onClick={handleClaim}
               >
-                Get A Demo
+                {emailCTAText}
               </button>
             </div>
             {emailError && <span className="fieldError">{emailError}</span>}
@@ -186,6 +190,8 @@ export default function LightboxWithForm({
           eventEmailSubmit={eventEmailSubmit}
           eventStepTwo={eventStepTwo}
           eventStepThree={eventStepThree}
+          emailInputPlaceholder={emailInputPlaceholder}
+          emailCTAText={emailCTAText}
         />
       )}
     </>

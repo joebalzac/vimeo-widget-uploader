@@ -83,6 +83,8 @@ interface Props {
   eventStepTwo?: string;
   eventStepThree?: string;
   enableWebflowEvent?: boolean;
+  emailInputPlaceholder?: string;
+  emailCTAText?: string;
 }
 
 // ─── Constants ────────────────────────────────────────────────────────────────
@@ -265,6 +267,8 @@ export default function MultiStepForm({
   eventStepTwo = "multi_form_step_two",
   eventStepThree = "multi_form_step_three",
   enableWebflowEvent = false,
+  emailInputPlaceholder = "What's your work email?",
+  emailCTAText = "Book a free demo",
 }: Props) {
   const [step, setStep] = useState<number>(initialStep || 1);
   const [dir, setDir] = useState<number>(1);
@@ -540,7 +544,7 @@ export default function MultiStepForm({
                 id="hsf-email"
                 className="emailCapture__input"
                 type="email"
-                placeholder="What's your work email?"
+                placeholder={emailInputPlaceholder}
                 value={form.email}
                 onChange={(e) => set("email", e.target.value)}
                 autoFocus
@@ -556,7 +560,7 @@ export default function MultiStepForm({
                   next();
                 }}
               >
-                Book a free demo
+                {emailCTAText}
               </button>
             </div>
             {errors.email && <span className="fieldError">{errors.email}</span>}

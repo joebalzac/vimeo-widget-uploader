@@ -66,5 +66,17 @@ export default declareComponent(MultiStepForm, {
       tooltip:
         "When enabled, fires the 'housing-hs-form-submit-optimize' Webflow event on final form submission.",
     }),
+
+    emailInputPlaceholder: props.Text({
+      name: "Email input placeholder",
+      defaultValue: "What's your work email?",
+      tooltip: "Placeholder text for the email input.",
+    }),
+
+    emailCTAText: props.Text({
+      name: "Email CTA text",
+      defaultValue: "Book a free demo",
+      tooltip: "Text for the email CTA button.",
+    }),
   },
 });

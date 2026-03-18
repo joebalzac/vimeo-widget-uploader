@@ -56,8 +56,11 @@ export default function LightboxModal({
               {/* MultiStepForm renders here as children */}
               <div className="lb-form-area">{children}</div>
 
-              <div className="lb-terms">
-                <a href={termsUrl}>Terms and Conditions</a> apply.
+              <div className="lb-body-terms">
+                <a className="lb-terms" href={termsUrl}>
+                  Terms and Conditions
+                </a>{" "}
+                apply.
               </div>
             </div>
 
