@@ -85,6 +85,8 @@ interface Props {
   enableWebflowEvent?: boolean;
   emailInputPlaceholder?: string;
   emailCTAText?: string;
+  promoOffering?: string;
+  onComplete?: () => void;
 }
 
 // ─── Constants ────────────────────────────────────────────────────────────────
@@ -269,6 +271,8 @@ export default function MultiStepForm({
   enableWebflowEvent = false,
   emailInputPlaceholder,
   emailCTAText,
+  promoOffering = "",
+  onComplete,
 }: Props) {
   const [step, setStep] = useState<number>(initialStep || 1);
   const [dir, setDir] = useState<number>(1);
@@ -388,6 +392,9 @@ export default function MultiStepForm({
         value:
           form.in_which_areas_of_your_operations_are_you_looking_to_implement_ai_,
       },
+      ...(promoOffering
+        ? [{ name: "promo_offering", value: promoOffering }]
+        : []),
     ];
 
     (["utm_source", "utm_medium", "utm_campaign"] as const).forEach((p) => {
@@ -520,6 +527,7 @@ export default function MultiStepForm({
       document.body.style.overflow = "";
       document.body.style.position = "";
       document.body.style.width = "";
+      onComplete?.();
       setStep(1);
       setForm(INITIAL_FORM);
       setErrors({});

@@ -38,6 +38,7 @@ interface LightboxWithFormProps {
   eventLightboxView?: string;
   emailInputPlaceholder?: string;
   emailCTAText?: string;
+  promoOffering?: string;
 }
 
 // ─── Constants ────────────────────────────────────────────────────────────────
@@ -113,11 +114,13 @@ export default function LightboxWithForm({
   eventLightboxView = "incentive_lightbox_viewed",
   emailInputPlaceholder = "What's your work email?",
   emailCTAText = "Book a free demo",
+  promoOffering = "",
 }: LightboxWithFormProps): React.ReactElement {
   const [open, setOpen] = useState<boolean>(defaultOpen);
   const [email, setEmail] = useState<string>("");
   const [emailError, setEmailError] = useState<string>("");
   const [submitted, setSubmitted] = useState<boolean>(false);
+  const [completed, setCompleted] = useState<boolean>(false);
 
   const { isKnown, isLoading } = useHubSpotContactCheck();
 
@@ -145,6 +148,12 @@ export default function LightboxWithForm({
 
   const handleClose = (): void => setOpen(false);
 
+  const handleComplete = (): void => {
+    setCompleted(true);
+    setSubmitted(false);
+    setEmail("");
+  };
+
   const handleClaim = (): void => {
     if (!email) {
       setEmailError("Email is required.");
@@ -161,6 +170,8 @@ export default function LightboxWithForm({
     setSubmitted(true);
     if (removeOnSubmit) setOpen(false);
   };
+
+  if (completed) return <></>;
 
   return (
     <>
@@ -211,7 +222,6 @@ export default function LightboxWithForm({
         </LightboxModal>
       )}
 
-      {/* Once submitted, render MultiStepForm starting at step 2 with email pre-filled */}
       {submitted && (
         <MultiStepForm
           portalId={portalId}
@@ -224,6 +234,8 @@ export default function LightboxWithForm({
           eventStepThree={eventStepThree}
           emailInputPlaceholder={emailInputPlaceholder}
           emailCTAText={emailCTAText}
+          promoOffering={promoOffering}
+          onComplete={handleComplete}
         />
       )}
     </>

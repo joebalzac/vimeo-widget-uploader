@@ -106,6 +106,12 @@
   text-transform: uppercase;
 }
 
+@media (min-width: 768px) {
+  .lb-eyebrow {
+    font-size: 14px;
+  }
+}
+
 .lb-headline h2 {
   font-size: 36px;
   font-weight: 450;
@@ -116,6 +122,12 @@
   margin: 8px 0;
 }
 
+@media (min-width: 768px) {
+  .lb-headline h2 {
+    font-size: 30px;
+  }
+}
+
 .lb-body {
   color: #515152;
   font-family: Inter;
@@ -124,6 +136,12 @@
   line-height: 150%;
   letter-spacing: -0.18px;
   margin-bottom: 32px;
+}
+
+@media (min-width: 768px) {
+  .lb-body {
+    font-size: 16px;
+  }
 }
 
 .lb-body-terms {
@@ -209,6 +227,8 @@
   object-fit: cover;
   object-position: top;
   display: block;
+  border-top-right-radius: 8px;
+  border-bottom-right-radius: 8px;
 }
 
 /* ─────────────────────────────────────────

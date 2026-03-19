@@ -78,5 +78,11 @@ export default declareComponent(MultiStepForm, {
       defaultValue: "Book a free demo",
       tooltip: "Text for the email CTA button.",
     }),
+
+    promoOffering: props.Text({
+      name: "Promo offering",
+      defaultValue: "",
+      tooltip: "The promo offering to be added to the form submission.",
+    }),
   },
 });

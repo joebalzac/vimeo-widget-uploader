@@ -144,5 +144,11 @@ export default declareComponent(LightboxWithForm, {
       defaultValue: "",
       tooltip: "Text for the email CTA button.",
     }),
+
+    promoOffering: props.Text({
+      name: "Promo offering",
+      defaultValue: "",
+      tooltip: "The promo offering to be added to the form submission.",
+    }),
   },
 });
