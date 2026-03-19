@@ -10,7 +10,7 @@
  * No refs, no programmatic clicks, no timing issues.
  */
 
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useState } from "react";
 import LightboxModal from "./LightboxModal";
 import MultiStepForm from "./MultiStepForm";
 import { useHubSpotContactCheck } from "../hooks/useHubSpotContactCheck";
@@ -123,14 +123,6 @@ export default function LightboxWithForm({
   const [completed, setCompleted] = useState<boolean>(false);
 
   const { isKnown, isLoading } = useHubSpotContactCheck();
-
-  // ── Preview mode — ?preview=lightbox bypasses all trigger logic ────────────
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    if (params.get("preview") === "lightbox") {
-      setOpen(true);
-    }
-  }, []);
 
   const handleTrigger = useCallback(() => {
     setOpen(true);
