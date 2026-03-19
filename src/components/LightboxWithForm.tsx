@@ -195,6 +195,7 @@ export default function LightboxWithForm({
           termsUrl={termsUrl}
           className={className}
           onClose={handleClose}
+          pushEvent={pushEvent}
         >
           <div className="lb-email-capture">
             <div

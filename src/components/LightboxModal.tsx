@@ -11,6 +11,7 @@ interface LightboxModalProps {
   className?: string;
   onClose: () => void;
   children?: React.ReactNode;
+  pushEvent: (event: string) => void;
 }
 
 export default function LightboxModal({
@@ -22,6 +23,7 @@ export default function LightboxModal({
   termsUrl = "/legal/demo-incentive-program",
   className = "",
   onClose,
+  pushEvent,
   children,
 }: LightboxModalProps): React.ReactElement {
   return (
@@ -29,7 +31,10 @@ export default function LightboxModal({
       {/* Overlay */}
       <div
         data-state="open"
-        onClick={onClose}
+        onClick={() => {
+          pushEvent("incentive_lightbox_dismissed_overlay");
+          onClose();
+        }}
         className="lb-overlay"
         aria-hidden="true"
       />
@@ -83,7 +88,10 @@ export default function LightboxModal({
           {/* Close button */}
           <button
             data-testid="lightbox-close-button"
-            onClick={onClose}
+            onClick={() => {
+              pushEvent("incentive_lightbox_dismissed_button");
+              onClose();
+            }}
             aria-label="Close"
             className="lb-close"
           >
