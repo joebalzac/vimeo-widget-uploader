@@ -87,6 +87,7 @@ interface Props {
   emailCTAText?: string;
   promoOffering?: string;
   onComplete?: () => void;
+  onBack?: () => void;
 }
 
 // ─── Constants ────────────────────────────────────────────────────────────────
@@ -273,6 +274,7 @@ export default function MultiStepForm({
   emailCTAText,
   promoOffering = "",
   onComplete,
+  onBack,
 }: Props) {
   const [step, setStep] = useState<number>(initialStep || 1);
   const [dir, setDir] = useState<number>(1);
@@ -371,6 +373,11 @@ export default function MultiStepForm({
     setDir(1);
     setStep((s) => Math.min(s + 1, TOTAL_STEPS));
   }, [validateStep]);
+
+  const prev = useCallback(() => {
+    setDir(-1);
+    setStep((s) => Math.max(s - 1, 1));
+  }, []);
 
   // ── Submit ──────────────────────────────────────────────────────────────────
 
@@ -830,6 +837,47 @@ export default function MultiStepForm({
 
               {/* Navigation */}
               <div className="hsf__nav">
+                {step > 1 && (
+                  <div
+                    className="hsf__nav-back"
+                    onClick={() => {
+                      if (step === 2 && onBack) {
+                        onBack();
+                      } else {
+                        prev();
+                      }
+                    }}
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="18"
+                      height="18"
+                      viewBox="0 0 18 18"
+                      fill="none"
+                    >
+                      <path
+                        d="M14.25 9H3.75005"
+                        stroke="#6A6A6B"
+                        stroke-width="1.5"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      />
+                      <path
+                        d="M9 3.75L3.74996 9L9 14.25"
+                        stroke="#6A6A6B"
+                        stroke-width="1.5"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      />
+                    </svg>
+                    <button
+                      className="defaultButton hsf__nav-back-btn"
+                      type="button"
+                    >
+                      Back
+                    </button>
+                  </div>
+                )}
                 {step < TOTAL_STEPS ? (
                   <button
                     className="defaultButton"

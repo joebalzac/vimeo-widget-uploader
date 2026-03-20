@@ -146,6 +146,11 @@ export default function LightboxWithForm({
     setEmail("");
   };
 
+  const handleBack = (): void => {
+    setSubmitted(false);
+    setOpen(true);
+  };
+
   const handleClaim = (): void => {
     if (!email) {
       setEmailError("Email is required.");
@@ -229,6 +234,7 @@ export default function LightboxWithForm({
           emailCTAText={emailCTAText}
           promoOffering={promoOffering}
           onComplete={handleComplete}
+          onBack={handleBack}
         />
       )}
     </>
