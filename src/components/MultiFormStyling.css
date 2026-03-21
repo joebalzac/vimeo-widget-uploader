@@ -277,25 +277,15 @@
   gap: 12px;
 }
 
-.hsf__nav-back {
+.hsf__nav-back-container {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  border-radius: 4px;
-  background: #f5f5f7;
-  color: #6a6a6b !important;
-  border: 1px solid #eaeaed !important;
+  align-items: flex-start;
+  justify-content: space-between;
   width: 100% !important;
   cursor: pointer;
+  margin-top: 12px;
 }
 
-.hsf__nav-back-btn {
-  background: transparent !important;
-  color: #6a6a6b !important;
-  width: auto !important;
-  padding: 0px !important;
-}
 
 .hsf__nav-back-btn:hover {
   background: #f5f5f5 !important;
