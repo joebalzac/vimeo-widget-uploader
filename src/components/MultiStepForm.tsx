@@ -88,6 +88,7 @@ interface Props {
   promoOffering?: string;
   onComplete?: () => void;
   onBack?: () => void;
+  eventStepBack?: string;
 }
 
 // ─── Constants ────────────────────────────────────────────────────────────────
@@ -269,6 +270,7 @@ export default function MultiStepForm({
   eventEmailSubmit = "multi_form_email_submit",
   eventStepTwo = "multi_form_step_two",
   eventStepThree = "multi_form_step_three",
+  eventStepBack = "multi_form_step_back",
   enableWebflowEvent = false,
   emailInputPlaceholder,
   emailCTAText,
@@ -619,6 +621,7 @@ export default function MultiStepForm({
                       } else {
                         prev();
                       }
+                      pushEvent(eventStepBack);
                     }}
                   >
                     <svg

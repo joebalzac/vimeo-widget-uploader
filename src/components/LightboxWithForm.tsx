@@ -39,6 +39,7 @@ interface LightboxWithFormProps {
   emailInputPlaceholder?: string;
   emailCTAText?: string;
   promoOffering?: string;
+  eventStepBack?: string;
 }
 
 // ─── Constants ────────────────────────────────────────────────────────────────
@@ -115,6 +116,7 @@ export default function LightboxWithForm({
   emailInputPlaceholder = "What's your work email?",
   emailCTAText = "Book a free demo",
   promoOffering = "",
+  eventStepBack = "multi_form_step_back",
 }: LightboxWithFormProps): React.ReactElement {
   const [open, setOpen] = useState<boolean>(defaultOpen);
   const [email, setEmail] = useState<string>("");
@@ -235,6 +237,7 @@ export default function LightboxWithForm({
           promoOffering={promoOffering}
           onComplete={handleComplete}
           onBack={handleBack}
+          eventStepBack={eventStepBack}
         />
       )}
     </>
