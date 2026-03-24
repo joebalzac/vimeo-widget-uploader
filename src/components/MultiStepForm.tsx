@@ -2,7 +2,6 @@ import { useState, useCallback, useEffect } from "react";
 import { motion, AnimatePresence, type Variants } from "framer-motion";
 import "./MultiFormStyling.css";
 // Add to imports at top
-import { createPortal } from "react-dom";
 
 // ─── Default SDK types ────────────────────────────────────────────────────────
 
@@ -586,354 +585,345 @@ export default function MultiStepForm({
           </div>
         )}
       </div>
-
       {/* ── Steps 2 & 3: Full screen white overlay ── */}
-      {createPortal(
-        <AnimatePresence>
-          {step > 1 && (
-            <motion.div
-              className="hsf__overlay"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.3 }}
-            >
-              <div className="hsf__overlay-inner" onKeyDown={onKeyDown}>
-                {/* Progress bar */}
-                <div
-                  className="hsf__progress-track"
-                  role="progressbar"
-                  aria-valuenow={progress}
-                  aria-valuemin={0}
-                  aria-valuemax={100}
-                >
-                  <motion.div
-                    className="hsf__progress-fill"
-                    initial={false}
-                    animate={{ width: `${progress}%` }}
-                    transition={{ duration: 0.4, ease: "easeInOut" }}
-                  />
-                </div>
-                <div className="hsf__nav-back-container">
-                  {step > 1 && (
-                    <div
-                      className="hsf__nav-back"
-                      onClick={() => {
-                        if (step === 2 && onBack) {
-                          onBack();
-                        } else {
-                          prev();
-                        }
-                        pushEvent(eventStepBack);
-                      }}
+      <AnimatePresence>
+        {step > 1 && (
+          <motion.div
+            className="hsf__overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            <div className="hsf__overlay-inner" onKeyDown={onKeyDown}>
+              {/* Progress bar */}
+              <div
+                className="hsf__progress-track"
+                role="progressbar"
+                aria-valuenow={progress}
+                aria-valuemin={0}
+                aria-valuemax={100}
+              >
+                <motion.div
+                  className="hsf__progress-fill"
+                  initial={false}
+                  animate={{ width: `${progress}%` }}
+                  transition={{ duration: 0.4, ease: "easeInOut" }}
+                />
+              </div>
+              <div className="hsf__nav-back-container">
+                {step > 1 && (
+                  <div
+                    className="hsf__nav-back"
+                    onClick={() => {
+                      if (step === 2 && onBack) {
+                        onBack();
+                      } else {
+                        prev();
+                      }
+                      pushEvent(eventStepBack);
+                    }}
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="18"
+                      height="18"
+                      viewBox="0 0 18 18"
+                      fill="none"
                     >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="18"
-                        height="18"
-                        viewBox="0 0 18 18"
-                        fill="none"
-                      >
-                        <path
-                          d="M14.25 9H3.75005"
-                          stroke="#6A6A6B"
-                          stroke-width="1.5"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                        />
-                        <path
-                          d="M9 3.75L3.74996 9L9 14.25"
-                          stroke="#6A6A6B"
-                          stroke-width="1.5"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                        />
-                      </svg>
-                    </div>
-                  )}
-                  <p className="hsf__step-count">
-                    {flowStep} / {flowTotal}
-                  </p>
-                </div>
-
-                {/* Eyebrow + heading */}
-                {meta && (
-                  <div style={{ textAlign: "center", marginBottom: "32px" }}>
-                    <p className="above-eye-brow">{meta.eyebrow}</p>
-                    <h2 className="step-heading">{meta.heading}</h2>
+                      <path
+                        d="M14.25 9H3.75005"
+                        stroke="#6A6A6B"
+                        stroke-width="1.5"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      />
+                      <path
+                        d="M9 3.75L3.74996 9L9 14.25"
+                        stroke="#6A6A6B"
+                        stroke-width="1.5"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      />
+                    </svg>
                   </div>
                 )}
+                <p className="hsf__step-count">
+                  {flowStep} / {flowTotal}
+                </p>
+              </div>
 
-                {/* Slides */}
-                <div className="hsf__slide-wrap">
-                  <AnimatePresence mode="wait" custom={dir}>
-                    <motion.div
-                      key={step}
-                      className="hsf__slide"
-                      custom={dir}
-                      variants={slideVariants as unknown as Variants}
-                      initial="enter"
-                      animate="center"
-                      exit="exit"
-                    >
-                      {/* ── Step 2: Name + Phone ── */}
-                      {step === 2 && (
-                        <div className="hsf__fields">
-                          <div className="hsf__row">
-                            <div className="hsf__col">
-                              <label
-                                className="field-label field-label-required"
-                                htmlFor="hsf-firstname"
-                              >
-                                First Name
-                              </label>
-                              <input
-                                id="hsf-firstname"
-                                className={`formInput${
-                                  errors.firstname ? " formInput--error" : ""
-                                }`}
-                                type="text"
-                                placeholder="First name"
-                                value={form.firstname}
-                                onChange={(e) =>
-                                  set("firstname", e.target.value)
-                                }
-                                autoFocus
-                              />
-                              {errors.firstname && (
-                                <span className="fieldError">
-                                  {errors.firstname}
-                                </span>
-                              )}
-                            </div>
-                            <div className="hsf__col">
-                              <label
-                                className="field-label field-label-required"
-                                htmlFor="hsf-lastname"
-                              >
-                                Last Name
-                              </label>
-                              <input
-                                id="hsf-lastname"
-                                className={`formInput${
-                                  errors.lastname ? " formInput--error" : ""
-                                }`}
-                                type="text"
-                                placeholder="Last name"
-                                value={form.lastname}
-                                onChange={(e) =>
-                                  set("lastname", e.target.value)
-                                }
-                              />
-                              {errors.lastname && (
-                                <span className="fieldError">
-                                  {errors.lastname}
-                                </span>
-                              )}
-                            </div>
-                          </div>
+              {/* Eyebrow + heading */}
+              {meta && (
+                <div style={{ textAlign: "center", marginBottom: "32px" }}>
+                  <p className="above-eye-brow">{meta.eyebrow}</p>
+                  <h2 className="step-heading">{meta.heading}</h2>
+                </div>
+              )}
+
+              {/* Slides */}
+              <div className="hsf__slide-wrap">
+                <AnimatePresence mode="wait" custom={dir}>
+                  <motion.div
+                    key={step}
+                    className="hsf__slide"
+                    custom={dir}
+                    variants={slideVariants as unknown as Variants}
+                    initial="enter"
+                    animate="center"
+                    exit="exit"
+                  >
+                    {/* ── Step 2: Name + Phone ── */}
+                    {step === 2 && (
+                      <div className="hsf__fields">
+                        <div className="hsf__row">
                           <div className="hsf__col">
                             <label
                               className="field-label field-label-required"
-                              htmlFor="hsf-phone"
+                              htmlFor="hsf-firstname"
                             >
-                              Phone Number
+                              First Name
                             </label>
                             <input
-                              id="hsf-phone"
+                              id="hsf-firstname"
                               className={`formInput${
-                                errors.phone ? " formInput--error" : ""
-                              }`}
-                              type="tel"
-                              inputMode="numeric"
-                              pattern="[0-9]*"
-                              placeholder="Phone number"
-                              value={form.phone}
-                              onChange={(e) =>
-                                set(
-                                  "phone",
-                                  e.target.value.replace(/[^\d-]/g, ""),
-                                )
-                              }
-                            />
-                            {errors.phone && (
-                              <span className="fieldError">{errors.phone}</span>
-                            )}
-                          </div>
-                        </div>
-                      )}
-
-                      {/* ── Step 3: Company + Units + PMS + AI ── */}
-                      {step === 3 && (
-                        <div className="hsf__fields">
-                          <div className="hsf__col">
-                            <label
-                              className="field-label field-label-required"
-                              htmlFor="hsf-company"
-                            >
-                              Company Name
-                            </label>
-                            <input
-                              id="hsf-company"
-                              className={`formInput${
-                                errors.company ? " formInput--error" : ""
+                                errors.firstname ? " formInput--error" : ""
                               }`}
                               type="text"
-                              placeholder="Company name"
-                              value={form.company}
-                              onChange={(e) => set("company", e.target.value)}
+                              placeholder="First name"
+                              value={form.firstname}
+                              onChange={(e) => set("firstname", e.target.value)}
                               autoFocus
                             />
-                            {errors.company && (
+                            {errors.firstname && (
                               <span className="fieldError">
-                                {errors.company}
+                                {errors.firstname}
                               </span>
                             )}
                           </div>
                           <div className="hsf__col">
-                            <label className="field-label" htmlFor="hsf-units">
-                              Units Managed
-                            </label>
-                            <select
-                              id="hsf-units"
-                              className={`formSelect${
-                                errors.units_managed ? " formSelect--error" : ""
-                              }`}
-                              value={form.units_managed}
-                              onChange={(e) =>
-                                set("units_managed", e.target.value)
-                              }
+                            <label
+                              className="field-label field-label-required"
+                              htmlFor="hsf-lastname"
                             >
-                              <option value="">Please select</option>
-                              {UNITS_MANAGED_OPTIONS.map((o) => (
-                                <option key={o} value={o}>
-                                  {o}
-                                </option>
-                              ))}
-                            </select>
-                            {errors.units_managed && (
-                              <span className="fieldError">
-                                {errors.units_managed}
-                              </span>
-                            )}
-                          </div>
-                          <div className="hsf__col">
-                            <label className="field-label" htmlFor="hsf-pms">
-                              PMS Compatibility
+                              Last Name
                             </label>
-                            <select
-                              id="hsf-pms"
-                              className={`formSelect${
-                                errors.pms_compatability
-                                  ? " formSelect--error"
-                                  : ""
+                            <input
+                              id="hsf-lastname"
+                              className={`formInput${
+                                errors.lastname ? " formInput--error" : ""
                               }`}
-                              value={form.pms_compatability}
-                              onChange={(e) =>
-                                set("pms_compatability", e.target.value)
-                              }
-                            >
-                              <option value="">Please select</option>
-                              {PMS_OPTIONS.map((o) => (
-                                <option key={o} value={o}>
-                                  {o}
-                                </option>
-                              ))}
-                            </select>
-                            {errors.pms_compatability && (
-                              <span className="fieldError">
-                                {errors.pms_compatability}
-                              </span>
-                            )}
-                          </div>
-                          <div className="hsf__col">
-                            <label className="field-label" htmlFor="hsf-ai">
-                              In which areas of your operations are you looking
-                              to implement AI?
-                            </label>
-                            <textarea
-                              id="hsf-ai"
-                              className={`formTextarea${
-                                errors.in_which_areas_of_your_operations_are_you_looking_to_implement_ai_
-                                  ? " formTextarea--error"
-                                  : ""
-                              }`}
-                              placeholder="Tell us about your goals..."
-                              rows={4}
-                              value={
-                                form.in_which_areas_of_your_operations_are_you_looking_to_implement_ai_
-                              }
-                              onChange={(e) =>
-                                set(
-                                  "in_which_areas_of_your_operations_are_you_looking_to_implement_ai_",
-                                  e.target.value,
-                                )
-                              }
+                              type="text"
+                              placeholder="Last name"
+                              value={form.lastname}
+                              onChange={(e) => set("lastname", e.target.value)}
                             />
-                            {errors.in_which_areas_of_your_operations_are_you_looking_to_implement_ai_ && (
+                            {errors.lastname && (
                               <span className="fieldError">
-                                {
-                                  errors.in_which_areas_of_your_operations_are_you_looking_to_implement_ai_
-                                }
+                                {errors.lastname}
                               </span>
                             )}
                           </div>
                         </div>
-                      )}
-                    </motion.div>
-                  </AnimatePresence>
-                </div>
+                        <div className="hsf__col">
+                          <label
+                            className="field-label field-label-required"
+                            htmlFor="hsf-phone"
+                          >
+                            Phone Number
+                          </label>
+                          <input
+                            id="hsf-phone"
+                            className={`formInput${
+                              errors.phone ? " formInput--error" : ""
+                            }`}
+                            type="tel"
+                            inputMode="numeric"
+                            pattern="[0-9]*"
+                            placeholder="Phone number"
+                            value={form.phone}
+                            onChange={(e) =>
+                              set(
+                                "phone",
+                                e.target.value.replace(/[^\d-]/g, ""),
+                              )
+                            }
+                          />
+                          {errors.phone && (
+                            <span className="fieldError">{errors.phone}</span>
+                          )}
+                        </div>
+                      </div>
+                    )}
 
-                {/* Navigation */}
-                <div className="hsf__nav">
-                  {step < TOTAL_STEPS ? (
-                    <button
-                      className="defaultButton"
-                      type="button"
-                      onClick={() => {
-                        pushEvent(eventStepTwo);
-                        onEmailSubmit?.();
-                        if (validateStep()) {
-                          void updateContact(form.email, {
-                            firstname: form.firstname,
-                            lastname: form.lastname,
-                            phone: form.phone,
-                          });
-                        }
-                        next();
-                      }}
-                    >
-                      Continue
-                    </button>
-                  ) : (
-                    <button
-                      className="defaultButton"
-                      type="button"
-                      onClick={() => {
-                        pushEvent(eventStepThree);
-                        if (enableWebflowEvent && (window as any).wf) {
-                          (window as any).wf.ready(function () {
-                            (window as any).wf.sendEvent(
-                              "housing-hs-form-submit-optimize",
-                            );
-                          });
-                        }
-                        void submit();
-                      }}
-                      disabled={submitting}
-                    >
-                      {submitting ? "Submitting…" : "Submit"}
-                    </button>
-                  )}
-                </div>
-
-                {apiError && <p className="hsf__api-error">{apiError}</p>}
+                    {/* ── Step 3: Company + Units + PMS + AI ── */}
+                    {step === 3 && (
+                      <div className="hsf__fields">
+                        <div className="hsf__col">
+                          <label
+                            className="field-label field-label-required"
+                            htmlFor="hsf-company"
+                          >
+                            Company Name
+                          </label>
+                          <input
+                            id="hsf-company"
+                            className={`formInput${
+                              errors.company ? " formInput--error" : ""
+                            }`}
+                            type="text"
+                            placeholder="Company name"
+                            value={form.company}
+                            onChange={(e) => set("company", e.target.value)}
+                            autoFocus
+                          />
+                          {errors.company && (
+                            <span className="fieldError">{errors.company}</span>
+                          )}
+                        </div>
+                        <div className="hsf__col">
+                          <label className="field-label" htmlFor="hsf-units">
+                            Units Managed
+                          </label>
+                          <select
+                            id="hsf-units"
+                            className={`formSelect${
+                              errors.units_managed ? " formSelect--error" : ""
+                            }`}
+                            value={form.units_managed}
+                            onChange={(e) =>
+                              set("units_managed", e.target.value)
+                            }
+                          >
+                            <option value="">Please select</option>
+                            {UNITS_MANAGED_OPTIONS.map((o) => (
+                              <option key={o} value={o}>
+                                {o}
+                              </option>
+                            ))}
+                          </select>
+                          {errors.units_managed && (
+                            <span className="fieldError">
+                              {errors.units_managed}
+                            </span>
+                          )}
+                        </div>
+                        <div className="hsf__col">
+                          <label className="field-label" htmlFor="hsf-pms">
+                            PMS Compatibility
+                          </label>
+                          <select
+                            id="hsf-pms"
+                            className={`formSelect${
+                              errors.pms_compatability
+                                ? " formSelect--error"
+                                : ""
+                            }`}
+                            value={form.pms_compatability}
+                            onChange={(e) =>
+                              set("pms_compatability", e.target.value)
+                            }
+                          >
+                            <option value="">Please select</option>
+                            {PMS_OPTIONS.map((o) => (
+                              <option key={o} value={o}>
+                                {o}
+                              </option>
+                            ))}
+                          </select>
+                          {errors.pms_compatability && (
+                            <span className="fieldError">
+                              {errors.pms_compatability}
+                            </span>
+                          )}
+                        </div>
+                        <div className="hsf__col">
+                          <label className="field-label" htmlFor="hsf-ai">
+                            In which areas of your operations are you looking to
+                            implement AI?
+                          </label>
+                          <textarea
+                            id="hsf-ai"
+                            className={`formTextarea${
+                              errors.in_which_areas_of_your_operations_are_you_looking_to_implement_ai_
+                                ? " formTextarea--error"
+                                : ""
+                            }`}
+                            placeholder="Tell us about your goals..."
+                            rows={4}
+                            value={
+                              form.in_which_areas_of_your_operations_are_you_looking_to_implement_ai_
+                            }
+                            onChange={(e) =>
+                              set(
+                                "in_which_areas_of_your_operations_are_you_looking_to_implement_ai_",
+                                e.target.value,
+                              )
+                            }
+                          />
+                          {errors.in_which_areas_of_your_operations_are_you_looking_to_implement_ai_ && (
+                            <span className="fieldError">
+                              {
+                                errors.in_which_areas_of_your_operations_are_you_looking_to_implement_ai_
+                              }
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                  </motion.div>
+                </AnimatePresence>
               </div>
-            </motion.div>
-          )}
-        </AnimatePresence>,
-        document.body,
-      )}
+
+              {/* Navigation */}
+              <div className="hsf__nav">
+                {step < TOTAL_STEPS ? (
+                  <button
+                    className="defaultButton"
+                    type="button"
+                    onClick={() => {
+                      pushEvent(eventStepTwo);
+                      onEmailSubmit?.();
+                      if (validateStep()) {
+                        void updateContact(form.email, {
+                          firstname: form.firstname,
+                          lastname: form.lastname,
+                          phone: form.phone,
+                        });
+                      }
+                      next();
+                    }}
+                  >
+                    Continue
+                  </button>
+                ) : (
+                  <button
+                    className="defaultButton"
+                    type="button"
+                    onClick={() => {
+                      pushEvent(eventStepThree);
+                      if (enableWebflowEvent && (window as any).wf) {
+                        (window as any).wf.ready(function () {
+                          (window as any).wf.sendEvent(
+                            "housing-hs-form-submit-optimize",
+                          );
+                        });
+                      }
+                      void submit();
+                    }}
+                    disabled={submitting}
+                  >
+                    {submitting ? "Submitting…" : "Submit"}
+                  </button>
+                )}
+              </div>
+
+              {apiError && <p className="hsf__api-error">{apiError}</p>}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+      ,
     </>
   );
 }
