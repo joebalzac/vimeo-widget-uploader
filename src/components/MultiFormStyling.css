@@ -191,12 +191,15 @@
 .hsf__overlay {
   position: fixed;
   inset: 0;
+  width: 100vw;
+  height: 100vh;
   background: #ffffff;
-  z-index: 9999;
+  z-index: 999999;
   display: flex;
   flex-direction: column;
   align-items: center;
   overflow-y: auto;
+  transform: translateZ(0);
 }
 
 .hsf__overlay-inner {
@@ -285,7 +288,6 @@
   cursor: pointer;
   margin-top: 12px;
 }
-
 
 .hsf__nav-back-btn:hover {
   background: #f5f5f5 !important;
