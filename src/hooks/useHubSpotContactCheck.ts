@@ -25,7 +25,6 @@ export function useHubSpotContactCheck(): UseHubSpotContactCheckResult {
 
   useEffect(() => {
     const utk = document.cookie.match(/hubspotutk=([^;]+)/)?.[1];
-    console.log("[useHubSpotContactCheck] utk:", utk);
 
     if (!utk) {
       setIsKnown(false);
@@ -37,12 +36,10 @@ export function useHubSpotContactCheck(): UseHubSpotContactCheckResult {
       try {
         const res = await fetch(`${CONTACT_CHECK_URL}?utk=${utk}`);
         const data = await res.json();
-        console.log("[useHubSpotContactCheck] isKnown:", data.isKnown);
         setIsKnown(data.isKnown ?? false);
       } catch {
         setIsKnown(false);
       } finally {
-        console.log("[useHubSpotContactCheck] isLoading: false");
         setIsLoading(false);
       }
     };

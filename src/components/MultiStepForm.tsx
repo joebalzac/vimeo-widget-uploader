@@ -923,7 +923,6 @@ export default function MultiStepForm({
           </motion.div>
         )}
       </AnimatePresence>
-      ,
     </>
   );
 }
