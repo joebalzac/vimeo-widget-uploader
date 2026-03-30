@@ -1,14 +1,3 @@
-/**
- * useHubSpotContactCheck.ts
- *
- * Reads the hubspotutk cookie and checks against the Vercel endpoint
- * to determine if the current visitor is a known HubSpot contact.
- *
- * Returns:
- *  - isKnown: true if existing contact, false if net new or check failed
- *  - isLoading: true while the check is in flight
- */
-
 import { useState, useEffect } from "react";
 
 const CONTACT_CHECK_URL =
@@ -57,10 +46,8 @@ export function useHubSpotContactCheck(): UseHubSpotContactCheckResult {
 
         setIsKnown(!listData.isEligible);
       } catch (err) {
-        console.warn("[useHubSpotContactCheck] failed silently", err);
         setIsKnown(false);
       } finally {
-        console.log("[useHubSpotContactCheck] isLoading: false");
         setIsLoading(false);
       }
     };

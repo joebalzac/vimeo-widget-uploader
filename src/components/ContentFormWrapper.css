@@ -1,0 +1,209 @@
+/* ─────────────────────────────────────────
+   Fullscreen overlay (replaces hsf__overlay)
+───────────────────────────────────────── */
+.cfw__overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: #fff;
+  display: flex;
+  align-items: stretch;
+  overflow-y: auto;
+}
+
+/* ─────────────────────────────────────────
+     Split grid
+  ───────────────────────────────────────── */
+.cfw__grid {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-height: 100%;
+}
+
+@media (min-width: 768px) {
+  .cfw__grid {
+    flex-direction: row;
+  }
+}
+
+/* ─────────────────────────────────────────
+     Form column (left)
+  ───────────────────────────────────────── */
+.cfw__form-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 48px 24px;
+  background: #fff;
+  overflow-y: auto;
+}
+
+@media (min-width: 768px) {
+  .cfw__form-col {
+    max-width: 560px;
+    padding: 64px 48px;
+  }
+}
+
+/* ─────────────────────────────────────────
+     Content column (right)
+  ───────────────────────────────────────── */
+.cfw__content-col {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 24px;
+  background: #181819;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  min-height: 300px;
+  position: relative;
+}
+
+/* Dark overlay on background image */
+.cfw__content-col::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 0;
+}
+
+@media (min-width: 768px) {
+  .cfw__content-col {
+    padding: 64px 48px;
+    min-height: 100%;
+  }
+}
+
+.cfw__content-inner {
+  position: relative;
+  z-index: 1;
+  max-width: 480px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* ─────────────────────────────────────────
+     Logo
+  ───────────────────────────────────────── */
+.cfw__logo {
+  height: 32px;
+  width: auto;
+  object-fit: contain;
+  object-position: left;
+}
+
+/* ─────────────────────────────────────────
+     Headline
+  ───────────────────────────────────────── */
+.cfw__headline {
+  font-family: "Inter Tight", sans-serif;
+  font-size: 36px;
+  font-weight: 450;
+  color: #fff;
+  line-height: 1.15;
+  margin: 0;
+}
+
+@media (max-width: 767px) {
+  .cfw__headline {
+    font-size: 28px;
+  }
+}
+
+/* ─────────────────────────────────────────
+     Body
+  ───────────────────────────────────────── */
+.cfw__body {
+  font-family: Inter, sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.75);
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* ─────────────────────────────────────────
+     Testimonial
+  ───────────────────────────────────────── */
+.cfw__testimonial {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 24px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.cfw__testimonial-quote {
+  font-family: Inter, sans-serif;
+  font-size: 15px;
+  font-weight: 400;
+  color: #fff;
+  line-height: 1.6;
+  margin: 0;
+  font-style: italic;
+}
+
+.cfw__testimonial-author {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.cfw__testimonial-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.cfw__testimonial-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.cfw__testimonial-name {
+  font-family: Inter, sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.cfw__testimonial-title {
+  font-family: Inter, sans-serif;
+  font-size: 13px;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* ─────────────────────────────────────────
+     CTA
+  ───────────────────────────────────────── */
+.cfw__cta {
+  display: inline-flex;
+  align-items: center;
+  padding: 12px 24px;
+  background: #7638fa;
+  color: #fff;
+  font-family: Inter, sans-serif;
+  font-size: 15px;
+  font-weight: 500;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: background-color 0.2s ease;
+  align-self: flex-start;
+}
+
+.cfw__cta:hover {
+  background: #5e2bd4;
+}
