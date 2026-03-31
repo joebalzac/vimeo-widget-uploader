@@ -85,6 +85,12 @@ export default declareComponent(ContentFormWrapper, {
       tooltip: "Body text displayed in the content panel.",
     }),
 
+    contentBackgroundColor: props.Text({
+      name: "Content Background Color",
+      defaultValue: "",
+      tooltip: "Background color for the content panel.",
+    }),
+
     contentImageUrl: props.Text({
       name: "Background Image URL",
       defaultValue: "",

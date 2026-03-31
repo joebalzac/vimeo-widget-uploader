@@ -136,20 +136,17 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
-  padding: 24px;
-  background: rgba(255, 255, 255, 0.08);
-  border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
 }
 
 .cfw__testimonial-quote {
-  font-family: Inter, sans-serif;
-  font-size: 15px;
+  font-family: "Inter Tight";
+  font-size: 30px;
+  font-style: normal;
   font-weight: 400;
-  color: #fff;
-  line-height: 1.6;
+  line-height: 130%;
+  letter-spacing: -0.3px;
+  color: #fafafb;
   margin: 0;
-  font-style: italic;
 }
 
 .cfw__testimonial-author {
@@ -173,17 +170,33 @@
 }
 
 .cfw__testimonial-name {
-  font-family: Inter, sans-serif;
-  font-size: 14px;
-  font-weight: 600;
-  color: #fff;
+  color: #fafafb;
+  font-family: Inter;
+  font-size: 20px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 130%;
+  letter-spacing: -0.2px;
 }
 
 .cfw__testimonial-title {
-  font-family: Inter, sans-serif;
-  font-size: 13px;
+  color: #fafafb;
+  font-family: Inter;
+  font-size: 20px;
+  font-style: normal;
   font-weight: 400;
-  color: rgba(255, 255, 255, 0.6);
+  line-height: 130%;
+  letter-spacing: -0.2px;
+}
+
+.cfw__testimonial-company {
+  color: #fafafb;
+  font-family: Inter;
+  font-size: 20px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 130%;
+  letter-spacing: -0.2px;
 }
 
 /* ─────────────────────────────────────────

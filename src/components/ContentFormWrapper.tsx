@@ -28,6 +28,7 @@ interface ContentFormWrapperProps {
   contentBody?: string;
   contentImageUrl?: string;
   contentImageAlt?: string;
+  contentBackgroundColor?: string;
   contentLogoUrl?: string;
   contentLogoAlt?: string;
   contentCtaText?: string;
@@ -57,6 +58,7 @@ export default function ContentFormWrapper({
   contentBody = "Our platform helps you save time, reduce waste, and take control.",
   contentImageUrl = "",
   contentImageAlt = "",
+  contentBackgroundColor = "",
   contentLogoUrl = "",
   contentLogoAlt = "",
   contentCtaText = "",
@@ -100,7 +102,6 @@ export default function ContentFormWrapper({
       {step > 1 && (
         <div className="cfw__overlay">
           <div className="cfw__grid">
-
             {/* Left — Form */}
             <div className="cfw__form-col">
               <MultiStepForm
@@ -124,10 +125,13 @@ export default function ContentFormWrapper({
             {/* Right — Content panel */}
             <div
               className="cfw__content-col"
-              style={contentImageUrl ? { backgroundImage: `url(${contentImageUrl})` } : {}}
+              style={
+                contentImageUrl
+                  ? { backgroundImage: `url(${contentImageUrl})` }
+                  : { backgroundColor: contentBackgroundColor }
+              }
             >
               <div className="cfw__content-inner">
-
                 {/* Logo */}
                 {contentLogoUrl && (
                   <img
@@ -143,16 +147,14 @@ export default function ContentFormWrapper({
                 )}
 
                 {/* Body */}
-                {contentBody && (
-                  <p className="cfw__body">{contentBody}</p>
-                )}
+                {contentBody && <p className="cfw__body">{contentBody}</p>}
 
                 {/* Testimonial */}
                 {testimonialQuote && (
                   <div className="cfw__testimonial">
-                    <blockquote className="cfw__testimonial-quote">
-                      "{testimonialQuote}"
-                    </blockquote>
+                    <div className="cfw__testimonial-quote">
+                      {testimonialQuote}
+                    </div>
                     <div className="cfw__testimonial-author">
                       {testimonialAvatarUrl && (
                         <img
@@ -163,11 +165,18 @@ export default function ContentFormWrapper({
                       )}
                       <div className="cfw__testimonial-meta">
                         {testimonialName && (
-                          <span className="cfw__testimonial-name">{testimonialName}</span>
+                          <span className="cfw__testimonial-name">
+                            {testimonialName}
+                          </span>
                         )}
                         {testimonialTitle && (
                           <span className="cfw__testimonial-title">
-                            {testimonialTitle}{testimonialCompany ? `, ${testimonialCompany}` : ""}
+                            {testimonialTitle}
+                          </span>
+                        )}
+                        {testimonialCompany && (
+                          <span className="cfw__testimonial-company">
+                            {testimonialCompany}
                           </span>
                         )}
                       </div>
@@ -181,10 +190,8 @@ export default function ContentFormWrapper({
                     {contentCtaText}
                   </a>
                 )}
-
               </div>
             </div>
-
           </div>
         </div>
       )}
