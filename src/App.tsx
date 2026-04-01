@@ -13,6 +13,7 @@ function App() {
           testimonialTitle="Sr. Director, Marketing & Resident Experience"
           testimonialCompany="LeFrak"
           testimonialQuote="EliseAI’s combination of advanced AI, automation, and industry expertise made it the best choice for enhancing resident communication at scale."
+          testimonialAvatarUrl="https://cdn.prod.website-files.com/63cc1eef179b054a9306598d/69cd452406f5c1c4c0c1304a_arthur-kosmider.png"
         />
       </div>
     </>

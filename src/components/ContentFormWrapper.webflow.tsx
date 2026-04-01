@@ -109,10 +109,34 @@ export default declareComponent(ContentFormWrapper, {
       tooltip: "Only logo image URL displayed at the top of the content panel.",
     }),
 
-    contentLogoAlt: props.Text({
-      name: "Only Logo Alt Text",
+    multipleLogos: props.Boolean({
+      name: "Multiple Logos",
+      defaultValue: false,
+      tooltip: "Whether to display multiple logos in the content panel.",
+    }),
+
+    contentOneLogoUrl: props.Text({
+      name: "Content One Logo URL",
       defaultValue: "",
-      tooltip: "Alt text for the only logo image.",
+      tooltip: "Content one logo image URL.",
+    }),
+
+    contentTwoLogoUrl: props.Text({
+      name: "Content Two Logo URL",
+      defaultValue: "",
+      tooltip: "Content two logo image URL.",
+    }),
+
+    contentThreeLogoUrl: props.Text({
+      name: "Content Three Logo URL",
+      defaultValue: "",
+      tooltip: "Content three logo image URL.",
+    }),
+
+    mainQuote: props.Text({
+      name: "Main Quote",
+      defaultValue: "",
+      tooltip: "Main quote text.",
     }),
 
     testimonialQuote: props.Text({
@@ -124,7 +148,7 @@ export default declareComponent(ContentFormWrapper, {
     testimonialName: props.Text({
       name: "Testimonial Name",
       defaultValue: "",
-      tooltip: "Name of the person giving the testimonial.",
+      tooltip: "Name of the person giving the main quote.",
     }),
 
     testimonialTitle: props.Text({

@@ -98,8 +98,38 @@
 /* ─────────────────────────────────────────
      Logo
   ───────────────────────────────────────── */
-.cfw__logo {
+.cfw__main-logo {
   height: 32px;
+  width: auto;
+  object-fit: contain;
+  object-position: left;
+}
+
+.cfw__multiple-logos {
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+.cfw__multiple-logo-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  width: 512px;
+  height: 80px;
+  margin: 0 auto;
+  border-radius: 2px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.cfw__multiple-logo {
+  max-height: 32px;
   width: auto;
   object-fit: contain;
   object-position: left;
@@ -153,7 +183,7 @@
   gap: 16px;
 }
 
-.cfw__testimonial-quote {
+.cfw__main-quote {
   font-family: "Inter Tight";
   font-size: 30px;
   font-style: normal;
@@ -162,6 +192,15 @@
   letter-spacing: -0.3px;
   color: #fafafb;
   margin: 0;
+}
+
+.cfw__testimonial-quote {
+  color: #fafafb;
+  font-family: "Inter Tight";
+  font-size: 20px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 130%;
 }
 
 .cfw__testimonial-author {
