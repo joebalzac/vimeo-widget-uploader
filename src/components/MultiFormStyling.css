@@ -204,6 +204,7 @@
   max-width: 600px;
   padding: 0 24px 48px;
   box-sizing: border-box;
+  margin: 0 auto;
 }
 
 .hsf__overlay-inner .hsf__progress-track {
@@ -285,7 +286,6 @@
   cursor: pointer;
   margin-top: 12px;
 }
-
 
 .hsf__nav-back-btn:hover {
   background: #f5f5f5 !important;

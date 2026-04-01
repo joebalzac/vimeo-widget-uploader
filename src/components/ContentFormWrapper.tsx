@@ -31,8 +31,8 @@ interface ContentFormWrapperProps {
   contentBackgroundColor?: string;
   contentLogoUrl?: string;
   contentLogoAlt?: string;
-  contentCtaText?: string;
-  contentCtaUrl?: string;
+  contentMainTitle?: string;
+  contentMainSubtitle?: string;
   testimonialQuote?: string;
   testimonialName?: string;
   testimonialTitle?: string;
@@ -61,8 +61,6 @@ export default function ContentFormWrapper({
   contentBackgroundColor = "",
   contentLogoUrl = "",
   contentLogoAlt = "",
-  contentCtaText = "",
-  contentCtaUrl = "#",
   testimonialQuote = "",
   testimonialName = "",
   testimonialTitle = "",
@@ -132,7 +130,6 @@ export default function ContentFormWrapper({
               }
             >
               <div className="cfw__content-inner">
-                {/* Logo */}
                 {contentLogoUrl && (
                   <img
                     src={contentLogoUrl}
@@ -141,55 +138,48 @@ export default function ContentFormWrapper({
                   />
                 )}
 
-                {/* Headline */}
-                {contentHeadline && (
-                  <h2 className="cfw__headline">{contentHeadline}</h2>
-                )}
-
-                {/* Body */}
-                {contentBody && <p className="cfw__body">{contentBody}</p>}
-
-                {/* Testimonial */}
-                {testimonialQuote && (
-                  <div className="cfw__testimonial">
-                    <div className="cfw__testimonial-quote">
-                      {testimonialQuote}
-                    </div>
-                    <div className="cfw__testimonial-author">
-                      {testimonialAvatarUrl && (
-                        <img
-                          src={testimonialAvatarUrl}
-                          alt={testimonialName}
-                          className="cfw__testimonial-avatar"
-                        />
-                      )}
-                      <div className="cfw__testimonial-meta">
-                        {testimonialName && (
-                          <span className="cfw__testimonial-name">
-                            {testimonialName}
-                          </span>
+                <div className="cfw__content-headline-body">
+                  {contentHeadline && (
+                    <h2 className="cfw__headline">{contentHeadline}</h2>
+                  )}
+                  {contentBody && <p className="cfw__body">{contentBody}</p>}
+                </div>
+                <div className="cfw__content-testimonial-cta">
+                  {testimonialQuote && (
+                    <div className="cfw__testimonial">
+                      <div className="cfw__testimonial-quote">
+                        {testimonialQuote}
+                      </div>
+                      <div className="cfw__testimonial-author">
+                        {testimonialAvatarUrl && (
+                          <img
+                            src={testimonialAvatarUrl}
+                            alt={testimonialName}
+                            className="cfw__testimonial-avatar"
+                          />
                         )}
-                        {testimonialTitle && (
-                          <span className="cfw__testimonial-title">
-                            {testimonialTitle}
-                          </span>
-                        )}
-                        {testimonialCompany && (
-                          <span className="cfw__testimonial-company">
-                            {testimonialCompany}
-                          </span>
-                        )}
+                        <div className="cfw__testimonial-meta">
+                          {testimonialName && (
+                            <span className="cfw__testimonial-name">
+                              {testimonialName}
+                            </span>
+                          )}
+                          {testimonialTitle && (
+                            <span className="cfw__testimonial-title">
+                              {testimonialTitle}
+                            </span>
+                          )}
+                          {testimonialCompany && (
+                            <span className="cfw__testimonial-company">
+                              {testimonialCompany}
+                            </span>
+                          )}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                )}
+                  )}
 
-                {/* CTA */}
-                {contentCtaText && (
-                  <a href={contentCtaUrl} className="cfw__cta">
-                    {contentCtaText}
-                  </a>
-                )}
+                </div>
               </div>
             </div>
           </div>

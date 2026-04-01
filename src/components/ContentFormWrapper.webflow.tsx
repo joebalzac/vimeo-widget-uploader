@@ -94,7 +94,7 @@ export default declareComponent(ContentFormWrapper, {
     contentImageUrl: props.Text({
       name: "Background Image URL",
       defaultValue: "",
-      tooltip: "Background image URL for the content panel.",
+      tooltip: "Background image URL for the content panel.", 
     }),
 
     contentImageAlt: props.Text({
@@ -113,18 +113,6 @@ export default declareComponent(ContentFormWrapper, {
       name: "Logo Alt Text",
       defaultValue: "",
       tooltip: "Alt text for the logo image.",
-    }),
-
-    contentCtaText: props.Text({
-      name: "CTA Text",
-      defaultValue: "",
-      tooltip: "Optional CTA button text in the content panel.",
-    }),
-
-    contentCtaUrl: props.Text({
-      name: "CTA URL",
-      defaultValue: "#",
-      tooltip: "URL for the optional CTA button.",
     }),
 
     testimonialQuote: props.Text({
