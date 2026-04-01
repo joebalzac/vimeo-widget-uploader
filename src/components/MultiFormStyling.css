@@ -318,6 +318,37 @@
   font-family: Inter;
 }
 
+.hsf__lowbrow-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.hsf__lowbrow-text {
+  color: #515152;
+  font-family: Inter;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 150%;
+  letter-spacing: -0.16px;
+}
+
+.hsf__separator {
+  width: 1px;
+  height: 28px;
+  background: #eaeaed;
+}
+
+.hsf__step-1-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
 /* ─── Mobile ───────────────────────────────────────────────────────────────── */
 
 @media (max-width: 480px) {
@@ -363,5 +394,13 @@
     height: 48px;
     padding: 12px 24px;
     border-radius: 4px;
+  }
+
+  .hsf__lowbrow-container {
+    gap: 8px;
+  }
+
+  .hsf__lowbrow-text {
+    font-size: 14px;
   }
 }
