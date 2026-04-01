@@ -171,8 +171,8 @@
 }
 
 .cfw__testimonial-avatar {
-  width: 40px;
-  height: 40px;
+  width: 64px;
+  height: 64px;
   border-radius: 50%;
   object-fit: cover;
   flex-shrink: 0;

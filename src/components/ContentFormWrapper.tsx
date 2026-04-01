@@ -29,7 +29,7 @@ interface ContentFormWrapperProps {
   contentImageUrl?: string;
   contentImageAlt?: string;
   contentBackgroundColor?: string;
-  contentLogoUrl?: string;
+  contentOnlyLogoUrl?: string;
   contentLogoAlt?: string;
   contentMainTitle?: string;
   contentMainSubtitle?: string;
@@ -59,7 +59,7 @@ export default function ContentFormWrapper({
   contentImageUrl = "",
   contentImageAlt = "",
   contentBackgroundColor = "",
-  contentLogoUrl = "",
+  contentOnlyLogoUrl = "",
   contentLogoAlt = "",
   testimonialQuote = "",
   testimonialName = "",
@@ -130,20 +130,20 @@ export default function ContentFormWrapper({
               }
             >
               <div className="cfw__content-inner">
-                {contentLogoUrl && (
-                  <img
-                    src={contentLogoUrl}
-                    alt={contentLogoAlt}
-                    className="cfw__logo"
-                  />
-                )}
-
                 <div className="cfw__content-headline-body">
                   {contentHeadline && (
                     <h2 className="cfw__headline">{contentHeadline}</h2>
                   )}
                   {contentBody && <p className="cfw__body">{contentBody}</p>}
                 </div>
+                {contentOnlyLogoUrl && (
+                  <img
+                    src={contentOnlyLogoUrl}
+                    alt={contentLogoAlt}
+                    className="cfw__logo"
+                  />
+                )}
+             
                 <div className="cfw__content-testimonial-cta">
                   {testimonialQuote && (
                     <div className="cfw__testimonial">
@@ -178,7 +178,6 @@ export default function ContentFormWrapper({
                       </div>
                     </div>
                   )}
-
                 </div>
               </div>
             </div>

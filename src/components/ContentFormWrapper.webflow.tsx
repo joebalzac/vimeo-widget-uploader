@@ -94,7 +94,7 @@ export default declareComponent(ContentFormWrapper, {
     contentImageUrl: props.Text({
       name: "Background Image URL",
       defaultValue: "",
-      tooltip: "Background image URL for the content panel.", 
+      tooltip: "Background image URL for the content panel.",
     }),
 
     contentImageAlt: props.Text({
@@ -103,16 +103,16 @@ export default declareComponent(ContentFormWrapper, {
       tooltip: "Alt text for the background image.",
     }),
 
-    contentLogoUrl: props.Text({
-      name: "Logo URL",
+    contentOnlyLogoUrl: props.Text({
+      name: "Only Logo URL",
       defaultValue: "",
-      tooltip: "Logo image URL displayed at the top of the content panel.",
+      tooltip: "Only logo image URL displayed at the top of the content panel.",
     }),
 
     contentLogoAlt: props.Text({
-      name: "Logo Alt Text",
+      name: "Only Logo Alt Text",
       defaultValue: "",
-      tooltip: "Alt text for the logo image.",
+      tooltip: "Alt text for the only logo image.",
     }),
 
     testimonialQuote: props.Text({
