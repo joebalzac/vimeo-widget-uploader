@@ -130,6 +130,7 @@
 
 .cfw__multiple-logo {
   max-height: 32px;
+  max-width: 125px;
   width: auto;
   object-fit: contain;
   object-position: left;

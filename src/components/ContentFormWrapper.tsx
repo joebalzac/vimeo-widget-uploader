@@ -111,32 +111,17 @@ export default function ContentFormWrapper({
       {step > 1 && (
         <div className="cfw__overlay">
           <div className="cfw__grid">
-            {/* Left — Form */}
-            <div className="cfw__form-col">
-              <MultiStepForm
-                portalId={portalId}
-                formGuid={formGuid}
-                className={className}
-                enableNavTrigger={enableNavTrigger}
-                eventEmailSubmit={eventEmailSubmit}
-                eventStepTwo={eventStepTwo}
-                eventStepThree={eventStepThree}
-                emailInputPlaceholder={emailInputPlaceholder}
-                emailCTAText={emailCTAText}
-                promoOffering={promoOffering}
-                initialStep={step}
-                onStepChange={handleStepChange}
-                onComplete={handleComplete}
-                disableOverlay
-              />
-            </div>
-
-            {/* Right — Content panel */}
+            {/* Left — Conten Panel*/}
             <div
               className="cfw__content-col"
               style={
                 contentImageUrl
-                  ? { backgroundImage: `url(${contentImageUrl})` }
+                  ? {
+                      backgroundImage: `url(${contentImageUrl})`,
+                      backgroundSize: "cover",
+                      backgroundPosition: "center",
+                      backgroundRepeat: "no-repeat",
+                    }
                   : { backgroundColor: contentBackgroundColor }
               }
             >
@@ -157,15 +142,26 @@ export default function ContentFormWrapper({
 
                 {multipleLogos && (
                   <div className="cfw__multiple-logos">
-                  
                     <div className="cfw__multiple-logo-container">
-                      <img src={contentOneLogoUrl} alt={contentLogoAlt} className="cfw__multiple-logo" />
+                      <img
+                        src={contentOneLogoUrl}
+                        alt={contentLogoAlt}
+                        className="cfw__multiple-logo"
+                      />
                     </div>
                     <div className="cfw__multiple-logo-container">
-                      <img src={contentTwoLogoUrl} alt={contentLogoAlt} className="cfw__multiple-logo" />
+                      <img
+                        src={contentTwoLogoUrl}
+                        alt={contentLogoAlt}
+                        className="cfw__multiple-logo"
+                      />
                     </div>
                     <div className="cfw__multiple-logo-container">
-                      <img src={contentThreeLogoUrl} alt={contentLogoAlt} className="cfw__multiple-logo" />
+                      <img
+                        src={contentThreeLogoUrl}
+                        alt={contentLogoAlt}
+                        className="cfw__multiple-logo"
+                      />
                     </div>
                   </div>
                 )}
@@ -250,6 +246,26 @@ export default function ContentFormWrapper({
                   )}
                 </div>
               </div>
+            </div>
+            {/* Right — Form */}
+
+            <div className="cfw__form-col">
+              <MultiStepForm
+                portalId={portalId}
+                formGuid={formGuid}
+                className={className}
+                enableNavTrigger={enableNavTrigger}
+                eventEmailSubmit={eventEmailSubmit}
+                eventStepTwo={eventStepTwo}
+                eventStepThree={eventStepThree}
+                emailInputPlaceholder={emailInputPlaceholder}
+                emailCTAText={emailCTAText}
+                promoOffering={promoOffering}
+                initialStep={step}
+                onStepChange={handleStepChange}
+                onComplete={handleComplete}
+                disableOverlay
+              />
             </div>
           </div>
         </div>
