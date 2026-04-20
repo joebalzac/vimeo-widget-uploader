@@ -12,33 +12,28 @@
 import { useEffect } from "react";
 
 interface UseVisitTriggerOptions {
-  triggerPages: string; // comma-separated list of qualifying paths
-  triggerAfter: number; // number of qualifying pages needed
-  triggerDelay: number; // ms delay before firing onTrigger
-  isKnown: boolean; // from useHubSpotContactCheck
-  isLoading: boolean; // from useHubSpotContactCheck
-  onTrigger: () => void; // called when all conditions are met
+  triggerPages: string;
+  triggerAfter: number;
+  triggerDelay: number;
+  singleVisitDelay?: number; // 👈 delay in ms to show on first visit alone
+  isKnown: boolean;
+  isLoading: boolean;
+  onTrigger: () => void;
 }
 
 export function useVisitTrigger({
   triggerPages,
   triggerAfter,
   triggerDelay,
+  singleVisitDelay = 20000,
   isKnown,
   isLoading,
   onTrigger,
 }: UseVisitTriggerOptions): void {
   useEffect(() => {
-    // Wait for HubSpot check to finish
     if (isLoading) return;
-
-    // Known contact — don't show
     if (isKnown) return;
-
-    // Already shown
     if (localStorage.getItem("lb_shown")) return;
-
-    // No pages configured
     if (!triggerPages) return;
 
     const pages = triggerPages
@@ -47,7 +42,6 @@ export function useVisitTrigger({
       .filter(Boolean);
     const currentPath = window.location.pathname;
 
-    // Record current page visit
     const visited: string[] = JSON.parse(
       localStorage.getItem("lb_visited") ?? "[]",
     );
@@ -56,30 +50,32 @@ export function useVisitTrigger({
       localStorage.setItem("lb_visited", JSON.stringify(visited));
     }
 
-    // Check qualifying page count
     const matchCount = pages.filter((p) => visited.includes(p)).length;
-    if (matchCount < triggerAfter) return;
 
-    // All conditions met — fire after delay
-    const timer = setTimeout(() => {
-      onTrigger();
-      localStorage.setItem("lb_shown", "true");
-    }, triggerDelay);
-    console.log("[useVisitTrigger] isLoading:", isLoading);
-    console.log("[useVisitTrigger] isKnown:", isKnown);
-    console.log(
-      "[useVisitTrigger] lb_shown:",
-      localStorage.getItem("lb_shown"),
-    );
-    console.log(
-      "[useVisitTrigger] visited:",
-      JSON.parse(localStorage.getItem("lb_visited") ?? "[]"),
-    );
-    console.log(
-      "[useVisitTrigger] matchCount:",
-      pages.filter((p) => visited.includes(p)).length,
-    );
+    // Met the multi-visit threshold — fire after triggerDelay
+    if (matchCount >= triggerAfter) {
+      const timer = setTimeout(() => {
+        onTrigger();
+        localStorage.setItem("lb_shown", "true");
+      }, triggerDelay);
+      return () => clearTimeout(timer);
+    }
 
-    return () => clearTimeout(timer);
-  }, [isLoading, isKnown, triggerPages, triggerAfter, triggerDelay, onTrigger]);
+    // Single qualifying page visit — fire after singleVisitDelay
+    if (matchCount === 1) {
+      const timer = setTimeout(() => {
+        onTrigger();
+        localStorage.setItem("lb_shown", "true");
+      }, singleVisitDelay);
+      return () => clearTimeout(timer);
+    }
+  }, [
+    isLoading,
+    isKnown,
+    triggerPages,
+    triggerAfter,
+    triggerDelay,
+    singleVisitDelay,
+    onTrigger,
+  ]);
 }

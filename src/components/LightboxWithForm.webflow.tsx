@@ -96,6 +96,13 @@ export default declareComponent(LightboxWithForm, {
         "Delay in ms before showing the lightbox once conditions are met.",
     }),
 
+    singleVisitDelay: props.Number({
+      name: "Single Visit Delay (ms)",
+      defaultValue: 2000,
+      tooltip:
+        "Delay in ms before showing the lightbox once the visitor has visited a qualifying page.",
+    }),
+
     portalId: props.Text({
       name: "HubSpot Portal ID",
       defaultValue: "45321630",

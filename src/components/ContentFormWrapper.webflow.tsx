@@ -74,8 +74,8 @@ export default declareComponent(ContentFormWrapper, {
     // ── Content panel props ───────────────────────────────────────────────────
     contentHeadline: props.Text({
       name: "Content Headline",
-      defaultValue: "See why thousands trust us.",
-      tooltip: "Headline displayed in the content panel.",
+      defaultValue: "",
+      tooltip: "",
     }),
 
     contentBody: props.Text({

@@ -29,6 +29,7 @@ interface LightboxWithFormProps {
   triggerPages?: string;
   triggerAfter?: number;
   triggerDelay?: number;
+  singleVisitDelay?: number;
   portalId?: string;
   formGuid?: string;
   enableNavTrigger?: boolean;
@@ -106,6 +107,7 @@ export default function LightboxWithForm({
   triggerPages = "",
   triggerAfter = 2,
   triggerDelay = 0,
+  singleVisitDelay = 20000, // 20 seconds
   portalId,
   formGuid,
   enableNavTrigger,
@@ -135,6 +137,7 @@ export default function LightboxWithForm({
     triggerPages,
     triggerAfter,
     triggerDelay,
+    singleVisitDelay,
     isKnown,
     isLoading,
     onTrigger: handleTrigger,
@@ -238,6 +241,7 @@ export default function LightboxWithForm({
           onComplete={handleComplete}
           onBack={handleBack}
           eventStepBack={eventStepBack}
+          enableLowbrow={true}
         />
       )}
     </>

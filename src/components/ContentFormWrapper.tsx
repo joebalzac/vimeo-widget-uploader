@@ -59,8 +59,8 @@ export default function ContentFormWrapper({
   promoOffering,
 
   // Content panel props
-  contentHeadline = "See why thousands trust us.",
-  contentBody = "Our platform helps you save time, reduce waste, and take control.",
+  contentHeadline = "",
+  contentBody = "",
   contentImageUrl = "",
   contentImageAlt = "",
   contentBackgroundColor = "",
@@ -103,7 +103,7 @@ export default function ContentFormWrapper({
           promoOffering={promoOffering}
           onStepChange={handleStepChange}
           onComplete={handleComplete}
-          disableOverlay
+          enableLowbrow={true}
         />
       )}
 
@@ -264,7 +264,7 @@ export default function ContentFormWrapper({
                 initialStep={step}
                 onStepChange={handleStepChange}
                 onComplete={handleComplete}
-                disableOverlay
+                enableLowbrow={true}
               />
             </div>
           </div>
