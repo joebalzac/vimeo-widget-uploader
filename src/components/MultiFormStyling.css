@@ -343,7 +343,7 @@
   background: #fff;
   display: flex;
   align-items: stretch;
-  overflow-y: auto;
+  overflow: hidden;
 }
 
 .hsf__split {
