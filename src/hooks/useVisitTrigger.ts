@@ -36,6 +36,12 @@ export function useVisitTrigger({
     if (localStorage.getItem("lb_shown")) return;
     if (!triggerPages) return;
 
+    // 👇 add these logs here
+    console.log("[useVisitTrigger] currentPath:", window.location.pathname);
+    console.log("[useVisitTrigger] triggerPages:", triggerPages);
+    console.log("[useVisitTrigger] isLoading:", isLoading);
+    console.log("[useVisitTrigger] isKnown:", isKnown);
+
     const pages = triggerPages
       .split(",")
       .map((p) => p.trim())
