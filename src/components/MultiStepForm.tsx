@@ -809,7 +809,12 @@ export default function MultiStepForm({
   return (
     <>
       {/* ── Step 1: Email — inline on page ── */}
-      <div className={`hsf ${className}`} onKeyDown={onKeyDown}>
+      <div
+        className={`hsf ${
+          leftAlignContent ? "hsf--left-align" : ""
+        } ${className}`}
+        onKeyDown={onKeyDown}
+      >
         {step === 1 && (
           <div
             className={`hsf__step-1-container${

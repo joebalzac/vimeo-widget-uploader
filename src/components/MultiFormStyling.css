@@ -229,6 +229,10 @@
   font-family: Inter, sans-serif;
 }
 
+.hsf--left-align {
+  margin: 0;
+}
+
 /* ─── Slide area ───────────────────────────────────────────────────────────── */
 
 .hsf__slide-wrap {
