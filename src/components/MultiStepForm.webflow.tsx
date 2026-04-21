@@ -92,6 +92,18 @@ export default declareComponent(MultiStepForm, {
       tooltip: "Show the rating + SOC2 trust bar below the email capture.",
     }),
 
+    darkMode: props.Boolean({
+      name: "Dark mode",
+      defaultValue: false,
+      tooltip: "Enable dark mode for the form.",
+    }),
+
+    leftAlignContent: props.Boolean({
+      name: "Left align content",
+      defaultValue: false,
+      tooltip: "Align the content panel to the left.",
+    }),
+
     // ── Content panel props ───────────────────────────────────────────────────
     contentImageUrl: props.Text({
       name: "Content — Background Image URL",

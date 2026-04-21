@@ -57,6 +57,8 @@ export function useVisitTrigger({
     }
 
     const matchCount = pages.filter((p) => visited.includes(p)).length;
+    console.log("[useVisitTrigger] visited:", visited);
+    console.log("[useVisitTrigger] matchCount:", matchCount);
 
     // Met the multi-visit threshold — fire after triggerDelay
     if (matchCount >= triggerAfter) {

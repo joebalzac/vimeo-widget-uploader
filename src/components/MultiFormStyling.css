@@ -78,11 +78,19 @@
   gap: 8px;
 }
 
+.hsf__step-1-container--left-align {
+  align-items: flex-start;
+}
+
 .hsf__lowbrow-container {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 12px;
+}
+
+.hsf__lowbrow-text--dark {
+  color: #fafafb;
 }
 
 .lowbrow-check-wrapper {
@@ -96,6 +104,10 @@
   width: 1px;
   height: 16px;
   background: #eaeaed;
+}
+
+.hsf__separator--dark {
+  background: #fafafb;
 }
 
 /* ─── Eyebrow ──────────────────────────────────────────────────────────────── */
@@ -610,7 +622,7 @@
   .emailCapture {
     flex-direction: column;
     width: 100%;
-    max-width: 345px;
+    max-width: none;
     margin: 0 auto;
     padding: 0;
     gap: 8px;
@@ -644,5 +656,10 @@
     left: 0;
     width: 100%;
     height: 100%;
+  }
+
+  .hsf__fields {
+    width: 100%;
+    max-width: none;
   }
 }
