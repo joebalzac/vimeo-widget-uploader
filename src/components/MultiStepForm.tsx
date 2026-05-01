@@ -1322,7 +1322,7 @@ export default function MultiStepForm({
                           if (enableWebflowEvent && (window as any).wf) {
                             (window as any).wf.ready(() =>
                               (window as any).wf.sendEvent(
-                                "form_submitted",
+                                "form_submitted_optimize",
                               ),
                             );
                           }
