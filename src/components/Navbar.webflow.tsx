@@ -1,7 +1,6 @@
 import { Navbar } from "./Navbar";
 import { props } from "@webflow/data-types";
 import { declareComponent } from "@webflow/react";
-import "../index.css";
 
 export default declareComponent(Navbar, {
   name: "EliseAI Navbar",
