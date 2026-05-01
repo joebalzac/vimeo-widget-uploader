@@ -20,7 +20,7 @@ export default declareComponent(MeetEliseCTA, {
     // ── HubSpot ──────────────────────────────────────────────────────────────
     portalId: props.Text({
       name: "HubSpot Portal ID",
-      defaultValue: "21794547",
+      defaultValue: "45321630",
       tooltip: "Your HubSpot portalId (string).",
     }),
 
@@ -51,6 +51,14 @@ export default declareComponent(MeetEliseCTA, {
       defaultValue: "(888) 315-2945",
       tooltip:
         "Human-readable phone number — also used to generate the tel: link.",
+    }),
+
+    qrCodeSrc: props.Text({
+      name: "QR Code Image URL",
+      defaultValue:
+        "https://cdn.prod.website-files.com/63cc1eef179b054a9306598d/69e923490d2027c0e66d0c17_meetelise-qr-code.png",
+      tooltip:
+        "Upload the QR code image to Webflow Assets and paste the URL here.",
     }),
 
     // ── GTM Events ────────────────────────────────────────────────────────────

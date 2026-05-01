@@ -12,6 +12,7 @@ interface Props {
   eventModalOpen?: string;
   eventFormSubmit?: string;
   phoneDisplay?: string;
+  qrCodeSrc?: string;
 }
 
 interface FormData {
@@ -24,11 +25,10 @@ interface FormData {
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 const SAMPLE_QUESTIONS = [
-  "Do you have any 1 bed 1 bath units available for move in next month?",
+  "Do you have any 1 bedroom apartments available for move in next month?",
   "What utilities are included in the rent?",
   "Are pets allowed? If so, are there any pet fees?",
   "Is there parking or public transportation close by?",
-  "What grocery stores are in the neighborhood?",
 ];
 
 const LANGUAGES = [
@@ -180,6 +180,7 @@ export default function MeetEliseCTA({
   eventModalOpen = "meetelise_cta_clicked",
   eventFormSubmit = "meetelise_lead_submitted",
   phoneDisplay = "(888) 315-2945",
+  qrCodeSrc = "https://cdn.prod.website-files.com/63cc1eef179b054a9306598d/69e923490d2027c0e66d0c17_meetelise-qr-code.png",
 }: Props) {
   const [open, setOpen] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -566,6 +567,22 @@ export default function MeetEliseCTA({
                   </div>
                 </div>
 
+                {/* QR code — desktop nudge */}
+                <div className="me-qr-block">
+                  <img
+                    src={qrCodeSrc}
+                    alt="Scan to call Elise from your phone"
+                    className="me-qr-img"
+                  />
+                  <div className="me-qr-text">
+                    <p className="me-qr-title">On your computer?</p>
+                    <p className="me-qr-sub">
+                      Scan this QR code with your phone to dial Elise directly —
+                      no typing needed.
+                    </p>
+                  </div>
+                </div>
+
                 <div className="me-divider" />
 
                 {/* Sample questions */}
@@ -589,7 +606,6 @@ export default function MeetEliseCTA({
                       {l}
                     </span>
                   ))}
-                  <span className="me-lang-pill-more">More</span>
                 </div>
 
                 {/* Dismiss */}

@@ -834,13 +834,15 @@ export default function MultiStepForm({
                   placeholder={emailInputPlaceholder}
                   value={form.email}
                   onChange={(e) => set("email", e.target.value)}
-                  autoFocus
                 />
                 <button
                   className="defaultButton emailCapture__btn"
                   type="button"
                   onClick={() => {
                     pushEvent(eventEmailSubmit);
+                    if ((window as any).wf) {
+                      (window as any).wf.ready(() => (window as any).wf.sendEvent("email_capture_optimize"));
+                    }
                     if (form.email && validateEmail(form.email))
                       void createContact(form.email);
                     next();
@@ -1320,7 +1322,7 @@ export default function MultiStepForm({
                           if (enableWebflowEvent && (window as any).wf) {
                             (window as any).wf.ready(() =>
                               (window as any).wf.sendEvent(
-                                "housing-hs-form-submit-optimize",
+                                "form_submitted",
                               ),
                             );
                           }
