@@ -71,6 +71,7 @@
 
 /* ===== NAV LINK ===== */
 .navbar__nav-link {
+  font-size: 1rem;
   color: #111827;
   transition: color 200ms;
   text-decoration: none;
@@ -100,8 +101,11 @@
 
 /* ===== LOGIN LINK ===== */
 .navbar__login {
+  font-size: 1rem;
+  font-family: Inter, sans-serif;
+  font-weight: 450;
+  line-height: 1.5;
   color: #7638fa;
-  font-weight: 500;
   transition: color 200ms;
   text-decoration: none;
   display: flex;
@@ -120,13 +124,17 @@
 
 /* ===== CTA BUTTON ===== */
 .navbar__cta {
+  font-size: 1rem;
+  font-family: Inter, sans-serif;
+  font-weight: 450;
+  line-height: 1.5;
   background-color: #7638fa;
   color: #ffffff;
-  padding: 0.625rem 1.25rem;
-  border-radius: 0.5rem;
-  font-weight: 600;
   transition: background-color 200ms;
   text-decoration: none;
+  letter-spacing: -0.16px;
+  border-radius: 4px;
+  padding: 10px 16px;
 }
 
 .navbar__cta:hover {
