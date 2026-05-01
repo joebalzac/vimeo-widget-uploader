@@ -353,28 +353,122 @@
   }
 }
 
-/* ===== MOBILE NAV LINK ===== */
-.navbar__mobile-link {
+/* ===== MOBILE HEADER ROW (back + close) ===== */
+.navbar__mobile-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid #eaeaed;
+  margin-bottom: 0.5rem;
+}
+
+.navbar__mobile-back {
+  background: none;
+  border: none;
+  font-size: 1rem;
+  font-weight: 500;
   color: #111827;
+  cursor: pointer;
+  padding: 0;
+}
+
+.navbar__mobile-btn--inline {
+  display: block;
+}
+
+/* ===== MOBILE NAV LINK (top-level) ===== */
+.navbar__mobile-link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  color: #111827;
+  font-size: 1rem;
   font-weight: 500;
   padding-top: 0.75rem;
   padding-bottom: 0.75rem;
+  border-bottom: 1px solid #eaeaed;
   transition: color 200ms;
   text-decoration: none;
+  background: none;
+  border-left: none;
+  border-right: none;
+  border-top: none;
+  cursor: pointer;
+  text-align: left;
+}
+
+.navbar__mobile-link:last-of-type {
+  border-bottom: none;
 }
 
 .navbar__mobile-link:hover {
   color: #374151;
 }
 
+.navbar__mobile-link-arrow {
+  font-size: 1.25rem;
+  color: #6b7280;
+}
+
+/* ===== MOBILE SUBMENU SECTION ===== */
+.navbar__mobile-section {
+  width: 100%;
+}
+
+.navbar__mobile-section-title {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #7638fa;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 1rem 0 0.5rem;
+}
+
+/* ===== MOBILE SUBMENU ITEM ===== */
+.navbar__mobile-item {
+  display: block;
+  padding: 0.75rem 0;
+  text-decoration: none;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.navbar__mobile-item:last-child {
+  border-bottom: none;
+}
+
+.navbar__mobile-item-title {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+.navbar__mobile-item-desc {
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin-top: 0.2rem;
+  line-height: 1.4;
+}
+
+/* ===== MOBILE DIVIDER ===== */
+.navbar__mobile-divider {
+  border: none;
+  border-top: 1px solid #eaeaed;
+  margin: 0.5rem 0;
+}
+
 /* ===== MOBILE LOGIN LINK ===== */
 .navbar__mobile-login {
+  display: block;
   color: #7638fa;
   font-weight: 500;
+  font-size: 1rem;
   padding-top: 0.75rem;
   padding-bottom: 0.75rem;
   transition: color 200ms;
   text-decoration: none;
+  text-align: center;
 }
 
 .navbar__mobile-login:hover {
@@ -383,15 +477,19 @@
 
 /* ===== MOBILE CTA ===== */
 .navbar__mobile-cta {
+  display: block;
   background-color: #7638fa;
   color: #ffffff;
-  padding: 0.75rem 1.5rem;
+  padding: 1rem 1.5rem;
   border-radius: 0.5rem;
   font-weight: 600;
+  font-size: 1rem;
   transition: background-color 200ms;
   text-decoration: none;
   text-align: center;
-  margin-top: 0.5rem;
+  margin-top: 1rem;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .navbar__mobile-cta:hover {

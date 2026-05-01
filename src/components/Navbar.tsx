@@ -43,12 +43,14 @@ export const Navbar = ({
   loginHref,
 }: NavbarProps) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [mobileSubmenu, setMobileSubmenu] = useState<string | null>(null);
   const [hoveredItem, setHoveredItem] = useState<string | null>(null);
   const parsedNavItems =
     typeof navItems === "string" ? JSON.parse(navItems) : navItems;
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
+    setMobileSubmenu(null);
   };
 
   const handleMouseEnter = (itemLabel: string, e: React.MouseEvent) => {
@@ -309,27 +311,90 @@ export const Navbar = ({
       </div>
 
       {/* Mobile Menu */}
-      <div
-        className={`navbar__mobile-menu${isMobileMenuOpen ? " navbar__mobile-menu--open" : ""}`}
-      >
-        {parsedNavItems.map((item: NavItem, index: number) => (
-          <a
-            key={index}
-            href={item.href}
-            className="navbar__mobile-link"
-            target={item.isExternal ? "_blank" : undefined}
-            rel={item.isExternal ? "noopener noreferrer" : undefined}
-          >
-            {item.label}
-          </a>
-        ))}
-        <a href={loginHref} className="navbar__mobile-login">
-          {loginText}
-        </a>
-        <a href={ctaHref} className="navbar__mobile-cta">
-          {ctaText}
-        </a>
-      </div>
+      {isMobileMenuOpen && (
+        <div className="navbar__mobile-menu navbar__mobile-menu--open">
+          {mobileSubmenu && menuData[mobileSubmenu] ? (
+            /* Submenu drill-down view */
+            <>
+              <div className="navbar__mobile-header">
+                <button
+                  className="navbar__mobile-back"
+                  onClick={() => setMobileSubmenu(null)}
+                >
+                  ← Back
+                </button>
+                <button
+                  className="navbar__mobile-btn navbar__mobile-btn--inline"
+                  onClick={toggleMobileMenu}
+                  aria-label="Close menu"
+                >
+                  ☰
+                </button>
+              </div>
+
+              {menuData[mobileSubmenu].columns.map((column, colIndex) => (
+                <div key={colIndex} className="navbar__mobile-section">
+                  {column.title && (
+                    <div className="navbar__mobile-section-title">{column.title}</div>
+                  )}
+                  {column.items.map((item, itemIndex) => (
+                    item.isSubheading ? null : (
+                      <a
+                        key={itemIndex}
+                        href={getItemHref(item)}
+                        className="navbar__mobile-item"
+                      >
+                        <div className="navbar__mobile-item-title">{item.title}</div>
+                        {item.description && (
+                          <div className="navbar__mobile-item-desc">{item.description}</div>
+                        )}
+                      </a>
+                    )
+                  ))}
+                  {colIndex < menuData[mobileSubmenu].columns.length - 1 && (
+                    <hr className="navbar__mobile-divider" />
+                  )}
+                </div>
+              ))}
+
+              <a href={ctaHref} className="navbar__mobile-cta">{ctaText}</a>
+              <a href={loginHref} className="navbar__mobile-login">
+                {loginText} →
+              </a>
+            </>
+          ) : (
+            /* Top-level mobile nav */
+            <>
+              {parsedNavItems.map((item: NavItem, index: number) => (
+                menuData[item.label] ? (
+                  <button
+                    key={index}
+                    className="navbar__mobile-link navbar__mobile-link--drill"
+                    onClick={() => setMobileSubmenu(item.label)}
+                  >
+                    {item.label}
+                    <span className="navbar__mobile-link-arrow">›</span>
+                  </button>
+                ) : (
+                  <a
+                    key={index}
+                    href={item.href}
+                    className="navbar__mobile-link"
+                    target={item.isExternal ? "_blank" : undefined}
+                    rel={item.isExternal ? "noopener noreferrer" : undefined}
+                  >
+                    {item.label}
+                  </a>
+                )
+              ))}
+              <a href={ctaHref} className="navbar__mobile-cta">{ctaText}</a>
+              <a href={loginHref} className="navbar__mobile-login">
+                {loginText} →
+              </a>
+            </>
+          )}
+        </div>
+      )}
     </nav>
   );
 };
