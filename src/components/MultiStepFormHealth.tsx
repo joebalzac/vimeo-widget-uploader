@@ -630,10 +630,12 @@ export default function MultiStepForm({
       { name: "lastname", value: form.lastname },
       { name: "phone", value: form.phone },
       { name: "company", value: form.company },
-      { name: "ehr", value: form.ehr },
-      { name: "specialty", value: form.specialty },
+      { name: "jobtitle", value: "" },
+      { name: "what_s_your_monthly_call_volume", value: "0" },
+      { name: "what_ehr_do_you_use_", value: form.ehr },
+      { name: "what_s_your_speciality_", value: form.specialty },
       { name: "how_did_you_hear_about_us", value: form.how_did_you_hear_about_us },
-    ];
+    ].filter((f) => f.value !== "");
 
     (["utm_source", "utm_medium", "utm_campaign"] as const).forEach((p) => {
       const v = getParam(p);
@@ -673,8 +675,8 @@ export default function MultiStepForm({
             lastname: form.lastname,
             phone: form.phone,
             company: form.company,
-            ehr: form.ehr,
-            specialty: form.specialty,
+            what_ehr_do_you_use_: form.ehr,
+            what_s_your_speciality_: form.specialty,
             how_did_you_hear_about_us: form.how_did_you_hear_about_us,
           },
           questions: [
@@ -704,14 +706,14 @@ export default function MultiStepForm({
               lead_attribute: "company",
             },
             {
-              id: "ehr",
-              name: "EHR",
+              id: "what_ehr_do_you_use_",
+              name: "What EHR Do You Use?",
               type: "select",
               options: EHR_OPTIONS,
             },
             {
-              id: "specialty",
-              name: "Specialty",
+              id: "what_s_your_speciality_",
+              name: "What's Your Specialty?",
               type: "select",
               options: SPECIALTY_OPTIONS,
             },
@@ -1191,13 +1193,13 @@ export default function MultiStepForm({
                             </div>
                             <div className="hsf__col">
                               <label
-                                className="field-label"
-                                htmlFor="hsf-units"
+                                className="field-label field-label-required"
+                                htmlFor="hsf-ehr"
                               >
-                                Units Managed
+                                What EHR Do You Use?
                               </label>
                               <select
-                                id="hsf-units"
+                                id="hsf-ehr"
                                 className={`formSelect${
                                   errors.ehr
                                     ? " formSelect--error"
@@ -1223,7 +1225,7 @@ export default function MultiStepForm({
                             </div>
                             <div className="hsf__col">
                               <label className="field-label" htmlFor="hsf-specialty">
-                                  Specialty
+                                  What's your specialty?
                               </label>
                               <select
                                 id="hsf-specialty"
