@@ -2,43 +2,6 @@ import { useState, useCallback, useEffect } from "react";
 import { motion, AnimatePresence, type Variants } from "framer-motion";
 import "./MultiFormStyling.css";
 
-// ─── Default SDK types ────────────────────────────────────────────────────────
-
-interface DefaultQuestion {
-  id: string;
-  name: string;
-  type: string;
-  options?: Array<string | number>;
-  lead_attribute?: string;
-}
-
-interface DefaultSubmission {
-  form_id: number;
-  team_id: number;
-  responses: Record<string, string>;
-  questions: DefaultQuestion[];
-}
-
-interface DefaultCallbacks {
-  onSuccess?: (data: unknown) => void;
-  onError?: (error: Error) => void;
-  onSchedulerDisplayed?: (data: unknown) => void;
-  onSchedulerClosed?: (data: { redirectUrl?: string }) => void;
-  onMeetingBooked?: (data: { payload: unknown }) => void;
-}
-
-declare global {
-  interface Window {
-    DefaultSDK?: {
-      submit: (
-        submission: DefaultSubmission,
-        callbacks?: DefaultCallbacks,
-      ) => Promise<void>;
-      helloWorld: () => void;
-    };
-  }
-}
-
 function pushEvent(event: string) {
   (window as any).dataLayer = (window as any).dataLayer || [];
   (window as any).dataLayer.push({ event });
@@ -118,8 +81,6 @@ interface Props {
 const PORTAL_ID = "45321630";
 const FORM_GUID = "46995898-7b5b-405d-a9b9-0d9673bf0c89";
 const API_BASE = "https://contact-checker-backend.vercel.app";
-const DEFAULT_FORM_ID = 539717;
-const DEFAULT_TEAM_ID = 588;
 
 const EHR_OPTIONS = [
   "AdvancedMD",
@@ -222,18 +183,6 @@ function validateEmail(val: string): boolean {
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)) return false;
   const domain = val.split("@")[1].toLowerCase();
   return !BLOCKED_DOMAINS.has(domain);
-}
-
-function loadDefaultSDK(): Promise<void> {
-  return new Promise((resolve, reject) => {
-    if (window.DefaultSDK) return resolve();
-    const script = document.createElement("script");
-    script.src = "https://import-cdn.default.com/sdk.js";
-    script.async = true;
-    script.onload = () => resolve();
-    script.onerror = () => reject(new Error("Failed to load Default SDK"));
-    document.head.appendChild(script);
-  });
 }
 
 async function createContact(email: string): Promise<void> {
@@ -530,10 +479,6 @@ export default function MultiStepForm({
   const [apiError, setApiError] = useState<string>("");
 
   useEffect(() => {
-    loadDefaultSDK().catch((err) => console.warn("[Default SDK]", err));
-  }, []);
-
-  useEffect(() => {
     if (!enableNavTrigger) return;
     const navBtn = document.getElementById("requestModalOpenBtn");
     if (!navBtn) return;
@@ -662,79 +607,6 @@ export default function MultiStepForm({
         },
       );
       if (!res.ok) throw new Error(`HubSpot responded with ${res.status}`);
-
-      await loadDefaultSDK();
-
-      window.DefaultSDK!.submit(
-        {
-          form_id: DEFAULT_FORM_ID,
-          team_id: DEFAULT_TEAM_ID,
-          responses: {
-            email: form.email,
-            firstname: form.firstname,
-            lastname: form.lastname,
-            phone: form.phone,
-            company: form.company,
-            what_ehr_do_you_use_: form.ehr,
-            what_s_your_speciality_: form.specialty,
-            how_did_you_hear_about_us: form.how_did_you_hear_about_us,
-          },
-          questions: [
-            { id: "email", name: "Email", type: "email" },
-            {
-              id: "firstname",
-              name: "First Name",
-              type: "input",
-              lead_attribute: "first_name",
-            },
-            {
-              id: "lastname",
-              name: "Last Name",
-              type: "input",
-              lead_attribute: "last_name",
-            },
-            {
-              id: "phone",
-              name: "Phone Number",
-              type: "tel",
-              lead_attribute: "phone",
-            },
-            {
-              id: "company",
-              name: "Company Name",
-              type: "input",
-              lead_attribute: "company",
-            },
-            {
-              id: "what_ehr_do_you_use_",
-              name: "What EHR Do You Use?",
-              type: "select",
-              options: EHR_OPTIONS,
-            },
-            {
-              id: "what_s_your_speciality_",
-              name: "What's Your Specialty?",
-              type: "select",
-              options: SPECIALTY_OPTIONS,
-            },
-            {
-              id: "how_did_you_hear_about_us",
-              name: "How Did You Hear About Us?",
-              type: "textarea",
-            },
-          ],
-        },
-        {
-          onSuccess: (d) => console.log("[Default] success", d),
-          onError: (e) => console.error("[Default] error", e),
-          onSchedulerDisplayed: (d) =>
-            console.log("[Default] scheduler displayed", d),
-          onSchedulerClosed: (d) =>
-            console.log("[Default] scheduler closed", d),
-          onMeetingBooked: (d) =>
-            console.log("[Default] meeting booked", d.payload),
-        },
-      );
 
       setSubmitted(true);
     } catch (err) {
