@@ -107,7 +107,7 @@ export default function LightboxWithForm({
   triggerPages = "",
   triggerAfter = 2,
   triggerDelay = 0,
-  singleVisitDelay = 20000, // 20 seconds
+  singleVisitDelay = 10000, 
   portalId,
   formGuid,
   enableNavTrigger,

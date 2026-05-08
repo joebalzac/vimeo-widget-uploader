@@ -136,30 +136,6 @@ export default declareComponent(MultiStepForm, {
       tooltip: "A single logo image URL. Leave empty if using multiple logos.",
     }),
 
-    multipleLogos: props.Boolean({
-      name: "Content — Multiple Logos",
-      defaultValue: false,
-      tooltip: "Enable to show up to three logos instead of one.",
-    }),
-
-    contentOneLogoUrl: props.Text({
-      name: "Content — Logo 1 URL",
-      defaultValue: "",
-      tooltip: "First logo URL (requires Multiple Logos enabled).",
-    }),
-
-    contentTwoLogoUrl: props.Text({
-      name: "Content — Logo 2 URL",
-      defaultValue: "",
-      tooltip: "Second logo URL (requires Multiple Logos enabled).",
-    }),
-
-    contentThreeLogoUrl: props.Text({
-      name: "Content — Logo 3 URL",
-      defaultValue: "",
-      tooltip: "Third logo URL (requires Multiple Logos enabled).",
-    }),
-
     contentLogoAlt: props.Text({
       name: "Content — Logo Alt Text",
       defaultValue: "",
@@ -170,12 +146,6 @@ export default declareComponent(MultiStepForm, {
       name: "Content — Main Quote",
       defaultValue: "",
       tooltip: "Large featured quote shown in the content panel.",
-    }),
-
-    testimonialQuote: props.Text({
-      name: "Content — Testimonial Quote",
-      defaultValue: "",
-      tooltip: "Smaller testimonial quote shown in a card.",
     }),
 
     testimonialName: props.Text({
@@ -196,10 +166,5 @@ export default declareComponent(MultiStepForm, {
       tooltip: "Company of the person giving the testimonial.",
     }),
 
-    testimonialAvatarUrl: props.Text({
-      name: "Content — Testimonial Avatar URL",
-      defaultValue: "",
-      tooltip: "Avatar image URL for the testimonial author.",
-    }),
   },
 });

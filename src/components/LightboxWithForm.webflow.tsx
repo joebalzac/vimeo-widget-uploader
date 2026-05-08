@@ -98,7 +98,7 @@ export default declareComponent(LightboxWithForm, {
 
     singleVisitDelay: props.Number({
       name: "Single Visit Delay (ms)",
-      defaultValue: 20000,
+      defaultValue: 10000,
       tooltip:
         "Delay in ms before showing the lightbox once the visitor has visited a qualifying page.",
     }),

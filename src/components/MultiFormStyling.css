@@ -493,6 +493,13 @@
   object-position: left;
 }
 
+.msf__content-logo-health {
+  height: 60px;
+  width: 120;
+  object-fit: contain;
+  object-position: left;
+}
+
 .msf__content-logos {
   display: flex;
   flex-direction: row;
@@ -666,4 +673,38 @@
     width: 100%;
     max-width: none;
   }
+}
+
+/* ─── Success screen ─────────────────────────────────────────────────────── */
+
+.hsf__success {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  height: 100%;
+  padding: 48px 32px;
+  text-align: center;
+}
+
+.hsf__success-headline {
+  font-family: "Inter", sans-serif;
+  font-size: 20px;
+  font-weight: 600;
+  color: #1a1a1b;
+  margin: 0;
+}
+
+.hsf__success-thanks {
+  font-family: "Inter", sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  color: #6a6a6b;
+  margin: 0;
+}
+
+.hsf__success-btn {
+  margin-top: 8px;
+  max-width: 200px;
 }
