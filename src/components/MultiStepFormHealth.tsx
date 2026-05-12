@@ -610,6 +610,12 @@ export default function MultiStepForm({
     setErrors({});
   }, []);
 
+  useEffect(() => {
+    if (!submitted) return;
+    const timer = setTimeout(closeSuccess, 5000);
+    return () => clearTimeout(timer);
+  }, [submitted, closeSuccess]);
+
   const contentPanelProps: ContentPanelProps = {
     contentHeadline,
     contentBody,
@@ -836,18 +842,14 @@ export default function MultiStepForm({
               <div className="hsf__form-col" onKeyDown={onKeyDown}>
                 {submitted ? (
                   <div className="hsf__success">
-                    <svg viewBox="0 0 200 200" width="140" height="140" xmlns="http://www.w3.org/2000/svg">
+                    <svg viewBox="0 0 200 200" width="100" height="100" xmlns="http://www.w3.org/2000/svg">
                       <path stroke="#3d3d3e" strokeWidth="1.5" fill="#fafafb" d="m74.096 91.818 9.01 38.806L190 4 74.09 91.818z"/>
                       <path stroke="#3d3d3e" strokeWidth="1.5" fill="#e8e3ff" d="m33.12 76.396 40.976 15.422L190 4 33.04 73.624c-1.227.544-1.172 2.303.08 2.772Z"/>
                       <path stroke="#3d3d3e" strokeWidth="1.5" fill="#7638fa" d="m89.186 97.008-6.08 33.616 43.42-44.99z"/>
                       <path stroke="#3d3d3e" strokeWidth="1.5" fill="#e8e3ff" d="m89.186 97.008 58.212 22.006a1.494 1.494 0 0 0 1.935-.899L190 4z"/>
-                      <path fill="none" stroke="#d7234a" strokeWidth="2" strokeLinecap="round" d="M83.105 130.623c-13.923 14.113-38.786 19.383-57.303 13.044-6.36-2.178-12.252-6.629-14.662-12.914-2.38-6.209-.923-13.628 3.328-18.738 8.96-10.771 23.65-8.368 32.83.749 20.682 20.537 17.13 67.536-10.322 81.444-4.909 2.487-11.439 2.632-15.44-1.144-3.741-3.532-4.2-9.737-1.72-14.243 2.479-4.506 7.387-7.348 12.456-8.188 5.073-.839 10.291.12 15.16 1.769 14.721 4.985 29.453 12.284 45.241 12.913 14.652.585 31.493-8.322 32.471-24.428.179-2.982-.245-6.09-1.806-8.638-1.562-2.547-4.41-4.421-7.388-4.266-1.971.105-3.821 1.059-5.313 2.353-5.437 4.726-5.891 13.209-3.696 20.078 2.783 8.697 9.208 16.155 17.39 20.192 8.181 4.031 18.003 4.581 26.584 1.483 10.186-3.676 20.473-14.387 32.071-11.734"/>
                     </svg>
                     <p className="hsf__success-headline">Your submission has been received!</p>
-                    <p className="hsf__success-thanks">Thank you!</p>
-                    <button className="defaultButton hsf__success-btn" type="button" onClick={closeSuccess}>
-                      Done
-                    </button>
+                    <p className="hsf__success-thanks">Someone from our team will be in touch shortly to get to know your practice and discuss how EliseAI can support your team.</p>
                   </div>
                 ) : (
                 <div className="hsf__overlay-inner">
