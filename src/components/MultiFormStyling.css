@@ -675,6 +675,73 @@
   }
 }
 
+/* ─── OneInputForm ──────────────────────────────────────────────────────────── */
+
+.oif__title {
+  color: #181819;
+  font-family: "Inter Tight";
+  font-size: 40px;
+  font-style: normal;
+  font-weight: 450;
+  line-height: 120%;
+  margin: 0 0 8px;
+}
+
+.oif__subtitle {
+  color: #515152;
+  font-family: Inter;
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 150%;
+  letter-spacing: -0.18px;
+  margin: 0 0 24px;
+}
+
+.emailCapture--standalone {
+  width: 100%;
+  padding: 10px 16px;
+}
+
+.oif__footer {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.oif__submit-btn {
+  width: auto !important;
+  flex-shrink: 0;
+}
+
+.oif__waitlist {
+  color: #515152;
+  font-family: Inter;
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 150%;
+  letter-spacing: -0.18px;
+  margin: 0;
+}
+
+.oif__waitlist-link {
+  color: #7638fa;
+  font-family: Inter;
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 150%;
+  letter-spacing: -0.18px;
+  text-decoration-line: underline;
+  text-decoration-style: solid;
+  text-decoration-skip-ink: none;
+  text-decoration-thickness: auto;
+  text-underline-offset: auto;
+  text-underline-position: from-font;
+}
+
 /* ─── Success screen ─────────────────────────────────────────────────────── */
 
 .hsf__success {
