@@ -229,6 +229,12 @@
   font-family: Inter, sans-serif;
 }
 
+.hsf-one-input {
+  width: 100%;
+  margin: 0 auto;
+  box-sizing: border-box;
+  font-family: Inter, sans-serif;
+}
 .hsf--left-align {
   margin: 0;
 }

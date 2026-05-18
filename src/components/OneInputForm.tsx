@@ -47,7 +47,7 @@ export default function OneInputForm({ className = "" }: Props) {
   }
 
   return (
-    <div className={`hsf ${className}`}>
+    <div className="hsf-one-input">
       <h1 className="oif__title">Enter YourInvite Code</h1>
       <p className="oif__subtitle">Enter your invite code to unlock early access.</p>
       <div className="hsf__fields">
