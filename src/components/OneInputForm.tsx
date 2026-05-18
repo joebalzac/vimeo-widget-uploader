@@ -38,10 +38,18 @@ export default function OneInputForm({ className = "" }: Props) {
     if (e.key === "Enter") handleSubmit();
   }
 
+  function handleWaitlistClick(e: React.MouseEvent<HTMLAnchorElement>) {
+    e.preventDefault();
+    const calendly = document.querySelector<HTMLElement>(".calendly-modal-backdrop");
+    if (calendly) calendly.style.display = "flex";
+    const zuddl = document.querySelector<HTMLElement>(".zuddl-modal-backdrop");
+    if (zuddl) zuddl.style.display = "none";
+  }
+
   return (
     <div className={`hsf ${className}`}>
-      <h1 className="oif__title">Add Invite Code</h1>
-      <p className="oif__subtitle">Lorem ipsum dolor sit amet, consectetur adipiscing elit</p>
+      <h1 className="oif__title">Enter YourInvite Code</h1>
+      <p className="oif__subtitle">Enter your invite code to unlock early access.</p>
       <div className="hsf__fields">
         <label className="field-label field-label-required" htmlFor="invite-code">
           Promo Code
@@ -51,7 +59,7 @@ export default function OneInputForm({ className = "" }: Props) {
             id="invite-code"
             className="emailCapture__input"
             type="text"
-            placeholder="ENTER-CODE HERE"
+            placeholder="Enter invite code"
             value={code}
             onChange={(e) => {
               setCode(e.target.value);
@@ -73,7 +81,7 @@ export default function OneInputForm({ className = "" }: Props) {
         </button>
         <p className="oif__waitlist">
           Dont have an invite code?{" "}
-          <a href="#" className="oif__waitlist-link">Join the waitlist</a>
+          <a href="#" className="oif__waitlist-link" onClick={handleWaitlistClick}>Join the waitlist</a>
         </p>
       </div>
     </div>
