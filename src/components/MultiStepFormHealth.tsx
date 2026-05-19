@@ -63,10 +63,6 @@ interface Props {
   contentImageAlt?: string;
   contentBackgroundColor?: string;
   contentOnlyLogoUrl?: string;
-  multipleLogos?: boolean;
-  contentOneLogoUrl?: string;
-  contentTwoLogoUrl?: string;
-  contentThreeLogoUrl?: string;
   contentLogoAlt?: string;
   mainQuote?: string;
   testimonialQuote?: string;
@@ -257,7 +253,6 @@ function ContentPanel({
   contentImageAlt,
   contentBackgroundColor,
   contentOnlyLogoUrl,
-  multipleLogos,
   contentLogoAlt,
   mainQuote,
   testimonialQuote,
@@ -293,7 +288,7 @@ function ContentPanel({
         )}
 
         {/* Single logo */}
-        {contentOnlyLogoUrl && !multipleLogos && (
+        {contentOnlyLogoUrl && (
           <img
             src={contentOnlyLogoUrl}
             alt={contentLogoAlt}
@@ -418,10 +413,6 @@ export default function MultiStepForm({
   contentImageAlt,
   contentBackgroundColor,
   contentOnlyLogoUrl,
-  multipleLogos,
-  contentOneLogoUrl,
-  contentTwoLogoUrl,
-  contentThreeLogoUrl,
   contentLogoAlt,
   mainQuote,
   testimonialQuote,
@@ -623,10 +614,6 @@ export default function MultiStepForm({
     contentImageAlt,
     contentBackgroundColor,
     contentOnlyLogoUrl,
-    multipleLogos,
-    contentOneLogoUrl,
-    contentTwoLogoUrl,
-    contentThreeLogoUrl,
     contentLogoAlt,
     mainQuote,
     testimonialQuote,
@@ -642,7 +629,6 @@ export default function MultiStepForm({
     contentHeadline ||
     contentBody ||
     contentOnlyLogoUrl ||
-    multipleLogos ||
     mainQuote ||
     testimonialQuote
   );

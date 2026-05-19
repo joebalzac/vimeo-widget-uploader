@@ -40,6 +40,7 @@ export default function OneInputForm({ className = "" }: Props) {
 
   function handleWaitlistClick(e: React.MouseEvent<HTMLAnchorElement>) {
     e.preventDefault();
+    document.body.style.overflow = "hidden";
     const calendly = document.querySelector<HTMLElement>(".calendly-modal-backdrop");
     if (calendly) calendly.style.display = "flex";
     const zuddl = document.querySelector<HTMLElement>(".zuddl-modal-backdrop");
@@ -48,7 +49,7 @@ export default function OneInputForm({ className = "" }: Props) {
 
   return (
     <div className="hsf-one-input">
-      <h1 className="oif__title">Enter YourInvite Code</h1>
+      <h1 className="oif__title">Enter Your Invite Code</h1>
       <p className="oif__subtitle">Enter your invite code to unlock early access.</p>
       <div className="hsf__fields">
         <label className="field-label field-label-required" htmlFor="invite-code">

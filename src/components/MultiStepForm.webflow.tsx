@@ -137,39 +137,15 @@ export default declareComponent(MultiStepForm, {
     }),
 
     contentOnlyLogoUrl: props.Text({
-      name: "Content — Single Logo URL",
+      name: "Content — Logo URL",
       defaultValue: "",
-      tooltip: "A single logo image URL. Leave empty if using multiple logos.",
-    }),
-
-    multipleLogos: props.Boolean({
-      name: "Content — Multiple Logos",
-      defaultValue: false,
-      tooltip: "Enable to show up to three logos instead of one.",
-    }),
-
-    contentOneLogoUrl: props.Text({
-      name: "Content — Logo 1 URL",
-      defaultValue: "",
-      tooltip: "First logo URL (requires Multiple Logos enabled).",
-    }),
-
-    contentTwoLogoUrl: props.Text({
-      name: "Content — Logo 2 URL",
-      defaultValue: "",
-      tooltip: "Second logo URL (requires Multiple Logos enabled).",
-    }),
-
-    contentThreeLogoUrl: props.Text({
-      name: "Content — Logo 3 URL",
-      defaultValue: "",
-      tooltip: "Third logo URL (requires Multiple Logos enabled).",
+      tooltip: "A single logo image URL for the content panel.",
     }),
 
     contentLogoAlt: props.Text({
       name: "Content — Logo Alt Text",
       defaultValue: "",
-      tooltip: "Alt text for the logo image(s).",
+      tooltip: "Alt text for the logo image.",
     }),
 
     mainQuote: props.Text({

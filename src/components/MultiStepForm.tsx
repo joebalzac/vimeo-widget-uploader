@@ -286,10 +286,6 @@ interface ContentPanelProps {
   contentImageAlt?: string;
   contentBackgroundColor?: string;
   contentOnlyLogoUrl?: string;
-  multipleLogos?: boolean;
-  contentOneLogoUrl?: string;
-  contentTwoLogoUrl?: string;
-  contentThreeLogoUrl?: string;
   contentLogoAlt?: string;
   mainQuote?: string;
   testimonialQuote?: string;
@@ -306,10 +302,6 @@ function ContentPanel({
   contentImageAlt,
   contentBackgroundColor,
   contentOnlyLogoUrl,
-  multipleLogos,
-  contentOneLogoUrl,
-  contentTwoLogoUrl,
-  contentThreeLogoUrl,
   contentLogoAlt,
   mainQuote,
   testimonialQuote,
@@ -345,45 +337,12 @@ function ContentPanel({
         )}
 
         {/* Single logo */}
-        {contentOnlyLogoUrl && !multipleLogos && (
+        {contentOnlyLogoUrl && (
           <img
             src={contentOnlyLogoUrl}
             alt={contentLogoAlt}
             className="msf__content-logo"
           />
-        )}
-
-        {/* Multiple logos */}
-        {multipleLogos && (
-          <div className="msf__content-logos">
-            {contentOneLogoUrl && (
-              <div className="msf__content-logo-wrap">
-                <img
-                  src={contentOneLogoUrl}
-                  alt={contentLogoAlt}
-                  className="msf__content-logo-img"
-                />
-              </div>
-            )}
-            {contentTwoLogoUrl && (
-              <div className="msf__content-logo-wrap">
-                <img
-                  src={contentTwoLogoUrl}
-                  alt={contentLogoAlt}
-                  className="msf__content-logo-img"
-                />
-              </div>
-            )}
-            {contentThreeLogoUrl && (
-              <div className="msf__content-logo-wrap">
-                <img
-                  src={contentThreeLogoUrl}
-                  alt={contentLogoAlt}
-                  className="msf__content-logo-img"
-                />
-              </div>
-            )}
-          </div>
         )}
 
         {/* Main quote */}
@@ -503,10 +462,6 @@ export default function MultiStepForm({
   contentImageAlt,
   contentBackgroundColor,
   contentOnlyLogoUrl,
-  multipleLogos,
-  contentOneLogoUrl,
-  contentTwoLogoUrl,
-  contentThreeLogoUrl,
   contentLogoAlt,
   mainQuote,
   testimonialQuote,
@@ -782,10 +737,6 @@ export default function MultiStepForm({
     contentImageAlt,
     contentBackgroundColor,
     contentOnlyLogoUrl,
-    multipleLogos,
-    contentOneLogoUrl,
-    contentTwoLogoUrl,
-    contentThreeLogoUrl,
     contentLogoAlt,
     mainQuote,
     testimonialQuote,
@@ -801,7 +752,6 @@ export default function MultiStepForm({
     contentHeadline ||
     contentBody ||
     contentOnlyLogoUrl ||
-    multipleLogos ||
     mainQuote ||
     testimonialQuote
   );
