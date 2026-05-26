@@ -143,6 +143,85 @@ export default declareComponent(MultiStepFormUniversal, {
       tooltip: "Optional description text on the Healthcare card.",
     }),
 
+    // ── Picker content panel ──────────────────────────────────────────────────
+    pickerContentImageUrl: props.Text({
+      name: "Picker — Content Image URL",
+      defaultValue: "",
+      tooltip: "Background image URL for the industry selection screen content panel.",
+    }),
+
+    pickerContentImageAlt: props.Text({
+      name: "Picker — Content Image Alt",
+      defaultValue: "",
+      tooltip: "Alt text for the picker background image.",
+    }),
+
+    pickerContentBackgroundColor: props.Text({
+      name: "Picker — Content Background Color",
+      defaultValue: "",
+      tooltip: "Fallback background color for the picker panel (e.g. #7638fa).",
+    }),
+
+    pickerContentHeadline: props.Text({
+      name: "Picker — Content Headline",
+      defaultValue: "",
+      tooltip: "Headline text in the picker content panel.",
+    }),
+
+    pickerContentBody: props.Text({
+      name: "Picker — Content Body",
+      defaultValue: "",
+      tooltip: "Body text in the picker content panel.",
+    }),
+
+    pickerContentOnlyLogoUrl: props.Text({
+      name: "Picker — Logo URL",
+      defaultValue: "",
+      tooltip: "Logo image URL for the picker content panel.",
+    }),
+
+    pickerContentLogoAlt: props.Text({
+      name: "Picker — Logo Alt Text",
+      defaultValue: "",
+      tooltip: "Alt text for the picker logo image.",
+    }),
+
+    pickerMainQuote: props.Text({
+      name: "Picker — Main Quote",
+      defaultValue: "",
+      tooltip: "Large featured quote in the picker content panel.",
+    }),
+
+    pickerTestimonialQuote: props.Text({
+      name: "Picker — Testimonial Quote",
+      defaultValue: "",
+      tooltip: "Smaller testimonial quote in the picker content panel.",
+    }),
+
+    pickerTestimonialName: props.Text({
+      name: "Picker — Testimonial Name",
+      defaultValue: "",
+      tooltip: "Name of the picker testimonial author.",
+    }),
+
+    pickerTestimonialTitle: props.Text({
+      name: "Picker — Testimonial Title",
+      defaultValue: "",
+      tooltip: "Job title of the picker testimonial author.",
+    }),
+
+    pickerTestimonialCompany: props.Text({
+      name: "Picker — Testimonial Company",
+      defaultValue: "",
+      tooltip: "Company of the picker testimonial author.",
+    }),
+
+    pickerTestimonialAvatarUrl: props.Text({
+      name: "Picker — Testimonial Avatar URL",
+      defaultValue: "",
+      tooltip: "Avatar image URL for the picker testimonial.",
+    }),
+
     // ── Housing content panel ─────────────────────────────────────────────────
     housingContentImageUrl: props.Text({
       name: "Housing — Content Image URL",

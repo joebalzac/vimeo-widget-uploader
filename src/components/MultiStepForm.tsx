@@ -216,6 +216,8 @@ function getCookie(name: string): string {
   return match ? match[2] : "";
 }
 
+
+
 function validateEmail(val: string): boolean {
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)) return false;
   const domain = val.split("@")[1].toLowerCase();
