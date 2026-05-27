@@ -124,18 +124,6 @@ export default declareComponent(MultiStepForm, {
       tooltip: "Fallback background color if no image is set (e.g. #7638fa).",
     }),
 
-    contentHeadline: props.Text({
-      name: "Content — Headline",
-      defaultValue: "",
-      tooltip: "Headline text displayed in the content panel.",
-    }),
-
-    contentBody: props.Text({
-      name: "Content — Body",
-      defaultValue: "",
-      tooltip: "Body text displayed in the content panel.",
-    }),
-
     contentOnlyLogoUrl: props.Text({
       name: "Content — Logo URL",
       defaultValue: "",

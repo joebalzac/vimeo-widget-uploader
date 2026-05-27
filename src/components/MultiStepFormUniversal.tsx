@@ -2,6 +2,43 @@ import { useState, useCallback, useEffect } from "react";
 import { motion, AnimatePresence, type Variants } from "framer-motion";
 import "./MultiFormStyling.css";
 
+// ─── Default SDK types ────────────────────────────────────────────────────────
+
+interface DefaultQuestion {
+  id: string;
+  name: string;
+  type: string;
+  options?: Array<string | number>;
+  lead_attribute?: string;
+}
+
+interface DefaultSubmission {
+  form_id: number;
+  team_id: number;
+  responses: Record<string, string>;
+  questions: DefaultQuestion[];
+}
+
+interface DefaultCallbacks {
+  onSuccess?: (data: unknown) => void;
+  onError?: (error: Error) => void;
+  onSchedulerDisplayed?: (data: unknown) => void;
+  onSchedulerClosed?: (data: { redirectUrl?: string }) => void;
+  onMeetingBooked?: (data: { payload: unknown }) => void;
+}
+
+declare global {
+  interface Window {
+    DefaultSDK?: {
+      submit: (
+        submission: DefaultSubmission,
+        callbacks?: DefaultCallbacks,
+      ) => Promise<void>;
+      helloWorld: () => void;
+    };
+  }
+}
+
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 type Phase = "email" | "picker" | "form" | "complete";
@@ -125,6 +162,8 @@ interface Props {
 const PORTAL_ID = "45321630";
 const FORM_GUID = "2e281015-dc06-4517-be23-42f379977b10";
 const API_BASE = "https://contact-checker-backend.vercel.app";
+const DEFAULT_FORM_ID = 539717;
+const DEFAULT_TEAM_ID = 588;
 
 const UNITS_MANAGED_OPTIONS = [
   "<450",
@@ -245,6 +284,18 @@ function getParam(name: string): string {
 function getCookie(name: string): string {
   const match = document.cookie.match(new RegExp(`(^| )${name}=([^;]+)`));
   return match ? match[2] : "";
+}
+
+function loadDefaultSDK(): Promise<void> {
+  return new Promise((resolve, reject) => {
+    if (window.DefaultSDK) return resolve();
+    const script = document.createElement("script");
+    script.src = "https://import-cdn.default.com/sdk.js";
+    script.async = true;
+    script.onload = () => resolve();
+    script.onerror = () => reject(new Error("Failed to load Default SDK"));
+    document.head.appendChild(script);
+  });
 }
 
 async function createContact(email: string): Promise<void> {
@@ -540,7 +591,7 @@ export default function MultiStepFormUniversal({
   housingContentImageAlt,
   housingContentBackgroundColor,
   housingContentHeadline,
-  housingContentBody,
+  housingContentBody = "Discover how EliseAI revolutionizes leasing, resident management, and operations, delivering measurable results for our clients.",
   housingContentOnlyLogoUrl,
   housingContentLogoAlt,
   housingMainQuote,
@@ -553,7 +604,7 @@ export default function MultiStepFormUniversal({
   healthContentImageAlt,
   healthContentBackgroundColor,
   healthContentHeadline,
-  healthContentBody,
+  healthContentBody = "Empowering healthcare providers to automate patient interactions and administrative tasks, enhancing efficiency, reducing costs, and improving patient outcomes.",
   healthContentOnlyLogoUrl,
   healthContentLogoAlt,
   healthMainQuote,
@@ -575,6 +626,11 @@ export default function MultiStepFormUniversal({
   );
   const [submitting, setSubmitting] = useState(false);
   const [apiError, setApiError] = useState("");
+
+  // Preload Default SDK
+  useEffect(() => {
+    loadDefaultSDK().catch((err) => console.warn("[Default SDK]", err));
+  }, []);
 
   // Scroll lock while overlay is open
   useEffect(() => {
@@ -790,6 +846,48 @@ export default function MultiStepFormUniversal({
         formGuid,
         fields: payload.fields,
       });
+
+      // Default SDK — housing only
+      if (selectedVertical === "housing") {
+        try {
+          await loadDefaultSDK();
+          window.DefaultSDK!.submit(
+            {
+              form_id: DEFAULT_FORM_ID,
+              team_id: DEFAULT_TEAM_ID,
+              responses: {
+                email: form.email,
+                firstname: form.firstname,
+                lastname: form.lastname,
+                phone: form.phone,
+                company: form.company,
+                units_managed: form.units_managed,
+                pms_compatability: form.pms_compatability,
+                ai_areas: form.ai_areas,
+              },
+              questions: [
+                { id: "email", name: "Email", type: "email" },
+                { id: "firstname", name: "First Name", type: "input", lead_attribute: "first_name" },
+                { id: "lastname", name: "Last Name", type: "input", lead_attribute: "last_name" },
+                { id: "phone", name: "Phone Number", type: "tel", lead_attribute: "phone" },
+                { id: "company", name: "Company Name", type: "input", lead_attribute: "company" },
+                { id: "units_managed", name: "Units Managed", type: "select", options: UNITS_MANAGED_OPTIONS },
+                { id: "pms_compatability", name: "PMS Compatibility", type: "select", options: PMS_OPTIONS },
+                { id: "ai_areas", name: "AI Implementation Areas", type: "textarea" },
+              ],
+            },
+            {
+              onSuccess: (d) => console.log("[Default] success", d),
+              onError: (e) => console.error("[Default] error", e),
+              onSchedulerDisplayed: (d) => console.log("[Default] scheduler displayed", d),
+              onSchedulerClosed: (d) => console.log("[Default] scheduler closed", d),
+              onMeetingBooked: (d) => console.log("[Default] meeting booked", d),
+            },
+          );
+        } catch (err) {
+          console.warn("[Default SDK] failed silently", err);
+        }
+      }
 
       if (enableWebflowEvent && (window as any).wf) {
         (window as any).wf.ready(() =>

@@ -532,7 +532,6 @@ export default function MultiStepForm({
       { name: "phone", value: form.phone },
       { name: "company", value: form.company },
       { name: "jobtitle", value: "" },
-      { name: "what_s_your_monthly_call_volume", value: "0" },
       { name: "what_ehr_do_you_use_", value: form.ehr },
       { name: "what_s_your_speciality_", value: form.specialty },
       { name: "how_did_you_hear_about_us", value: form.how_did_you_hear_about_us },
