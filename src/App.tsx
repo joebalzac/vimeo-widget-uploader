@@ -1,14 +1,21 @@
 import "./App.css";
-import MeetEliseCTA from "./components/MeetEliseCTA";
+import MultiStepForm from "./components/MultiStepForm";
+import MultiStepFormHealth from "./components/MultiStepFormHealth";
 import MultiStepFormUniversal from "./components/MultiStepFormUniversal";
+
+const form = new URLSearchParams(window.location.search).get("form");
 
 function App() {
   return (
-    <>
-      <div>
+    <div>
+      {form === "housing" ? (
+        <MultiStepForm />
+      ) : form === "health" ? (
+        <MultiStepFormHealth />
+      ) : (
         <MultiStepFormUniversal />
-      </div>
-    </>
+      )}
+    </div>
   );
 }
 

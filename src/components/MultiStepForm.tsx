@@ -44,6 +44,14 @@ function pushEvent(event: string) {
   (window as any).dataLayer.push({ event });
 }
 
+function measurePixel(
+  eventName: string,
+  eventProps?: Record<string, unknown>,
+  eventOptions?: Record<string, unknown>,
+) {
+  (window as any).oaiq?.("measure", eventName, eventProps, eventOptions);
+}
+
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 interface FormData {
@@ -624,6 +632,8 @@ export default function MultiStepForm({
       );
       if (!res.ok) throw new Error(`HubSpot responded with ${res.status}`);
 
+      measurePixel("lead_created", { type: "customer_action" });
+
       await loadDefaultSDK();
 
       window.DefaultSDK!.submit(
@@ -689,8 +699,10 @@ export default function MultiStepForm({
         {
           onSuccess: (d) => console.log("[Default] success", d),
           onError: (e) => console.error("[Default] error", e),
-          onSchedulerDisplayed: (d) =>
-            console.log("[Default] scheduler displayed", d),
+          onSchedulerDisplayed: (d) => {
+            console.log("[Default] scheduler displayed", d);
+            measurePixel("appointment_scheduled", { type: "customer_action" });
+          },
           onSchedulerClosed: (d) =>
             console.log("[Default] scheduler closed", d),
           onMeetingBooked: (d) =>
