@@ -88,27 +88,27 @@ export default function TeamCarousel({
         </a>
       </div>
 
+      <div className="tc__nav splide__arrows">
+        <button
+          className="tc__nav-btn splide__arrow splide__arrow--prev"
+          aria-label="Previous"
+        >
+          <Arrow direction="left" />
+        </button>
+        <button
+          className="tc__nav-btn splide__arrow splide__arrow--next"
+          aria-label="Next"
+        >
+          <Arrow direction="right" />
+        </button>
+      </div>
+
       <Splide
         hasTrack={false}
         options={options}
         aria-label={heading}
         className="tc__splide"
       >
-        <div className="tc__nav splide__arrows">
-          <button
-            className="tc__nav-btn splide__arrow splide__arrow--prev"
-            aria-label="Previous"
-          >
-            <Arrow direction="left" />
-          </button>
-          <button
-            className="tc__nav-btn splide__arrow splide__arrow--next"
-            aria-label="Next"
-          >
-            <Arrow direction="right" />
-          </button>
-        </div>
-
         <SplideTrack>
           {members.map((m, i) => (
             <SplideSlide key={i}>
