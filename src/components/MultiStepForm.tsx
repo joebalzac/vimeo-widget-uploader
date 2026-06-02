@@ -632,7 +632,7 @@ export default function MultiStepForm({
       );
       if (!res.ok) throw new Error(`HubSpot responded with ${res.status}`);
 
-      measurePixel("lead_created", { type: "customer_action" });
+      measurePixel("custom", { type: "custom" }, { custom_event_name: "form_submission" });
 
       await loadDefaultSDK();
 
@@ -701,7 +701,7 @@ export default function MultiStepForm({
           onError: (e) => console.error("[Default] error", e),
           onSchedulerDisplayed: (d) => {
             console.log("[Default] scheduler displayed", d);
-            measurePixel("appointment_scheduled", { type: "customer_action" });
+            measurePixel("custom", { type: "custom" }, { custom_event_name: "default_demo_scheduled" });
           },
           onSchedulerClosed: (d) =>
             console.log("[Default] scheduler closed", d),

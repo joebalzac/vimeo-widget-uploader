@@ -1,0 +1,251 @@
+/* TeamCarousel — plain CSS. Implemented from Figma node 17206-4.
+   Assumes Inter (variable) and IBM Plex Mono are loaded globally.
+   H6/22 title: 22px / 1.3 / -0.88px.  P2/18 label: 18px / 1.4 / -0.36px. */
+
+.tc {
+  position: relative;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
+  justify-content: center;
+  background-color: #ffffff;
+  padding: 60px 140px 120px;
+  overflow: hidden;
+  font-family: Inter, sans-serif;
+}
+
+/* Header row: heading + CTA on the left, pill nav on the right. */
+.tc__head {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.tc__head-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.tc__eyebrow {
+  margin: 0;
+  font-family: "IBM Plex Mono", monospace;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 1.1;
+  letter-spacing: -0.16px;
+  text-transform: uppercase;
+  color: #704eff;
+}
+
+.tc__heading {
+  margin: 0;
+  font-weight: 400;
+  font-size: 48px;
+  line-height: 1.1;
+  letter-spacing: -0.96px;
+  color: #0d0d0c;
+}
+
+.tc__cta {
+  display: inline-flex;
+  align-items: center;
+  padding: 12px 20px;
+  border: 1px solid #e1dbff;
+  border-radius: 4px;
+  font-size: 16px;
+  line-height: 1.4;
+  letter-spacing: -0.16px;
+  color: #704eff;
+  text-decoration: none;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+/* The Splide block holds the nav row and the track. */
+.tc__splide {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Custom pill nav — pinned top-right of the section, matching Figma.
+     Absolute (not stacked negative margins) so it's robust to heading height. */
+.tc__nav {
+  position: absolute;
+  top: 60px; /* = section padding-top */
+  right: 140px; /* = section padding-right */
+  display: inline-flex;
+  align-items: center;
+  background-color: #f5f4f2;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  border-radius: 1000px;
+  width: auto;
+  height: auto;
+  z-index: 2;
+}
+
+.tc__nav-btn {
+  position: static;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  border-radius: 1000px;
+  color: #0d0d0c;
+  cursor: pointer;
+  opacity: 1;
+  transform: none;
+}
+
+/* Active (non-end) next button gets the subtle raised chip in Figma. */
+.tc__nav-btn:not(:disabled).splide__arrow--next {
+  background-color: #ffffff;
+  box-shadow: 0px 0px 0.49px rgba(0, 0, 0, 0.4),
+    0px 3.918px 1.959px rgba(0, 0, 0, 0.04);
+}
+
+.tc__nav-btn:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.tc__nav-btn svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* Slides */
+.splide__list {
+  align-items: flex-start;
+}
+
+/* Card — light container, fixed 444px, text on top + photo below. */
+.tc__card {
+  width: 444px;
+  box-sizing: border-box;
+  background-color: #f5f4f2;
+  border: 1px solid #e6e5e3;
+  border-radius: 8px;
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  align-items: center;
+}
+
+.tc__card-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.tc__card-text {
+  flex: 1 0 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: flex-start;
+}
+
+.tc__card-title {
+  margin: 0;
+  font-size: 22px;
+  line-height: 1.3;
+  letter-spacing: -0.88px;
+  color: #0d0d0c;
+}
+
+.tc__card-label {
+  margin: 0;
+  font-size: 18px;
+  line-height: 1.4;
+  letter-spacing: -0.36px;
+  color: #3f3e3c;
+}
+
+/* Play icon — 32px round, triangle glyph. */
+.tc__play {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 50%;
+  background-color: rgba(13, 13, 12, 0.04);
+  cursor: pointer;
+}
+
+.tc__play-icon {
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 5px 0 5px 8px;
+  border-color: transparent transparent transparent #0d0d0c;
+  display: inline-block;
+}
+
+/* Photo block — 380x280 inside the 444 card (444 - 2*32 padding). */
+.tc__photo {
+  width: 100%;
+  height: 280px;
+  background-color: #0d0d0c;
+  overflow: hidden;
+}
+
+/* Responsive. */
+@media (max-width: 991px) {
+  .tc {
+    padding: 60px 40px 80px;
+  }
+  .tc__nav {
+    top: 60px;
+    right: 40px;
+  }
+  .tc__heading {
+    font-size: 40px;
+  }
+  .tc__card {
+    width: 380px;
+  }
+  .tc__photo {
+    height: 240px;
+  }
+}
+
+@media (max-width: 767px) {
+  .tc {
+    padding: 48px 20px 64px;
+  }
+  .tc__heading {
+    font-size: 32px;
+  }
+  .tc__head {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 24px;
+  }
+  /* On mobile, drop the nav back into flow under the header. */
+  .tc__nav {
+    position: static;
+    align-self: flex-start;
+    margin-bottom: 24px;
+  }
+  .tc__card {
+    width: 100%;
+  }
+  .tc__photo {
+    height: 220px;
+  }
+}

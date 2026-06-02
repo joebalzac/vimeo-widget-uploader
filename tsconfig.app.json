@@ -22,7 +22,10 @@
     "noUnusedParameters": true,
     "erasableSyntaxOnly": true,
     "noFallthroughCasesInSwitch": true,
-    "noUncheckedSideEffectImports": true
+    "noUncheckedSideEffectImports": true,
+    "paths": {
+      "@splidejs/react-splide": ["./node_modules/@splidejs/react-splide/dist/types/index"]
+    }
   },
   "include": ["src"]
 }
