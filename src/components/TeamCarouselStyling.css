@@ -15,6 +15,13 @@
   font-family: Inter, sans-serif;
 }
 
+.tc__container {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  width: 100%;
+}
+
 /* Header row: heading + CTA on the left, pill nav on the right. */
 .tc__head {
   display: flex;

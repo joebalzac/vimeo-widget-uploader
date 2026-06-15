@@ -1,0 +1,225 @@
+/* CustomerStoriesLogo — Figma node 16806-33498 (light) / 16806-33690 (dark) */
+
+.csl {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 104px 120px;
+  font-family: Inter, sans-serif;
+  background-color: #ffffff;
+}
+
+.csl--dark {
+  background-color: #000000;
+}
+
+.csl__grid {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  border: 1px solid #dddcda;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.csl--dark .csl__grid {
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.csl__row {
+  display: flex;
+  width: 100%;
+  height: 140px;
+}
+
+.csl__row:not(:last-child) {
+  margin-bottom: -1px;
+}
+
+.csl__cell {
+  position: relative;
+  display: flex;
+  flex: 1 1 0;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  height: 100%;
+  margin-right: -1px;
+  border: 1px solid #dddcda;
+  background-color: #ffffff;
+  overflow: hidden;
+  text-decoration: none;
+  color: inherit;
+  transition:
+    flex 0.45s cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 0.35s ease;
+}
+
+.csl--dark .csl__cell {
+  border-color: rgba(255, 255, 255, 0.2);
+  background-color: #000000;
+}
+
+.csl__cell:hover,
+.csl__cell:focus-visible {
+  flex: 0 0 clamp(200px, 32vw, 360px);
+  z-index: 2;
+}
+
+.csl__row:has(.csl__cell:hover) .csl__cell:not(:hover),
+.csl__row:has(.csl__cell:focus-visible) .csl__cell:not(:focus-visible) {
+  flex: 1 1 0;
+}
+
+.csl__cell--linked {
+  cursor: pointer;
+}
+
+.csl__cell-bg {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 0.35s ease;
+  pointer-events: none;
+}
+
+.csl__cell-bg img {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 110%;
+  height: 110%;
+  transform: translate(-50%, -50%);
+  object-fit: cover;
+  filter: blur(6px);
+}
+
+.csl__cell-bg::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.csl__cell--linked:hover .csl__cell-bg,
+.csl__cell--linked:focus-visible .csl__cell-bg {
+  opacity: 1;
+}
+
+.csl__logo {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 70%;
+  height: 48px;
+}
+
+.csl__logo-img {
+  display: block;
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  transition: opacity 0.25s ease;
+}
+
+.csl__logo-img--hover {
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  opacity: 0;
+}
+
+.csl__cell--linked:hover .csl__logo-img--default,
+.csl__cell--linked:focus-visible .csl__logo-img--default {
+  opacity: 0;
+}
+
+.csl__cell--linked:hover .csl__logo-img--hover,
+.csl__cell--linked:focus-visible .csl__logo-img--hover {
+  opacity: 1;
+}
+
+.csl__arrow {
+  position: absolute;
+  top: 11px;
+  right: 11px;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background-color: #efeeec;
+  transition: background-color 0.25s ease;
+}
+
+.csl--dark .csl__arrow {
+  background-color: rgba(239, 238, 236, 0.3);
+}
+
+.csl__cell--linked:hover .csl__arrow,
+.csl__cell--linked:focus-visible .csl__arrow {
+  background-color: rgba(239, 238, 236, 0.3);
+}
+
+.csl__arrow svg {
+  width: 8px;
+  height: 8px;
+}
+
+.csl__arrow-icon {
+  display: block;
+}
+
+.csl__arrow-icon--hover {
+  display: none;
+}
+
+.csl__cell--linked:hover .csl__arrow-icon--default,
+.csl__cell--linked:focus-visible .csl__arrow-icon--default {
+  display: none;
+}
+
+.csl__cell--linked:hover .csl__arrow-icon--hover,
+.csl__cell--linked:focus-visible .csl__arrow-icon--hover {
+  display: block;
+}
+
+@media (max-width: 1200px) {
+  .csl {
+    padding: 80px 48px;
+  }
+
+  .csl__cell:hover,
+  .csl__cell:focus-visible {
+    flex: 0 0 clamp(160px, 38vw, 280px);
+  }
+}
+
+@media (max-width: 768px) {
+  .csl {
+    padding: 64px 24px;
+  }
+
+  .csl__row {
+    flex-wrap: wrap;
+    height: auto;
+  }
+
+  .csl__cell {
+    flex: 1 1 calc(50% - 1px);
+    height: 120px;
+  }
+
+  .csl__cell:hover,
+  .csl__cell:focus-visible {
+    flex: 1 1 100%;
+    height: 120px;
+  }
+}

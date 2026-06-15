@@ -4,13 +4,10 @@ import "@splidejs/react-splide/css";
 import "./TeamCarouselStyling.css";
 
 export interface TeamMember {
-  /** Person's name — card title (22px). */
   name: string;
-  /** Secondary label under the name (18px). */
   label: string;
-  /** Vimeo numeric ID, e.g. "76979871". */
+  /** Vimeo numeric ID, e.g. "76979871". Thumbnail is fetched automatically if not provided. */
   vimeoId: string;
-  /** Thumbnail image URL for the card's photo block. */
   thumbnail?: string;
 }
 
@@ -20,7 +17,7 @@ export interface TeamCarouselProps {
   ctaLabel?: string;
   ctaHref?: string;
   members?: TeamMember[];
-  /** Visible cards per page at desktop. Omit to use the fixed-width peek. */
+  /** Visible cards per page at desktop. Leave 0/undefined to use fixed-width peek layout. */
   perPage?: number;
   /** Fixed card width for the "next card peeks" layout. Default "444px". */
   fixedWidth?: string;
@@ -33,6 +30,30 @@ const PLACEHOLDER_MEMBERS: TeamMember[] = [
   { name: "Lorem Ipsum", label: "Name", vimeoId: "" },
 ];
 
+function useVimeoThumbnails(members: TeamMember[]) {
+  const [thumbs, setThumbs] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    const ids = members.map((m) => m.vimeoId).filter((id) => id && !thumbs[id]);
+
+    if (!ids.length) return;
+
+    ids.forEach((id) => {
+      fetch(`https://vimeo.com/api/oembed.json?url=https://vimeo.com/${id}`)
+        .then((r) => r.json())
+        .then((data) => {
+          if (data?.thumbnail_url) {
+            setThumbs((prev) => ({ ...prev, [id]: data.thumbnail_url }));
+          }
+        })
+        .catch(() => {});
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [members.map((m) => m.vimeoId).join(",")]);
+
+  return thumbs;
+}
+
 export default function TeamCarousel({
   eyebrow = "people behind the product",
   heading = "Hear From Our Team",
@@ -44,10 +65,10 @@ export default function TeamCarousel({
 }: TeamCarouselProps) {
   const [active, setActive] = useState<TeamMember | null>(null);
   const useFixed = !perPage;
+  const autoThumbs = useVimeoThumbnails(members);
 
   const close = useCallback(() => setActive(null), []);
 
-  // Escape to close + body-scroll lock while a video is open.
   useEffect(() => {
     if (!active) return;
     const onKey = (e: KeyboardEvent) => {
@@ -78,29 +99,31 @@ export default function TeamCarousel({
 
   return (
     <section className="tc">
-      <div className="tc__head">
-        <div className="tc__head-copy">
-          <p className="tc__eyebrow">{eyebrow}</p>
-          <h2 className="tc__heading">{heading}</h2>
+      <div className="tc__container">
+        <div className="tc__head">
+          <div className="tc__head-copy">
+            <p className="tc__eyebrow">{eyebrow}</p>
+            <h2 className="tc__heading">{heading}</h2>
+          </div>
+          <a className="tc__cta" href={ctaHref}>
+            {ctaLabel}
+          </a>
         </div>
-        <a className="tc__cta" href={ctaHref}>
-          {ctaLabel}
-        </a>
-      </div>
 
-      <div className="tc__nav splide__arrows">
-        <button
-          className="tc__nav-btn splide__arrow splide__arrow--prev"
-          aria-label="Previous"
-        >
-          <Arrow direction="left" />
-        </button>
-        <button
-          className="tc__nav-btn splide__arrow splide__arrow--next"
-          aria-label="Next"
-        >
-          <Arrow direction="right" />
-        </button>
+        <div className="tc__nav splide__arrows">
+          <button
+            className="tc__nav-btn splide__arrow splide__arrow--prev"
+            aria-label="Previous"
+          >
+            <Arrow direction="left" />
+          </button>
+          <button
+            className="tc__nav-btn splide__arrow splide__arrow--next"
+            aria-label="Next"
+          >
+            <Arrow direction="right" />
+          </button>
+        </div>
       </div>
 
       <Splide
@@ -110,48 +133,51 @@ export default function TeamCarousel({
         className="tc__splide"
       >
         <SplideTrack>
-          {members.map((m, i) => (
-            <SplideSlide key={i}>
-              <article className="tc__card">
-                <div className="tc__card-head">
-                  <div className="tc__card-text">
-                    <p className="tc__card-title">{m.name}</p>
-                    <p className="tc__card-label">{m.label}</p>
+          {members.map((m, i) => {
+            const thumb = m.thumbnail || autoThumbs[m.vimeoId];
+            return (
+              <SplideSlide key={i}>
+                <article className="tc__card">
+                  <div className="tc__card-head">
+                    <div className="tc__card-text">
+                      <p className="tc__card-title">{m.name}</p>
+                      <p className="tc__card-label">{m.label}</p>
+                    </div>
+                    <button
+                      className="tc__play"
+                      type="button"
+                      aria-label={`Play ${m.name}'s video`}
+                      onClick={() => m.vimeoId && setActive(m)}
+                      disabled={!m.vimeoId}
+                    >
+                      <span className="tc__play-icon" aria-hidden="true" />
+                    </button>
                   </div>
+
                   <button
-                    className="tc__play"
+                    className="tc__photo"
                     type="button"
                     aria-label={`Play ${m.name}'s video`}
                     onClick={() => m.vimeoId && setActive(m)}
                     disabled={!m.vimeoId}
+                    style={
+                      thumb
+                        ? {
+                            backgroundImage: `url(${thumb})`,
+                            backgroundSize: "cover",
+                            backgroundPosition: "center",
+                          }
+                        : undefined
+                    }
                   >
-                    <span className="tc__play-icon" aria-hidden="true" />
+                    <span className="tc__photo-play" aria-hidden="true">
+                      <span className="tc__photo-play-icon" />
+                    </span>
                   </button>
-                </div>
-
-                <button
-                  className="tc__photo"
-                  type="button"
-                  aria-label={`Play ${m.name}'s video`}
-                  onClick={() => m.vimeoId && setActive(m)}
-                  disabled={!m.vimeoId}
-                  style={
-                    m.thumbnail
-                      ? {
-                          backgroundImage: `url(${m.thumbnail})`,
-                          backgroundSize: "cover",
-                          backgroundPosition: "center",
-                        }
-                      : undefined
-                  }
-                >
-                  <span className="tc__photo-play" aria-hidden="true">
-                    <span className="tc__photo-play-icon" />
-                  </span>
-                </button>
-              </article>
-            </SplideSlide>
-          ))}
+                </article>
+              </SplideSlide>
+            );
+          })}
         </SplideTrack>
       </Splide>
 

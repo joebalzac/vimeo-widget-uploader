@@ -632,8 +632,6 @@ export default function MultiStepForm({
       );
       if (!res.ok) throw new Error(`HubSpot responded with ${res.status}`);
 
-      measurePixel("custom", { type: "custom" }, { custom_event_name: "form_submission" });
-
       await loadDefaultSDK();
 
       window.DefaultSDK!.submit(
@@ -1283,6 +1281,7 @@ export default function MultiStepForm({
                         type="button"
                         onClick={() => {
                           pushEvent(eventStepThree);
+                          measurePixel("custom", { type: "custom" }, { custom_event_name: "form_submission" });
                           if (enableWebflowEvent && (window as any).wf) {
                             (window as any).wf.ready(() =>
                               (window as any).wf.sendEvent(
