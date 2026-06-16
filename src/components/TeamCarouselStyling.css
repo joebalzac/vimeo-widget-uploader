@@ -5,6 +5,7 @@
 .tc {
   position: relative;
   width: 100%;
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
   gap: 48px;
@@ -81,11 +82,14 @@
 }
 
 /* Custom pill nav — pinned top-right of the section, matching Figma.
-     Absolute (not stacked negative margins) so it's robust to heading height. */
+     Absolute (not stacked negative margins) so it's robust to heading height.
+     Lives inside <Splide>, whose root is the nearest positioned ancestor —
+     it sits flush with .tc's padding box, so top/right of 0 lands it
+     exactly at the section's padding edges. */
 .tc__nav {
   position: absolute;
-  top: 60px; /* = section padding-top */
-  right: 140px; /* = section padding-right */
+  top: 0;
+  right: 0;
   display: inline-flex;
   align-items: center;
   background-color: #f5f4f2;
@@ -215,10 +219,6 @@
 @media (max-width: 991px) {
   .tc {
     padding: 60px 40px 80px;
-  }
-  .tc__nav {
-    top: 60px;
-    right: 40px;
   }
   .tc__heading {
     font-size: 40px;

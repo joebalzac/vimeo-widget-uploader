@@ -99,39 +99,41 @@ export default function TeamCarousel({
 
   return (
     <section className="tc">
-      <div className="tc__container">
-        <div className="tc__head">
-          <div className="tc__head-copy">
-            <p className="tc__eyebrow">{eyebrow}</p>
-            <h2 className="tc__heading">{heading}</h2>
-          </div>
-          <a className="tc__cta" href={ctaHref}>
-            {ctaLabel}
-          </a>
-        </div>
-
-        <div className="tc__nav splide__arrows">
-          <button
-            className="tc__nav-btn splide__arrow splide__arrow--prev"
-            aria-label="Previous"
-          >
-            <Arrow direction="left" />
-          </button>
-          <button
-            className="tc__nav-btn splide__arrow splide__arrow--next"
-            aria-label="Next"
-          >
-            <Arrow direction="right" />
-          </button>
-        </div>
-      </div>
-
       <Splide
         hasTrack={false}
         options={options}
         aria-label={heading}
         className="tc__splide"
       >
+        <div className="tc__container">
+          <div className="tc__head">
+            <div className="tc__head-copy">
+              <p className="tc__eyebrow">{eyebrow}</p>
+              <h2 className="tc__heading">{heading}</h2>
+            </div>
+            <a className="tc__cta" href={ctaHref}>
+              {ctaLabel}
+            </a>
+          </div>
+
+          {/* Custom pill nav — must live inside <Splide> so it binds to
+              click/disabled state instead of Splide auto-creating its own arrows. */}
+          <div className="tc__nav splide__arrows">
+            <button
+              className="tc__nav-btn splide__arrow splide__arrow--prev"
+              aria-label="Previous"
+            >
+              <Arrow direction="left" />
+            </button>
+            <button
+              className="tc__nav-btn splide__arrow splide__arrow--next"
+              aria-label="Next"
+            >
+              <Arrow direction="right" />
+            </button>
+          </div>
+        </div>
+
         <SplideTrack>
           {members.map((m, i) => {
             const thumb = m.thumbnail || autoThumbs[m.vimeoId];

@@ -4,6 +4,7 @@ import MultiStepForm from "./components/MultiStepForm";
 import MultiStepFormHealth from "./components/MultiStepFormHealth";
 import MultiStepFormUniversal from "./components/MultiStepFormUniversal";
 import TeamCarousel from "./components/TeamCarousel";
+import ScrollSection from "./components/ScrollSection";
 import { DEMO_LOGOS } from "./data/customerStoriesLogoDemo";
 
 const params = new URLSearchParams(window.location.search);
@@ -24,6 +25,16 @@ function App() {
     return <CustomerStoriesLogoPreview />;
   }
 
+  if (section === "scroll") {
+    return (
+      <>
+        <div style={{ height: "100vh" }} />
+        <ScrollSection />
+        <div style={{ height: "100vh" }} />
+      </>
+    );
+  }
+
   return (
     <>
       <div>
@@ -35,8 +46,10 @@ function App() {
           <MultiStepFormUniversal />
         )}
       </div>
+     
       <div>
         <TeamCarousel />
+        <ScrollSection />
       </div>
       <CustomerStoriesLogoPreview />
     </>

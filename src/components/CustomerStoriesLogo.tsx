@@ -15,8 +15,10 @@ export interface CustomerLogo {
   logoHoverUrl?: string;
   /** Background image revealed on hover. */
   hoverBgUrl?: string;
-  /** Case study link. Hover expand + preview when set with hoverBgUrl. */
+  /** Case study link. Enables click + width expand when set. */
   href?: string;
+  /** Show the arrow badge (default slots from Figma layout). */
+  showArrow?: boolean;
   alt?: string;
 }
 
@@ -51,24 +53,23 @@ function resolveLogoAssets(
   };
 }
 
-function ArrowIcon({ variant }: { variant: "default" | "hover" }) {
-  const stroke = variant === "hover" ? "#ffffff" : "#181819";
+function ArrowIcon() {
   return (
     <svg
-      className={`csl__arrow-icon csl__arrow-icon--${variant}`}
+      className="csl__arrow-icon"
       viewBox="0 0 8 8"
       fill="none"
       aria-hidden
     >
       <path
         d="M1 4h5.5"
-        stroke={stroke}
+        stroke="currentColor"
         strokeWidth="0.75"
         strokeLinecap="round"
       />
       <path
         d="M4.5 1.5L7 4l-2.5 2.5"
-        stroke={stroke}
+        stroke="currentColor"
         strokeWidth="0.75"
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -87,18 +88,20 @@ function LogoCell({
   const assets = resolveLogoAssets(logo, theme);
   if (!assets) return null;
 
-  const isLinked = Boolean(logo.href && logo.hoverBgUrl);
-  const Tag = isLinked ? "a" : "div";
+  const hasHref = Boolean(logo.href);
+  const hasHoverPreview = Boolean(logo.href && logo.hoverBgUrl);
+  const showArrow = logo.showArrow ?? hasHref;
+  const Tag = hasHref ? "a" : "div";
 
   return (
     <Tag
-      className={`csl__cell${isLinked ? " csl__cell--linked" : ""}`}
-      href={isLinked ? logo.href : undefined}
-      target={isLinked ? "_blank" : undefined}
-      rel={isLinked ? "noopener noreferrer" : undefined}
-      aria-label={isLinked ? assets.alt || "Read case study" : undefined}
+      className={`csl__cell${hasHref ? " csl__cell--linked" : ""}`}
+      href={hasHref ? logo.href : undefined}
+      target={hasHref ? "_blank" : undefined}
+      rel={hasHref ? "noopener noreferrer" : undefined}
+      aria-label={hasHref ? assets.alt || "Read case study" : undefined}
     >
-      {isLinked && logo.hoverBgUrl && (
+      {hasHoverPreview && logo.hoverBgUrl && (
         <div className="csl__cell-bg" aria-hidden>
           <img src={logo.hoverBgUrl} alt="" />
         </div>
@@ -110,7 +113,7 @@ function LogoCell({
           alt={assets.alt}
           className="csl__logo-img csl__logo-img--default"
         />
-        {isLinked && (
+        {hasHoverPreview && (
           <img
             src={assets.logoHoverUrl}
             alt=""
@@ -120,10 +123,9 @@ function LogoCell({
         )}
       </div>
 
-      {isLinked && (
+      {showArrow && (
         <span className="csl__arrow" aria-hidden>
-          <ArrowIcon variant="default" />
-          <ArrowIcon variant="hover" />
+          <ArrowIcon />
         </span>
       )}
     </Tag>

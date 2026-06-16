@@ -148,47 +148,38 @@
   position: absolute;
   top: 11px;
   right: 11px;
-  z-index: 2;
+  z-index: 3;
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
   width: 24px;
   height: 24px;
   border-radius: 50%;
   background-color: #efeeec;
-  transition: background-color 0.25s ease;
+  color: #181819;
+  pointer-events: none;
+  transition:
+    background-color 0.25s ease,
+    color 0.25s ease;
 }
 
 .csl--dark .csl__arrow {
   background-color: rgba(239, 238, 236, 0.3);
+  color: #ffffff;
 }
 
 .csl__cell--linked:hover .csl__arrow,
 .csl__cell--linked:focus-visible .csl__arrow {
   background-color: rgba(239, 238, 236, 0.3);
-}
-
-.csl__arrow svg {
-  width: 8px;
-  height: 8px;
+  color: #ffffff;
 }
 
 .csl__arrow-icon {
   display: block;
-}
-
-.csl__arrow-icon--hover {
-  display: none;
-}
-
-.csl__cell--linked:hover .csl__arrow-icon--default,
-.csl__cell--linked:focus-visible .csl__arrow-icon--default {
-  display: none;
-}
-
-.csl__cell--linked:hover .csl__arrow-icon--hover,
-.csl__cell--linked:focus-visible .csl__arrow-icon--hover {
-  display: block;
+  width: 10px;
+  height: 10px;
+  flex-shrink: 0;
 }
 
 @media (max-width: 1200px) {

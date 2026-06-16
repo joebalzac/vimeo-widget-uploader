@@ -1,5 +1,4 @@
 import type { CustomerLogo, CustomerBrandId } from "../components/CustomerStoriesLogo";
-import { hoverBg } from "../assets/customer-logos";
 
 /** Grid order: row 1 left → right, then row 2. Matches Figma. */
 export const LOGO_SLOT_BRANDS: CustomerBrandId[] = [
@@ -14,6 +13,9 @@ export const LOGO_SLOT_BRANDS: CustomerBrandId[] = [
   "scion",
   "goldoller",
 ];
+
+/** Slots that show the arrow badge by default (matches Figma). 1-based: 1, 4, 6, 7, 10 */
+const CASE_STUDY_SLOT_INDEXES = new Set([0, 3, 5, 6, 9]);
 
 const SLOT_LABELS = [
   "Row 1 — GoldOller",
@@ -35,35 +37,32 @@ export function slotLabel(n: number): string {
 /**
  * Build the 10-logo grid from optional per-slot case study URLs.
  * Logos are bundled SVGs — only paste URLs for slots that should link out.
- * Hover preview activates when both case study URL + hover background are set.
+ * Hover preview requires both case study URL + hover background URL.
  */
 export function buildLogoGrid(
   caseStudyUrls: (string | undefined)[],
   hoverBgUrl?: string,
 ): CustomerLogo[] {
-  const bg = hoverBgUrl || hoverBg;
+  const bg = hoverBgUrl?.trim();
 
   return LOGO_SLOT_BRANDS.map((brand, i) => {
     const href = caseStudyUrls[i]?.trim();
-    const linked = Boolean(href && bg);
+    const showArrow = CASE_STUDY_SLOT_INDEXES.has(i) || Boolean(href);
 
     return {
       brand,
-      ...(linked ? { href, hoverBgUrl: bg } : {}),
+      showArrow,
+      ...(href ? { href, ...(bg ? { hoverBgUrl: bg } : {}) } : {}),
     };
   });
 }
 
+/** Demo hover image — hosted URL only, not bundled (keeps Webflow library under size limit). */
+const DEMO_HOVER_BG =
+  "https://cdn.prod.website-files.com/63cc1eef179b054a9306598d/69e923490d2027c0e66d0c17_meetelise-qr-code.png";
+
 /** Default demo grid with placeholder case study links on interactive cells. */
-export const DEFAULT_LOGO_GRID: CustomerLogo[] = buildLogoGrid([
-  "#",
-  undefined,
-  undefined,
-  "#",
-  undefined,
-  "#",
-  "#",
-  undefined,
-  undefined,
-  "#",
-]);
+export const DEFAULT_LOGO_GRID: CustomerLogo[] = buildLogoGrid(
+  ["#", undefined, undefined, "#", undefined, "#", "#", undefined, undefined, "#"],
+  DEMO_HOVER_BG,
+);

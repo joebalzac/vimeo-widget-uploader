@@ -6,7 +6,6 @@ import rpmDark from "./rpm.svg";
 import rpmWhite from "./rpm-white.svg";
 import scionDark from "./scion-dark.svg";
 import scionWhite from "./scion-white.svg";
-import hoverBg from "./hover-bg.jpg";
 
 export type CustomerBrandId = "goldoller" | "rpm" | "scion" | "greystar";
 
@@ -28,4 +27,3 @@ export const BRAND_LOGOS: Record<
   },
 };
 
-export { hoverBg };

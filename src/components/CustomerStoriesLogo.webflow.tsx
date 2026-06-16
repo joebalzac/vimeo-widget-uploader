@@ -63,7 +63,7 @@ function caseStudyUrlProp(n: number) {
   return props.Text({
     name: `${slotLabel(n)} — Case Study URL`,
     defaultValue: "",
-    tooltip: `Optional. When set (with a hover background), this cell expands on hover and links to the case study. Logo SVG is preset — no upload needed.`,
+      tooltip: `Optional. Links this cell on click. Arrows show on preset case-study slots automatically; add a URL here to enable the link.`,
   });
 }
 
@@ -84,7 +84,7 @@ export default declareComponent(CustomerStoriesLogoAdapter, {
       name: "Hover Background Image URL",
       defaultValue: "",
       tooltip:
-        "Shared hero image for all linked cells on hover. Upload once to Webflow Assets. Leave empty to use the built-in default.",
+        "Optional for arrow-only cells. Required for hover image preview. Upload a hero image to Webflow Assets and paste the URL.",
     }),
     l1CaseStudyUrl: caseStudyUrlProp(1),
     l2CaseStudyUrl: caseStudyUrlProp(2),

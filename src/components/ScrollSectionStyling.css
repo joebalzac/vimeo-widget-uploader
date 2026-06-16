@@ -1,0 +1,142 @@
+/* ScrollSection — plain CSS. Implemented from Figma node 17801-4330.
+   Assumes Inter (variable) and IBM Plex Mono are loaded globally.
+   Timeline steps reveal progressively as the section scrolls through the viewport. */
+
+.ss {
+  position: relative;
+  width: 100%;
+  box-sizing: border-box;
+  background-color: #fcfcfb;
+  padding: 120px 140px;
+  font-family: Inter, sans-serif;
+}
+
+.ss__row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  width: 100%;
+}
+
+.ss__intro {
+  display: flex;
+  flex: 1 1 0%;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+}
+
+.ss__eyebrow {
+  margin: 0;
+  font-family: "IBM Plex Mono", monospace;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 1.1;
+  text-transform: uppercase;
+  color: #6b4fff;
+}
+
+.ss__heading {
+  margin: 0;
+  font-size: 48px;
+  line-height: 1.1;
+  letter-spacing: -1.44px;
+  color: #0e0d0c;
+  font-weight: 400;
+}
+
+.ss__timeline {
+  display: flex;
+  flex: 1 1 0%;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.ss__item {
+  display: flex;
+  gap: 32px;
+  min-width: 0;
+}
+
+.ss__rail {
+  flex-shrink: 0;
+  width: 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.ss__dot {
+  flex-shrink: 0;
+  width: 8px;
+  height: 8px;
+  margin-top: 8px;
+  border-radius: 50%;
+}
+
+.ss__line {
+  flex: 1;
+  width: 1px;
+  min-height: 24px;
+  margin: 4px 0 16px;
+  background-color: #dddcda;
+  position: relative;
+  overflow: hidden;
+}
+
+.ss__line-fill {
+  position: absolute;
+  inset: 0;
+  background-color: #6b4fff;
+  transform-origin: top;
+}
+
+.ss__content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-bottom: 24px;
+  min-width: 0;
+}
+
+.ss__step-title {
+  margin: 0;
+  font-size: 22px;
+  line-height: 1.3;
+  letter-spacing: -0.66px;
+  color: #0e0d0c;
+  font-weight: 400;
+}
+
+.ss__step-body {
+  margin: 0;
+  font-size: 18px;
+  line-height: 1.4;
+  letter-spacing: -0.36px;
+  color: #3f3e3c;
+}
+
+@media (max-width: 991px) {
+  .ss {
+    padding: 80px 40px;
+  }
+  .ss__heading {
+    font-size: 36px;
+    letter-spacing: -1.08px;
+  }
+}
+
+@media (max-width: 767px) {
+  .ss {
+    padding: 64px 20px;
+  }
+  .ss__row {
+    flex-direction: column;
+    gap: 32px;
+  }
+  .ss__heading {
+    font-size: 28px;
+    letter-spacing: -0.84px;
+  }
+}
