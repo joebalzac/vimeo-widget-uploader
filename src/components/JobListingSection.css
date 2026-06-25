@@ -1,0 +1,240 @@
+.job-listing-wrapper {
+    display: flex;
+    gap: 32px;
+    align-items: flex-start;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.filters-wrapper {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  width: 100%;
+}
+
+.filters-title {
+  color: #181819;
+  font-family: "Inter Tight";
+  font-size: 30px;
+  font-weight: 450;
+  line-height: 140%;
+}
+
+.search-input-wrapper,
+.filters-select {
+  display: flex;
+  padding: 10px 12px;
+  align-items: center;
+  border-radius: 4px;
+  border: 1px solid #eaeaed;
+}
+
+.search-input-wrapper {
+  gap: 12px;
+  align-self: stretch;
+  width: 100%;
+}
+
+.search-input {
+  outline: none;
+  border: 0;
+  width: 100%;
+}
+
+.filters-select {
+  justify-content: space-between;
+  align-self: stretch;
+  cursor: pointer;
+}
+
+.collection-list {
+  width: 100%;
+}
+
+/* =========================================================
+   ACCORDION DEPARTMENT STYLES
+   ========================================================= */
+
+.department-container {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.15);
+}
+
+.department-title {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 18px 0;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+
+  color: #181819;
+  font-family: "Inter Tight";
+  font-size: 24px;
+  font-weight: 450;
+  line-height: 140%;
+  text-align: left;
+}
+
+.department-count {
+  color: #181819;
+  opacity: 0.9;
+}
+
+.department-chevron {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.department-chevron svg {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+}
+
+
+.department-jobs {
+  padding: 6px 0 16px 0;
+}
+
+/* =========================================================
+   JOB ITEM STYLES
+   ========================================================= */
+
+.job-item {
+  text-decoration: none;
+  display: block;
+}
+
+.job-item-content {
+  display: flex;
+  padding: 16px 0;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  border-bottom: 1px solid #eaeaed;
+}
+
+.name-location-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.job-item-name,
+.job-item-location {
+  margin: 0;
+  padding: 0;
+}
+
+.job-item-name {
+  color: #181819;
+  font-family: "Inter Tight";
+  font-size: 18px;
+  font-weight: 450;
+  line-height: 150%;
+}
+
+.job-item-location {
+  color: #515152;
+  font-family: Inter;
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 150%;
+  letter-spacing: -0.18px;
+}
+
+.job-item-content:hover .job-item-name,
+.job-item-content:hover .job-item-location {
+  color: #b9b9bb;
+}
+
+.job-item-content:hover .job-item-icon {
+  transform: translateX(3px);
+  transition: transform 0.25s ease-in-out;
+}
+
+.job-item-content:hover .job-item-icon path {
+  stroke: #b9b9bb;
+}
+
+.job-item-icon path {
+  transition: stroke 0.25s ease-in-out;
+}
+
+/* =========================================================
+   SELECT DROPDOWN STYLES
+   ========================================================= */
+
+.select-wrapper {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+}
+
+.select-wrapper select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  width: 100%;
+  padding-right: 32px;
+}
+
+.custom-select-icon {
+  position: absolute;
+  top: 50%;
+  right: 12px;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+/* =========================================================
+   MOBILE STYLES
+   ========================================================= */
+
+@media (max-width: 768px) {
+  .filters-wrapper {
+    width: 100%;
+  }
+
+  .job-listing-wrapper {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .department-title {
+    font-size: 18px;
+    padding: 16px 0;
+  }
+
+  .job-item-name,
+  .job-item-location {
+    font-size: 16px;
+  }
+
+  .name-location-wrapper {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+
+  .job-item-content:hover .job-item-name,
+  .job-item-content:hover .job-item-location {
+    color: #181819;
+  }
+
+  .job-item-content:hover .job-item-icon {
+    transform: none;
+    transition: none;
+  }
+
+  .job-item-content:hover .job-item-icon path {
+    stroke: #515152;
+  }
+}
