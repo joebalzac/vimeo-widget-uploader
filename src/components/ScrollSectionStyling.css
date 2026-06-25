@@ -1,4 +1,4 @@
-/* ScrollSection — plain CSS. Implemented from Figma node 17801-4330.
+/* ScrollSection — plain CSS. Implemented from Figma nodes 17801-4330 (desktop) and 18098-154 (mobile).
    Assumes Inter (variable) and IBM Plex Mono are loaded globally.
    Timeline steps reveal progressively as the section scrolls through the viewport. */
 
@@ -117,6 +117,11 @@
   color: #3f3e3c;
 }
 
+/* Cards — hidden on desktop, visible on mobile only */
+.ss__cards {
+  display: none;
+}
+
 @media (max-width: 991px) {
   .ss {
     padding: 80px 40px;
@@ -129,14 +134,112 @@
 
 @media (max-width: 767px) {
   .ss {
-    padding: 64px 20px;
+    padding: 48px 24px;
+    gap: 32px;
+    display: flex;
+    flex-direction: column;
   }
+
   .ss__row {
     flex-direction: column;
     gap: 32px;
   }
+
+  /* Mobile eyebrow: smaller, gray text, with a purple square dot prefix */
+  .ss__eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    color: #3f3e3c;
+  }
+
+  .ss__eyebrow::before {
+    content: "";
+    display: block;
+    width: 8px;
+    height: 8px;
+    flex-shrink: 0;
+    background-color: #6b4fff;
+  }
+
   .ss__heading {
-    font-size: 28px;
-    letter-spacing: -0.84px;
+    font-size: 36px;
+    letter-spacing: -1.08px;
+  }
+
+  .ss__item {
+    gap: 20px;
+  }
+
+  .ss__rail {
+    width: 16px;
+  }
+
+  .ss__dot {
+    margin-top: 6px;
+  }
+
+  .ss__content {
+    gap: 6px;
+  }
+
+  .ss__step-title {
+    font-size: 20px;
+    line-height: 1.2;
+    letter-spacing: -0.6px;
+  }
+
+  .ss__step-body {
+    font-size: 16px;
+    letter-spacing: -0.32px;
+  }
+
+  /* Show cards on mobile */
+  .ss__cards {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+  }
+
+  .ss__card {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 24px;
+    background-color: #f5f4f2;
+    border-radius: 6px;
+    box-shadow: inset 0 0 0 0.5px rgba(0, 0, 0, 0.1);
+    color: #3f3e3c;
+  }
+
+  .ss__card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .ss__card-body {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .ss__card-title {
+    margin: 0;
+    font-size: 20px;
+    line-height: 1.2;
+    letter-spacing: -0.6px;
+    color: #0e0d0c;
+    font-weight: 400;
+  }
+
+  .ss__card-text {
+    margin: 0;
+    font-size: 16px;
+    line-height: 1.4;
+    letter-spacing: -0.32px;
+    color: #3f3e3c;
   }
 }

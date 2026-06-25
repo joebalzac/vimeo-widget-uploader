@@ -9,6 +9,8 @@ interface AdapterProps {
   s2Title?: string; s2Body?: string;
   s3Title?: string; s3Body?: string;
   s4Title?: string; s4Body?: string;
+  c1Title?: string; c1Body?: string;
+  c2Title?: string; c2Body?: string;
 }
 
 function ScrollSectionAdapter({
@@ -18,23 +20,33 @@ function ScrollSectionAdapter({
   s2Title, s2Body,
   s3Title, s3Body,
   s4Title, s4Body,
+  c1Title, c1Body,
+  c2Title, c2Body,
 }: AdapterProps) {
-  const slots = [
+  const stepSlots = [
     { title: s1Title, body: s1Body },
     { title: s2Title, body: s2Body },
     { title: s3Title, body: s3Body },
     { title: s4Title, body: s4Body },
   ];
-
-  const steps = slots
+  const steps = stepSlots
     .filter((s) => s.title || s.body)
     .map((s) => ({ title: s.title || "", body: s.body || "" }));
+
+  const cardSlots = [
+    { title: c1Title, body: c1Body },
+    { title: c2Title, body: c2Body },
+  ];
+  const cards = cardSlots
+    .filter((c) => c.title || c.body)
+    .map((c) => ({ title: c.title || "", body: c.body || "" }));
 
   return (
     <ScrollSection
       eyebrow={eyebrow}
       heading={heading}
       steps={steps.length ? steps : undefined}
+      cards={cards.length ? cards : undefined}
     />
   );
 }

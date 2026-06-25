@@ -11,7 +11,7 @@
   gap: 48px;
   justify-content: center;
   background-color: #ffffff;
-  padding: 60px 140px 120px;
+  padding: 0px;
   overflow: hidden;
   font-family: Inter, sans-serif;
 }
@@ -232,8 +232,14 @@
 }
 
 @media (max-width: 767px) {
+  /* No left/right padding — carousel bleeds edge-to-edge with Splide padding handling the peek. */
   .tc {
-    padding: 48px 20px 64px;
+    padding: 48px 0 64px;
+    gap: 32px;
+  }
+  /* Give just the heading area side padding so text isn't flush to screen edge. */
+  .tc__container {
+    padding: 0 20px;
   }
   .tc__heading {
     font-size: 32px;
@@ -243,11 +249,9 @@
     align-items: flex-start;
     gap: 24px;
   }
-  /* On mobile, drop the nav back into flow under the header. */
+  /* Hide pill nav on mobile — swipe only. */
   .tc__nav {
-    position: static;
-    align-self: flex-start;
-    margin-bottom: 24px;
+    display: none;
   }
   .tc__card {
     width: 100%;

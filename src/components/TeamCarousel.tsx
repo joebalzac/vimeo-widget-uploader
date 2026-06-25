@@ -9,6 +9,8 @@ export interface TeamMember {
   /** Vimeo numeric ID, e.g. "76979871". Thumbnail is fetched automatically if not provided. */
   vimeoId: string;
   thumbnail?: string;
+  /** Optional duration string shown in the mobile card badge, e.g. "02:56". */
+  duration?: string;
 }
 
 export interface TeamCarouselProps {
@@ -93,7 +95,15 @@ export default function TeamCarousel({
     ...(useFixed ? { fixedWidth, focus: 0 } : { perPage }),
     breakpoints: {
       991: useFixed ? { fixedWidth: "380px" } : { perPage: 2 },
-      767: useFixed ? { fixedWidth: "85%" } : { perPage: 1 },
+      767: {
+        fixedWidth: 0,
+        perPage: 1,
+        focus: "center" as const,
+        padding: "18%",
+        trimSpace: false,
+        arrows: false,
+        start: 1,
+      },
     },
   };
 
