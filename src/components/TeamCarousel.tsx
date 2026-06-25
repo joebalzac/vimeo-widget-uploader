@@ -9,7 +9,7 @@ export interface TeamMember {
   /** Vimeo numeric ID, e.g. "76979871". Thumbnail is fetched automatically if not provided. */
   vimeoId: string;
   thumbnail?: string;
-  /** Optional duration string shown in the mobile card badge, e.g. "02:56". */
+  /** Optional duration string shown in the card badge, e.g. "02:56". */
   duration?: string;
 }
 
@@ -37,9 +37,7 @@ function useVimeoThumbnails(members: TeamMember[]) {
 
   useEffect(() => {
     const ids = members.map((m) => m.vimeoId).filter((id) => id && !thumbs[id]);
-
     if (!ids.length) return;
-
     ids.forEach((id) => {
       fetch(`https://vimeo.com/api/oembed.json?url=https://vimeo.com/${id}`)
         .then((r) => r.json())
@@ -98,10 +96,9 @@ export default function TeamCarousel({
       767: {
         fixedWidth: 0,
         perPage: 1,
-        focus: "center" as const,
-        padding: "18%",
+        padding: { left: "24px", right: "24px" },
         trimSpace: false,
-        arrows: false,
+        arrows: true,
         start: 1,
       },
     },
@@ -118,60 +115,43 @@ export default function TeamCarousel({
         <div className="tc__container">
           <div className="tc__head">
             <div className="tc__head-copy">
-              <p className="tc__eyebrow">{eyebrow}</p>
+              <div className="tc__eyebrow">
+                <span className="tc__eyebrow-dot" aria-hidden="true" />
+                <span>{eyebrow}</span>
+              </div>
               <h2 className="tc__heading">{heading}</h2>
             </div>
             <a className="tc__cta" href={ctaHref}>
               {ctaLabel}
             </a>
           </div>
-
-          {/* Custom pill nav — must live inside <Splide> so it binds to
-              click/disabled state instead of Splide auto-creating its own arrows. */}
-          <div className="tc__nav splide__arrows">
-            <button
-              className="tc__nav-btn splide__arrow splide__arrow--prev"
-              aria-label="Previous"
-            >
-              <Arrow direction="left" />
-            </button>
-            <button
-              className="tc__nav-btn splide__arrow splide__arrow--next"
-              aria-label="Next"
-            >
-              <Arrow direction="right" />
-            </button>
-          </div>
         </div>
 
         <SplideTrack>
           {members.map((m, i) => {
             const thumb = m.thumbnail || autoThumbs[m.vimeoId];
+            const canPlay = Boolean(m.vimeoId);
+            const open = () => canPlay && setActive(m);
             return (
               <SplideSlide key={i}>
                 <article className="tc__card">
-                  <div className="tc__card-head">
-                    <div className="tc__card-text">
-                      <p className="tc__card-title">{m.name}</p>
-                      <p className="tc__card-label">{m.label}</p>
-                    </div>
-                    <button
-                      className="tc__play"
-                      type="button"
-                      aria-label={`Play ${m.name}'s video`}
-                      onClick={() => m.vimeoId && setActive(m)}
-                      disabled={!m.vimeoId}
-                    >
-                      <span className="tc__play-icon" aria-hidden="true" />
-                    </button>
-                  </div>
-
+                  {/* Play pill badge */}
                   <button
-                    className="tc__photo"
+                    className="tc__card-badge"
                     type="button"
                     aria-label={`Play ${m.name}'s video`}
-                    onClick={() => m.vimeoId && setActive(m)}
-                    disabled={!m.vimeoId}
+                    onClick={open}
+                    disabled={!canPlay}
+                  >
+                    <span className="tc__badge-icon" aria-hidden="true" />
+                    {m.duration && (
+                      <span className="tc__badge-duration">{m.duration}</span>
+                    )}
+                  </button>
+
+                  {/* Thumbnail — decorative; overlay handles the click */}
+                  <div
+                    className="tc__photo"
                     style={
                       thumb
                         ? {
@@ -181,16 +161,46 @@ export default function TeamCarousel({
                           }
                         : undefined
                     }
-                  >
-                    <span className="tc__photo-play" aria-hidden="true">
-                      <span className="tc__photo-play-icon" />
-                    </span>
-                  </button>
+                  />
+
+                  {/* Title + name */}
+                  <div className="tc__card-text">
+                    <p className="tc__card-title">{m.name}</p>
+                    <p className="tc__card-label">{m.label}</p>
+                  </div>
+
+                  {/* Full-card hover overlay: dark blur + "Watch Video" pill */}
+                  {canPlay && (
+                    <button
+                      className="tc__card-overlay"
+                      type="button"
+                      aria-label={`Watch ${m.name}'s video`}
+                      onClick={open}
+                    >
+                      <span className="tc__watch-pill">Watch Video</span>
+                    </button>
+                  )}
                 </article>
               </SplideSlide>
             );
           })}
         </SplideTrack>
+
+        {/* Nav: absolute top-right on desktop, static below track on mobile */}
+        <div className="tc__nav splide__arrows">
+          <button
+            className="tc__nav-btn splide__arrow splide__arrow--prev"
+            aria-label="Previous"
+          >
+            <Arrow direction="left" />
+          </button>
+          <button
+            className="tc__nav-btn splide__arrow splide__arrow--next"
+            aria-label="Next"
+          >
+            <Arrow direction="right" />
+          </button>
+        </div>
       </Splide>
 
       {active && (

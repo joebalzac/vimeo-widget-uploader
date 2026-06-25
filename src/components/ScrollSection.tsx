@@ -7,16 +7,10 @@ export interface ScrollSectionStep {
   body: string;
 }
 
-export interface ScrollSectionCard {
-  title: string;
-  body: string;
-}
-
 export interface ScrollSectionProps {
   eyebrow?: string;
   heading?: string;
   steps?: ScrollSectionStep[];
-  cards?: ScrollSectionCard[];
 }
 
 const DEFAULT_STEPS: ScrollSectionStep[] = [
@@ -38,49 +32,10 @@ const DEFAULT_STEPS: ScrollSectionStep[] = [
   },
 ];
 
-const DEFAULT_CARDS: ScrollSectionCard[] = [
-  {
-    title: "AI for Property Management",
-    body: "Automate the entire resident journey, from finding an apartment to all that comes after.",
-  },
-  {
-    title: "AI for Healthcare",
-    body: "Put administrative work on autopilot so practices can focus on patient care.",
-  },
-];
-
 const INACTIVE_DOT_BG = "#fcfcfb";
 const INACTIVE_DOT_RING = "#dddcda";
 const ACTIVE_DOT_BG = "#6b4fff";
 const ACTIVE_DOT_RING = "#fcfcfb";
-
-function BuildingIcon() {
-  return (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-      <rect x="3" y="6" width="18" height="15" rx="1" />
-      <path d="M10 21v-6h4v6" />
-      <path d="M7 10h2M15 10h2M7 14h2M15 14h2" />
-    </svg>
-  );
-}
-
-function HeartIcon() {
-  return (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-    </svg>
-  );
-}
-
-function ArrowDiagIcon() {
-  return (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-      <path d="M7 17L17 7M7 7h10v10" />
-    </svg>
-  );
-}
-
-const CARD_ICONS = [BuildingIcon, HeartIcon];
 
 function TimelineItem({
   step,
@@ -134,7 +89,6 @@ export default function ScrollSection({
   eyebrow = "Our mission",
   heading = "Improve Life's Most Critical Areas Through AI Automation",
   steps = DEFAULT_STEPS,
-  cards = DEFAULT_CARDS,
 }: ScrollSectionProps) {
   const sectionRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
@@ -164,26 +118,6 @@ export default function ScrollSection({
           ))}
         </div>
       </div>
-
-      {cards.length > 0 && (
-        <div className="ss__cards">
-          {cards.map((card, i) => {
-            const Icon = CARD_ICONS[i] ?? CARD_ICONS[CARD_ICONS.length - 1];
-            return (
-              <div className="ss__card" key={card.title}>
-                <div className="ss__card-header">
-                  <Icon />
-                  <ArrowDiagIcon />
-                </div>
-                <div className="ss__card-body">
-                  <h3 className="ss__card-title">{card.title}</h3>
-                  <p className="ss__card-text">{card.body}</p>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      )}
     </section>
   );
 }
