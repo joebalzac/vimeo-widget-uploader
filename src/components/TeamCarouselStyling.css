@@ -50,6 +50,7 @@
   letter-spacing: -0.16px;
   text-transform: uppercase;
   color: #704eff;
+  font-feature-settings: "salt" 1;
 }
 
 /* Purple square dot — hidden on desktop, shown on mobile */
@@ -295,17 +296,21 @@
 
 /* ─── Mobile ─────────────────────────────────────────────────────────────── */
 @media (max-width: 767px) {
+  /* Page background matches Figma surface/page token */
   .tc {
-    padding: 48px 0 64px;
+    background-color: #fcfcfb;
+    padding: 48px 0;
     gap: 32px;
   }
 
+  /* Heading area gets 24px side padding; track bleeds via Splide options */
   .tc__container {
     padding: 0 24px;
   }
 
   .tc__heading {
     font-size: 36px;
+    letter-spacing: -1.08px;
   }
 
   .tc__head {
@@ -314,7 +319,7 @@
     gap: 24px;
   }
 
-  /* Show purple dot, grey text, smaller font */
+  /* Eyebrow: purple dot visible, text switches to grey at 14px */
   .tc__eyebrow {
     color: #3f3e3c;
     font-size: 14px;
@@ -323,27 +328,32 @@
     display: block;
   }
 
-  /* Nav flows below the track */
+  /* Nav: drop out of absolute, flow below the track; match Figma border spec */
   .tc__nav {
     position: static;
     margin: 0 0 0 24px;
+    border: 0.5px solid rgba(0, 0, 0, 0.1);
   }
 
-  /* Card: full-width, tighter padding/gap, smaller type */
+  /* Card: full-width, 24px padding, 16px gap, no inherited desktop shadow */
   .tc__card {
     width: 100%;
     padding: 24px;
     gap: 16px;
     border-radius: 6px;
+    box-shadow: none;
+    overflow: hidden;
   }
 
   .tc__card-title {
     font-size: 20px;
+    line-height: 1.2;
     letter-spacing: -0.6px;
   }
 
   .tc__card-label {
     font-size: 16px;
+    line-height: 1.4;
     letter-spacing: -0.32px;
   }
 
