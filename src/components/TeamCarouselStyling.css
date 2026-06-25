@@ -68,7 +68,7 @@
   font-size: 48px;
   line-height: 1.1;
   letter-spacing: -0.96px;
-  color: #0d0d0c;
+  color: #0e0d0c;
 }
 
 .tc__cta {
@@ -103,6 +103,7 @@
   background-color: #f5f4f2;
   border: 1px solid rgba(0, 0, 0, 0.05);
   border-radius: 1000px;
+  overflow: hidden;
   width: auto;
   height: auto;
   z-index: 2;
@@ -118,13 +119,13 @@
   border: none;
   background: transparent;
   border-radius: 1000px;
-  color: #0d0d0c;
+  color: #0e0d0c;
   cursor: pointer;
   opacity: 1;
   transform: none;
 }
 
-.tc__nav-btn:not(:disabled).splide__arrow--next {
+.tc__nav-btn:not(:disabled) {
   background-color: #ffffff;
   box-shadow: 0px 0px 0.49px rgba(0, 0, 0, 0.4),
     0px 3.918px 1.959px rgba(0, 0, 0, 0.04);
@@ -187,7 +188,7 @@
   height: 0;
   border-style: solid;
   border-width: 5px 0 5px 8px;
-  border-color: transparent transparent transparent #0d0d0c;
+  border-color: transparent transparent transparent #0e0d0c;
   display: inline-block;
   flex-shrink: 0;
 }
@@ -205,7 +206,7 @@
 .tc__photo {
   width: 100%;
   height: 214px;
-  background-color: #0d0d0c;
+  background-color: #0e0d0c;
   background-size: cover;
   background-position: center;
   flex-shrink: 0;
@@ -225,7 +226,7 @@
   font-size: 22px;
   line-height: 1.2;
   letter-spacing: -0.66px;
-  color: #0d0d0c;
+  color: #0e0d0c;
 }
 
 .tc__card-label {
@@ -319,18 +320,21 @@
     gap: 24px;
   }
 
-  /* Eyebrow: purple dot visible, text switches to grey at 14px */
+  /* Eyebrow: purple dot visible, grey text, 14px, letter-spacing 0 per Figma Caption 14 spec */
   .tc__eyebrow {
     color: #3f3e3c;
     font-size: 14px;
+    letter-spacing: 0;
   }
   .tc__eyebrow-dot {
     display: block;
   }
 
-  /* Nav: drop out of absolute, flow below the track; match Figma border spec */
+  /* Nav: drop out of absolute, flow below the track; align-self prevents
+     it from stretching full-width in the flex column parent */
   .tc__nav {
     position: static;
+    align-self: flex-start;
     margin: 0 0 0 24px;
     border: 0.5px solid rgba(0, 0, 0, 0.1);
   }
@@ -345,8 +349,10 @@
     overflow: hidden;
   }
 
+  /* Figma Headline 20: weight 450, size 20, line-height 1.2, tracking -0.6px */
   .tc__card-title {
     font-size: 20px;
+    font-weight: 450;
     line-height: 1.2;
     letter-spacing: -0.6px;
   }
@@ -359,6 +365,11 @@
 
   .tc__photo {
     height: 158px;
+  }
+
+  /* CTA not shown in Figma mobile design */
+  .tc__cta {
+    display: none;
   }
 
   /* No hover overlay on touch — badge handles play */
