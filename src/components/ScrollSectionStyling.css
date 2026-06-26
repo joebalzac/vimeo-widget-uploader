@@ -28,12 +28,24 @@
 
 .ss__eyebrow {
   margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
   font-family: "IBM Plex Mono", monospace;
   font-weight: 500;
   font-size: 16px;
   line-height: 1.1;
   text-transform: uppercase;
-  color: #6b4fff;
+  color: #3f3e3c;
+}
+
+.ss__eyebrow::before {
+  content: "";
+  display: block;
+  width: 8px;
+  height: 8px;
+  flex-shrink: 0;
+  background-color: #6b4fff;
 }
 
 .ss__heading {
@@ -141,22 +153,9 @@
     gap: 32px;
   }
 
-  /* Mobile eyebrow: smaller, gray text, with a purple square dot prefix */
+  /* Mobile eyebrow: slightly smaller font */
   .ss__eyebrow {
-    display: flex;
-    align-items: center;
-    gap: 10px;
     font-size: 14px;
-    color: #3f3e3c;
-  }
-
-  .ss__eyebrow::before {
-    content: "";
-    display: block;
-    width: 8px;
-    height: 8px;
-    flex-shrink: 0;
-    background-color: #6b4fff;
   }
 
   .ss__heading {

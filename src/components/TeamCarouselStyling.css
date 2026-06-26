@@ -37,25 +37,25 @@
   align-items: flex-start;
 }
 
-/* Eyebrow — flex row to hold the mobile dot + text */
+/* Eyebrow — dot + text row, shown at all breakpoints */
 .tc__eyebrow {
   display: flex;
   align-items: center;
   gap: 10px;
-  margin: 0;
+  margin: 0 0 20px 0;
   font-family: "IBM Plex Mono", monospace;
   font-weight: 500;
   font-size: 16px;
   line-height: 1.1;
-  letter-spacing: -0.16px;
+  letter-spacing: 0;
   text-transform: uppercase;
-  color: #704eff;
+  color: #3f3e3c;
   font-feature-settings: "salt" 1;
 }
 
-/* Purple square dot — hidden on desktop, shown on mobile */
+/* Purple square dot — always visible */
 .tc__eyebrow-dot {
-  display: none;
+  display: block;
   width: 8px;
   height: 8px;
   background-color: #6b4fff;
@@ -63,7 +63,7 @@
 }
 
 .tc__heading {
-  margin: 0;
+  margin: 0 0 24px 0;
   font-weight: 400;
   font-size: 48px;
   line-height: 1.1;
@@ -320,14 +320,9 @@
     gap: 24px;
   }
 
-  /* Eyebrow: purple dot visible, grey text, 14px, letter-spacing 0 per Figma Caption 14 spec */
+  /* Eyebrow: smaller font on mobile (14px vs 16px desktop) */
   .tc__eyebrow {
-    color: #3f3e3c;
     font-size: 14px;
-    letter-spacing: 0;
-  }
-  .tc__eyebrow-dot {
-    display: block;
   }
 
   /* Nav: drop out of absolute, flow below the track; align-self prevents
