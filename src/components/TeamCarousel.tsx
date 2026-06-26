@@ -32,8 +32,15 @@ const PLACEHOLDER_MEMBERS: TeamMember[] = [
   { name: "Lorem Ipsum", label: "Name", vimeoId: "" },
 ];
 
-function useVimeoThumbnails(members: TeamMember[]) {
+function formatDuration(seconds: number): string {
+  const m = Math.floor(seconds / 60);
+  const s = seconds % 60;
+  return `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
+}
+
+function useVimeoData(members: TeamMember[]) {
   const [thumbs, setThumbs] = useState<Record<string, string>>({});
+  const [durations, setDurations] = useState<Record<string, string>>({});
 
   useEffect(() => {
     const ids = members.map((m) => m.vimeoId).filter((id) => id && !thumbs[id]);
@@ -45,13 +52,16 @@ function useVimeoThumbnails(members: TeamMember[]) {
           if (data?.thumbnail_url) {
             setThumbs((prev) => ({ ...prev, [id]: data.thumbnail_url }));
           }
+          if (typeof data?.duration === "number") {
+            setDurations((prev) => ({ ...prev, [id]: formatDuration(data.duration) }));
+          }
         })
         .catch(() => {});
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [members.map((m) => m.vimeoId).join(",")]);
 
-  return thumbs;
+  return { thumbs, durations };
 }
 
 export default function TeamCarousel({
@@ -65,7 +75,7 @@ export default function TeamCarousel({
 }: TeamCarouselProps) {
   const [active, setActive] = useState<TeamMember | null>(null);
   const useFixed = !perPage;
-  const autoThumbs = useVimeoThumbnails(members);
+  const { thumbs: autoThumbs, durations: autoDurations } = useVimeoData(members);
 
   const close = useCallback(() => setActive(null), []);
 
@@ -130,6 +140,7 @@ export default function TeamCarousel({
         <SplideTrack>
           {members.map((m, i) => {
             const thumb = m.thumbnail || autoThumbs[m.vimeoId];
+            const duration = m.duration || autoDurations[m.vimeoId];
             const canPlay = Boolean(m.vimeoId);
             const open = () => canPlay && setActive(m);
             return (
@@ -144,8 +155,8 @@ export default function TeamCarousel({
                     disabled={!canPlay}
                   >
                     <span className="tc__badge-icon" aria-hidden="true" />
-                    {m.duration && (
-                      <span className="tc__badge-duration">{m.duration}</span>
+                    {duration && (
+                      <span className="tc__badge-duration">{duration}</span>
                     )}
                   </button>
 
