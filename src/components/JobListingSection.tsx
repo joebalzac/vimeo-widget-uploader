@@ -283,7 +283,7 @@ export default function JobListingSection({
             id="job-search"
             className="search-input"
             type="text"
-            placeholder="Search jobs..."
+            placeholder="Search"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />

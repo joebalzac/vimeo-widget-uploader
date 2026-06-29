@@ -9,7 +9,7 @@
   flex-direction: column;
   gap: 48px;
   justify-content: center;
-  background-color: #ffffff;
+  background-color: transparent;
   padding: 0px;
   overflow: hidden;
   font-family: Inter, sans-serif;
@@ -30,6 +30,8 @@
 }
 
 .tc__container {
+  position: relative;
+  z-index: 11; /* above .tc::before overlay (z-index:10); Splide track is z-index:0 */
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
@@ -42,14 +44,14 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  justify-content: space-between;
+  gap: 24px;
   width: 100%;
 }
 
 .tc__head-copy {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 20px;
   align-items: flex-start;
 }
 
@@ -58,7 +60,7 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  margin: 0 0 20px 0;
+  margin: 0;
   font-family: "IBM Plex Mono", monospace;
   font-weight: 500;
   font-size: 16px;
@@ -79,7 +81,7 @@
 }
 
 .tc__heading {
-  margin: 0 0 24px 0;
+  margin: 0;
   font-weight: 400;
   font-size: 48px;
   line-height: 1.1;
@@ -334,10 +336,12 @@
     gap: 32px;
   }
 
-  /* Heading area gets 24px side padding; track bleeds via Splide options */
+  /* Full-width on mobile — 24px side padding replaces the 90rem/90% desktop container */
   .tc__container {
+    max-width: 100%;
+    width: 100%;
     padding: 0 24px;
-    margin-bottom: 32px
+    margin: 0 0 32px;
   }
 
   .tc__heading {
@@ -354,7 +358,6 @@
   /* Eyebrow: smaller font on mobile (14px vs 16px desktop) */
   .tc__eyebrow {
     font-size: 14px;
-    margin-bottom: 12px;
   }
 
   /* Nav: drop out of absolute, flow below the track; align-self prevents
