@@ -15,11 +15,27 @@
   font-family: Inter, sans-serif;
 }
 
+/* Covers the left-margin zone (between viewport edge and container edge) so
+   cards sliding off the left are hidden instead of bleeding out of the container. */
+.tc::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: max(5vw, calc((100vw - 90rem) / 2));
+  background: #ffffff;
+  z-index: 10;
+  pointer-events: none;
+}
+
 .tc__container {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  width: 100%;
+  max-width: 90rem;
+  width: 90%;
+  margin: 0 auto 48px;
 }
 
 .tc__head {
@@ -93,11 +109,11 @@
   flex-direction: column;
 }
 
-/* Pill nav — absolute on desktop (top-right of .tc), static below track on mobile */
+/* Pill nav — absolute on desktop aligned to container right edge, static below track on mobile */
 .tc__nav {
   position: absolute;
   top: 0;
-  right: 0;
+  right: max(5vw, calc((100vw - 90rem) / 2));
   display: inline-flex;
   align-items: center;
   background-color: #f5f4f2;
@@ -160,6 +176,7 @@
   flex-direction: column;
   gap: 20px;
   align-items: flex-start;
+  cursor: pointer;
   /* Subtle inner shadow from Figma */
   box-shadow: inset 0px 0px 0px 0.5px rgba(0, 0, 0, 0.1);
 }
@@ -284,6 +301,19 @@
   .tc {
     padding: 60px 40px 80px;
   }
+  /* Tablet/mobile use section padding — left overlay not needed */
+  .tc::before {
+    display: none;
+  }
+  /* Section padding handles alignment at tablet — revert container and nav */
+  .tc__container {
+    max-width: none;
+    width: 100%;
+    margin: 0 0 48px;
+  }
+  .tc__nav {
+    right: 0;
+  }
   .tc__heading {
     font-size: 40px;
   }
@@ -307,6 +337,7 @@
   /* Heading area gets 24px side padding; track bleeds via Splide options */
   .tc__container {
     padding: 0 24px;
+    margin-bottom: 32px
   }
 
   .tc__heading {
@@ -323,6 +354,7 @@
   /* Eyebrow: smaller font on mobile (14px vs 16px desktop) */
   .tc__eyebrow {
     font-size: 14px;
+    margin-bottom: 12px;
   }
 
   /* Nav: drop out of absolute, flow below the track; align-self prevents

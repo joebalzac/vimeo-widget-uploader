@@ -93,6 +93,10 @@ export default function TeamCarousel({
     };
   }, [active, close]);
 
+  // Left offset matches the site container (max-width: 90rem, width: 90%, centered).
+  // At viewports < 100rem: 5vw each side. At >= 100rem: (100vw - 90rem) / 2.
+  const containerPad = "max(5vw, calc((100vw - 90rem) / 2))";
+
   const options = {
     type: "slide" as const,
     perMove: 1,
@@ -100,9 +104,14 @@ export default function TeamCarousel({
     arrows: true,
     pagination: false,
     drag: true,
+    padding: { left: containerPad, right: "0" },
     ...(useFixed ? { fixedWidth, focus: 0 } : { perPage }),
     breakpoints: {
-      991: useFixed ? { fixedWidth: "380px" } : { perPage: 2 },
+      // Tablet: section padding handles alignment; reset Splide padding.
+      991: {
+        ...(useFixed ? { fixedWidth: "380px" } : { perPage: 2 }),
+        padding: { left: "0", right: "0" },
+      },
       767: {
         fixedWidth: 0,
         perPage: 1,
@@ -180,17 +189,18 @@ export default function TeamCarousel({
                     <p className="tc__card-label">{m.label}</p>
                   </div>
 
-                  {/* Full-card hover overlay: dark blur + "Watch Video" pill */}
-                  {canPlay && (
-                    <button
-                      className="tc__card-overlay"
-                      type="button"
-                      aria-label={`Watch ${m.name}'s video`}
-                      onClick={open}
-                    >
-                      <span className="tc__watch-pill">Watch Video</span>
-                    </button>
-                  )}
+                  {/* Full-card hover overlay: dark blur + "Watch Video" pill.
+                      Always rendered so hover effect shows; disabled prevents
+                      click when no video is wired up. */}
+                  <button
+                    className="tc__card-overlay"
+                    type="button"
+                    aria-label={`Watch ${m.name}'s video`}
+                    onClick={open}
+                    disabled={!canPlay}
+                  >
+                    <span className="tc__watch-pill">Watch Video</span>
+                  </button>
                 </article>
               </SplideSlide>
             );
