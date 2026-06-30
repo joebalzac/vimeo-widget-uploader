@@ -1,0 +1,270 @@
+/* OfficeLocations — "In Person, By Design". Dark office-locations grid.
+   Tokens from Figma node 18229-42130. Assumes Inter (variable) + IBM Plex Mono
+   load globally. The outer container padding (120px / 140px) is intentionally
+   NOT set here — it's owned by the wrapping container. */
+
+.ol {
+  position: relative;
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
+  justify-content: center;
+  background-color: #131115;
+  font-family: Inter, sans-serif;
+}
+
+/* ─── Header ─────────────────────────────────────────────────────────────── */
+.ol__header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 20px;
+}
+
+.ol__eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  font-family: "IBM Plex Mono", monospace;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 1.1;
+  letter-spacing: 0;
+  text-transform: uppercase;
+  color: #dddcda;
+  font-feature-settings: "salt" 1;
+}
+
+/* Lilac square dot (type/caption token) */
+.ol__eyebrow-dot {
+  display: block;
+  width: 8px;
+  height: 8px;
+  background-color: #c1bafe;
+  flex-shrink: 0;
+}
+
+.ol__heading {
+  margin: 0;
+  font-weight: 400;
+  font-size: 48px;
+  line-height: 1.1;
+  letter-spacing: -1.44px;
+  color: #ffffff;
+}
+
+/* ─── Grid ───────────────────────────────────────────────────────────────── */
+.ol__grid {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.ol__row {
+  display: flex;
+  align-items: stretch;
+}
+
+.ol__row:not(:last-child) {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* ─── Cell ───────────────────────────────────────────────────────────────── */
+.ol__cell {
+  position: relative;
+  flex: 1 0 0;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.ol__cell:not(:last-child) {
+  border-right: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.ol__cell-inner {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 20px;
+  padding: 32px;
+  box-sizing: border-box;
+  height: 100%;
+}
+
+.ol__cell-top {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  width: 100%;
+}
+
+.ol__cell-icon {
+  display: flex;
+  align-items: center;
+  height: 24px;
+  color: #ffffff;
+}
+
+.ol__cell-text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+}
+
+.ol__cell-city {
+  margin: 0;
+  font-weight: 450;
+  font-size: 22px;
+  line-height: 1.2;
+  letter-spacing: -0.66px;
+  color: #ffffff;
+}
+
+.ol__cell-address {
+  font-family: "IBM Plex Mono", monospace;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 1.1;
+  text-transform: uppercase;
+  color: #a9a8a6;
+  font-feature-settings: "salt" 1;
+}
+
+.ol__cell-address p {
+  margin: 0;
+}
+
+/* "View Roles" tertiary link */
+.ol__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 16px;
+  line-height: 1.4;
+  letter-spacing: -0.32px;
+  color: #ffffff;
+  text-decoration: none;
+}
+
+.ol__cta:hover {
+  opacity: 0.8;
+}
+
+/* ─── Image cell (photo + dark overlay, revealed on hover) ───────────────── */
+.ol__cell--image {
+  min-height: 210px;
+}
+
+/* Photo + overlay sit behind the content and fade in on hover / keyboard focus. */
+.ol__cell-bg,
+.ol__cell-overlay {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.ol__cell-bg {
+  background-position: center bottom;
+  background-size: cover;
+  background-repeat: no-repeat;
+  transform: scale(1.06);
+  transition: opacity 0.4s ease, transform 0.6s ease;
+}
+
+.ol__cell-overlay {
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.ol__cell--image:hover .ol__cell-bg,
+.ol__cell--image:focus-within .ol__cell-bg {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.ol__cell--image:hover .ol__cell-overlay,
+.ol__cell--image:focus-within .ol__cell-overlay {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ol__cell-bg,
+  .ol__cell-overlay {
+    transition: none;
+  }
+  .ol__cell-bg {
+    transform: none;
+  }
+}
+
+/* ─── Tablet ─────────────────────────────────────────────────────────────── */
+@media (max-width: 991px) {
+  .ol__heading {
+    font-size: 40px;
+    letter-spacing: -1.2px;
+  }
+}
+
+/* ─── Mobile ─────────────────────────────────────────────────────────────── */
+@media (max-width: 767px) {
+  .ol {
+    gap: 32px;
+  }
+
+  .ol__header {
+    gap: 12px;
+  }
+
+  .ol__eyebrow {
+    gap: 10px;
+    font-size: 14px;
+  }
+
+  .ol__heading {
+    font-size: 36px;
+    letter-spacing: -1.08px;
+  }
+
+  /* Stack every cell into a single column. Within-row vertical separators
+     become horizontal rules; the row's own border-bottom keeps rows apart. */
+  .ol__row {
+    flex-direction: column;
+  }
+
+  .ol__cell:not(:last-child) {
+    border-right: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  }
+
+  /* Mobile cards are flat: natural height, no photo / hover reveal. */
+  .ol__cell--image {
+    min-height: 0;
+  }
+
+  .ol__cell-bg,
+  .ol__cell-overlay {
+    display: none;
+  }
+
+  .ol__cell-inner {
+    gap: 16px;
+    padding: 24px;
+  }
+
+  .ol__cell-city {
+    font-size: 20px;
+    letter-spacing: -0.6px;
+  }
+
+  .ol__cell-address {
+    font-size: 14px;
+  }
+}
