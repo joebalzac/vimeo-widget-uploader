@@ -4,8 +4,10 @@ import MultiStepForm from "./components/MultiStepForm";
 import MultiStepFormHealth from "./components/MultiStepFormHealth";
 import MultiStepFormUniversal from "./components/MultiStepFormUniversal";
 import TeamCarousel from "./components/TeamCarousel";
+import ValuesCarousel from "./components/ValuesCarousel";
 import ScrollSection from "./components/ScrollSection";
 import { DEMO_LOGOS } from "./data/customerStoriesLogoDemo";
+import JobListingSection from "./components/JobListingSection";
 
 const params = new URLSearchParams(window.location.search);
 const form = params.get("form");
@@ -23,6 +25,10 @@ function CustomerStoriesLogoPreview() {
 function App() {
   if (section === "logos") {
     return <CustomerStoriesLogoPreview />;
+  }
+
+  if (section === "values") {
+    return <ValuesCarousel />;
   }
 
   if (section === "scroll") {
@@ -46,12 +52,13 @@ function App() {
           <MultiStepFormUniversal />
         )}
       </div>
-     
+
       <div>
         <TeamCarousel />
         <ScrollSection />
       </div>
-      <CustomerStoriesLogoPreview />
+      <JobListingSection />
+      <ValuesCarousel />
     </>
   );
 }

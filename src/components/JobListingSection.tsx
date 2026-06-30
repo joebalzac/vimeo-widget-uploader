@@ -21,7 +21,8 @@ interface JobListingSectionProps {
   singleOpen?: boolean;
 }
 
-const JOBS_API = "https://nodejs-serverless-function-express-blush-two.vercel.app/api/jobs";
+const JOBS_API =
+  "https://nodejs-serverless-function-express-blush-two.vercel.app/api/jobs";
 
 const getLocationNames = (job: Job, locationsMap: LocationsMap): string => {
   const names: string[] = [];
@@ -51,38 +52,42 @@ const buildJobUrl = (job: Job): string => {
 };
 
 const MinusIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-    <path d="M5 12H19" stroke="#0E0D0C" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="none"
+  >
+    <path
+      d="M5 12H19"
+      stroke="#0E0D0C"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
   </svg>
 );
 
 const PlusIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-    <path d="M5 12H19" stroke="#7A7977" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-    <path d="M12 5V19" stroke="#7A7977" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-  </svg>
-);
-
-const ArrowRight = () => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
-    width="18"
-    height="18"
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
     fill="none"
-    viewBox="0 0 18 18"
-    className="job-item-icon"
   >
     <path
-      d="M3.75 9H14.25"
-      stroke="#838385"
-      strokeWidth="1.5"
+      d="M5 12H19"
+      stroke="#7A7977"
+      strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"
     />
     <path
-      d="M9 3.75L14.25 9L9 14.25"
-      stroke="#838385"
-      strokeWidth="1.5"
+      d="M12 5V19"
+      stroke="#7A7977"
+      strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"
     />
@@ -141,19 +146,19 @@ const DepartmentAccordion = ({
   onToggle,
 }: DepartmentAccordionProps) => {
   return (
-    <div className={`department-container${isOpen ? " is-open" : ""}`}>
+    <div className={`${isOpen ? " is-open" : ""}`}>
       <button
         type="button"
         className="department-title"
         aria-expanded={isOpen}
         onClick={() => onToggle(department)}
       >
-        <span>
-          <span className="department-name">{department}</span>{" "}
-          <span className="department-count">({jobs.length})</span>
-        </span>
-        <span className="department-chevron" aria-hidden="true">
-          {isOpen ? <MinusIcon /> : <PlusIcon />}
+        <span className="department-name">{department}</span>
+        <span className="department-meta">
+          <span className="department-count">{jobs.length}</span>
+          <span className="department-chevron" aria-hidden="true">
+            {isOpen ? <MinusIcon /> : <PlusIcon />}
+          </span>
         </span>
       </button>
 
@@ -175,7 +180,6 @@ const DepartmentAccordion = ({
                     {getLocationNames(job, locationsMap)}
                   </p>
                 </div>
-                <ArrowRight />
               </div>
             </a>
           ))}
@@ -194,7 +198,9 @@ export default function JobListingSection({
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedDept, setSelectedDept] = useState("");
   const [selectedLoc, setSelectedLoc] = useState("");
-  const [openDepartments, setOpenDepartments] = useState<Set<string>>(new Set());
+  const [openDepartments, setOpenDepartments] = useState<Set<string>>(
+    new Set(),
+  );
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
 
@@ -260,7 +266,7 @@ export default function JobListingSection({
   const sortedDepts = Object.keys(grouped).sort();
 
   const departments = Array.from(
-    new Set(allJobs.map((j) => j.departmentName || "Other"))
+    new Set(allJobs.map((j) => j.departmentName || "Other")),
   ).sort();
 
   const locationOptions = Array.from(
@@ -269,9 +275,9 @@ export default function JobListingSection({
         getLocationNames(job, locationsMap)
           .split(",")
           .map((l) => l.trim())
-          .filter(Boolean)
-      )
-    )
+          .filter(Boolean),
+      ),
+    ),
   ).sort();
 
   return (
@@ -326,7 +332,11 @@ export default function JobListingSection({
 
       <div className="collection-list">
         {loading && <p style={{ color: "#515152" }}>Loading jobs…</p>}
-        {error && <p style={{ color: "#515152" }}>Failed to load jobs. Please try again.</p>}
+        {error && (
+          <p style={{ color: "#515152" }}>
+            Failed to load jobs. Please try again.
+          </p>
+        )}
         {!loading && !error && sortedDepts.length === 0 && (
           <p style={{ color: "#515152" }}>No jobs match your search.</p>
         )}

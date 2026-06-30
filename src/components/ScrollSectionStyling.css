@@ -129,9 +129,6 @@
 }
 
 @media (max-width: 991px) {
-  .ss {
-    padding: 80px 40px;
-  }
   .ss__heading {
     font-size: 36px;
     letter-spacing: -1.08px;
@@ -140,7 +137,6 @@
 
 @media (max-width: 767px) {
   .ss {
-    padding: 48px 24px;
     gap: 32px;
     display: flex;
     flex-direction: column;

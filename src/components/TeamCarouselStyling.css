@@ -124,7 +124,9 @@
   overflow: hidden;
   width: auto;
   height: auto;
-  z-index: 2;
+  /* Above .tc__container (z-index:11) so the heading's full-width box doesn't
+     intercept clicks meant for the arrows. */
+  z-index: 12;
 }
 
 .tc__nav-btn {
@@ -300,9 +302,6 @@
 
 /* ─── Tablet ─────────────────────────────────────────────────────────────── */
 @media (max-width: 991px) {
-  .tc {
-    padding: 60px 40px 80px;
-  }
   /* Tablet/mobile use section padding — left overlay not needed */
   .tc::before {
     display: none;
@@ -331,7 +330,6 @@
 @media (max-width: 767px) {
   /* Page background matches Figma surface/page token */
   .tc {
-    background-color: #fcfcfb;
     padding: 48px 0;
     gap: 32px;
   }
@@ -340,7 +338,6 @@
   .tc__container {
     max-width: 100%;
     width: 100%;
-    padding: 0 24px;
     margin: 0 0 32px;
   }
 
@@ -365,8 +362,9 @@
   .tc__nav {
     position: static;
     align-self: flex-start;
-    margin: 0 0 0 24px;
+    margin: 0;
     border: 0.5px solid rgba(0, 0, 0, 0.1);
+    margin-top: 32px;
   }
 
   /* Card: full-width, 24px padding, 16px gap, no inherited desktop shadow */
