@@ -115,7 +115,7 @@ export default function TeamCarousel({
       767: {
         fixedWidth: 0,
         perPage: 1,
-        padding: { left: "24px", right: "24px" },
+        padding: { left: "0", right: "0" },
         trimSpace: false,
         arrows: true,
         start: 1,

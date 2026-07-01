@@ -173,7 +173,6 @@
   width: 444px;
   box-sizing: border-box;
   background-color: #f5f4f2;
-  border: 1px solid #e6e5e3;
   border-radius: 8px;
   padding: 32px;
   display: flex;
@@ -330,7 +329,7 @@
 @media (max-width: 767px) {
   /* Page background matches Figma surface/page token */
   .tc {
-    padding: 48px 0;
+    padding: 0;
     gap: 32px;
   }
 
