@@ -1,0 +1,309 @@
+/* TeamImageCarousel — "Meet the Engineers". Same carousel chrome as TeamCarousel,
+   but each card is a full-bleed photo with the name/role pinned bottom-left; on
+   hover a dark blur reveals the member's quote. Figma node 18125-27893.
+   Assumes Inter (variable) + IBM Plex Mono load globally. */
+
+.tic {
+  position: relative;
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
+  justify-content: center;
+  background-color: transparent;
+  padding: 0px;
+  overflow: hidden;
+  font-family: Inter, sans-serif;
+}
+
+/* Covers the left-margin zone so cards sliding off the left are hidden. */
+.tic::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: max(5vw, calc((100vw - 90rem) / 2));
+  background: #fcfcfb;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.tic__container {
+  position: relative;
+  z-index: 11;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  max-width: 90rem;
+  width: 90%;
+  margin: 0 auto 48px;
+}
+
+.tic__head {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 24px;
+  width: 100%;
+}
+
+.tic__head-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  align-items: flex-start;
+}
+
+/* Eyebrow — dot + text row */
+.tic__eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  font-family: "IBM Plex Mono", monospace;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 1.1;
+  letter-spacing: 0;
+  text-transform: uppercase;
+  color: #3f3e3c;
+  font-feature-settings: "salt" 1;
+}
+
+.tic__eyebrow-dot {
+  display: block;
+  width: 8px;
+  height: 8px;
+  background-color: #6b4fff;
+  flex-shrink: 0;
+}
+
+.tic__heading {
+  margin: 0;
+  font-weight: 400;
+  font-size: 48px;
+  line-height: 1.1;
+  letter-spacing: -1.44px;
+  color: #0e0d0c;
+}
+
+/* Splide root */
+.tic__splide {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Pill nav — absolute on desktop aligned to container right edge */
+.tic__nav {
+  position: absolute;
+  top: 0;
+  right: max(5vw, calc((100vw - 90rem) / 2));
+  display: inline-flex;
+  align-items: center;
+  background-color: #f5f4f2;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  border-radius: 1000px;
+  overflow: hidden;
+  width: auto;
+  height: auto;
+  z-index: 12;
+}
+
+.tic__nav-btn {
+  position: static;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  border-radius: 1000px;
+  color: #0e0d0c;
+  cursor: pointer;
+  opacity: 1;
+  transform: none;
+}
+
+.tic__nav-btn:not(:disabled) {
+  background-color: #ffffff;
+  box-shadow: 0px 0px 0.49px rgba(0, 0, 0, 0.4),
+    0px 3.918px 1.959px rgba(0, 0, 0, 0.04);
+}
+
+.tic__nav-btn:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.tic__nav-btn svg {
+  width: 20px;
+  height: 20px;
+}
+
+.splide__list {
+  align-items: flex-start;
+}
+
+/* ─── Card ──────────────────────────────────────────────────────────────── */
+.tic__card {
+  position: relative;
+  overflow: hidden;
+  width: 476px;
+  height: 520px;
+  box-sizing: border-box;
+  background-color: #f5f4f2;
+  border: 1px solid #e6e5e3;
+  border-radius: 12px;
+  cursor: pointer;
+  box-shadow: inset 0px 0px 0px 0.5px rgba(0, 0, 0, 0.1);
+}
+
+.tic__img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+  user-select: none;
+  z-index: 0;
+}
+
+/* Bottom gradient so the white name/role stays legible over bright photos. */
+.tic__scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(
+    to top,
+    rgba(13, 13, 12, 0.55) 0%,
+    rgba(13, 13, 12, 0) 38%
+  );
+  pointer-events: none;
+}
+
+/* ── Hover overlay: dark blur + quote (top) ─────────────────────────────── */
+.tic__overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background: rgba(13, 13, 12, 0.4);
+  backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(40px);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 20px;
+  padding: 32px;
+  box-sizing: border-box;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+  border-radius: inherit;
+}
+
+.tic__card:hover .tic__overlay {
+  opacity: 1;
+}
+
+.tic__quote-mark {
+  flex-shrink: 0;
+}
+
+.tic__quote {
+  margin: 0;
+  font-size: 22px;
+  line-height: 1.3;
+  letter-spacing: -0.44px;
+  color: #ffffff;
+}
+
+/* ── Name + role — pinned bottom-left, always above the blur ─────────────── */
+.tic__meta {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  z-index: 3;
+  padding: 32px;
+  box-sizing: border-box;
+  pointer-events: none;
+}
+
+.tic__name,
+.tic__role {
+  margin: 0;
+  font-size: 18px;
+  line-height: 1.4;
+  letter-spacing: -0.36px;
+  color: #ffffff;
+}
+
+/* ─── Tablet ─────────────────────────────────────────────────────────────── */
+@media (max-width: 991px) {
+  .tic::before {
+    display: none;
+  }
+  .tic__container {
+    max-width: none;
+    width: 100%;
+    margin: 0 0 48px;
+  }
+  .tic__nav {
+    right: 0;
+  }
+  .tic__heading {
+    font-size: 40px;
+    letter-spacing: -1.2px;
+  }
+  .tic__card {
+    width: 380px;
+    height: 460px;
+  }
+}
+
+/* ─── Mobile ─────────────────────────────────────────────────────────────── */
+@media (max-width: 767px) {
+  .tic {
+    padding: 48px 0;
+    gap: 32px;
+  }
+  .tic__container {
+    max-width: 100%;
+    width: 100%;
+    margin: 0 0 32px;
+    padding: 0 24px;
+    box-sizing: border-box;
+  }
+  .tic__heading {
+    font-size: 36px;
+    letter-spacing: -1.08px;
+  }
+  .tic__head {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 24px;
+  }
+  .tic__eyebrow {
+    font-size: 14px;
+  }
+  /* Nav: drop out of absolute, flow below the track */
+  .tic__nav {
+    position: static;
+    align-self: flex-start;
+    margin: 32px 24px 0;
+    right: auto;
+    border: 0.5px solid rgba(0, 0, 0, 0.1);
+  }
+  .tic__card {
+    width: 100%;
+    height: 440px;
+    border-radius: 12px;
+  }
+  /* Touch devices have no hover — surface the quote permanently when present */
+  .tic__card:hover .tic__overlay {
+    opacity: 1;
+  }
+}

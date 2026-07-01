@@ -9,6 +9,9 @@ import ScrollSection from "./components/ScrollSection";
 import { DEMO_LOGOS } from "./data/customerStoriesLogoDemo";
 import JobListingSection from "./components/JobListingSection";
 import OfficeLocations from "./components/OfficeLocations";
+import PhotoCarousel from "./components/PhotoCarousel";
+import TeamImageCarousel from "./components/TeamImageCarousel";
+import ProductShowcase from "./components/ProductShowcase";
 
 const params = new URLSearchParams(window.location.search);
 const form = params.get("form");
@@ -32,12 +35,43 @@ function App() {
     return <ValuesCarousel />;
   }
 
+  if (section === "engineers") {
+    return (
+      <div
+        style={{
+          padding: "clamp(48px, 8vw, 120px) 0",
+          backgroundColor: "#fcfcfb",
+        }}
+      >
+        <TeamImageCarousel />
+      </div>
+    );
+  }
+
+  if (section === "gallery") {
+    return (
+      <div style={{ padding: "clamp(48px, 8vw, 120px) 0" }}>
+        <PhotoCarousel />
+      </div>
+    );
+  }
+
   if (section === "offices") {
     return (
-      <div style={{ padding: "120px 140px", backgroundColor: "#131115", minHeight: "100vh" }}>
+      <div
+        style={{
+          padding: "clamp(48px, 8vw, 120px) clamp(24px, 10vw, 140px)",
+          backgroundColor: "#131115",
+          minHeight: "100vh",
+        }}
+      >
         <OfficeLocations />
       </div>
     );
+  }
+
+  if (section === "demo") {
+    return <ProductShowcase />;
   }
 
   if (section === "scroll") {
@@ -68,9 +102,20 @@ function App() {
       </div>
       <JobListingSection />
       <ValuesCarousel />
-      <div style={{ padding: "120px 140px", backgroundColor: "#131115" }}>
+      <div
+        style={{
+          padding: "clamp(48px, 8vw, 120px) clamp(24px, 10vw, 140px)",
+          backgroundColor: "#131115",
+        }}
+      >
         <OfficeLocations />
       </div>
+
+      <PhotoCarousel />
+
+      <TeamImageCarousel />
+
+      <ProductShowcase />
     </>
   );
 }

@@ -1,0 +1,467 @@
+/* ProductShowcase — looping AI conversation demo inside a framed card.
+   Figma node 18125-27844. Assumes Inter (variable) + IBM Plex Mono load
+   globally. The card background grid, central glow, and speaker icon are
+   recreated in CSS/SVG so the component is self-contained (no external assets). */
+
+.ps {
+  position: relative;
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 48px;
+  font-family: Inter, system-ui, sans-serif;
+}
+
+/* ── Header ─────────────────────────────────────────────────────────────────── */
+.ps__head {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.ps__eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  font-family: "IBM Plex Mono", monospace;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 1.1;
+  text-transform: uppercase;
+  color: #3f3e3c;
+  font-feature-settings: "salt" 1;
+}
+
+.ps__eyebrow-dot {
+  display: block;
+  width: 8px;
+  height: 8px;
+  background-color: #6b4fff;
+  flex-shrink: 0;
+}
+
+.ps__heading {
+  margin: 0;
+  font-weight: 400;
+  font-size: 48px;
+  line-height: 1.1;
+  letter-spacing: -1.44px;
+  color: #0e0d0c;
+}
+
+/* ── Card ───────────────────────────────────────────────────────────────────── */
+.ps__card {
+  position: relative;
+  width: 100%;
+  height: 550px;
+  border-radius: 12px;
+  overflow: hidden;
+  /* Soft light field, slightly cooler toward the edges. */
+  background: radial-gradient(
+    140% 120% at 50% 0%,
+    #f2f5fb 0%,
+    #eaf0f8 55%,
+    #e3eaf4 100%
+  );
+}
+
+/* Two full-height vertical framing lines (centered ~66% band), positioned by
+   percentage so they scale. The horizontal dividers come from the top/bottom
+   bars' own borders — drawing them here too would double up the top/bottom line. */
+.ps__grid {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image: linear-gradient(
+      rgba(14, 13, 12, 0.07),
+      rgba(14, 13, 12, 0.07)
+    ),
+    linear-gradient(rgba(14, 13, 12, 0.07), rgba(14, 13, 12, 0.07));
+  background-repeat: no-repeat;
+  background-size: 1px 100%, 1px 100%;
+  background-position: 16.8% 0, 83.2% 0;
+}
+
+/* Central vertical glow over the conversation column. */
+.ps__glow {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    46% 70% at 50% 46%,
+    rgba(255, 255, 255, 0.92) 0%,
+    rgba(255, 255, 255, 0) 72%
+  );
+}
+
+/* ── Top bar — tab toggle ─────────────────────────────────────────────────────── */
+.ps__top-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  padding: 32px;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+  border-bottom: 0.5px solid rgba(0, 0, 0, 0.1);
+  z-index: 20;
+}
+
+.ps__toggle {
+  display: flex;
+  align-items: center;
+  padding: 3px;
+  border: 0.5px solid rgba(0, 0, 0, 0.1);
+  border-radius: 1000px;
+  background: transparent;
+}
+
+.ps__tab {
+  font-family: inherit;
+  font-size: 18px;
+  font-weight: 400;
+  color: #0e0d0c;
+  letter-spacing: -0.36px;
+  line-height: 1.4;
+  padding: 12px 24px;
+  border: none;
+  background: none;
+  border-radius: 1000px;
+  cursor: pointer;
+  white-space: nowrap;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.2s, box-shadow 0.2s;
+}
+
+.ps__tab.is-active {
+  background: #fcfcfb;
+  box-shadow: 0 0 0.5px rgba(0, 0, 0, 0.2), 0 2px 2px rgba(0, 0, 0, 0.04);
+}
+
+/* ── Conversation viewport ────────────────────────────────────────────────────── */
+/* Fixed window between the bars; inner stack slides up as messages arrive. */
+.ps__conv {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(705px, 72%);
+  height: 255px;
+  overflow: hidden;
+  z-index: 10;
+}
+
+.ps__conv.is-hidden {
+  display: none;
+}
+
+.ps__conv-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  will-change: transform;
+}
+
+/* ── Message entrance ─────────────────────────────────────────────────────────── */
+.ps__msg {
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  flex-shrink: 0;
+}
+
+.ps__msg.is-show,
+.ps__msg.is-processing {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ── User bubble ──────────────────────────────────────────────────────────────── */
+.ps__msg--user {
+  align-self: flex-end;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+}
+
+.ps__bubble {
+  background: #131115;
+  border-radius: 8px;
+  padding: 14px;
+  width: 280px;
+  box-shadow: 0 0 0.5px rgba(0, 0, 0, 0.2), 0 2px 2px rgba(0, 0, 0, 0.04);
+}
+
+.ps__bubble p {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 400;
+  color: #ffffff;
+  letter-spacing: -0.36px;
+  line-height: 1.4;
+}
+
+.ps__msg-name {
+  font-size: 14px;
+  font-weight: 400;
+  color: #7a7977;
+  letter-spacing: -0.28px;
+  line-height: 1.4;
+}
+
+/* ── AI response ──────────────────────────────────────────────────────────────── */
+.ps__msg--ai {
+  align-self: flex-start;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-width: 550px;
+}
+
+.ps__ai-text {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 400;
+  color: #0e0d0c;
+  letter-spacing: -0.36px;
+  line-height: 1.4;
+}
+
+/* Word-by-word streaming */
+.ps__word {
+  opacity: 0;
+  transition: opacity 0.18s ease;
+}
+
+.ps__word.is-visible {
+  opacity: 1;
+}
+
+/* ── Processing state (star + status text) ───────────────────────────────────── */
+.ps__ai-status {
+  display: none;
+  align-items: center;
+  gap: 8px;
+}
+
+.ps__msg--ai.is-processing .ps__ai-status {
+  display: flex;
+}
+
+/* Hide the response content while processing. */
+.ps__msg--ai.is-processing .ps__waveform,
+.ps__msg--ai.is-processing .ps__ai-text {
+  display: none;
+}
+
+.ps__star {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  animation: psStarSpin 2.4s linear infinite,
+    psStarPulse 1.6s ease-in-out infinite;
+}
+
+@keyframes psStarSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes psStarPulse {
+  0%,
+  100% {
+    opacity: 0.55;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.ps__status-text {
+  font-size: 14px;
+  font-weight: 400;
+  color: #7a7977;
+  letter-spacing: -0.28px;
+  line-height: 1.4;
+}
+
+/* ── Waveform ─────────────────────────────────────────────────────────────────── */
+.ps__waveform {
+  width: 37px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+.ps__wv-bar {
+  transform-box: fill-box;
+  transform-origin: center center;
+}
+
+.ps__msg--ai.is-speaking .ps__wv-bar {
+  animation: psWvPulse 0.65s ease-in-out infinite alternate;
+}
+.ps__msg--ai.is-speaking .ps__wv-bar:nth-child(1) {
+  animation-delay: 0s;
+}
+.ps__msg--ai.is-speaking .ps__wv-bar:nth-child(2) {
+  animation-delay: 0.07s;
+}
+.ps__msg--ai.is-speaking .ps__wv-bar:nth-child(3) {
+  animation-delay: 0.14s;
+}
+.ps__msg--ai.is-speaking .ps__wv-bar:nth-child(4) {
+  animation-delay: 0.21s;
+}
+.ps__msg--ai.is-speaking .ps__wv-bar:nth-child(5) {
+  animation-delay: 0.11s;
+}
+.ps__msg--ai.is-speaking .ps__wv-bar:nth-child(6) {
+  animation-delay: 0.18s;
+}
+.ps__msg--ai.is-speaking .ps__wv-bar:nth-child(7) {
+  animation-delay: 0.04s;
+}
+
+@keyframes psWvPulse {
+  from {
+    transform: scaleY(0.25);
+  }
+  to {
+    transform: scaleY(1);
+  }
+}
+
+/* ── Bottom bar — audio button ────────────────────────────────────────────────── */
+.ps__bottom-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding: 32px;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+  border-top: 0.5px solid rgba(0, 0, 0, 0.1);
+  z-index: 20;
+}
+
+.ps__audio-btn {
+  position: relative;
+  width: 48px;
+  height: 48px;
+  background: #0e0d0c;
+  border: none;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: transform 0.18s, background 0.18s;
+}
+
+.ps__audio-btn:hover {
+  transform: scale(1.08);
+  background: #262422;
+}
+
+.ps__audio-btn:active {
+  transform: scale(0.95);
+}
+
+.ps__audio-btn svg {
+  width: 24px;
+  height: 24px;
+  display: block;
+}
+
+.ps__audio-btn.is-playing::after {
+  content: "";
+  position: absolute;
+  inset: -5px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(107, 79, 255, 0.45);
+  animation: psRingPulse 1.6s ease-out infinite;
+}
+
+@keyframes psRingPulse {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1.45);
+    opacity: 0;
+  }
+}
+
+/* ── Inset border ─────────────────────────────────────────────────────────────── */
+.ps__inset {
+  position: absolute;
+  inset: 0;
+  border-radius: 12px;
+  box-shadow: inset 0 0 0 0.5px rgba(0, 0, 0, 0.1);
+  pointer-events: none;
+  z-index: 30;
+}
+
+/* ── Tablet ───────────────────────────────────────────────────────────────────── */
+@media (max-width: 991px) {
+  .ps__heading {
+    font-size: 40px;
+    letter-spacing: -1.2px;
+  }
+}
+
+/* ── Mobile ───────────────────────────────────────────────────────────────────── */
+@media (max-width: 767px) {
+  .ps {
+    gap: 32px;
+  }
+  .ps__heading {
+    font-size: 32px;
+    letter-spacing: -0.96px;
+  }
+  .ps__eyebrow {
+    font-size: 14px;
+  }
+  .ps__card {
+    height: 520px;
+  }
+  .ps__tab {
+    font-size: 16px;
+    padding: 10px 18px;
+  }
+  .ps__bubble {
+    width: auto;
+    max-width: 240px;
+  }
+  .ps__conv {
+    width: 84%;
+    height: 240px;
+  }
+  /* The framing grid is busy at narrow widths — drop it, keep the glow. */
+  .ps__grid {
+    display: none;
+  }
+}
+
+/* ── Reduced motion ───────────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .ps__star,
+  .ps__msg--ai.is-speaking .ps__wv-bar,
+  .ps__audio-btn.is-playing::after {
+    animation: none;
+  }
+}
