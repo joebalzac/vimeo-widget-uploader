@@ -1,5 +1,11 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import "./ProductShowcase.css";
+import { AUDIO } from "../assets/audio";
+
+function pushEvent(event: string) {
+  (window as any).dataLayer = (window as any).dataLayer || [];
+  (window as any).dataLayer.push({ event });
+}
 
 export interface DemoMessage {
   role: "user" | "ai";
@@ -9,6 +15,12 @@ export interface DemoMessage {
   name?: string;
   /** Processing label shown while the AI "thinks" (ai role only). */
   status?: string;
+  /** Per-line call audio (bundled URL); plays when this message appears. */
+  audioSrc?: string;
+  /** Length of this line's audio clip in ms; drives when the next line appears. */
+  durationMs?: number;
+  /** Fraction of durationMs over which words stream (default 0.78). Lower = quicker. */
+  streamFactor?: number;
 }
 
 export interface DemoTab {
@@ -23,6 +35,12 @@ export interface ProductShowcaseProps {
   eyebrow?: string;
   heading?: string;
   tabs?: DemoTab[];
+  /** GTM dataLayer event fired when the first (Housing) tab is selected. */
+  eventHousingTab?: string;
+  /** GTM dataLayer event fired when the second (Healthcare) tab is selected. */
+  eventHealthcareTab?: string;
+  /** GTM dataLayer event fired when the audio speaker button is clicked. */
+  eventAudioBtn?: string;
 }
 
 const PLACEHOLDER_TABS: DemoTab[] = [
@@ -33,24 +51,39 @@ const PLACEHOLDER_TABS: DemoTab[] = [
       {
         role: "user",
         name: "Jordan T.",
-        text: "The garbage disposal just hums and won't turn on.",
+        text: "Hey, the garbage disposal just hums and won't turn on.",
+        audioSrc: AUDIO["housing/Jordan-Hey"],
+        durationMs: 3000,
       },
       {
         role: "ai",
-        status: "Pulling resident file…",
+        status: "AI is gathering details and checking device guides…",
         text: 'Sorry to hear that. A humming disposal is usually jammed. Try inserting a 1/4" Allen wrench into the hex slot underneath, turning it back and forth to free the jam, then press the red reset button and test it again. Let me know how it goes.',
+        audioSrc: AUDIO["housing/Elise-Sorry"],
+        durationMs: 17000,
+        streamFactor: 0.92,
       },
       {
         role: "user",
         name: "Jordan T.",
-        text: "Ok, that worked, it's running now.",
+        text: "Oh great, that worked! It's running now.",
+        audioSrc: AUDIO["housing/Jordan-Oh-Great"],
+        durationMs: 3000,
       },
       {
         role: "ai",
-        status: "Logging resolution…",
-        text: "Wonderful, I'm glad that resolved it, and we saved you a maintenance visit.",
+        status: "AI logs outcome and closes the maintenance request.",
+        text: "Wonderful! I'm glad that resolved it, and we saved you a maintenance visit.",
+        audioSrc: AUDIO["housing/Elise-Wonderful"],
+        durationMs: 5000,
       },
-      { role: "user", name: "Jordan T.", text: "Super helpful. Thank you!" },
+      {
+        role: "user",
+        name: "Jordan T.",
+        text: "Super helpful! Thank you!",
+        audioSrc: AUDIO["housing/Jordan-Super-Helpful"],
+        durationMs: 2000,
+      },
     ],
   },
   {
@@ -58,43 +91,72 @@ const PLACEHOLDER_TABS: DemoTab[] = [
     label: "Healthcare",
     messages: [
       {
+        role: "ai",
+        text: "Hi Mia, your annual physical is coming up next week. Before I confirm your appointment, has your insurance changed since your last visit?",
+        audioSrc: AUDIO["healthcare/Elise-Hi-Mia"],
+        durationMs: 8000,
+      },
+      {
         role: "user",
-        name: "Marcus R.",
-        text: "I need to reschedule my appointment with Dr. Chen tomorrow.",
+        name: "Mia S.",
+        text: "Yes, I switched jobs and now have Blue Cross.",
+        audioSrc: AUDIO["healthcare/Mia-Yes-I-Swithced"],
+        durationMs: 3000,
       },
       {
         role: "ai",
-        status: "Checking schedule…",
-        text: "Of course, Marcus! Dr. Chen has openings this Thursday at 10 AM or Friday at 2 PM. Which works better for you?",
+        status: "AI updates insurance on file and checks eligibility…",
+        text: "Thanks. Can you provide your member ID so I can verify coverage?",
+        audioSrc: AUDIO["healthcare/Mia-Got-It"],
+        durationMs: 4000,
       },
-      { role: "user", name: "Marcus R.", text: "Friday at 2 PM works." },
+      {
+        role: "user",
+        name: "Mia S.",
+        text: "Sure, it's BC12345678.",
+        audioSrc: AUDIO["healthcare/Mia-XJH"],
+        durationMs: 6000,
+      },
       {
         role: "ai",
-        status: "Verifying coverage…",
-        text: "Done! I've rescheduled you to Friday, June 27th at 2:00 PM with Dr. Chen. You'll get a confirmation text shortly.",
+        status: "AI verifies coverage and confirms appointment.",
+        text: "Thanks. I've confirmed your plan is accepted. You're all set, we'll see you next week!",
+        audioSrc: AUDIO["healthcare/Elise-Thanks"],
+        durationMs: 5000,
       },
-      { role: "user", name: "Marcus R.", text: "Perfect, thank you so much!" },
     ],
   },
 ];
 
 // ── Timing config (ms) ───────────────────────────────────────────────────────
-// APPEAR_AT[i] is when message i shows. Processing fires PROCESS_DUR before an
-// AI message; SPEAK_DUR drives the word-streaming length of each AI message.
-const APPEAR_AT = [600, 3000, 7500, 9800, 13000];
-const SPEAK_DUR = [2800, 2200];
-const PROCESS_DUR = 800;
-const LOOP_PAUSE = 4000;
-const GAP = 12;
+// Each line appears when the previous clip finishes plus GAP_MS. Per-line clip
+// lengths come from message.durationMs; the timeline is derived per scenario.
+const START_MS = 600; // delay before the first line
+const GAP_MS = 900; // pause between a clip ending and the next line
+const PROCESS_DUR = 800; // "processing" pre-roll before an AI line with a status
+const LOOP_PAUSE = 4000; // pause after the last line before the loop restarts
+const DEFAULT_DUR = 2500; // fallback clip length when durationMs is unset
+const GAP = 12; // px gap used by the slide-to-latest math (not a duration)
 
 export default function ProductShowcase({
   eyebrow = "See it in action",
   heading = "Product Demo",
   tabs = PLACEHOLDER_TABS,
+  eventHousingTab = "product_demo_housing_tab",
+  eventHealthcareTab = "product_demo_healthcare_tab",
+  eventAudioBtn = "product_demo_audio_btn",
 }: ProductShowcaseProps) {
   const [activeTab, setActiveTab] = useState(tabs[0]?.id ?? "");
   const [audioOn, setAudioOn] = useState(false);
   const panelsRef = useRef<Record<string, HTMLDivElement | null>>({});
+  const audioRef = useRef<HTMLAudioElement>(null);
+  // Read inside the animation effect without re-running it when audio toggles.
+  const audioOnRef = useRef(audioOn);
+  audioOnRef.current = audioOn;
+
+  const hasAudio = (
+    tabs.find((t) => t.id === activeTab)?.messages ?? []
+  ).some((m) => m.audioSrc);
 
   // Animation engine — scoped to one effect run so all timers/rAF handles are
   // captured locally and torn down on tab change / unmount. Mirrors the proven
@@ -116,6 +178,43 @@ export default function ProductShowcase({
     const inner = () => panel.querySelector<HTMLElement>(".ps__conv-inner");
     const msgEls = () => [...panel.querySelectorAll<HTMLElement>(".ps__msg")];
 
+    const activeMessages =
+      tabs.find((t) => t.id === activeTab)?.messages ?? [];
+
+    // Derive the timeline from each line's clip length: line i appears when the
+    // previous clip finished plus GAP_MS, so the text tracks the speech.
+    const durations = activeMessages.map((m) => m.durationMs ?? DEFAULT_DUR);
+    const appearAt: number[] = [];
+    let cursor = START_MS;
+    durations.forEach((d, i) => {
+      appearAt[i] = cursor;
+      cursor += d + GAP_MS;
+    });
+    const lastEnd = durations.length
+      ? appearAt[durations.length - 1] + durations[durations.length - 1]
+      : START_MS;
+
+    // Play the clip for message `i` as it appears, so each line's audio stays
+    // in step with the text animation. Swapping src cuts off the prior line.
+    // Returns true if it actually started audio. When `msg` is given, the wave
+    // (is-speaking) is stopped the moment the real clip ends.
+    function playClip(i: number, msg?: HTMLElement) {
+      const audio = audioRef.current;
+      const src = activeMessages[i]?.audioSrc;
+      if (!audio || !audioOnRef.current || !src) return false;
+      audio.src = src;
+      audio.currentTime = 0;
+      audio.play().catch(() => {});
+      if (msg) {
+        audio.addEventListener(
+          "ended",
+          () => msg.classList.remove("is-speaking"),
+          { once: true },
+        );
+      }
+      return true;
+    }
+
     function slideToLatest() {
       const el = inner();
       if (!el) return;
@@ -136,10 +235,12 @@ export default function ProductShowcase({
       el.style.transform = `translateY(-${offset}px)`;
     }
 
-    function streamWords(msg: HTMLElement, dur: number) {
+    function streamWords(msg: HTMLElement, dur: number, factor: number) {
       const words = [...msg.querySelectorAll<HTMLElement>(".ps__word")];
       if (!words.length) return;
-      const step = (dur * 0.9) / words.length;
+      // Stream words across `factor` of the clip; the longer per-word fade (CSS)
+      // keeps consecutive words smooth.
+      const step = (dur * factor) / words.length;
       words.forEach((w, i) => push(() => w.classList.add("is-visible"), i * step));
     }
 
@@ -159,35 +260,42 @@ export default function ProductShowcase({
 
     function play() {
       const msgs = msgEls();
-      let aiIdx = 0;
       msgs.forEach((msg, i) => {
-        const showAt = APPEAR_AT[i] ?? 600 + i * 2500;
+        const showAt = appearAt[i] ?? START_MS + i * (DEFAULT_DUR + GAP_MS);
+        const dur = durations[i] ?? DEFAULT_DUR;
         if (msg.classList.contains("ps__msg--ai")) {
-          const thisAi = aiIdx++;
-          const dur = SPEAK_DUR[thisAi] ?? 2000;
-          push(() => {
-            msg.classList.add("is-processing");
-            raf(slideToLatest);
-          }, Math.max(0, showAt - PROCESS_DUR));
+          // Only run the "processing" pre-roll when the message has a status
+          // line (e.g. the AI-initiated first turn shows no status).
+          if (msg.querySelector(".ps__ai-status")) {
+            push(() => {
+              msg.classList.add("is-processing");
+              raf(slideToLatest);
+            }, Math.max(0, showAt - PROCESS_DUR));
+          }
           push(() => {
             msg.classList.remove("is-processing");
             msg.classList.add("is-show", "is-speaking");
-            streamWords(msg, dur);
-            push(() => msg.classList.remove("is-speaking"), dur);
+            streamWords(msg, dur, activeMessages[i]?.streamFactor ?? 0.78);
+            // When audio plays, the wave stops on the real "ended" event; when
+            // muted, fall back to the estimated clip duration.
+            const startedAudio = playClip(i, msg);
+            if (!startedAudio) {
+              push(() => msg.classList.remove("is-speaking"), dur);
+            }
             raf(slideToLatest);
           }, showAt);
         } else {
           push(() => {
             msg.classList.add("is-show");
+            playClip(i);
             raf(slideToLatest);
           }, showAt);
         }
       });
-      const last = APPEAR_AT[msgs.length - 1] ?? 13000;
       push(() => {
         reset();
         push(play, 300);
-      }, last + LOOP_PAUSE);
+      }, lastEnd + LOOP_PAUSE);
     }
 
     reset();
@@ -198,8 +306,19 @@ export default function ProductShowcase({
       rafs.forEach(cancelAnimationFrame);
       timers = [];
       rafs = [];
+      const audio = audioRef.current;
+      if (audio) {
+        audio.pause();
+        audio.currentTime = 0;
+      }
     };
   }, [activeTab, tabs]);
+
+  // Muting pauses immediately; unmuting resumes at the next line (per-line
+  // playback lives in the animation effect above).
+  useEffect(() => {
+    if (!audioOn) audioRef.current?.pause();
+  }, [audioOn]);
 
   return (
     <section className="ps">
@@ -218,7 +337,7 @@ export default function ProductShowcase({
         {/* Top bar — tab toggle */}
         <div className="ps__top-bar">
           <div className="ps__toggle" role="tablist" aria-label="Demo scenario">
-            {tabs.map((tab) => {
+            {tabs.map((tab, i) => {
               const active = tab.id === activeTab;
               return (
                 <button
@@ -227,7 +346,11 @@ export default function ProductShowcase({
                   className={`ps__tab${active ? " is-active" : ""}`}
                   role="tab"
                   aria-selected={active}
-                  onClick={() => active || setActiveTab(tab.id)}
+                  onClick={() => {
+                    if (active) return;
+                    setActiveTab(tab.id);
+                    pushEvent(i === 0 ? eventHousingTab : eventHealthcareTab);
+                  }}
                 >
                   {tab.label}
                 </button>
@@ -259,10 +382,12 @@ export default function ProductShowcase({
                   </div>
                 ) : (
                   <div key={i} className="ps__msg ps__msg--ai">
-                    <div className="ps__ai-status">
-                      <StarIcon />
-                      <span className="ps__status-text">{msg.status}</span>
-                    </div>
+                    {msg.status && (
+                      <div className="ps__ai-status">
+                        <StarIcon />
+                        <span className="ps__status-text">{msg.status}</span>
+                      </div>
+                    )}
                     <Waveform />
                     <p className="ps__ai-text">
                       {msg.text.split(/\s+/).map((w, wi) => (
@@ -285,10 +410,15 @@ export default function ProductShowcase({
             className={`ps__audio-btn${audioOn ? " is-playing" : ""}`}
             aria-label={audioOn ? "Pause call audio" : "Listen to call"}
             aria-pressed={audioOn}
-            onClick={() => setAudioOn((v) => !v)}
+            disabled={!hasAudio}
+            onClick={() => {
+              setAudioOn((v) => !v);
+              pushEvent(eventAudioBtn);
+            }}
           >
             <SpeakerIcon />
           </button>
+          <audio ref={audioRef} preload="auto" />
         </div>
 
         <div className="ps__inset" aria-hidden="true" />
@@ -299,37 +429,45 @@ export default function ProductShowcase({
 
 /** Four-point sparkle used as the "thinking" indicator. */
 function StarIcon() {
+  // Unique gradient id per instance — shared ids break when a duplicate lives in
+  // a display:none tab panel (its gradient stops resolving).
+  const gradId = useId();
   return (
     <svg
       className="ps__star"
-      viewBox="0 0 14 14"
+      viewBox="0 0 240 240"
       xmlns="http://www.w3.org/2000/svg"
       aria-hidden="true"
     >
       <defs>
-        <linearGradient id="psStarGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#6b4fff" />
-          <stop offset="100%" stopColor="#60a5fa" />
+        <linearGradient id={gradId} x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#C1BAFE" />
+          <stop offset="100%" stopColor="#1A87F0" />
         </linearGradient>
       </defs>
       <path
-        d="M7,0 C7,3.2 10.8,3.2 14,7 C10.8,7 10.8,10.8 7,14 C7,10.8 3.2,10.8 0,7 C3.2,7 3.2,3.2 7,0Z"
-        fill="url(#psStarGrad)"
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M240 120C173.72 120 120 173.72 120 240C120 173.72 66.28 120 0 120C66.28 120 120 66.28 120 0C120 66.28 173.72 120 240 120Z"
+        fill={`url(#${gradId})`}
       />
     </svg>
   );
 }
 
-/** Seven-bar voice waveform; bars animate independently while speaking. */
+/** Seven-bar voice waveform; bars animate independently while the line is shown.
+    Bar geometry + gradient match the Figma waveform asset. */
 function Waveform() {
+  // Unique gradient id per instance (see StarIcon note).
+  const gradId = useId();
   const bars = [
-    { x: 0, y: 6.5, h: 5 },
-    { x: 5, y: 3.5, h: 11 },
-    { x: 10, y: 1, h: 16 },
-    { x: 15, y: 2.5, h: 13 },
-    { x: 20, y: 4.5, h: 9 },
-    { x: 25, y: 6, h: 6 },
-    { x: 30, y: 7, h: 4 },
+    { x: 0, y: 6, h: 6 },
+    { x: 5.818, y: 0, h: 18 },
+    { x: 11.637, y: 2.909, h: 12.182 },
+    { x: 17.455, y: 5.091, h: 7.818 },
+    { x: 23.273, y: 5.091, h: 7.818 },
+    { x: 29.091, y: 2.909, h: 12.182 },
+    { x: 34.909, y: 6, h: 6 },
   ];
   return (
     <svg
@@ -340,15 +478,15 @@ function Waveform() {
     >
       <defs>
         <linearGradient
-          id="psWvGrad"
-          x1="0"
-          y1="0"
-          x2="37"
-          y2="0"
+          id={gradId}
+          x1="5.625"
+          y1="3.344"
+          x2="70.14"
+          y2="42.876"
           gradientUnits="userSpaceOnUse"
         >
-          <stop offset="0%" stopColor="#6b4fff" />
-          <stop offset="100%" stopColor="#60a5fa" />
+          <stop offset="0%" stopColor="#C1BAFE" />
+          <stop offset="100%" stopColor="#1A87F0" />
         </linearGradient>
       </defs>
       {bars.map((b, i) => (
@@ -357,10 +495,10 @@ function Waveform() {
           className="ps__wv-bar"
           x={b.x}
           y={b.y}
-          width="3.5"
+          width="2"
           height={b.h}
-          rx="10"
-          fill="url(#psWvGrad)"
+          rx="1"
+          fill={`url(#${gradId})`}
         />
       ))}
     </svg>

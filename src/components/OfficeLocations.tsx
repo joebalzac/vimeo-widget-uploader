@@ -114,11 +114,17 @@ export default function OfficeLocations({
   items = PLACEHOLDER_ITEMS,
   perRow = 3,
 }: OfficeLocationsProps) {
-  // Chunk into rows of `perRow`. For 5 items this yields the Figma 3 + 2 layout:
-  // each row's cells are equal-width (flex: 1), so the second row's two cards
-  // become half-width.
+  // Chunk into rows of `perRow`, but put the partial (remainder) row first so
+  // for 5 items you get a 2 + 3 layout: the two wide rectangles on top and the
+  // three squares on the bottom. Each row's cells are equal-width (flex: 1).
   const rows: OfficeLocation[][] = [];
-  for (let i = 0; i < items.length; i += perRow) {
+  const remainder = items.length % perRow;
+  let i = 0;
+  if (remainder) {
+    rows.push(items.slice(0, remainder));
+    i = remainder;
+  }
+  for (; i < items.length; i += perRow) {
     rows.push(items.slice(i, i + perRow));
   }
 

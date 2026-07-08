@@ -3,6 +3,7 @@
    Figma node 18098-25649. Assumes Inter (variable) + IBM Plex Mono load globally. */
 
 .vc {
+  --container-max: 90rem;
   position: relative;
   width: 100%;
   box-sizing: border-box;
@@ -15,6 +16,18 @@
   font-family: Inter, sans-serif;
 }
 
+@media (min-width: 1440px) {
+  .vc {
+    --container-max: 100rem;
+  }
+}
+
+@media (min-width: 1920px) {
+  .vc {
+    --container-max: 120rem;
+  }
+}
+
 /* Covers the left-margin zone (between viewport edge and container edge) so
    cards sliding off the left are hidden instead of bleeding out of the container. */
 .vc::before {
@@ -23,7 +36,7 @@
   top: 0;
   left: 0;
   bottom: 0;
-  width: max(5vw, calc((100vw - 90rem) / 2));
+  width: max(5vw, calc((100vw - var(--container-max)) / 2));
   background: #131115;
   z-index: 10;
   pointer-events: none;
@@ -35,7 +48,7 @@
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  max-width: 90rem;
+  max-width: var(--container-max);
   width: 90%;
   margin: 0 auto 48px;
 }
@@ -82,6 +95,7 @@
 
 .vc__heading {
   margin: 0;
+  font-family: "inter-variable", sans-serif;
   font-weight: 400;
   font-size: 48px;
   line-height: 1.1;
@@ -100,7 +114,7 @@
 .vc__nav {
   position: absolute;
   top: 0;
-  right: max(5vw, calc((100vw - 90rem) / 2));
+  right: max(5vw, calc((100vw - var(--container-max)) / 2));
   display: inline-flex;
   align-items: center;
   background-color: #151413;
@@ -109,8 +123,6 @@
   overflow: hidden;
   width: auto;
   height: auto;
-  /* Above .vc__container (z-index:11) so the heading's full-width box doesn't
-     intercept clicks meant for the arrows. */
   z-index: 12;
 }
 
@@ -124,17 +136,24 @@
   border: none;
   background: transparent;
   border-radius: 1000px;
-  color: rgba(255, 255, 255, 0.6);
+  color: #a9a8a6;
   cursor: pointer;
   opacity: 1;
   transform: none;
 }
 
-.vc__nav-btn:not(:disabled) {
+/* Next — the active arrow: always dark with the raised pill background. */
+.vc__nav-btn.splide__arrow--next:not(:disabled) {
   background-color: #ffffff;
   color: #0e0d0c;
   box-shadow: 0px 0px 0.49px rgba(0, 0, 0, 0.4),
     0px 3.918px 1.959px rgba(0, 0, 0, 0.04);
+}
+
+/* Prev — non-active arrow: plain by default, only darkens on hover;
+   reverts to default once clicked. No background/pill — icon color only. */
+.vc__nav-btn.splide__arrow--prev:hover:not(:disabled) {
+  color: #7a7977;
 }
 
 .vc__nav-btn:disabled {
@@ -189,16 +208,20 @@
 
 .vc__card-title {
   margin: 0;
+  font-family: "inter-variable", sans-serif;
   font-size: 22px;
-  line-height: 1.2;
+  font-weight: 450;
+  line-height: 120%;
   letter-spacing: -0.66px;
   color: #ffffff;
 }
 
 .vc__card-desc {
   margin: 0;
+  font-family: "inter-variable", sans-serif;
   font-size: 18px;
-  line-height: 1.4;
+  font-weight: 400;
+  line-height: 140%;
   letter-spacing: -0.36px;
   color: #dddcda;
 }
@@ -285,7 +308,7 @@
   .vc__nav {
     position: static;
     align-self: flex-start;
-    margin: 32px 24px 0;
+    margin: 32px 0 0 0;
     right: auto;
   }
 
@@ -302,14 +325,11 @@
 
   .vc__card-title {
     font-size: 20px;
-    font-weight: 450;
-    line-height: 1.2;
     letter-spacing: -0.6px;
   }
 
   .vc__card-desc {
     font-size: 16px;
-    line-height: 1.4;
     letter-spacing: -0.32px;
   }
 }

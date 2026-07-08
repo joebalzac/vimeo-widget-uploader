@@ -32,6 +32,7 @@
   font-weight: 500;
   font-size: 16px;
   line-height: 1.1;
+  letter-spacing: normal;
   text-transform: uppercase;
   color: #3f3e3c;
   font-feature-settings: "salt" 1;
@@ -47,9 +48,10 @@
 
 .ps__heading {
   margin: 0;
+  font-family: "inter-variable", sans-serif;
   font-weight: 400;
   font-size: 48px;
-  line-height: 1.1;
+  line-height: 110%;
   letter-spacing: -1.44px;
   color: #0e0d0c;
 }
@@ -125,12 +127,12 @@
 }
 
 .ps__tab {
-  font-family: inherit;
+  font-family: "inter-variable", sans-serif;
   font-size: 18px;
   font-weight: 400;
+  line-height: 140%;
   color: #0e0d0c;
   letter-spacing: -0.36px;
-  line-height: 1.4;
   padding: 12px 24px;
   border: none;
   background: none;
@@ -204,19 +206,21 @@
 
 .ps__bubble p {
   margin: 0;
+  font-family: "inter-variable", sans-serif;
   font-size: 18px;
+  line-height: 140%;
   font-weight: 400;
   color: #ffffff;
   letter-spacing: -0.36px;
-  line-height: 1.4;
 }
 
 .ps__msg-name {
+  font-family: "inter-variable", sans-serif;
   font-size: 14px;
-  font-weight: 400;
+  font-weight: 450;
   color: #7a7977;
   letter-spacing: -0.28px;
-  line-height: 1.4;
+  line-height: 140%;
 }
 
 /* ── AI response ──────────────────────────────────────────────────────────────── */
@@ -230,17 +234,18 @@
 
 .ps__ai-text {
   margin: 0;
+  font-family: "inter-variable", sans-serif;
   font-size: 18px;
+  line-height: 140%;
   font-weight: 400;
   color: #0e0d0c;
   letter-spacing: -0.36px;
-  line-height: 1.4;
 }
 
-/* Word-by-word streaming */
+/* Word-by-word streaming — longer eased fade so consecutive words blend */
 .ps__word {
   opacity: 0;
-  transition: opacity 0.18s ease;
+  transition: opacity 0.32s ease-out;
 }
 
 .ps__word.is-visible {
@@ -289,11 +294,12 @@
 }
 
 .ps__status-text {
-  font-size: 14px;
+  font-family: "inter-variable", sans-serif;
+  font-size: 18px;
   font-weight: 400;
-  color: #7a7977;
-  letter-spacing: -0.28px;
-  line-height: 1.4;
+  color: #0e0d0c;
+  line-height: 140%;
+  letter-spacing: -0.36px;
 }
 
 /* ── Waveform ─────────────────────────────────────────────────────────────────── */
@@ -306,6 +312,8 @@
 .ps__wv-bar {
   transform-box: fill-box;
   transform-origin: center center;
+  /* Settle smoothly to rest height when the speaking animation stops. */
+  transition: transform 0.25s ease-out;
 }
 
 .ps__msg--ai.is-speaking .ps__wv-bar {
@@ -436,6 +444,22 @@
   .ps__eyebrow {
     font-size: 14px;
   }
+
+  .ps__status-text {
+    font-size: 16px;
+    letter-spacing: -0.32px;
+  }
+
+  .ps__ai-text {
+    font-size: 16px;
+    letter-spacing: -0.32px;
+  }
+
+  .ps__bubble p {
+    font-size: 16px;
+    letter-spacing: -0.32px;
+  }
+
   .ps__card {
     height: 520px;
   }

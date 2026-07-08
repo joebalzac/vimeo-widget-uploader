@@ -35,7 +35,6 @@ const DEFAULT_STEPS: ScrollSectionStep[] = [
 const INACTIVE_DOT_BG = "#fcfcfb";
 const INACTIVE_DOT_RING = "#dddcda";
 const ACTIVE_DOT_BG = "#6b4fff";
-const ACTIVE_DOT_RING = "#fcfcfb";
 
 function TimelineItem({
   step,
@@ -57,7 +56,7 @@ function TimelineItem({
   const dotRing = useTransform(
     activation,
     [0, 1],
-    [`0 0 0 1px ${INACTIVE_DOT_RING}`, `0 0 0 6px ${ACTIVE_DOT_RING}`],
+    [`0 0 0 1px ${INACTIVE_DOT_RING}`, `0 0 0 0px transparent`],
   );
   const lineFill = useTransform(activation, [0, 1], [0, 1]);
 

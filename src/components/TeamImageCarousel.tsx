@@ -77,19 +77,19 @@ export default function TeamImageCarousel({
 }: TeamImageCarouselProps) {
   const useFixed = !perPage;
 
-  // Left offset matches the site container (max-width: 90rem, width: 90%, centered).
-  // At viewports < 100rem: 5vw each side. At >= 100rem: (100vw - 90rem) / 2.
-  const containerPad = "max(5vw, calc((100vw - 90rem) / 2))";
+  // Left offset matches the site container (max-width: var(--container-max), width: 90%,
+  // centered; --container-max steps from 90rem to 100rem at 1440px and 120rem at 1920px).
+  const containerPad = "max(5vw, calc((100vw - var(--container-max)) / 2))";
 
   const options = {
-    type: "slide" as const,
+    type: "loop" as const,
     perMove: 1,
     gap: "12px",
     arrows: true,
     pagination: false,
     drag: true,
-    padding: { left: containerPad, right: "0" },
-    ...(useFixed ? { fixedWidth, focus: 0 } : { perPage }),
+    padding: { left: "0", right: containerPad },
+    ...(useFixed ? { fixedWidth, focus: -1 } : { perPage }),
     breakpoints: {
       // Tablet: section padding handles alignment; reset Splide padding.
       991: {
@@ -100,7 +100,6 @@ export default function TeamImageCarousel({
         fixedWidth: 0,
         perPage: 1,
         padding: { left: "0", right: "0" },
-        trimSpace: false,
         arrows: true,
         start: 0,
       },
@@ -198,17 +197,18 @@ function QuoteMark() {
 function Arrow({ direction }: { direction: "left" | "right" }) {
   return (
     <svg
-      width="20"
-      height="20"
+      width="24"
+      height="24"
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
-      strokeWidth="1.5"
+      strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"
       style={{ transform: direction === "left" ? "rotate(180deg)" : undefined }}
     >
-      <path d="M5 12h14M13 6l6 6-6 6" />
+      <path d="M5 12H19" />
+      <path d="M12 5L19 12L12 19" />
     </svg>
   );
 }

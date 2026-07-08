@@ -23,6 +23,9 @@ export interface TeamCarouselProps {
   perPage?: number;
   /** Fixed card width for the "next card peeks" layout. Default "444px". */
   fixedWidth?: string;
+  /** When false, hides the eyebrow/heading/CTA header and moves the nav arrows
+   *  to the bottom-left, 48px beneath the carousel (Figma 18125-27752). */
+  showHeader?: boolean;
 }
 
 const PLACEHOLDER_MEMBERS: TeamMember[] = [
@@ -53,7 +56,10 @@ function useVimeoData(members: TeamMember[]) {
             setThumbs((prev) => ({ ...prev, [id]: data.thumbnail_url }));
           }
           if (typeof data?.duration === "number") {
-            setDurations((prev) => ({ ...prev, [id]: formatDuration(data.duration) }));
+            setDurations((prev) => ({
+              ...prev,
+              [id]: formatDuration(data.duration),
+            }));
           }
         })
         .catch(() => {});
@@ -72,10 +78,12 @@ export default function TeamCarousel({
   members = PLACEHOLDER_MEMBERS,
   perPage,
   fixedWidth = "444px",
+  showHeader = true,
 }: TeamCarouselProps) {
   const [active, setActive] = useState<TeamMember | null>(null);
   const useFixed = !perPage;
-  const { thumbs: autoThumbs, durations: autoDurations } = useVimeoData(members);
+  const { thumbs: autoThumbs, durations: autoDurations } =
+    useVimeoData(members);
 
   const close = useCallback(() => setActive(null), []);
 
@@ -93,19 +101,19 @@ export default function TeamCarousel({
     };
   }, [active, close]);
 
-  // Left offset matches the site container (max-width: 90rem, width: 90%, centered).
-  // At viewports < 100rem: 5vw each side. At >= 100rem: (100vw - 90rem) / 2.
-  const containerPad = "max(5vw, calc((100vw - 90rem) / 2))";
+  // Left offset matches the site container (max-width: var(--container-max), width: 90%,
+  // centered; --container-max steps from 90rem to 100rem at 1440px and 120rem at 1920px).
+  const containerPad = "max(5vw, calc((100vw - var(--container-max)) / 2))";
 
   const options = {
-    type: "slide" as const,
+    type: "loop" as const,
     perMove: 1,
     gap: "12px",
     arrows: true,
     pagination: false,
     drag: true,
-    padding: { left: containerPad, right: "0" },
-    ...(useFixed ? { fixedWidth, focus: 0 } : { perPage }),
+    padding: { left: "0", right: containerPad },
+    ...(useFixed ? { fixedWidth, focus: -1 } : { perPage }),
     breakpoints: {
       // Tablet: section padding handles alignment; reset Splide padding.
       991: {
@@ -116,7 +124,6 @@ export default function TeamCarousel({
         fixedWidth: 0,
         perPage: 1,
         padding: { left: "0", right: "0" },
-        trimSpace: false,
         arrows: true,
         start: 1,
       },
@@ -124,27 +131,29 @@ export default function TeamCarousel({
   };
 
   return (
-    <section className="tc">
+    <section className={`tc${showHeader ? "" : " tc--no-header"}`}>
       <Splide
         hasTrack={false}
         options={options}
         aria-label={heading}
         className="tc__splide"
       >
-        <div className="tc__container">
-          <div className="tc__head">
-            <div className="tc__head-copy">
-              <div className="tc__eyebrow">
-                <span className="tc__eyebrow-dot" aria-hidden="true" />
-                <span>{eyebrow}</span>
+        {showHeader && (
+          <div className="tc__container">
+            <div className="tc__head">
+              <div className="tc__head-copy">
+                <div className="tc__eyebrow">
+                  <span className="tc__eyebrow-dot" aria-hidden="true" />
+                  <span>{eyebrow}</span>
+                </div>
+                <h2 className="tc__heading">{heading}</h2>
               </div>
-              <h2 className="tc__heading">{heading}</h2>
+              <a className="tc__cta" href={ctaHref}>
+                {ctaLabel}
+              </a>
             </div>
-            <a className="tc__cta" href={ctaHref}>
-              {ctaLabel}
-            </a>
           </div>
-        </div>
+        )}
 
         <SplideTrack>
           {members.map((m, i) => {
@@ -260,17 +269,26 @@ export default function TeamCarousel({
 function Arrow({ direction }: { direction: "left" | "right" }) {
   return (
     <svg
-      width="20"
-      height="20"
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
       viewBox="0 0 24 24"
       fill="none"
-      stroke="currentColor"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      style={{ transform: direction === "left" ? "rotate(180deg)" : undefined }}
     >
-      <path d="M5 12h14M13 6l6 6-6 6" />
+      <path
+        d="M5 12H19"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+      <path
+        d="M12 5L19 12L12 19"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
     </svg>
   );
 }

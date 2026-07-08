@@ -3,6 +3,7 @@
    18098-24825). Assumes Inter (variable) + IBM Plex Mono load globally. */
 
 .pg {
+  --container-max: 90rem;
   position: relative;
   width: 100%;
   box-sizing: border-box;
@@ -12,10 +13,22 @@
   font-family: Inter, sans-serif;
 }
 
+@media (min-width: 1440px) {
+  .pg {
+    --container-max: 100rem;
+  }
+}
+
+@media (min-width: 1920px) {
+  .pg {
+    --container-max: 120rem;
+  }
+}
+
 /* ── Optional header (matches the other carousels' container alignment) ───── */
 .pg__container {
   display: flex;
-  max-width: 90rem;
+  max-width: var(--container-max);
   width: 90%;
   margin: 0 auto;
 }
@@ -36,6 +49,7 @@
   font-weight: 500;
   font-size: 16px;
   line-height: 1.1;
+  letter-spacing: normal;
   text-transform: uppercase;
   color: #5c5a57;
   font-feature-settings: "salt" 1;
@@ -63,10 +77,10 @@
   display: flex;
   align-items: flex-end;
   justify-content: flex-start;
-  gap: 16px;
+  gap: 12px;
   /* Vertical padding leaves room for the hover scale-up; horizontal padding
      aligns the first/last card with the site container. */
-  padding: 36px max(5vw, calc((100vw - 90rem) / 2));
+  /* padding: 36px max(5vw, calc((100vw - 90rem) / 2)); */
   overflow-x: auto;
   overflow-y: hidden;
   cursor: grab;
@@ -145,7 +159,7 @@
   }
   .pg__track {
     align-items: center;
-    gap: 13px;
+    gap: 9.8px;
     padding: 0 24px 0 0;
   }
   .pg__card {

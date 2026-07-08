@@ -105,15 +105,18 @@ export default function ValuesCarousel({
 }: ValuesCarouselProps) {
   const useFixed = !perPage;
 
-  // Left offset matches the site container (max-width: 90rem, width: 90%, centered).
-  // At viewports < 100rem: 5vw each side. At >= 100rem: (100vw - 90rem) / 2.
-  const containerPad = "max(5vw, calc((100vw - 90rem) / 2))";
+  // Left offset matches the site container (max-width: var(--container-max), width: 90%,
+  // centered; --container-max steps from 90rem to 100rem at 1440px and 120rem at 1920px).
+  const containerPad = "max(5vw, calc((100vw - var(--container-max)) / 2))";
 
   const options = {
     type: "slide" as const,
     perMove: 1,
     gap: "12px",
     arrows: true,
+    // Trim the trailing empty space so the last slide reaches the right edge
+    // and the "next" arrow becomes disabled at the final slide.
+    omitEnd: true,
     pagination: false,
     drag: true,
     padding: { left: containerPad, right: "0" },
@@ -194,17 +197,18 @@ export default function ValuesCarousel({
 function Arrow({ direction }: { direction: "left" | "right" }) {
   return (
     <svg
-      width="20"
-      height="20"
+      width="24"
+      height="24"
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
-      strokeWidth="1.5"
+      strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"
       style={{ transform: direction === "left" ? "rotate(180deg)" : undefined }}
     >
-      <path d="M5 12h14M13 6l6 6-6 6" />
+      <path d="M5 12H19" />
+      <path d="M12 5L19 12L12 19" />
     </svg>
   );
 }

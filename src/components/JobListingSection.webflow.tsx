@@ -22,5 +22,12 @@ export default declareComponent(JobListingSection, {
       tooltip:
         "When enabled, opening one department automatically closes all others.",
     }),
+
+    engineeringOnly: props.Boolean({
+      name: "Engineering Only",
+      defaultValue: false,
+      tooltip:
+        "When enabled, only the Engineering department is shown (listing and filters).",
+    }),
   },
 });

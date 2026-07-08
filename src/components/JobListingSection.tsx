@@ -19,6 +19,8 @@ interface LocationsMap {
 interface JobListingSectionProps {
   apiUrl?: string;
   singleOpen?: boolean;
+  /** When true, only the Engineering department is shown (listing + filters). */
+  engineeringOnly?: boolean;
 }
 
 const JOBS_API =
@@ -62,9 +64,9 @@ const MinusIcon = () => (
     <path
       d="M5 12H19"
       stroke="#0E0D0C"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
     />
   </svg>
 );
@@ -79,17 +81,17 @@ const PlusIcon = () => (
   >
     <path
       d="M5 12H19"
-      stroke="#7A7977"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
+      stroke="#A9A8A6"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
     />
     <path
       d="M12 5V19"
-      stroke="#7A7977"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
+      stroke="#A9A8A6"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
     />
   </svg>
 );
@@ -97,17 +99,25 @@ const PlusIcon = () => (
 const SearchIcon = () => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
-    width="18"
-    height="18"
-    fill="none"
+    width="24"
+    height="24"
     viewBox="0 0 24 24"
-    stroke="#838385"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
+    fill="none"
   >
-    <circle cx="11" cy="11" r="8" />
-    <line x1="21" y1="21" x2="16.65" y2="16.65" />
+    <path
+      d="M21.0002 21.0002L16.6602 16.6602"
+      stroke="#A9A8A6"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    />
+    <path
+      d="M11 19C15.4183 19 19 15.4183 19 11C19 6.58172 15.4183 3 11 3C6.58172 3 3 6.58172 3 11C3 15.4183 6.58172 19 11 19Z"
+      stroke="#A9A8A6"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    />
   </svg>
 );
 
@@ -115,16 +125,18 @@ const SelectChevron = () => (
   <span className="custom-select-icon">
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      width="16"
-      height="16"
+      width="24"
+      height="24"
       viewBox="0 0 24 24"
       fill="none"
-      stroke="#838385"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
     >
-      <polyline points="6 9 12 15 18 9" />
+      <path
+        d="M6 9L12 15L18 9"
+        stroke="#A9A8A6"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
     </svg>
   </span>
 );
@@ -192,6 +204,7 @@ const DepartmentAccordion = ({
 export default function JobListingSection({
   apiUrl = JOBS_API,
   singleOpen = false,
+  engineeringOnly = false,
 }: JobListingSectionProps) {
   const [allJobs, setAllJobs] = useState<Job[]>([]);
   const [locationsMap, setLocationsMap] = useState<LocationsMap>({});
@@ -206,6 +219,8 @@ export default function JobListingSection({
 
   const openDeptRef = useRef(openDepartments);
   openDeptRef.current = openDepartments;
+
+  const didAutoOpenRef = useRef(false);
 
   useEffect(() => {
     fetch(apiUrl, { method: "POST" })
@@ -226,6 +241,27 @@ export default function JobListingSection({
       .finally(() => setLoading(false));
   }, [apiUrl]);
 
+  useEffect(() => {
+    if (!engineeringOnly || didAutoOpenRef.current || allJobs.length === 0) {
+      return;
+    }
+    const engineeringDepts = Array.from(
+      new Set(
+        allJobs
+          .filter((job) =>
+            (job.departmentName || "").toLowerCase().includes("engineering"),
+          )
+          .map((job) => job.departmentName || "Other"),
+      ),
+    );
+    if (engineeringDepts.length > 0) {
+      didAutoOpenRef.current = true;
+      setOpenDepartments(
+        singleOpen ? new Set([engineeringDepts[0]]) : new Set(engineeringDepts),
+      );
+    }
+  }, [engineeringOnly, allJobs, singleOpen]);
+
   const handleToggle = (dept: string) => {
     setOpenDepartments((prev) => {
       const next = new Set(prev);
@@ -239,7 +275,13 @@ export default function JobListingSection({
     });
   };
 
-  const filteredJobs = allJobs.filter((job) => {
+  const visibleJobs = engineeringOnly
+    ? allJobs.filter((job) =>
+        (job.departmentName || "").toLowerCase().includes("engineering"),
+      )
+    : allJobs;
+
+  const filteredJobs = visibleJobs.filter((job) => {
     const title = job.title.toLowerCase();
     const dept = job.departmentName || "Other";
     const loc = getLocationNames(job, locationsMap).toLowerCase();
@@ -266,12 +308,12 @@ export default function JobListingSection({
   const sortedDepts = Object.keys(grouped).sort();
 
   const departments = Array.from(
-    new Set(allJobs.map((j) => j.departmentName || "Other")),
+    new Set(visibleJobs.map((j) => j.departmentName || "Other")),
   ).sort();
 
   const locationOptions = Array.from(
     new Set(
-      allJobs.flatMap((job) =>
+      visibleJobs.flatMap((job) =>
         getLocationNames(job, locationsMap)
           .split(",")
           .map((l) => l.trim())

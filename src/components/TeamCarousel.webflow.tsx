@@ -10,6 +10,7 @@ interface AdapterProps {
   ctaHref?: string;
   fixedWidth?: string;
   perPage?: number;
+  showHeader?: boolean;
   // Member slots — only included in the array if vimeoId is non-empty
   m1Name?: string; m1Title?: string; m1VimeoId?: string;
   m2Name?: string; m2Title?: string; m2VimeoId?: string;
@@ -17,16 +18,20 @@ interface AdapterProps {
   m4Name?: string; m4Title?: string; m4VimeoId?: string;
   m5Name?: string; m5Title?: string; m5VimeoId?: string;
   m6Name?: string; m6Title?: string; m6VimeoId?: string;
+  m7Name?: string; m7Title?: string; m7VimeoId?: string;
+  m8Name?: string; m8Title?: string; m8VimeoId?: string;
 }
 
 function TeamCarouselAdapter({
-  eyebrow, heading, ctaLabel, ctaHref, fixedWidth, perPage,
+  eyebrow, heading, ctaLabel, ctaHref, fixedWidth, perPage, showHeader,
   m1Name, m1Title, m1VimeoId,
   m2Name, m2Title, m2VimeoId,
   m3Name, m3Title, m3VimeoId,
   m4Name, m4Title, m4VimeoId,
   m5Name, m5Title, m5VimeoId,
   m6Name, m6Title, m6VimeoId,
+  m7Name, m7Title, m7VimeoId,
+  m8Name, m8Title, m8VimeoId,
 }: AdapterProps) {
   const slots = [
     { name: m1Name, label: m1Title, vimeoId: m1VimeoId },
@@ -35,6 +40,8 @@ function TeamCarouselAdapter({
     { name: m4Name, label: m4Title, vimeoId: m4VimeoId },
     { name: m5Name, label: m5Title, vimeoId: m5VimeoId },
     { name: m6Name, label: m6Title, vimeoId: m6VimeoId },
+    { name: m7Name, label: m7Title, vimeoId: m7VimeoId },
+    { name: m8Name, label: m8Title, vimeoId: m8VimeoId },
   ];
 
   const members: TeamMember[] = slots
@@ -53,6 +60,7 @@ function TeamCarouselAdapter({
       ctaHref={ctaHref}
       fixedWidth={fixedWidth}
       perPage={perPage}
+      showHeader={showHeader}
       members={members.length ? members : undefined}
     />
   );
@@ -81,10 +89,16 @@ function memberProps(n: number) {
 export default declareComponent(TeamCarouselAdapter, {
   name: "Team Carousel",
   description:
-    "Hear From Our Team carousel. Add up to 6 members — just paste a Vimeo ID and the thumbnail is fetched automatically. Clicking a card opens the video in a modal.",
+    "Hear From Our Team carousel. Add up to 8 members — just paste a Vimeo ID and the thumbnail is fetched automatically. Clicking a card opens the video in a modal.",
   group: "Media",
 
   props: {
+    showHeader: props.Boolean({
+      name: "Show Header",
+      defaultValue: true,
+      tooltip:
+        "Show the eyebrow/heading/CTA header. Turn off to hide it and move the nav arrows to the bottom-left, 48px beneath the carousel.",
+    }),
     eyebrow: props.Text({
       name: "Eyebrow",
       defaultValue: "people behind the product",
@@ -114,7 +128,7 @@ export default declareComponent(TeamCarouselAdapter, {
       name: "Cards per page",
       defaultValue: 0,
       min: 0,
-      max: 6,
+      max: 8,
       tooltip: "Set > 0 to override the peek layout with a fixed count per page.",
     }),
     ...memberProps(1),
@@ -123,5 +137,7 @@ export default declareComponent(TeamCarouselAdapter, {
     ...memberProps(4),
     ...memberProps(5),
     ...memberProps(6),
+    ...memberProps(7),
+    ...memberProps(8),
   },
 });
