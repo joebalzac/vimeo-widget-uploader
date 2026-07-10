@@ -8,7 +8,7 @@
 
 .filters-wrapper {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 6px;
   width: 100%;
 }
@@ -24,7 +24,9 @@
 .search-input-wrapper,
 .filters-select {
   display: flex;
-  padding: 16px;
+  box-sizing: border-box;
+  height: 60px;
+  padding: 0 16px;
   align-items: center;
   border-radius: 6px;
   border: 1px solid #dddcda;
@@ -33,7 +35,6 @@
 
 .search-input-wrapper {
   gap: 12px;
-  align-self: stretch;
   width: 100%;
 }
 
@@ -56,7 +57,7 @@
 
 .filters-select {
   justify-content: space-between;
-  align-self: stretch;
+  align-items: center;
   cursor: pointer;
   font-family: "inter-variable", sans-serif;
   font-size: 16px;
@@ -109,7 +110,7 @@
   line-height: 110%;
   letter-spacing: normal;
   text-transform: uppercase;
-  font-size: 16px;
+  font-size: 14px;
 }
 
 .department-chevron {
@@ -220,6 +221,8 @@
   top: 50%;
   right: 12px;
   transform: translateY(-50%);
+  display: flex;
+  align-items: center;
   pointer-events: none;
 }
 
@@ -237,12 +240,17 @@
   .search-input-wrapper {
     width: auto;
     height: 56px;
-    padding: 0 16px;
+    padding: 16px;
+  }
+
+  .search-input {
+    font-size: 16px;
   }
 
   .select-wrapper select {
     height: 56px;
-    padding: 0 16px;
+    padding: 16px;
+    font-size: 16px;
   }
 
   .job-listing-wrapper {
@@ -251,7 +259,8 @@
   }
 
   .department-title {
-    font-size: 18px;
+    font-size: 20px;
+    letter-spacing: -0.6px;
     padding: 16px 0;
   }
 

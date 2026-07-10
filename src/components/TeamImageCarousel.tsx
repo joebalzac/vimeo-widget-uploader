@@ -82,14 +82,20 @@ export default function TeamImageCarousel({
   const containerPad = "max(5vw, calc((100vw - var(--container-max)) / 2))";
 
   const options = {
-    type: "loop" as const,
+    type: "slide" as const,
     perMove: 1,
     gap: "12px",
     arrows: true,
+    // Trim the trailing empty space so the last slide reaches the right edge
+    // and the "next" arrow becomes disabled at the final slide.
+    omitEnd: true,
     pagination: false,
     drag: true,
-    padding: { left: "0", right: containerPad },
-    ...(useFixed ? { fixedWidth, focus: -1 } : { perPage }),
+    // Left/right padding = container margin so the first slide starts at the
+    // left container edge and the last slide rests at the right container edge.
+    // Slides in between overflow through the margins and off screen.
+    padding: { left: containerPad, right: containerPad },
+    ...(useFixed ? { fixedWidth, focus: 0 } : { perPage }),
     breakpoints: {
       // Tablet: section padding handles alignment; reset Splide padding.
       991: {
@@ -100,6 +106,7 @@ export default function TeamImageCarousel({
         fixedWidth: 0,
         perPage: 1,
         padding: { left: "0", right: "0" },
+        trimSpace: false,
         arrows: true,
         start: 0,
       },

@@ -1,6 +1,6 @@
-/* PhotoCarousel — drag-to-scroll image gallery with hover-to-enlarge cards.
-   Varied card sizes aligned to the bottom, 8px radius, 16px gap (Figma node
-   18098-24825). Assumes Inter (variable) + IBM Plex Mono load globally. */
+/* PhotoCarousel — auto-scrolling image gallery (drag also works). Cards share
+   a fixed row height with varied widths, 8px radius, 12px gap (Figma node
+   18716-12073). Assumes Inter (variable) + IBM Plex Mono load globally. */
 
 .pg {
   --container-max: 90rem;
@@ -72,15 +72,12 @@
   color: #131115;
 }
 
-/* ── Track — horizontal drag-scroll, cards anchored to the bottom edge ────── */
+/* ── Track — horizontal drag-scroll, auto-scrolled by the component ───────── */
 .pg__track {
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   justify-content: flex-start;
   gap: 12px;
-  /* Vertical padding leaves room for the hover scale-up; horizontal padding
-     aligns the first/last card with the site container. */
-  /* padding: 36px max(5vw, calc((100vw - 90rem) / 2)); */
   overflow-x: auto;
   overflow-y: hidden;
   cursor: grab;
@@ -107,17 +104,6 @@
   overflow: hidden;
   border-radius: 8px;
   background-color: #ecebe9;
-  transform-origin: center bottom;
-  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
-    box-shadow 0.35s cubic-bezier(0.22, 1, 0.36, 1);
-  will-change: transform;
-}
-
-/* Hover-to-enlarge — disabled while dragging so the scale doesn't fight the scroll. */
-.pg__track:not(.pg__track--dragging) .pg__card:hover {
-  transform: scale(1.08);
-  z-index: 2;
-  box-shadow: 0 18px 40px rgba(19, 17, 21, 0.18);
 }
 
 .pg__img {
@@ -147,9 +133,9 @@
 }
 
 /* ── Mobile ───────────────────────────────────────────────────────────────── */
-/* ── Mobile — Figma node 18098-24107 ─────────────────────────────────────────
-   Cards scale uniformly to 0.8167× the desktop size (e.g. 200×260 → 163×212),
-   6px radius, 13px gap, vertically centered. */
+/* Scales the desktop card size down proportionally (no dedicated mobile
+   Figma frame for this node): width ×0.8167, height ×1.225, 6px radius,
+   13px gap. */
 @media (max-width: 767px) {
   .pg {
     gap: 32px;
@@ -158,13 +144,12 @@
     padding: 0 24px;
   }
   .pg__track {
-    align-items: center;
     gap: 9.8px;
     padding: 0 24px 0 0;
   }
   .pg__card {
     width: calc(var(--pg-w) * 0.8167);
-    height: calc(var(--pg-h) * 0.8167);
+    height: calc(var(--pg-h) * 1.225);
     border-radius: 6px;
   }
   .pg__heading {
@@ -173,10 +158,5 @@
   }
   .pg__eyebrow {
     font-size: 14px;
-  }
-  /* Touch devices scroll natively; skip the hover scale to avoid sticky states. */
-  .pg__track:not(.pg__track--dragging) .pg__card:hover {
-    transform: none;
-    box-shadow: none;
   }
 }

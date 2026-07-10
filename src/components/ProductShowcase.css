@@ -200,8 +200,16 @@
   background: #131115;
   border-radius: 8px;
   padding: 14px;
-  width: 280px;
+  /* Hug the text: box shrinks to its content, capped at max-width. */
+  width: fit-content;
+  max-width: 480px;
   box-shadow: 0 0 0.5px rgba(0, 0, 0, 0.2), 0 2px 2px rgba(0, 0, 0, 0.04);
+}
+
+/* Force a single line on desktop (drop the wrap cap so the text can't break). */
+.ps__bubble--one-line {
+  max-width: none;
+  white-space: nowrap;
 }
 
 .ps__bubble p {
@@ -240,16 +248,15 @@
   font-weight: 400;
   color: #0e0d0c;
   letter-spacing: -0.36px;
-}
-
-/* Word-by-word streaming — longer eased fade so consecutive words blend */
-.ps__word {
   opacity: 0;
-  transition: opacity 0.32s ease-out;
+  transform: translateY(6px);
+  transition: opacity 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.ps__word.is-visible {
+.ps__ai-text.is-visible {
   opacity: 1;
+  transform: translateY(0);
 }
 
 /* ── Processing state (star + status text) ───────────────────────────────────── */
@@ -437,9 +444,14 @@
   .ps {
     gap: 32px;
   }
+
+  .ps__head {
+    gap: 16px;
+  }
+
   .ps__heading {
-    font-size: 32px;
-    letter-spacing: -0.96px;
+    font-size: 36px;
+    letter-spacing: -1.08px;
   }
   .ps__eyebrow {
     font-size: 14px;
@@ -462,14 +474,29 @@
 
   .ps__card {
     height: 520px;
+    border-radius: 10px;
   }
+
+  .ps__toggle {
+    padding: 0px;
+  }
+
+  .ps__bottom-bar {
+    padding: 24px;
+  }
+
   .ps__tab {
     font-size: 16px;
     padding: 10px 18px;
   }
   .ps__bubble {
-    width: auto;
+    width: fit-content;
     max-width: 240px;
+  }
+  /* Re-enable wrapping on narrow screens so one-line bubbles can't overflow. */
+  .ps__bubble--one-line {
+    max-width: 240px;
+    white-space: normal;
   }
   .ps__conv {
     width: 84%;

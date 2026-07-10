@@ -36,9 +36,10 @@ function PhotoCarouselAdapter(p: AdapterProps) {
   );
 }
 
+// Figma rhythm (node 18716-12073): fixed 300px row height, varied widths.
+const FIGMA_WIDTHS = [245, 520, 300, 400, 480, 245, 520, 400, 450];
+
 function photoProps(n: number) {
-  // Figma rhythm: odd cards portrait (200×260), even cards landscape (300×200).
-  const portrait = n % 2 === 1;
   return {
     [`p${n}Image`]: props.Image({
       name: `Photo ${n} — Image`,
@@ -46,14 +47,14 @@ function photoProps(n: number) {
     }),
     [`p${n}Width`]: props.Number({
       name: `Photo ${n} — Width (px)`,
-      defaultValue: portrait ? 200 : 300,
+      defaultValue: FIGMA_WIDTHS[n - 1] ?? 300,
       min: 80,
       max: 800,
       tooltip: `Card width in pixels.`,
     }),
     [`p${n}Height`]: props.Number({
       name: `Photo ${n} — Height (px)`,
-      defaultValue: portrait ? 260 : 200,
+      defaultValue: 300,
       min: 80,
       max: 800,
       tooltip: `Card height in pixels.`,
@@ -70,7 +71,7 @@ function allPhotoProps() {
 export default declareComponent(PhotoCarouselAdapter, {
   name: "Photo Carousel",
   description:
-    "Drag-to-scroll image gallery with hover-to-enlarge cards. Grab anywhere and drag to scroll; cards scale up on hover. Add up to 9 images, each with its own size.",
+    "Auto-scrolling image gallery — cards drift continuously and pause on hover; grab anywhere to drag-scroll manually. Add up to 9 images, each with its own size.",
   group: "Media",
 
   props: {

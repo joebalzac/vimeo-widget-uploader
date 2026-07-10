@@ -119,7 +119,10 @@ export default function ValuesCarousel({
     omitEnd: true,
     pagination: false,
     drag: true,
-    padding: { left: containerPad, right: "0" },
+    // Left/right padding = container margin so the first slide starts at the
+    // left container edge and the last slide rests at the right container edge.
+    // Slides in between overflow through the margins and off screen.
+    padding: { left: containerPad, right: containerPad },
     ...(useFixed ? { fixedWidth, focus: 0 } : { perPage }),
     breakpoints: {
       // Tablet: section padding handles alignment; reset Splide padding.
@@ -156,12 +159,28 @@ export default function ValuesCarousel({
               <h2 className="vc__heading">{heading}</h2>
             </div>
           </div>
+          <div className="vc__nav splide__arrows">
+            <button
+              className="vc__nav-btn splide__arrow splide__arrow--prev"
+              aria-label="Previous"
+            >
+              <Arrow direction="left" />
+            </button>
+            <button
+              className="vc__nav-btn splide__arrow splide__arrow--next"
+              aria-label="Next"
+            >
+              <Arrow direction="right" />
+            </button>
+          </div>
         </div>
 
         <SplideTrack>
           {items.map((item, i) => (
             <SplideSlide key={i}>
-              <article className={`vc__card${i === 0 ? " vc__card--solid" : ""}`}>
+              <article
+                className={`vc__card${i === 0 ? " vc__card--solid" : ""}`}
+              >
                 <div className="vc__card-text">
                   <p className="vc__card-title">{item.title}</p>
                   <p className="vc__card-desc">{item.description}</p>
@@ -173,22 +192,6 @@ export default function ValuesCarousel({
             </SplideSlide>
           ))}
         </SplideTrack>
-
-        {/* Nav: absolute top-right on desktop, static below track on mobile */}
-        <div className="vc__nav splide__arrows">
-          <button
-            className="vc__nav-btn splide__arrow splide__arrow--prev"
-            aria-label="Previous"
-          >
-            <Arrow direction="left" />
-          </button>
-          <button
-            className="vc__nav-btn splide__arrow splide__arrow--next"
-            aria-label="Next"
-          >
-            <Arrow direction="right" />
-          </button>
-        </div>
       </Splide>
     </section>
   );

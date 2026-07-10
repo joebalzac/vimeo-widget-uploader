@@ -13,7 +13,7 @@
 .ss__row {
   display: flex;
   align-items: flex-start;
-  gap: 32px;
+  gap: 64px;
   width: 100%;
 }
 
@@ -149,7 +149,7 @@
   }
 
   .ss__intro {
-    gap: 12px;
+    gap: 16px;
   }
 
   .ss__row {
@@ -175,7 +175,7 @@
   }
 
   .ss__dot {
-    margin-top: 6px;
+    margin-top: 0px;
   }
 
   .ss__step-title {

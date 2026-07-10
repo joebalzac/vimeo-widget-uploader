@@ -14,7 +14,6 @@ type MsgDef = {
   text: string;
   audioKey?: string;
   durationMs?: number;
-  streamFactor?: number;
 };
 
 const TAB_DEFAULTS: { key: string; label: string; messages: MsgDef[] }[] = [
@@ -35,7 +34,6 @@ const TAB_DEFAULTS: { key: string; label: string; messages: MsgDef[] }[] = [
         text: 'Sorry to hear that. A humming disposal is usually jammed. Try inserting a 1/4" Allen wrench into the hex slot underneath, turning it back and forth to free the jam, then press the red reset button and test it again. Let me know how it goes.',
         audioKey: "housing/Elise-Sorry",
         durationMs: 17000,
-        streamFactor: 0.92,
       },
       {
         role: "user",
@@ -131,7 +129,6 @@ function ProductShowcaseAdapter(p: AdapterProps) {
         text: get(`Text${mi}`, m.text),
         audioSrc: get(`Audio${mi}`, defaultAudio) || undefined,
         durationMs: m.durationMs,
-        streamFactor: m.streamFactor,
       };
       if (m.role === "user") msg.name = name;
       if (m.role === "ai" && m.status !== undefined) {

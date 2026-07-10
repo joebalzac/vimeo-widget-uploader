@@ -41,6 +41,19 @@ function formatDuration(seconds: number): string {
   return `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
 }
 
+/* Request a large thumbnail so it stays crisp on retina cards (card is up to
+   ~476px wide → ~2x on high-DPR screens). Vimeo's oembed default is ~295px. */
+const THUMB_WIDTH = 960;
+
+/* Vimeo CDN thumbnails encode their size either in the path (…_295x166.jpg) or
+   as a query param (?…w=295). Bump whichever form is present so the browser
+   isn't upscaling a small image to fill the card. */
+function upscaleThumb(url: string): string {
+  return url
+    .replace(/_\d+x\d+(?=\.\w+($|\?)|$|\?)/, `_${THUMB_WIDTH}`)
+    .replace(/([?&](?:w|mw)=)\d+/, `$1${THUMB_WIDTH}`);
+}
+
 function useVimeoData(members: TeamMember[]) {
   const [thumbs, setThumbs] = useState<Record<string, string>>({});
   const [durations, setDurations] = useState<Record<string, string>>({});
@@ -49,11 +62,17 @@ function useVimeoData(members: TeamMember[]) {
     const ids = members.map((m) => m.vimeoId).filter((id) => id && !thumbs[id]);
     if (!ids.length) return;
     ids.forEach((id) => {
-      fetch(`https://vimeo.com/api/oembed.json?url=https://vimeo.com/${id}`)
+      fetch(
+        `https://vimeo.com/api/oembed.json?url=https://vimeo.com/${id}&width=${THUMB_WIDTH}`,
+      )
         .then((r) => r.json())
         .then((data) => {
           if (data?.thumbnail_url) {
-            setThumbs((prev) => ({ ...prev, [id]: data.thumbnail_url }));
+            const url = upscaleThumb(data.thumbnail_url);
+            setThumbs((prev) => ({ ...prev, [id]: url }));
+            // Warm the browser cache so the image is decoded before it paints.
+            const img = new Image();
+            img.src = url;
           }
           if (typeof data?.duration === "number") {
             setDurations((prev) => ({
@@ -106,14 +125,20 @@ export default function TeamCarousel({
   const containerPad = "max(5vw, calc((100vw - var(--container-max)) / 2))";
 
   const options = {
-    type: "loop" as const,
+    type: "slide" as const,
     perMove: 1,
     gap: "12px",
     arrows: true,
+    // Trim the trailing empty space so the last slide reaches the right edge
+    // and the "next" arrow becomes disabled at the final slide.
+    omitEnd: true,
     pagination: false,
     drag: true,
-    padding: { left: "0", right: containerPad },
-    ...(useFixed ? { fixedWidth, focus: -1 } : { perPage }),
+    // Left/right padding = container margin so the first slide starts at the
+    // left container edge and the last slide rests at the right container edge.
+    // Slides in between overflow through the margins and off screen.
+    padding: { left: containerPad, right: containerPad },
+    ...(useFixed ? { fixedWidth, focus: 0 } : { perPage }),
     breakpoints: {
       // Tablet: section padding handles alignment; reset Splide padding.
       991: {
@@ -124,8 +149,9 @@ export default function TeamCarousel({
         fixedWidth: 0,
         perPage: 1,
         padding: { left: "0", right: "0" },
+        trimSpace: false,
         arrows: true,
-        start: 1,
+        start: 0,
       },
     },
   };
@@ -151,6 +177,20 @@ export default function TeamCarousel({
               <a className="tc__cta" href={ctaHref}>
                 {ctaLabel}
               </a>
+            </div>
+            <div className="tc__nav splide__arrows">
+              <button
+                className="tc__nav-btn splide__arrow splide__arrow--prev"
+                aria-label="Previous"
+              >
+                <Arrow direction="left" />
+              </button>
+              <button
+                className="tc__nav-btn splide__arrow splide__arrow--next"
+                aria-label="Next"
+              >
+                <Arrow direction="right" />
+              </button>
             </div>
           </div>
         )}
@@ -215,22 +255,6 @@ export default function TeamCarousel({
             );
           })}
         </SplideTrack>
-
-        {/* Nav: absolute top-right on desktop, static below track on mobile */}
-        <div className="tc__nav splide__arrows">
-          <button
-            className="tc__nav-btn splide__arrow splide__arrow--prev"
-            aria-label="Previous"
-          >
-            <Arrow direction="left" />
-          </button>
-          <button
-            className="tc__nav-btn splide__arrow splide__arrow--next"
-            aria-label="Next"
-          >
-            <Arrow direction="right" />
-          </button>
-        </div>
       </Splide>
 
       {active && (

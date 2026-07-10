@@ -19,8 +19,8 @@ export interface DemoMessage {
   audioSrc?: string;
   /** Length of this line's audio clip in ms; drives when the next line appears. */
   durationMs?: number;
-  /** Fraction of durationMs over which words stream (default 0.78). Lower = quicker. */
-  streamFactor?: number;
+  /** Keep this user bubble on a single line (no wrap) on desktop. */
+  oneLine?: boolean;
 }
 
 export interface DemoTab {
@@ -61,7 +61,6 @@ const PLACEHOLDER_TABS: DemoTab[] = [
         text: 'Sorry to hear that. A humming disposal is usually jammed. Try inserting a 1/4" Allen wrench into the hex slot underneath, turning it back and forth to free the jam, then press the red reset button and test it again. Let me know how it goes.',
         audioSrc: AUDIO["housing/Elise-Sorry"],
         durationMs: 17000,
-        streamFactor: 0.92,
       },
       {
         role: "user",
@@ -69,6 +68,7 @@ const PLACEHOLDER_TABS: DemoTab[] = [
         text: "Oh great, that worked! It's running now.",
         audioSrc: AUDIO["housing/Jordan-Oh-Great"],
         durationMs: 3000,
+        oneLine: true,
       },
       {
         role: "ai",
@@ -102,6 +102,7 @@ const PLACEHOLDER_TABS: DemoTab[] = [
         text: "Yes, I switched jobs and now have Blue Cross.",
         audioSrc: AUDIO["healthcare/Mia-Yes-I-Swithced"],
         durationMs: 3000,
+        oneLine: true,
       },
       {
         role: "ai",
@@ -133,7 +134,7 @@ const PLACEHOLDER_TABS: DemoTab[] = [
 // lengths come from message.durationMs; the timeline is derived per scenario.
 const START_MS = 600; // delay before the first line
 const GAP_MS = 900; // pause between a clip ending and the next line
-const PROCESS_DUR = 800; // "processing" pre-roll before an AI line with a status
+const PROCESS_DUR = 1600; // "processing" pre-roll before an AI line with a status — long enough to read the status line
 const LOOP_PAUSE = 4000; // pause after the last line before the loop restarts
 const DEFAULT_DUR = 2500; // fallback clip length when durationMs is unset
 const GAP = 12; // px gap used by the slide-to-latest math (not a duration)
@@ -196,23 +197,13 @@ export default function ProductShowcase({
 
     // Play the clip for message `i` as it appears, so each line's audio stays
     // in step with the text animation. Swapping src cuts off the prior line.
-    // Returns true if it actually started audio. When `msg` is given, the wave
-    // (is-speaking) is stopped the moment the real clip ends.
-    function playClip(i: number, msg?: HTMLElement) {
+    function playClip(i: number) {
       const audio = audioRef.current;
       const src = activeMessages[i]?.audioSrc;
-      if (!audio || !audioOnRef.current || !src) return false;
+      if (!audio || !audioOnRef.current || !src) return;
       audio.src = src;
       audio.currentTime = 0;
       audio.play().catch(() => {});
-      if (msg) {
-        audio.addEventListener(
-          "ended",
-          () => msg.classList.remove("is-speaking"),
-          { once: true },
-        );
-      }
-      return true;
     }
 
     function slideToLatest() {
@@ -235,13 +226,14 @@ export default function ProductShowcase({
       el.style.transform = `translateY(-${offset}px)`;
     }
 
-    function streamWords(msg: HTMLElement, dur: number, factor: number) {
-      const words = [...msg.querySelectorAll<HTMLElement>(".ps__word")];
-      if (!words.length) return;
-      // Stream words across `factor` of the clip; the longer per-word fade (CSS)
-      // keeps consecutive words smooth.
-      const step = (dur * factor) / words.length;
-      words.forEach((w, i) => push(() => w.classList.add("is-visible"), i * step));
+    // Fade the whole response in as one block. The rAF gives the browser a
+    // frame to register the text's display:none -> visible switch (from
+    // is-processing being removed) before toggling opacity, so it transitions
+    // instead of popping straight to visible.
+    function revealText(msg: HTMLElement) {
+      const text = msg.querySelector<HTMLElement>(".ps__ai-text");
+      if (!text) return;
+      raf(() => text.classList.add("is-visible"));
     }
 
     function reset() {
@@ -254,8 +246,8 @@ export default function ProductShowcase({
         m.classList.remove("is-show", "is-speaking", "is-processing")
       );
       panel!
-        .querySelectorAll<HTMLElement>(".ps__word")
-        .forEach((w) => w.classList.remove("is-visible"));
+        .querySelectorAll<HTMLElement>(".ps__ai-text")
+        .forEach((t) => t.classList.remove("is-visible"));
     }
 
     function play() {
@@ -275,13 +267,11 @@ export default function ProductShowcase({
           push(() => {
             msg.classList.remove("is-processing");
             msg.classList.add("is-show", "is-speaking");
-            streamWords(msg, dur, activeMessages[i]?.streamFactor ?? 0.78);
-            // When audio plays, the wave stops on the real "ended" event; when
-            // muted, fall back to the estimated clip duration.
-            const startedAudio = playClip(i, msg);
-            if (!startedAudio) {
-              push(() => msg.classList.remove("is-speaking"), dur);
-            }
+            revealText(msg);
+            playClip(i);
+            // Stop the wave once this line's clip duration elapses, whether
+            // or not audio actually played (muted, blocked autoplay, etc.).
+            push(() => msg.classList.remove("is-speaking"), dur);
             raf(slideToLatest);
           }, showAt);
         } else {
@@ -373,7 +363,11 @@ export default function ProductShowcase({
               {tab.messages.map((msg, i) =>
                 msg.role === "user" ? (
                   <div key={i} className="ps__msg ps__msg--user">
-                    <div className="ps__bubble">
+                    <div
+                      className={`ps__bubble${
+                        msg.oneLine ? " ps__bubble--one-line" : ""
+                      }`}
+                    >
                       <p>{msg.text}</p>
                     </div>
                     {msg.name && (
@@ -389,13 +383,7 @@ export default function ProductShowcase({
                       </div>
                     )}
                     <Waveform />
-                    <p className="ps__ai-text">
-                      {msg.text.split(/\s+/).map((w, wi) => (
-                        <span className="ps__word" key={wi}>
-                          {w}{" "}
-                        </span>
-                      ))}
-                    </p>
+                    <p className="ps__ai-text">{msg.text}</p>
                   </div>
                 )
               )}
@@ -416,7 +404,7 @@ export default function ProductShowcase({
               pushEvent(eventAudioBtn);
             }}
           >
-            <SpeakerIcon />
+            {audioOn ? <SpeakerIcon /> : <SpeakerOffIcon />}
           </button>
           <audio ref={audioRef} preload="auto" />
         </div>
@@ -525,6 +513,53 @@ function SpeakerIcon() {
         stroke="white"
         strokeWidth="2"
         strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
+function SpeakerOffIcon() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden="true"
+    >
+      <path
+        d="M16 9C16.5044 9.67234 16.8311 10.461 16.95 11.293"
+        stroke="white"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M19.3643 5.63672C20.6432 6.91498 21.5075 8.54887 21.8445 10.3255C22.1814 12.102 21.9754 13.9389 21.2533 15.5967"
+        stroke="white"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M2 2L22 22"
+        stroke="white"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M7 7L6.413 7.587C6.2824 7.71838 6.12703 7.82253 5.95589 7.89342C5.78475 7.96432 5.60124 8.00054 5.416 8H3C2.73478 8 2.48043 8.10536 2.29289 8.29289C2.10536 8.48043 2 8.73478 2 9V15C2 15.2652 2.10536 15.5196 2.29289 15.7071C2.48043 15.8946 2.73478 16 3 16H5.416C5.60124 15.9995 5.78475 16.0357 5.95589 16.1066C6.12703 16.1775 6.2824 16.2816 6.413 16.413L9.796 19.797C9.8946 19.8958 10.0203 19.9631 10.1572 19.9904C10.2941 20.0177 10.436 20.0037 10.5649 19.9503C10.6939 19.8968 10.804 19.8063 10.8815 19.6902C10.959 19.5741 11.0002 19.4376 11 19.298V11"
+        stroke="white"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M9.82812 4.17256C9.92401 4.0763 10.0463 4.01069 10.1795 3.98404C10.3128 3.95738 10.4509 3.97088 10.5764 4.02283C10.702 4.07478 10.8093 4.16284 10.8847 4.27584C10.9601 4.38884 11.0003 4.52169 11.0001 4.65756V5.34356"
+        stroke="white"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
     </svg>
   );

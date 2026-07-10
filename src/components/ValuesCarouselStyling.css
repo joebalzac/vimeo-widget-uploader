@@ -28,25 +28,11 @@
   }
 }
 
-/* Covers the left-margin zone (between viewport edge and container edge) so
-   cards sliding off the left are hidden instead of bleeding out of the container. */
-.vc::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  width: max(5vw, calc((100vw - var(--container-max)) / 2));
-  background: #131115;
-  z-index: 10;
-  pointer-events: none;
-}
-
 .vc__container {
   position: relative;
-  z-index: 11; /* above .vc::before overlay (z-index:10); Splide track is z-index:0 */
+  z-index: 11;
   display: flex;
-  align-items: flex-start;
+  align-items: flex-end;
   justify-content: space-between;
   max-width: var(--container-max);
   width: 90%;
@@ -94,6 +80,7 @@
 }
 
 .vc__heading {
+  padding: 0;
   margin: 0;
   font-family: "inter-variable", sans-serif;
   font-weight: 400;
@@ -112,9 +99,6 @@
 
 /* Pill nav — absolute on desktop aligned to container right edge, static below track on mobile */
 .vc__nav {
-  position: absolute;
-  top: 0;
-  right: max(5vw, calc((100vw - var(--container-max)) / 2));
   display: inline-flex;
   align-items: center;
   background-color: #151413;
@@ -136,28 +120,26 @@
   border: none;
   background: transparent;
   border-radius: 1000px;
-  color: #a9a8a6;
+  /* Active/light whenever the arrow is enabled (slides exist that direction). */
+  color: #ffffff;
   cursor: pointer;
   opacity: 1;
   transform: none;
+  transition: background-color 0.15s ease, box-shadow 0.15s ease;
 }
 
-/* Next — the active arrow: always dark with the raised pill background. */
-.vc__nav-btn.splide__arrow--next:not(:disabled) {
+/* White pill background only on hover and while clicking — nothing otherwise. */
+.vc__nav-btn:not(:disabled):hover,
+.vc__nav-btn:not(:disabled):active {
   background-color: #ffffff;
   color: #0e0d0c;
   box-shadow: 0px 0px 0.49px rgba(0, 0, 0, 0.4),
     0px 3.918px 1.959px rgba(0, 0, 0, 0.04);
 }
 
-/* Prev — non-active arrow: plain by default, only darkens on hover;
-   reverts to default once clicked. No background/pill — icon color only. */
-.vc__nav-btn.splide__arrow--prev:hover:not(:disabled) {
-  color: #7a7977;
-}
-
 .vc__nav-btn:disabled {
   opacity: 0.4;
+  color: #a9a8a6;
   cursor: default;
 }
 
@@ -183,8 +165,19 @@
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  /* Subtle inner hairline from Figma */
+}
+
+/* Subtle inner hairline from Figma. Drawn on a pseudo-element above the card
+   content (z-index 4) so it stays visible over the full-bleed video, which
+   would otherwise paint over an inset box-shadow on the card itself. */
+.vc__card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
   box-shadow: inset 0px 0px 0px 0.5px rgba(255, 255, 255, 0.1);
+  pointer-events: none;
+  z-index: 4;
 }
 
 /* First card uses the slightly more opaque surface from Figma */
@@ -229,6 +222,8 @@
 /* ── Looping background video region (lower graphic area) ───────────────── */
 .vc__media {
   position: relative;
+  /* Fill the card height left below the text. Without this the box collapses
+     to 0 (its <video>/<iframe> is absolutely positioned) and nothing shows. */
   flex: 1 0 0;
   min-height: 0;
   width: 100%;
@@ -249,10 +244,6 @@
 @media (max-width: 991px) {
   .vc {
     padding: 80px 5vw;
-  }
-  /* Tablet/mobile use section padding — left overlay not needed */
-  .vc::before {
-    display: none;
   }
   /* Section padding handles alignment at tablet — revert container and nav */
   .vc__container {
@@ -275,6 +266,10 @@
 
 /* ─── Mobile ─────────────────────────────────────────────────────────────── */
 @media (max-width: 767px) {
+  .splide__list {
+    padding: 0 24px 0 0 !important;
+  }
+  
   .vc {
     padding: 48px 0;
     gap: 32px;
@@ -290,8 +285,12 @@
   }
 
   .vc__heading {
-    font-size: 32px;
-    letter-spacing: -0.96px;
+    font-size: 36px;
+    letter-spacing: -1.08px;
+  }
+
+  .vc__head-copy {
+    gap: 16px;
   }
 
   .vc__head {
@@ -316,7 +315,7 @@
   .vc__card {
     width: 100%;
     height: 460px;
-    border-radius: 12px;
+    border-radius: 10px;
   }
 
   .vc__card-text {

@@ -116,6 +116,8 @@ function App() {
       <TeamImageCarousel />
 
       <ProductShowcase />
+
+      <ScrollSection />
     </>
   );
 }

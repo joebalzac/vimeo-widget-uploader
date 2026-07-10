@@ -1,4 +1,4 @@
-import { useRef, useCallback, useState } from "react";
+import { useRef, useCallback, useState, useEffect } from "react";
 import "./PhotoCarousel.css";
 
 export interface PhotoItem {
@@ -6,9 +6,9 @@ export interface PhotoItem {
   src: string;
   /** Alt text for the image. */
   alt?: string;
-  /** Card width in px. Defaults alternate portrait/landscape if omitted. */
+  /** Card width in px. Defaults to the Figma rhythm if omitted. */
   width?: number;
-  /** Card height in px. */
+  /** Card height in px. Defaults to 300 (Figma). */
   height?: number;
 }
 
@@ -18,29 +18,33 @@ export interface PhotoCarouselProps {
   /** Optional heading above the gallery. Hidden when empty. */
   heading?: string;
   items?: PhotoItem[];
+  /** Auto-scroll speed in px/second. Set to 0 to disable. */
+  autoScrollSpeed?: number;
 }
 
-/** Figma alternates portrait (200×260) and landscape (300×200) cards, with one
-    taller 230×300 hero in the middle. Defaults mirror that rhythm. */
+/** All cards share a 300px row height (Figma node 18716-12073); only the
+    width varies per card. */
 const PLACEHOLDER_ITEMS: PhotoItem[] = [
-  { src: "https://picsum.photos/id/1011/400/520", width: 200, height: 260 },
-  { src: "https://picsum.photos/id/1025/600/400", width: 300, height: 200 },
-  { src: "https://picsum.photos/id/1005/400/520", width: 200, height: 260 },
-  { src: "https://picsum.photos/id/1043/600/400", width: 300, height: 200 },
-  { src: "https://picsum.photos/id/1062/460/600", width: 230, height: 300 },
-  { src: "https://picsum.photos/id/1074/600/400", width: 300, height: 200 },
-  { src: "https://picsum.photos/id/1027/400/520", width: 200, height: 260 },
-  { src: "https://picsum.photos/id/1084/600/400", width: 300, height: 200 },
-  { src: "https://picsum.photos/id/1080/400/520", width: 200, height: 260 },
+  { src: "https://picsum.photos/id/1011/245/300", width: 245, height: 300 },
+  { src: "https://picsum.photos/id/1025/520/300", width: 520, height: 300 },
+  { src: "https://picsum.photos/id/1005/300/300", width: 300, height: 300 },
+  { src: "https://picsum.photos/id/1043/400/300", width: 400, height: 300 },
+  { src: "https://picsum.photos/id/1062/480/300", width: 480, height: 300 },
+  { src: "https://picsum.photos/id/1074/245/300", width: 245, height: 300 },
+  { src: "https://picsum.photos/id/1027/520/300", width: 520, height: 300 },
+  { src: "https://picsum.photos/id/1084/400/300", width: 400, height: 300 },
+  { src: "https://picsum.photos/id/1080/450/300", width: 450, height: 300 },
 ];
 
 export default function PhotoCarousel({
   eyebrow = "",
   heading = "",
   items = PLACEHOLDER_ITEMS,
+  autoScrollSpeed = 40,
 }: PhotoCarouselProps) {
   const trackRef = useRef<HTMLDivElement>(null);
   const [dragging, setDragging] = useState(false);
+  const hovered = useRef(false);
 
   // Drag-to-scroll state. moved tracks whether the pointer travelled far enough
   // to count as a drag (vs. a click), so hover/click aren't triggered mid-drag.
@@ -84,7 +88,51 @@ export default function PhotoCarousel({
     }
   }, []);
 
+  // Continuous auto-scroll. The item list is rendered twice back-to-back so
+  // scrolling past the first copy can snap back by exactly half the track's
+  // scrollWidth with no visible seam. Paused while dragging or hovered, and
+  // skipped entirely for reduced-motion users.
+  useEffect(() => {
+    const track = trackRef.current;
+    if (!track || autoScrollSpeed <= 0) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    let rafId: number;
+    let last = performance.now();
+    // Sub-pixel-per-frame speeds get rounded away if we read scrollLeft back
+    // from the DOM each tick (browsers round it to an integer), so track the
+    // precise position ourselves and only ever write it, not read it back.
+    let pos = track.scrollLeft;
+
+    const tick = (now: number) => {
+      const dt = now - last;
+      last = now;
+      if (drag.current.active || hovered.current) {
+        pos = track.scrollLeft;
+      } else {
+        const half = track.scrollWidth / 2;
+        pos += (autoScrollSpeed * dt) / 1000;
+        if (pos >= half) pos -= half;
+        track.scrollLeft = pos;
+      }
+      rafId = window.requestAnimationFrame(tick);
+    };
+    rafId = window.requestAnimationFrame(tick);
+
+    return () => window.cancelAnimationFrame(rafId);
+  }, [autoScrollSpeed, items]);
+
+  const onPointerEnter = useCallback(() => {
+    hovered.current = true;
+  }, []);
+
+  const onPointerLeave = useCallback(() => {
+    hovered.current = false;
+  }, []);
+
   const showHead = Boolean(eyebrow || heading);
+  const loop = autoScrollSpeed > 0;
+  const renderedItems = loop ? [...items, ...items] : items;
 
   return (
     <section className="pg">
@@ -109,19 +157,22 @@ export default function PhotoCarousel({
         onPointerMove={onPointerMove}
         onPointerUp={endDrag}
         onPointerCancel={endDrag}
+        onPointerEnter={onPointerEnter}
+        onPointerLeave={onPointerLeave}
         onClickCapture={onClickCapture}
         role="list"
         aria-label={heading || "Photo gallery"}
       >
-        {items.map((item, i) => (
+        {renderedItems.map((item, i) => (
           <div
             key={i}
             className="pg__card"
             role="listitem"
+            aria-hidden={loop && i >= items.length ? true : undefined}
             style={
               {
-                "--pg-w": `${item.width ?? 200}px`,
-                "--pg-h": `${item.height ?? 260}px`,
+                "--pg-w": `${item.width ?? 245}px`,
+                "--pg-h": `${item.height ?? 300}px`,
               } as React.CSSProperties
             }
           >
