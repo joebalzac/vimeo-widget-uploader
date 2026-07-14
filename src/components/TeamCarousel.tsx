@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { Splide, SplideSlide, SplideTrack } from "@splidejs/react-splide";
 import "@splidejs/react-splide/css";
 import "./TeamCarouselStyling.css";
@@ -104,6 +104,25 @@ export default function TeamCarousel({
   const { thumbs: autoThumbs, durations: autoDurations } =
     useVimeoData(members);
 
+  // Splide only wires the first prev/next it finds in the DOM, so the mobile
+  // nav (rendered after the track) is the Splide-controlled set. The desktop
+  // nav lives inside the header container and is driven manually through this
+  // ref, mirroring the disabled state Splide reports via onArrowsUpdated.
+  const splideRef = useRef<Splide>(null);
+  const [arrows, setArrows] = useState({
+    prevDisabled: true,
+    nextDisabled: false,
+  });
+  const onArrowsUpdated = (
+    _splide: unknown,
+    _prev: HTMLElement,
+    _next: HTMLElement,
+    prevIndex: number,
+    nextIndex: number,
+  ) => {
+    setArrows({ prevDisabled: prevIndex < 0, nextDisabled: nextIndex < 0 });
+  };
+
   const close = useCallback(() => setActive(null), []);
 
   useEffect(() => {
@@ -163,6 +182,8 @@ export default function TeamCarousel({
         options={options}
         aria-label={heading}
         className="tc__splide"
+        ref={splideRef}
+        onArrowsUpdated={onArrowsUpdated}
       >
         {showHeader && (
           <div className="tc__container">
@@ -178,16 +199,26 @@ export default function TeamCarousel({
                 {ctaLabel}
               </a>
             </div>
-            <div className="tc__nav splide__arrows">
+
+            {/* Desktop nav — sits flex-end alongside the header copy. Driven
+                manually via the Splide ref (the mobile set below is the one
+                Splide binds to). */}
+            <div className="tc__nav tc__nav--desktop">
               <button
-                className="tc__nav-btn splide__arrow splide__arrow--prev"
+                className="tc__nav-btn"
+                type="button"
                 aria-label="Previous"
+                onClick={() => splideRef.current?.go("<")}
+                disabled={arrows.prevDisabled}
               >
                 <Arrow direction="left" />
               </button>
               <button
-                className="tc__nav-btn splide__arrow splide__arrow--next"
+                className="tc__nav-btn"
+                type="button"
                 aria-label="Next"
+                onClick={() => splideRef.current?.go(">")}
+                disabled={arrows.nextDisabled}
               >
                 <Arrow direction="right" />
               </button>
@@ -255,6 +286,24 @@ export default function TeamCarousel({
             );
           })}
         </SplideTrack>
+
+        {/* Mobile nav (also the header-less desktop nav): the Splide-bound set.
+            Shown below the track on mobile, and bottom-left under the track when
+            there's no header. Hidden on desktop when the header nav is present. */}
+        <div className="tc__nav tc__nav--mobile splide__arrows">
+          <button
+            className="tc__nav-btn splide__arrow splide__arrow--prev"
+            aria-label="Previous"
+          >
+            <Arrow direction="left" />
+          </button>
+          <button
+            className="tc__nav-btn splide__arrow splide__arrow--next"
+            aria-label="Next"
+          >
+            <Arrow direction="right" />
+          </button>
+        </div>
       </Splide>
 
       {active && (
@@ -298,6 +347,7 @@ function Arrow({ direction }: { direction: "left" | "right" }) {
       height="24"
       viewBox="0 0 24 24"
       fill="none"
+      style={{ transform: direction === "left" ? "rotate(180deg)" : undefined }}
     >
       <path
         d="M5 12H19"

@@ -51,38 +51,72 @@ const PLACEHOLDER_TABS: DemoTab[] = [
       {
         role: "user",
         name: "Jordan T.",
-        text: "Hey, the garbage disposal just hums and won't turn on.",
-        audioSrc: AUDIO["housing/Jordan-Hey"],
-        durationMs: 3000,
+        text: "Hey. So I have no hot water and it's really urgent.",
+        audioSrc: AUDIO["housing/Jordan-No-Hot-Water"],
+        durationMs: 4000,
       },
       {
         role: "ai",
-        status: "AI is gathering details and checking device guides…",
-        text: 'Sorry to hear that. A humming disposal is usually jammed. Try inserting a 1/4" Allen wrench into the hex slot underneath, turning it back and forth to free the jam, then press the red reset button and test it again. Let me know how it goes.',
-        audioSrc: AUDIO["housing/Elise-Sorry"],
-        durationMs: 17000,
+        status:
+          "AI detects a potential maintenance emergency and initiates resident verification.",
+        text: "I'm sorry you're dealing with that. Let me get a maintenance request started. Can I have your full name and apartment number?",
+        audioSrc: AUDIO["housing/Elise-Sorry-Maintenance"],
+        durationMs: 7000,
       },
       {
         role: "user",
         name: "Jordan T.",
-        text: "Oh great, that worked! It's running now.",
-        audioSrc: AUDIO["housing/Jordan-Oh-Great"],
+        text: "Yeah, my name's Jordan and I live in unit 12F.",
+        audioSrc: AUDIO["housing/Jordan-Name-Unit"],
         durationMs: 3000,
+      },
+      {
+        role: "ai",
+        status:
+          "AI verifies the resident, retrieves the unit record, and loads maintenance history.",
+        text: "Thanks, Jordan. Is the hot water out everywhere, or just in the kitchen?",
+        audioSrc: AUDIO["housing/Elise-Everywhere-Or-Kitchen"],
+        durationMs: 4000,
+      },
+      {
+        role: "user",
+        name: "Jordan T.",
+        text: "Uh, just the kitchen.",
+        audioSrc: AUDIO["housing/Jordan-Just-Kitchen"],
+        durationMs: 2000,
         oneLine: true,
       },
       {
         role: "ai",
-        status: "AI logs outcome and closes the maintenance request.",
-        text: "Wonderful! I'm glad that resolved it, and we saved you a maintenance visit.",
-        audioSrc: AUDIO["housing/Elise-Wonderful"],
-        durationMs: 5000,
+        status:
+          "AI categorizes the issue, determines priority, and prepares the work order.",
+        text: "Got it. I'll submit a work order for the hot water issue in your kitchen. Is maintenance allowed to enter if you're not home?",
+        audioSrc: AUDIO["housing/Elise-Got-It-Work-Order"],
+        durationMs: 7000,
       },
       {
         role: "user",
         name: "Jordan T.",
-        text: "Super helpful! Thank you!",
-        audioSrc: AUDIO["housing/Jordan-Super-Helpful"],
+        text: "Yeah, they can come.",
+        audioSrc: AUDIO["housing/Jordan-They-Can-Come"],
         durationMs: 2000,
+        oneLine: true,
+      },
+      {
+        role: "ai",
+        status:
+          "AI creates the work order, records permission to enter, and routes the request to the maintenance team.",
+        text: "Perfect. Your work order has been submitted, and I've noted that maintenance has permission to enter. They'll take care of it as soon as possible.",
+        audioSrc: AUDIO["housing/Elise-Perfect-Submitted"],
+        durationMs: 8000,
+      },
+      {
+        role: "user",
+        name: "Jordan T.",
+        text: "Thanks.",
+        audioSrc: AUDIO["housing/Jordan-Thanks"],
+        durationMs: 1000,
+        oneLine: true,
       },
     ],
   },
@@ -154,6 +188,13 @@ export default function ProductShowcase({
   // Read inside the animation effect without re-running it when audio toggles.
   const audioOnRef = useRef(audioOn);
   audioOnRef.current = audioOn;
+  // The line currently "on air" — recorded on every line (even while muted) so
+  // unmuting mid-dialogue can resume it in sync instead of waiting for the next.
+  const activeClipRef = useRef<{
+    src: string;
+    startedAt: number;
+    durationMs: number;
+  } | null>(null);
 
   const hasAudio = (
     tabs.find((t) => t.id === activeTab)?.messages ?? []
@@ -200,7 +241,15 @@ export default function ProductShowcase({
     function playClip(i: number) {
       const audio = audioRef.current;
       const src = activeMessages[i]?.audioSrc;
-      if (!audio || !audioOnRef.current || !src) return;
+      if (!src) return;
+      // Record what's on air regardless of mute state, so a later unmute can
+      // resume this exact clip at the right offset.
+      activeClipRef.current = {
+        src,
+        startedAt: performance.now(),
+        durationMs: durations[i] ?? DEFAULT_DUR,
+      };
+      if (!audio || !audioOnRef.current) return;
       audio.src = src;
       audio.currentTime = 0;
       audio.play().catch(() => {});
@@ -248,6 +297,7 @@ export default function ProductShowcase({
       panel!
         .querySelectorAll<HTMLElement>(".ps__ai-text")
         .forEach((t) => t.classList.remove("is-visible"));
+      activeClipRef.current = null;
     }
 
     function play() {
@@ -282,9 +332,30 @@ export default function ProductShowcase({
           }, showAt);
         }
       });
+      // Loop: fade the finished conversation out and stop audio first, then
+      // snap the scroll position back only once it's invisible — otherwise the
+      // instant transform reset shows as a jump between dialogues.
       push(() => {
-        reset();
-        push(play, 300);
+        const audio = audioRef.current;
+        if (audio) {
+          audio.pause();
+          audio.currentTime = 0;
+        }
+        activeClipRef.current = null;
+        msgEls().forEach((m) =>
+          m.classList.remove("is-show", "is-speaking", "is-processing")
+        );
+        panel!
+          .querySelectorAll<HTMLElement>(".ps__ai-text")
+          .forEach((t) => t.classList.remove("is-visible"));
+        push(() => {
+          const el = inner();
+          if (el) {
+            el.style.transition = "none";
+            el.style.transform = "translateY(0)";
+          }
+          push(play, 60);
+        }, 550); // wait out the 0.5s opacity fade before the invisible snap
       }, lastEnd + LOOP_PAUSE);
     }
 
@@ -304,10 +375,34 @@ export default function ProductShowcase({
     };
   }, [activeTab, tabs]);
 
-  // Muting pauses immediately; unmuting resumes at the next line (per-line
-  // playback lives in the animation effect above).
+  // Muting pauses immediately. Unmuting resumes the line that's currently on
+  // air, seeking to where it should be so the audio matches the on-screen text
+  // instead of staying silent until the next line begins.
   useEffect(() => {
-    if (!audioOn) audioRef.current?.pause();
+    const audio = audioRef.current;
+    if (!audio) return;
+    if (!audioOn) {
+      audio.pause();
+      return;
+    }
+    const clip = activeClipRef.current;
+    if (!clip) return;
+    const elapsed = (performance.now() - clip.startedAt) / 1000;
+    // Clip already finished (we're in the gap before the next line) — let the
+    // next line's own playback handle it rather than replaying stale audio.
+    if (elapsed >= clip.durationMs / 1000) return;
+    audio.src = clip.src;
+    const seekAndPlay = () => {
+      try {
+        audio.currentTime = elapsed;
+      } catch {
+        /* seeking before metadata is ready — play from wherever it lands */
+      }
+      audio.play().catch(() => {});
+    };
+    // Seek needs loaded metadata; play immediately if it's already available.
+    if (audio.readyState >= 1) seekAndPlay();
+    else audio.addEventListener("loadedmetadata", seekAndPlay, { once: true });
   }, [audioOn]);
 
   return (

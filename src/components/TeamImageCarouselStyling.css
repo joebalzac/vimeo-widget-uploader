@@ -100,11 +100,8 @@
   fill: none;
 }
 
-/* Pill nav — absolute on desktop aligned to container right edge */
+/* Pill nav — shared chrome for both the desktop and mobile arrow sets. */
 .tic__nav {
-  position: absolute;
-  top: 0;
-  right: max(5vw, calc((100vw - var(--container-max)) / 2));
   display: inline-flex;
   align-items: center;
   background-color: #f5f4f2;
@@ -114,6 +111,24 @@
   width: auto;
   height: auto;
   z-index: 12;
+}
+
+/* Desktop set: relative, flex-end alongside the header copy inside the
+   container. Hidden on mobile (the separate mobile set takes over). */
+.tic__nav--desktop {
+  position: relative;
+  align-self: flex-end;
+  flex-shrink: 0;
+}
+
+/* Mobile set: hidden on desktop when a header (and its nav) is present. */
+.tic__nav--mobile {
+  display: none;
+}
+
+/* Let the header copy shrink so the desktop nav fits beside it. */
+.tic__head {
+  min-width: 0;
 }
 
 .tic__nav-btn {
@@ -152,6 +167,18 @@
 .tic__nav-btn svg {
   width: 20px;
   height: 20px;
+}
+
+/* ─── Header-less variant ────────────────────────────────────────────────────
+   No eyebrow/heading and thus no desktop nav — the mobile set is shown on all
+   widths, at the bottom-left, 48px under the track, aligned with the first
+   card. */
+.tic--no-header .tic__nav--mobile {
+  display: inline-flex;
+  align-self: flex-start;
+  margin-top: 48px;
+  margin-left: max(5vw, calc((100vw - var(--container-max)) / 2));
+  border: 0.5px solid rgba(0, 0, 0, 0.1);
 }
 
 .splide__list {
@@ -272,8 +299,9 @@
     width: 100%;
     margin: 0 0 48px;
   }
-  .tic__nav {
-    right: 0;
+  /* Splide left padding resets at tablet, so align the header-less nav flush left */
+  .tic--no-header .tic__nav--mobile {
+    margin-left: 0;
   }
   .tic__heading {
     font-size: 40px;
@@ -323,13 +351,21 @@
     font-size: 16px;
     letter-spacing: -0.32px;
   }
-  /* Nav: drop out of absolute, flow below the track */
-  .tic__nav {
-    position: static;
+  /* Hide the desktop (header) nav; show the mobile set below the track. */
+  .tic__nav--desktop {
+    display: none;
+  }
+  .tic__nav--mobile {
+    display: inline-flex;
     align-self: flex-start;
-    margin: 32px 24px 0;
-    right: auto;
+    margin: 32px 0 0;
     border: 0.5px solid rgba(0, 0, 0, 0.1);
+  }
+  /* Header-less variant: 32px under the track on mobile (overrides the 48px
+     desktop rule, which otherwise wins on specificity inside this query). */
+  .tic--no-header .tic__nav--mobile {
+    margin-top: 32px;
+    margin-left: 0;
   }
   .tic__card {
     width: 100%;

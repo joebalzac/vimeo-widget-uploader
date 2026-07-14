@@ -1,6 +1,7 @@
 import { useState, useCallback, useEffect } from "react";
 import { motion, AnimatePresence, type Variants } from "framer-motion";
 import "./MultiFormStyling.css";
+import { storeUtms, getUtmFields } from "../utils/utm";
 
 // ─── Default SDK types ────────────────────────────────────────────────────────
 
@@ -214,10 +215,6 @@ const BLOCKED_DOMAINS = new Set([
 ]);
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
-
-function getParam(name: string): string {
-  return new URLSearchParams(window.location.search).get(name) ?? "";
-}
 
 function getCookie(name: string): string {
   const match = document.cookie.match(new RegExp(`(^| )${name}=([^;]+)`));
@@ -497,6 +494,11 @@ export default function MultiStepForm({
     loadDefaultSDK().catch((err) => console.warn("[Default SDK]", err));
   }, []);
 
+  // First-touch capture of UTMs into sessionStorage on mount.
+  useEffect(() => {
+    storeUtms();
+  }, []);
+
   useEffect(() => {
     if (!enableNavTrigger) return;
     const navBtn = document.getElementById("requestModalOpenBtn");
@@ -606,10 +608,7 @@ export default function MultiStepForm({
         : []),
     ];
 
-    (["utm_source", "utm_medium", "utm_campaign"] as const).forEach((p) => {
-      const v = getParam(p);
-      if (v) fields.push({ name: p, value: v });
-    });
+    fields.push(...getUtmFields());
 
     const hutk = getCookie("hubspotutk");
     const payload: HubSpotPayload = {

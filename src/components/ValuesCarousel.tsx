@@ -1,3 +1,4 @@
+import { useRef, useState } from "react";
 import { Splide, SplideSlide, SplideTrack } from "@splidejs/react-splide";
 import "@splidejs/react-splide/css";
 import "./ValuesCarouselStyling.css";
@@ -105,6 +106,24 @@ export default function ValuesCarousel({
 }: ValuesCarouselProps) {
   const useFixed = !perPage;
 
+  // Splide only wires the first prev/next in the DOM, so the mobile nav (after
+  // the track) is the Splide-controlled set. The desktop nav in the header is
+  // driven manually via this ref, mirroring the disabled state Splide reports.
+  const splideRef = useRef<Splide>(null);
+  const [arrows, setArrows] = useState({
+    prevDisabled: true,
+    nextDisabled: false,
+  });
+  const onArrowsUpdated = (
+    _splide: unknown,
+    _prev: HTMLElement,
+    _next: HTMLElement,
+    prevIndex: number,
+    nextIndex: number,
+  ) => {
+    setArrows({ prevDisabled: prevIndex < 0, nextDisabled: nextIndex < 0 });
+  };
+
   // Left offset matches the site container (max-width: var(--container-max), width: 90%,
   // centered; --container-max steps from 90rem to 100rem at 1440px and 120rem at 1920px).
   const containerPad = "max(5vw, calc((100vw - var(--container-max)) / 2))";
@@ -148,6 +167,8 @@ export default function ValuesCarousel({
         options={options}
         aria-label={heading}
         className="vc__splide"
+        ref={splideRef}
+        onArrowsUpdated={onArrowsUpdated}
       >
         <div className="vc__container">
           <div className="vc__head">
@@ -159,16 +180,25 @@ export default function ValuesCarousel({
               <h2 className="vc__heading">{heading}</h2>
             </div>
           </div>
-          <div className="vc__nav splide__arrows">
+
+          {/* Desktop nav — flex-end alongside the header copy. Driven manually
+              via the Splide ref (the mobile set below is Splide-bound). */}
+          <div className="vc__nav vc__nav--desktop">
             <button
-              className="vc__nav-btn splide__arrow splide__arrow--prev"
+              className="vc__nav-btn"
+              type="button"
               aria-label="Previous"
+              onClick={() => splideRef.current?.go("<")}
+              disabled={arrows.prevDisabled}
             >
               <Arrow direction="left" />
             </button>
             <button
-              className="vc__nav-btn splide__arrow splide__arrow--next"
+              className="vc__nav-btn"
+              type="button"
               aria-label="Next"
+              onClick={() => splideRef.current?.go(">")}
+              disabled={arrows.nextDisabled}
             >
               <Arrow direction="right" />
             </button>
@@ -192,6 +222,23 @@ export default function ValuesCarousel({
             </SplideSlide>
           ))}
         </SplideTrack>
+
+        {/* Mobile nav: the Splide-bound set. Shown below the track on mobile,
+            hidden on desktop where the header nav is present. */}
+        <div className="vc__nav vc__nav--mobile splide__arrows">
+          <button
+            className="vc__nav-btn splide__arrow splide__arrow--prev"
+            aria-label="Previous"
+          >
+            <Arrow direction="left" />
+          </button>
+          <button
+            className="vc__nav-btn splide__arrow splide__arrow--next"
+            aria-label="Next"
+          >
+            <Arrow direction="right" />
+          </button>
+        </div>
       </Splide>
     </section>
   );

@@ -51,7 +51,6 @@ function TimelineItem({
 }) {
   const activation = useTransform(progress, [start, end], [0, 1]);
   const opacity = useTransform(activation, [0, 1], [0.4, 1]);
-  const y = useTransform(activation, [0, 1], [10, 0]);
   const dotBg = useTransform(activation, [0, 1], [INACTIVE_DOT_BG, ACTIVE_DOT_BG]);
   const dotRing = useTransform(
     activation,
@@ -76,7 +75,7 @@ function TimelineItem({
           </div>
         )}
       </div>
-      <motion.div className="ss__content" style={{ opacity, y }}>
+      <motion.div className="ss__content" style={{ opacity }}>
         <h3 className="ss__step-title">{step.title}</h3>
         <p className="ss__step-body">{step.body}</p>
       </motion.div>

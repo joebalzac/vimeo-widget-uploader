@@ -83,6 +83,12 @@
   width: 8px;
   height: 8px;
   border-radius: 50%;
+  /* Center the dot on the title's first line: (title line-height 26.4px − 8px) / 2 */
+  margin-top: 0px;
+}
+
+.ss__dot:first-child {
+  margin-top: 4px;
 }
 
 .ss__line {
@@ -175,7 +181,8 @@
   }
 
   .ss__dot {
-    margin-top: 0px;
+    /* Center on the mobile title first line: (line-height 24px − 8px) / 2 */
+    margin-top: 8px;
   }
 
   .ss__step-title {

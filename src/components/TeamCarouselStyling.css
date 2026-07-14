@@ -118,7 +118,7 @@
   flex-direction: column;
 }
 
-/* Pill nav — absolute on desktop aligned to container right edge, static below track on mobile */
+/* Pill nav — shared chrome for both the desktop and mobile arrow sets. */
 .tc__nav {
   display: inline-flex;
   align-items: center;
@@ -128,9 +128,25 @@
   overflow: hidden;
   width: auto;
   height: auto;
-  /* Above .tc__container (z-index:11) so the heading's full-width box doesn't
-     intercept clicks meant for the arrows. */
   z-index: 12;
+}
+
+/* Desktop set: relative, flex-end alongside the header copy inside the
+   container. Hidden on mobile (the separate mobile set takes over). */
+.tc__nav--desktop {
+  position: relative;
+  align-self: flex-end;
+  flex-shrink: 0;
+}
+
+/* Mobile set: hidden on desktop when a header (and its nav) is present. */
+.tc__nav--mobile {
+  display: none;
+}
+
+/* Let the header copy shrink so the desktop nav fits beside it. */
+.tc__head {
+  min-width: 0;
 }
 
 .tc__nav-btn {
@@ -176,12 +192,11 @@
 }
 
 /* ─── Header-less variant (Figma 18125-27752) ───────────────────────────────
-   No eyebrow/heading/CTA; nav flows below the track at the bottom-left, 48px
-   beneath the carousel, left-aligned with the first card. */
-.tc--no-header .tc__nav {
-  position: static;
-  top: auto;
-  right: auto;
+   No eyebrow/heading/CTA and thus no desktop nav — the mobile set is shown on
+   all widths, at the bottom-left, 48px under the track, aligned with the first
+   card. */
+.tc--no-header .tc__nav--mobile {
+  display: inline-flex;
   align-self: flex-start;
   margin-top: 48px;
   margin-left: max(5vw, calc((100vw - var(--container-max)) / 2));
@@ -339,11 +354,8 @@
     width: 100%;
     margin: 0 0 48px;
   }
-  .tc__nav {
-    right: 0;
-  }
   /* Splide left padding resets at tablet, so align the header-less nav flush left */
-  .tc--no-header .tc__nav {
+  .tc--no-header .tc__nav--mobile {
     margin-left: 0;
   }
   .tc__heading {
@@ -398,14 +410,22 @@
     font-size: 14px;
   }
 
-  /* Nav: drop out of absolute, flow below the track; align-self prevents
-     it from stretching full-width in the flex column parent */
-  .tc__nav {
-    position: static;
+  /* Hide the desktop (header) nav; show the mobile set below the track. */
+  .tc__nav--desktop {
+    display: none;
+  }
+  .tc__nav--mobile {
+    display: inline-flex;
     align-self: flex-start;
-    margin: 0;
+    margin: 32px 0 0;
     border: 0.5px solid rgba(0, 0, 0, 0.1);
+  }
+
+  /* Header-less variant: 32px under the track on mobile (overrides the 48px
+     desktop rule, which otherwise wins on specificity inside this query). */
+  .tc--no-header .tc__nav--mobile {
     margin-top: 32px;
+    margin-left: 0;
   }
 
   .tc__card {

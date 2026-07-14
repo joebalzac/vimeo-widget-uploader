@@ -1,3 +1,4 @@
+import { useRef, useState } from "react";
 import { Splide, SplideSlide, SplideTrack } from "@splidejs/react-splide";
 import "@splidejs/react-splide/css";
 import "./TeamImageCarouselStyling.css";
@@ -21,6 +22,9 @@ export interface TeamImageCarouselProps {
   perPage?: number;
   /** Fixed card width for the "next card peeks" layout. Default "476px" (Figma). */
   fixedWidth?: string;
+  /** When false, hides the eyebrow/heading header and moves the nav arrows to
+   *  the bottom-left, 48px beneath the carousel (32px on mobile). */
+  showHeader?: boolean;
 }
 
 const PLACEHOLDER_MEMBERS: TeamImageMember[] = [
@@ -66,6 +70,13 @@ const PLACEHOLDER_MEMBERS: TeamImageMember[] = [
       "Every project feels meaningful. We're building something generational and you can feel it in the work.",
     image: "https://picsum.photos/id/1074/476/520",
   },
+  {
+    name: "Name",
+    role: "Role",
+    quote:
+      "The people make it. I'm surrounded by talented, driven folks who show up for each other every single day.",
+    image: "https://picsum.photos/id/1062/476/520",
+  },
 ];
 
 export default function TeamImageCarousel({
@@ -74,8 +85,27 @@ export default function TeamImageCarousel({
   members = PLACEHOLDER_MEMBERS,
   perPage,
   fixedWidth = "476px",
+  showHeader = true,
 }: TeamImageCarouselProps) {
   const useFixed = !perPage;
+
+  // Splide only wires the first prev/next in the DOM, so the mobile nav (after
+  // the track) is the Splide-controlled set. The desktop nav in the header is
+  // driven manually via this ref, mirroring the disabled state Splide reports.
+  const splideRef = useRef<Splide>(null);
+  const [arrows, setArrows] = useState({
+    prevDisabled: true,
+    nextDisabled: false,
+  });
+  const onArrowsUpdated = (
+    _splide: unknown,
+    _prev: HTMLElement,
+    _next: HTMLElement,
+    prevIndex: number,
+    nextIndex: number,
+  ) => {
+    setArrows({ prevDisabled: prevIndex < 0, nextDisabled: nextIndex < 0 });
+  };
 
   // Left offset matches the site container (max-width: var(--container-max), width: 90%,
   // centered; --container-max steps from 90rem to 100rem at 1440px and 120rem at 1920px).
@@ -114,24 +144,51 @@ export default function TeamImageCarousel({
   };
 
   return (
-    <section className="tic">
+    <section className={`tic${showHeader ? "" : " tic--no-header"}`}>
       <Splide
         hasTrack={false}
         options={options}
         aria-label={heading}
         className="tic__splide"
+        ref={splideRef}
+        onArrowsUpdated={onArrowsUpdated}
       >
-        <div className="tic__container">
-          <div className="tic__head">
-            <div className="tic__head-copy">
-              <div className="tic__eyebrow">
-                <span className="tic__eyebrow-dot" aria-hidden="true" />
-                <span>{eyebrow}</span>
+        {showHeader && (
+          <div className="tic__container">
+            <div className="tic__head">
+              <div className="tic__head-copy">
+                <div className="tic__eyebrow">
+                  <span className="tic__eyebrow-dot" aria-hidden="true" />
+                  <span>{eyebrow}</span>
+                </div>
+                <h2 className="tic__heading">{heading}</h2>
               </div>
-              <h2 className="tic__heading">{heading}</h2>
+            </div>
+
+            {/* Desktop nav — flex-end alongside the header copy. Driven manually
+                via the Splide ref (the mobile set below is Splide-bound). */}
+            <div className="tic__nav tic__nav--desktop">
+              <button
+                className="tic__nav-btn"
+                type="button"
+                aria-label="Previous"
+                onClick={() => splideRef.current?.go("<")}
+                disabled={arrows.prevDisabled}
+              >
+                <Arrow direction="left" />
+              </button>
+              <button
+                className="tic__nav-btn"
+                type="button"
+                aria-label="Next"
+                onClick={() => splideRef.current?.go(">")}
+                disabled={arrows.nextDisabled}
+              >
+                <Arrow direction="right" />
+              </button>
             </div>
           </div>
-        </div>
+        )}
 
         <SplideTrack>
           {members.map((m, i) => (
@@ -165,8 +222,10 @@ export default function TeamImageCarousel({
           ))}
         </SplideTrack>
 
-        {/* Nav: absolute top-right on desktop, static below track on mobile */}
-        <div className="tic__nav splide__arrows">
+        {/* Mobile nav (also the header-less desktop nav): the Splide-bound set.
+            Below the track on mobile; bottom-left under the track when there's
+            no header. Hidden on desktop when the header nav is present. */}
+        <div className="tic__nav tic__nav--mobile splide__arrows">
           <button
             className="tic__nav-btn splide__arrow splide__arrow--prev"
             aria-label="Previous"

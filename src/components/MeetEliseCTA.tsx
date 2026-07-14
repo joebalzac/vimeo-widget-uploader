@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import "./MeetEliseCTA.css";
 import "./MultiFormStyling.css";
+import { storeUtms, getUtmFields } from "../utils/utm";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -50,10 +51,6 @@ const EMPTY_FORM: FormData = {
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-function getUtm(key: string): string {
-  return new URLSearchParams(window.location.search).get(key) ?? "";
-}
-
 function getHutk(): string {
   const m = document.cookie.match(/hubspotutk=([^;]+)/);
   return m ? m[1] : "";
@@ -82,9 +79,7 @@ async function submitToHubSpot(
             { name: "lastname", value: data.lastname },
             { name: "email", value: data.email },
             { name: "phone", value: data.phone },
-            { name: "utm_source", value: getUtm("utm_source") },
-            { name: "utm_medium", value: getUtm("utm_medium") },
-            { name: "utm_campaign", value: getUtm("utm_campaign") },
+            ...getUtmFields(),
           ],
           context: {
             pageUri: window.location.href,
@@ -192,6 +187,11 @@ export default function MeetEliseCTA({
 
   const overlayRef = useRef<HTMLDivElement>(null);
   const firstInputRef = useRef<HTMLInputElement>(null);
+
+  // First-touch capture of UTMs into sessionStorage on mount.
+  useEffect(() => {
+    storeUtms();
+  }, []);
 
   // Body scroll lock
   useEffect(() => {

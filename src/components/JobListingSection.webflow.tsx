@@ -27,7 +27,7 @@ export default declareComponent(JobListingSection, {
       name: "Engineering Only",
       defaultValue: false,
       tooltip:
-        "When enabled, only the Engineering department is shown (listing and filters).",
+        "When enabled, only the Engineering, Product, and Research departments are shown (listing and filters).",
     }),
   },
 });

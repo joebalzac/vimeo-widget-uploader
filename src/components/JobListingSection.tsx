@@ -19,9 +19,24 @@ interface LocationsMap {
 interface JobListingSectionProps {
   apiUrl?: string;
   singleOpen?: boolean;
-  /** When true, only the Engineering department is shown (listing + filters). */
+  /** When true, only the Engineering, Product, and Research departments are
+   *  shown (listing + filters). */
   engineeringOnly?: boolean;
 }
+
+/** Departments shown when `engineeringOnly` is enabled (matched as substrings,
+ *  case-insensitive, against the job's department name). */
+const FOCUSED_DEPARTMENTS = ["engineering", "product", "research"];
+
+/** Departments explicitly excluded even if they match FOCUSED_DEPARTMENTS —
+ *  e.g. "Product Solutions" would otherwise match the "product" substring. */
+const EXCLUDED_DEPARTMENTS = ["product solutions"];
+
+const isFocusedDept = (job: Job): boolean => {
+  const dept = (job.departmentName || "").toLowerCase();
+  if (EXCLUDED_DEPARTMENTS.some((d) => dept.includes(d))) return false;
+  return FOCUSED_DEPARTMENTS.some((d) => dept.includes(d));
+};
 
 const JOBS_API =
   "https://nodejs-serverless-function-express-blush-two.vercel.app/api/jobs";
@@ -220,8 +235,6 @@ export default function JobListingSection({
   const openDeptRef = useRef(openDepartments);
   openDeptRef.current = openDepartments;
 
-  const didAutoOpenRef = useRef(false);
-
   useEffect(() => {
     fetch(apiUrl, { method: "POST" })
       .then((res) => res.json())
@@ -241,27 +254,6 @@ export default function JobListingSection({
       .finally(() => setLoading(false));
   }, [apiUrl]);
 
-  useEffect(() => {
-    if (!engineeringOnly || didAutoOpenRef.current || allJobs.length === 0) {
-      return;
-    }
-    const engineeringDepts = Array.from(
-      new Set(
-        allJobs
-          .filter((job) =>
-            (job.departmentName || "").toLowerCase().includes("engineering"),
-          )
-          .map((job) => job.departmentName || "Other"),
-      ),
-    );
-    if (engineeringDepts.length > 0) {
-      didAutoOpenRef.current = true;
-      setOpenDepartments(
-        singleOpen ? new Set([engineeringDepts[0]]) : new Set(engineeringDepts),
-      );
-    }
-  }, [engineeringOnly, allJobs, singleOpen]);
-
   const handleToggle = (dept: string) => {
     setOpenDepartments((prev) => {
       const next = new Set(prev);
@@ -276,9 +268,7 @@ export default function JobListingSection({
   };
 
   const visibleJobs = engineeringOnly
-    ? allJobs.filter((job) =>
-        (job.departmentName || "").toLowerCase().includes("engineering"),
-      )
+    ? allJobs.filter(isFocusedDept)
     : allJobs;
 
   const filteredJobs = visibleJobs.filter((job) => {

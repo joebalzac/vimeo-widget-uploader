@@ -10,11 +10,15 @@
 // in Webflow each clip's URL can also be overridden per-message in the Designer
 // (see ProductShowcase.webflow.tsx).
 export const AUDIO: Record<string, string> = {
-  "housing/Jordan-Hey": "",
-  "housing/Elise-Sorry": "",
-  "housing/Jordan-Oh-Great": "",
-  "housing/Elise-Wonderful": "",
-  "housing/Jordan-Super-Helpful": "",
+  "housing/Jordan-No-Hot-Water": "",
+  "housing/Elise-Sorry-Maintenance": "",
+  "housing/Jordan-Name-Unit": "",
+  "housing/Elise-Everywhere-Or-Kitchen": "",
+  "housing/Jordan-Just-Kitchen": "",
+  "housing/Elise-Got-It-Work-Order": "",
+  "housing/Jordan-They-Can-Come": "",
+  "housing/Elise-Perfect-Submitted": "",
+  "housing/Jordan-Thanks": "",
 
   "healthcare/Elise-Hi-Mia": "",
   "healthcare/Mia-Yes-I-Swithced": "",

@@ -1,6 +1,7 @@
 import { useState, useCallback, useEffect } from "react";
 import { motion, AnimatePresence, type Variants } from "framer-motion";
 import "./MultiFormStyling.css";
+import { storeUtms, getUtmFields } from "../utils/utm";
 
 // ─── Default SDK types ────────────────────────────────────────────────────────
 
@@ -97,6 +98,8 @@ interface Props {
   eventStepTwo?: string;
   eventStepThree?: string;
   eventStepBack?: string;
+  eventVerticalHousing?: string;
+  eventVerticalHealthcare?: string;
   onStepChange?: (step: number) => void;
   enableWebflowEvent?: boolean;
   emailInputPlaceholder?: string;
@@ -275,10 +278,6 @@ function pushEvent(event: string) {
 function validateEmail(val: string): boolean {
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)) return false;
   return !BLOCKED_DOMAINS.has(val.split("@")[1].toLowerCase());
-}
-
-function getParam(name: string): string {
-  return new URLSearchParams(window.location.search).get(name) ?? "";
 }
 
 function getCookie(name: string): string {
@@ -559,6 +558,8 @@ export default function MultiStepFormUniversal({
   eventStepTwo = "multi_form_step_two",
   eventStepThree = "multi_form_step_three",
   eventStepBack = "multi_form_step_back",
+  eventVerticalHousing = "multi_form_vertical_housing",
+  eventVerticalHealthcare = "multi_form_vertical_healthcare",
   onStepChange,
   enableWebflowEvent = false,
   emailInputPlaceholder = "What's your work email?",
@@ -630,6 +631,11 @@ export default function MultiStepFormUniversal({
   // Preload Default SDK
   useEffect(() => {
     loadDefaultSDK().catch((err) => console.warn("[Default SDK]", err));
+  }, []);
+
+  // First-touch capture of UTMs into sessionStorage on mount.
+  useEffect(() => {
+    storeUtms();
   }, []);
 
   // Scroll lock while overlay is open
@@ -810,10 +816,7 @@ export default function MultiStepFormUniversal({
     if (promoOffering)
       fields.push({ name: "promo_offering", value: promoOffering });
 
-    (["utm_source", "utm_medium", "utm_campaign"] as const).forEach((p) => {
-      const v = getParam(p);
-      if (v) fields.push({ name: p, value: v });
-    });
+    fields.push(...getUtmFields());
 
     const hutk = getCookie("hubspotutk");
     const payload: HubSpotPayload = {
@@ -1279,7 +1282,10 @@ export default function MultiStepFormUniversal({
                             ? " msf__picker-card--selected"
                             : ""
                         }`}
-                        onClick={() => setSelectedVertical("housing")}
+                        onClick={() => {
+                          setSelectedVertical("housing");
+                          pushEvent(eventVerticalHousing);
+                        }}
                       >
                         <div className="msf__picker-card-icon">
                           <HousingIcon />
@@ -1300,7 +1306,10 @@ export default function MultiStepFormUniversal({
                             ? " msf__picker-card--selected"
                             : ""
                         }`}
-                        onClick={() => setSelectedVertical("healthcare")}
+                        onClick={() => {
+                          setSelectedVertical("healthcare");
+                          pushEvent(eventVerticalHealthcare);
+                        }}
                       >
                         <div className="msf__picker-card-icon">
                           <HealthcareIcon />
