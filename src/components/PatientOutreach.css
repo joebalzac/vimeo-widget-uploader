@@ -1,0 +1,496 @@
+/* PatientOutreach — feature accordion with an animated preview panel.
+   Figma node 18313-46687. Assumes Inter (variable) + IBM Plex Mono load
+   globally. Icons and connector lines are inline SVG / CSS so the component is
+   self-contained (no external assets). */
+
+.po {
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+  padding: 120px 140px;
+  background: #fcfcfb;
+  font-family: "inter-variable", Inter, system-ui, sans-serif;
+}
+
+.po__inner {
+  width: 100%;
+  max-width: 1160px;
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
+}
+
+/* ── Header ─────────────────────────────────────────────────────────────────── */
+.po__head {
+  display: flex;
+  gap: 64px;
+  align-items: flex-end;
+  justify-content: center;
+  width: 100%;
+}
+
+.po__head-left {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  align-items: flex-start;
+}
+
+.po__eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  font-family: "IBM Plex Mono", monospace;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 1.1;
+  text-transform: uppercase;
+  color: #3f3e3c;
+  font-feature-settings: "salt" 1;
+}
+
+.po__eyebrow-dot {
+  display: block;
+  width: 8px;
+  height: 8px;
+  background-color: #6b4fff;
+  flex-shrink: 0;
+}
+
+.po__heading {
+  margin: 0;
+  font-family: "inter-variable", sans-serif;
+  font-weight: 400;
+  font-size: 48px;
+  line-height: 1.1;
+  letter-spacing: -1.44px;
+  color: #0e0d0c;
+}
+
+.po__body {
+  flex: 1 1 0;
+  min-width: 0;
+  margin: 0;
+  font-family: "inter-variable", sans-serif;
+  font-weight: 400;
+  font-size: 18px;
+  line-height: 1.4;
+  letter-spacing: -0.36px;
+  color: #3f3e3c;
+}
+
+/* ── Content — list + panel ───────────────────────────────────────────────────── */
+.po__content {
+  display: flex;
+  gap: 64px;
+  align-items: center;
+  width: 100%;
+}
+
+.po__list {
+  flex: 1 1 0;
+  min-width: 0;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.po__item {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  border-bottom: 1px solid #dddcda;
+  padding-bottom: 20px;
+}
+
+.po__item-btn {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: flex-start;
+  width: 100%;
+  padding: 0;
+  border: none;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.po__item-title {
+  font-family: "inter-variable", sans-serif;
+  font-size: 22px;
+  font-weight: 450;
+  line-height: 1.2;
+  letter-spacing: -0.66px;
+  color: #a9a8a6;
+  transition: color 0.25s ease;
+}
+
+.po__item.is-active .po__item-title {
+  color: #0e0d0c;
+}
+
+.po__item:not(.is-active):hover .po__item-title {
+  color: #7a7977;
+}
+
+.po__item-desc {
+  font-family: "inter-variable", sans-serif;
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 1.4;
+  letter-spacing: -0.36px;
+  color: #3f3e3c;
+}
+
+/* Progress bar under the active item (auto-advance countdown). */
+.po__progress {
+  position: absolute;
+  left: 0;
+  bottom: -1px;
+  height: 2px;
+  width: 0;
+  background: #6b4fff;
+  animation: poProgress linear forwards;
+}
+
+.po__progress.is-paused {
+  animation-play-state: paused;
+}
+
+@keyframes poProgress {
+  from {
+    width: 0;
+  }
+  to {
+    width: 100%;
+  }
+}
+
+/* ── Preview panel ────────────────────────────────────────────────────────────── */
+.po__panel {
+  position: relative;
+  flex-shrink: 0;
+  width: 548px;
+  height: 520px;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #f6f4f2;
+  box-shadow: inset 0 0 0 0.5px rgba(0, 0, 0, 0.1);
+}
+
+.po__scene {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 370px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  animation: poFadeIn 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes poFadeIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, calc(-50% + 8px));
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+  }
+}
+
+/* Patient card */
+.po__card {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 18px;
+  border-radius: 8px;
+  background: #ffffff;
+  box-shadow: 0 0 1.125px rgba(0, 0, 0, 0.2), 0 2.25px 4.5px rgba(0, 0, 0, 0.04);
+}
+
+.po__avatar {
+  position: relative;
+  flex-shrink: 0;
+  width: 56px;
+  height: 56px;
+  border-radius: 1000px;
+  overflow: hidden;
+  background: #e6e2de;
+}
+
+.po__avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.po__avatar-fallback {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "inter-variable", sans-serif;
+  font-size: 22px;
+  font-weight: 500;
+}
+
+.po__avatar--coral {
+  background: #ffe6dd;
+}
+.po__avatar--coral .po__avatar-fallback {
+  color: #f25530;
+}
+.po__avatar--azure {
+  background: #e0ecfb;
+}
+.po__avatar--azure .po__avatar-fallback {
+  color: #0e5cbf;
+}
+.po__avatar--mint {
+  background: #d9f4ec;
+}
+.po__avatar--mint .po__avatar-fallback {
+  color: #00b080;
+}
+.po__avatar--amber {
+  background: #fdeecb;
+}
+.po__avatar--amber .po__avatar-fallback {
+  color: #d98a00;
+}
+
+.po__card-body {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2.25px;
+}
+
+.po__card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+}
+
+.po__card-name {
+  font-family: "inter-variable", sans-serif;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: -0.54px;
+  color: #0e0d0c;
+  white-space: nowrap;
+}
+
+.po__badge {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 10px;
+  border-radius: 100px;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.po__badge--coral {
+  background: #fff4f0;
+  color: #f25530;
+}
+.po__badge--azure {
+  background: #eef4fd;
+  color: #0e5cbf;
+}
+.po__badge--mint {
+  background: #e6f7f1;
+  color: #00b080;
+}
+.po__badge--amber {
+  background: #fff7e6;
+  color: #d98a00;
+}
+
+.po__card-detail {
+  font-family: "inter-variable", sans-serif;
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 1.3;
+  letter-spacing: -0.54px;
+  color: #7a7977;
+}
+
+/* Vertical connector between card and flow row */
+.po__connector {
+  width: 0;
+  height: 45px;
+  border-left: 1.5px dashed #cfcecc;
+}
+
+/* Flow row: call icon — line — label — line — check icon */
+.po__flow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 318px;
+}
+
+.po__flow-icon {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 1000px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.po__flow-icon svg {
+  width: 16px;
+  height: 16px;
+  display: block;
+}
+
+.po__flow-icon--call {
+  background: #041220;
+}
+
+.po__flow-icon--done {
+  background: #00b080;
+}
+
+.po__flow-line {
+  flex: 1 1 0;
+  min-width: 0;
+  height: 0;
+  border-top: 1.5px dashed #cfcecc;
+}
+
+.po__flow-label {
+  flex-shrink: 0;
+  font-family: "inter-variable", sans-serif;
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 1.4;
+  letter-spacing: -0.36px;
+  white-space: nowrap;
+  background-image: linear-gradient(
+    99deg,
+    #a093fd 12%,
+    #dfdbff 55%,
+    #0e5cbf 126%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* ── Tablet ─────────────────────────────────────────────────────────────────── */
+@media (max-width: 991px) {
+  .po {
+    padding: 80px 40px;
+  }
+
+  .po__head {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+  }
+
+  .po__content {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 40px;
+  }
+
+  .po__heading {
+    font-size: 40px;
+    letter-spacing: -1.2px;
+  }
+
+  .po__panel {
+    width: 100%;
+  }
+}
+
+/* ── Mobile ─────────────────────────────────────────────────────────────────── */
+@media (max-width: 767px) {
+  .po {
+    padding: 56px 20px;
+  }
+
+  .po__inner {
+    gap: 32px;
+  }
+
+  .po__heading {
+    font-size: 32px;
+    letter-spacing: -0.96px;
+  }
+
+  .po__eyebrow {
+    font-size: 14px;
+  }
+
+  .po__body {
+    font-size: 16px;
+    letter-spacing: -0.32px;
+  }
+
+  .po__item-title {
+    font-size: 20px;
+    letter-spacing: -0.6px;
+  }
+
+  .po__item-desc {
+    font-size: 16px;
+    letter-spacing: -0.32px;
+  }
+
+  .po__panel {
+    height: 440px;
+  }
+
+  .po__scene {
+    width: min(320px, 86%);
+  }
+
+  .po__flow {
+    width: 100%;
+  }
+}
+
+/* ── Reduced motion ─────────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .po__progress,
+  .po__scene {
+    animation: none;
+  }
+  .po__progress {
+    width: 100%;
+  }
+}

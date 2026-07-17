@@ -12,6 +12,7 @@ import OfficeLocations from "./components/OfficeLocations";
 import PhotoCarousel from "./components/PhotoCarousel";
 import TeamImageCarousel from "./components/TeamImageCarousel";
 import ProductShowcase from "./components/ProductShowcase";
+import PatientOutreach from "./components/PatientOutreach";
 
 const params = new URLSearchParams(window.location.search);
 const form = params.get("form");
@@ -27,97 +28,9 @@ function CustomerStoriesLogoPreview() {
 }
 
 function App() {
-  if (section === "logos") {
-    return <CustomerStoriesLogoPreview />;
-  }
-
-  if (section === "values") {
-    return <ValuesCarousel />;
-  }
-
-  if (section === "engineers") {
-    return (
-      <div
-        style={{
-          padding: "clamp(48px, 8vw, 120px) 0",
-          backgroundColor: "#fcfcfb",
-        }}
-      >
-        <TeamImageCarousel />
-      </div>
-    );
-  }
-
-  if (section === "gallery") {
-    return (
-      <div style={{ padding: "clamp(48px, 8vw, 120px) 0" }}>
-        <PhotoCarousel />
-      </div>
-    );
-  }
-
-  if (section === "offices") {
-    return (
-      <div
-        style={{
-          padding: "clamp(48px, 8vw, 120px) clamp(24px, 10vw, 140px)",
-          backgroundColor: "#131115",
-          minHeight: "100vh",
-        }}
-      >
-        <OfficeLocations />
-      </div>
-    );
-  }
-
-  if (section === "demo") {
-    return <ProductShowcase />;
-  }
-
-  if (section === "scroll") {
-    return (
-      <>
-        <div style={{ height: "100vh" }} />
-        <ScrollSection />
-        <div style={{ height: "100vh" }} />
-      </>
-    );
-  }
-
   return (
     <>
-      <div>
-        {form === "housing" ? (
-          <MultiStepForm />
-        ) : form === "health" ? (
-          <MultiStepFormHealth />
-        ) : (
-          <MultiStepFormUniversal />
-        )}
-      </div>
-
-      <div>
-        <TeamCarousel />
-        <ScrollSection />
-      </div>
-      <JobListingSection />
-      <ValuesCarousel />
-      <div
-        style={{
-          padding: "clamp(48px, 8vw, 120px) clamp(24px, 10vw, 140px)",
-          backgroundColor: "#131115",
-        }}
-      >
-        <OfficeLocations />
-      </div>
-
-      <PhotoCarousel />
-
-      <TeamImageCarousel />
-
-      <ProductShowcase />
-
-      <ScrollSection />
+      <PatientOutreach />
     </>
   );
 }
