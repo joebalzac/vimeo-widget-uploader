@@ -143,8 +143,8 @@ interface AdapterProps {
   eventHousingTab?: string;
   eventHealthcareTab?: string;
   eventAudioBtn?: string;
-  // Per-tab text props are added dynamically (t1Label, t1Name, t1Text1, …).
-  [key: string]: string | undefined;
+  // Per-tab text/number props are added dynamically (t1Label, t1Name, t1Text1, t1Duration1, …).
+  [key: string]: string | number | undefined;
 }
 
 function ProductShowcaseAdapter(p: AdapterProps) {
@@ -160,7 +160,8 @@ function ProductShowcaseAdapter(p: AdapterProps) {
         role: m.role,
         text: get(`Text${mi}`, m.text),
         audioSrc: get(`Audio${mi}`, defaultAudio) || undefined,
-        durationMs: m.durationMs,
+        durationMs:
+          (p[`${d.key}Duration${mi}`] as number | undefined) ?? m.durationMs,
       };
       if (m.role === "user") msg.name = name;
       if (m.role === "ai" && m.status !== undefined) {
@@ -185,7 +186,10 @@ function ProductShowcaseAdapter(p: AdapterProps) {
 }
 
 function tabProps(d: TabDefault, n: number) {
-  const acc: Record<string, ReturnType<typeof props.Text>> = {
+  const acc: Record<
+    string,
+    ReturnType<typeof props.Text> | ReturnType<typeof props.Number>
+  > = {
     [`${d.key}Label`]: props.Text({
       name: `Scenario ${n} — Tab label`,
       defaultValue: d.label,
@@ -212,6 +216,12 @@ function tabProps(d: TabDefault, n: number) {
       defaultValue: m.audioKey ? AUDIO[m.audioKey] || "" : "",
       tooltip:
         "URL of the uploaded audio clip (upload the .mp3 in the Webflow Asset Manager, then paste its URL here).",
+    });
+    acc[`${d.key}Duration${mi}`] = props.Number({
+      name: `Scenario ${n} — Message ${mi} duration (ms)`,
+      defaultValue: m.durationMs ?? 2500,
+      tooltip:
+        "Length of this line's audio clip in ms — controls when the next line appears. Match it to the uploaded clip's actual length.",
     });
   });
   return acc;

@@ -24,4 +24,16 @@ export const AUDIO: Record<string, string> = {
   "healthcare/Mia-Yes-I-Swithced": "",
   "healthcare/Mia-XJH": "",
   "healthcare/Elise-Thanks": "",
+
+  "reschedule/Elise-Missed-Appt": "",
+  "reschedule/Jordan-Next-Week": "",
+  "reschedule/Elise-Openings": "",
+  "reschedule/Jordan-Thursday-3PM": "",
+  "reschedule/Elise-Confirmed": "",
+
+  "waitlist/Elise-Slot-Opened": "",
+  "waitlist/Kaia-Same-Location": "",
+  "waitlist/Elise-Midtown-Office": "",
+  "waitlist/Kaia-Ill-Take-It": "",
+  "waitlist/Elise-Booked": "",
 };

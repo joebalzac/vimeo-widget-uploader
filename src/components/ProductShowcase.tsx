@@ -34,6 +34,8 @@ export interface DemoTab {
 export interface ProductShowcaseProps {
   eyebrow?: string;
   heading?: string;
+  /** Hides the eyebrow/heading section above the card (health-site variant doesn't need it). */
+  isHealthcare?: boolean;
   tabs?: DemoTab[];
   /** GTM dataLayer event fired when the first (Housing) tab is selected. */
   eventHousingTab?: string;
@@ -176,6 +178,7 @@ const GAP = 12; // px gap used by the slide-to-latest math (not a duration)
 export default function ProductShowcase({
   eyebrow = "See it in action",
   heading = "Product Demo",
+  isHealthcare = false,
   tabs = PLACEHOLDER_TABS,
   eventHousingTab = "product_demo_housing_tab",
   eventHealthcareTab = "product_demo_healthcare_tab",
@@ -407,13 +410,15 @@ export default function ProductShowcase({
 
   return (
     <section className="ps">
-      <div className="ps__head">
-        <div className="ps__eyebrow">
-          <span className="ps__eyebrow-dot" aria-hidden="true" />
-          <span>{eyebrow}</span>
+      {!isHealthcare && (
+        <div className="ps__head">
+          <div className="ps__eyebrow">
+            <span className="ps__eyebrow-dot" aria-hidden="true" />
+            <span>{eyebrow}</span>
+          </div>
+          <h2 className="ps__heading">{heading}</h2>
         </div>
-        <h2 className="ps__heading">{heading}</h2>
-      </div>
+      )}
 
       <div className="ps__card">
         <div className="ps__grid" aria-hidden="true" />
