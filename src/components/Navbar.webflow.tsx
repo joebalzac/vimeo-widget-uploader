@@ -5,7 +5,7 @@ import { declareComponent } from "@webflow/react";
 export default declareComponent(Navbar, {
   name: "EliseAI Navbar",
   description:
-    "A responsive navbar matching EliseAI design with logo, navigation, login, and CTA",
+    "Responsive EliseAI navbar. Transparent + blur over the hero, solid white after. Light or dark text theme.",
   group: "Navigation",
   props: {
     logoImageUrl: props.Text({
@@ -49,6 +49,54 @@ export default declareComponent(Navbar, {
     loginHref: props.Text({
       name: "Login Link",
       defaultValue: "/login",
+    }),
+
+    // ===== Resources → "Latest Posts" (editable in Webflow) =====
+    latestPost1Image: props.Image({
+      name: "Latest Post 1 Image",
+    }),
+    latestPost1Category: props.Text({
+      name: "Latest Post 1 Category",
+      defaultValue: "BLOG",
+    }),
+    latestPost1Title: props.Text({
+      name: "Latest Post 1 Title",
+      defaultValue: "Centralization Playbook 2026: What's New in This Edition",
+    }),
+    latestPost1Href: props.Text({
+      name: "Latest Post 1 Link",
+      defaultValue: "/blog/centralization-playbook-2026",
+    }),
+    latestPost2Image: props.Image({
+      name: "Latest Post 2 Image",
+    }),
+    latestPost2Category: props.Text({
+      name: "Latest Post 2 Category",
+      defaultValue: "EVENTS",
+    }),
+    latestPost2Title: props.Text({
+      name: "Latest Post 2 Title",
+      defaultValue: "Where operators master the full potential of multifamily AI",
+    }),
+    latestPost2Href: props.Text({
+      name: "Latest Post 2 Link",
+      defaultValue: "/events/elise-beyond",
+    }),
+
+    // ===== Company → CTA card graphic (editable in Webflow) =====
+    companyCtaImage: props.Image({
+      name: "Company CTA Image",
+    }),
+
+    // ===== Appearance =====
+    theme: props.Variant({
+      name: "Theme",
+      options: ["light", "dark"],
+      defaultValue: "light",
+    }),
+    heroSectionId: props.Text({
+      name: "Hero Section ID",
+      defaultValue: "heroSection",
     }),
   },
 });

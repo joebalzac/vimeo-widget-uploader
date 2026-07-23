@@ -121,7 +121,7 @@
 
 .ol__cell-city {
   margin: 0;
-  font-family: "inter-variable", sans-serif;
+  font-family: "Intervariable", sans-serif;
   font-weight: 450;
   font-size: 22px;
   line-height: 120%;
@@ -149,7 +149,7 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  font-family: "inter-variable", sans-serif;
+  font-family: "Intervariable", sans-serif;
   font-weight: 400;
   line-height: 140%;
   letter-spacing: -0.32px;

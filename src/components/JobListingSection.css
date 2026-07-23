@@ -15,7 +15,7 @@
 
 .filters-title {
   color: #181819;
-  font-family: "inter-variable", sans-serif;
+  font-family: "Intervariable", sans-serif;
   font-size: 30px;
   font-weight: 450;
   line-height: 140%;
@@ -39,7 +39,7 @@
 }
 
 .search-input {
-  font-family: "inter-variable", sans-serif;
+  font-family: "Intervariable", sans-serif;
   font-size: 18px;
   font-weight: 400;
   line-height: 140%;
@@ -59,7 +59,7 @@
   justify-content: space-between;
   align-items: center;
   cursor: pointer;
-  font-family: "inter-variable", sans-serif;
+  font-family: "Intervariable", sans-serif;
   font-size: 16px;
   font-weight: 400;
   line-height: 140%;
@@ -86,7 +86,7 @@
   background: transparent;
   cursor: pointer;
   color: #181819;
-  font-family: "inter-variable", sans-serif;
+  font-family: "Intervariable", sans-serif;
   font-size: 22px;
   font-style: normal;
   font-weight: 450;
@@ -163,7 +163,7 @@
 
 .job-item-name {
   color: #0e0d0c;
-  font-family: "inter-variable", sans-serif;
+  font-family: "Intervariable", sans-serif;
   font-size: 18px;
   font-weight: 400;
   line-height: 140%;
@@ -173,7 +173,7 @@
 
 .job-item-location {
   color: #7a7977;
-  font-family: "inter-variable", sans-serif;
+  font-family: "Intervariable", sans-serif;
   font-size: 18px;
   font-weight: 400;
   line-height: 140%;

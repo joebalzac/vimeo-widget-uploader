@@ -4,52 +4,32 @@ import { declareComponent } from "@webflow/react";
 import {
   buildLogoGrid,
   slotLabel,
+  type LogoSlotConfig,
 } from "../data/customerStoriesLogoConfig";
+
+const SLOT_COUNT = 10;
 
 interface AdapterProps {
   theme?: string;
   hoverBgUrl?: string;
-  l1CaseStudyUrl?: string;
-  l2CaseStudyUrl?: string;
-  l3CaseStudyUrl?: string;
-  l4CaseStudyUrl?: string;
-  l5CaseStudyUrl?: string;
-  l6CaseStudyUrl?: string;
-  l7CaseStudyUrl?: string;
-  l8CaseStudyUrl?: string;
-  l9CaseStudyUrl?: string;
-  l10CaseStudyUrl?: string;
+  [slotProp: string]: string | undefined;
 }
 
 function CustomerStoriesLogoAdapter({
   theme,
   hoverBgUrl,
-  l1CaseStudyUrl,
-  l2CaseStudyUrl,
-  l3CaseStudyUrl,
-  l4CaseStudyUrl,
-  l5CaseStudyUrl,
-  l6CaseStudyUrl,
-  l7CaseStudyUrl,
-  l8CaseStudyUrl,
-  l9CaseStudyUrl,
-  l10CaseStudyUrl,
+  ...rest
 }: AdapterProps) {
-  const logos = buildLogoGrid(
-    [
-      l1CaseStudyUrl,
-      l2CaseStudyUrl,
-      l3CaseStudyUrl,
-      l4CaseStudyUrl,
-      l5CaseStudyUrl,
-      l6CaseStudyUrl,
-      l7CaseStudyUrl,
-      l8CaseStudyUrl,
-      l9CaseStudyUrl,
-      l10CaseStudyUrl,
-    ],
-    hoverBgUrl,
-  );
+  const slots: LogoSlotConfig[] = Array.from({ length: SLOT_COUNT }, (_, i) => {
+    const n = i + 1;
+    return {
+      href: rest[`l${n}CaseStudyUrl`],
+      logoUrl: rest[`l${n}LogoUrl`],
+      hoverBgUrl: rest[`l${n}HoverBgUrl`],
+    };
+  });
+
+  const logos = buildLogoGrid(slots, hoverBgUrl);
 
   return (
     <CustomerStoriesLogo
@@ -63,14 +43,44 @@ function caseStudyUrlProp(n: number) {
   return props.Text({
     name: `${slotLabel(n)} — Case Study URL`,
     defaultValue: "",
-      tooltip: `Optional. Links this cell on click. Arrows show on preset case-study slots automatically; add a URL here to enable the link.`,
+    tooltip: `Optional. Links this cell on click. Arrows show on preset case-study slots automatically; add a URL here to enable the link.`,
   });
 }
+
+function logoUrlProp(n: number) {
+  return props.Text({
+    name: `${slotLabel(n)} — Logo URL (override)`,
+    defaultValue: "",
+    tooltip:
+      "Optional. Replaces the bundled brand logo for this cell. Upload an SVG/PNG to Webflow Assets and paste the URL.",
+  });
+}
+
+function hoverBgProp(n: number) {
+  return props.Text({
+    name: `${slotLabel(n)} — Hover Background URL`,
+    defaultValue: "",
+    tooltip:
+      "Optional. Hover image for this specific cell (requires a Case Study URL). Overrides the shared hover background.",
+  });
+}
+
+// Build the flat per-slot prop map: logo URL, hover bg URL, and case study URL
+// for each of the 10 grid cells.
+const slotProps = Array.from({ length: SLOT_COUNT }).reduce<
+  Record<string, ReturnType<typeof props.Text>>
+>((acc, _, i) => {
+  const n = i + 1;
+  acc[`l${n}LogoUrl`] = logoUrlProp(n);
+  acc[`l${n}HoverBgUrl`] = hoverBgProp(n);
+  acc[`l${n}CaseStudyUrl`] = caseStudyUrlProp(n);
+  return acc;
+}, {});
 
 export default declareComponent(CustomerStoriesLogoAdapter, {
   name: "Customer Stories — Logo Grid",
   description:
-    "Trusted-by logo grid with bundled company SVGs (GoldOller, RPM, Scion, Greystar). Only add case study URLs for cells that should be clickable — logos are preset in code.",
+    "Trusted-by logo grid with bundled company SVGs (GoldOller, RPM, Scion, Greystar). Per cell you can add a custom logo, a hover background image, and a case study link.",
   group: "Media",
 
   props: {
@@ -81,20 +91,11 @@ export default declareComponent(CustomerStoriesLogoAdapter, {
         '"light" = white background, dark logos. "dark" = black background, white logos.',
     }),
     hoverBgUrl: props.Text({
-      name: "Hover Background Image URL",
+      name: "Shared Hover Background Image URL",
       defaultValue: "",
       tooltip:
-        "Optional for arrow-only cells. Required for hover image preview. Upload a hero image to Webflow Assets and paste the URL.",
+        "Optional fallback hover image for linked cells. Upload a hero image to Webflow Assets and paste the URL. Per-cell hover URLs override this.",
     }),
-    l1CaseStudyUrl: caseStudyUrlProp(1),
-    l2CaseStudyUrl: caseStudyUrlProp(2),
-    l3CaseStudyUrl: caseStudyUrlProp(3),
-    l4CaseStudyUrl: caseStudyUrlProp(4),
-    l5CaseStudyUrl: caseStudyUrlProp(5),
-    l6CaseStudyUrl: caseStudyUrlProp(6),
-    l7CaseStudyUrl: caseStudyUrlProp(7),
-    l8CaseStudyUrl: caseStudyUrlProp(8),
-    l9CaseStudyUrl: caseStudyUrlProp(9),
-    l10CaseStudyUrl: caseStudyUrlProp(10),
+    ...slotProps,
   },
 });

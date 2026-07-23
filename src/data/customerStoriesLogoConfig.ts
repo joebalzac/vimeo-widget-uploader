@@ -34,25 +34,44 @@ export function slotLabel(n: number): string {
   return SLOT_LABELS[n - 1] ?? `Slot ${n}`;
 }
 
+/** Per-slot overrides. Any field is optional — omit to fall back to presets. */
+export interface LogoSlotConfig {
+  /** Case study link. Enables click + width expand + arrow badge. */
+  href?: string;
+  /** Custom logo URL. Overrides the bundled brand SVG for this slot. */
+  logoUrl?: string;
+  /** Custom logo URL shown on hover (defaults to the same as logoUrl). */
+  logoHoverUrl?: string;
+  /** Custom hover background image URL. Overrides the shared fallback. */
+  hoverBgUrl?: string;
+}
+
 /**
- * Build the 10-logo grid from optional per-slot case study URLs.
- * Logos are bundled SVGs — only paste URLs for slots that should link out.
- * Hover preview requires both case study URL + hover background URL.
+ * Build the 10-logo grid from optional per-slot config.
+ * Logos default to bundled SVGs — pass `logoUrl` to override a slot with a
+ * custom logo, `href` to link it out, and `hoverBgUrl` to set the hover image.
+ * Hover preview requires both a case study URL + a hover background URL.
  */
 export function buildLogoGrid(
-  caseStudyUrls: (string | undefined)[],
-  hoverBgUrl?: string,
+  slots: (LogoSlotConfig | undefined)[],
+  fallbackHoverBgUrl?: string,
 ): CustomerLogo[] {
-  const bg = hoverBgUrl?.trim();
+  const fallbackBg = fallbackHoverBgUrl?.trim();
 
   return LOGO_SLOT_BRANDS.map((brand, i) => {
-    const href = caseStudyUrls[i]?.trim();
+    const slot = slots[i] ?? {};
+    const href = slot.href?.trim();
+    const logoUrl = slot.logoUrl?.trim();
+    const logoHoverUrl = slot.logoHoverUrl?.trim();
+    const hoverBg = slot.hoverBgUrl?.trim() || fallbackBg;
     const showArrow = CASE_STUDY_SLOT_INDEXES.has(i) || Boolean(href);
 
     return {
-      brand,
+      // Custom logo URL replaces the bundled brand SVG when provided.
+      ...(logoUrl ? { logoUrl } : { brand }),
+      ...(logoHoverUrl ? { logoHoverUrl } : {}),
       showArrow,
-      ...(href ? { href, ...(bg ? { hoverBgUrl: bg } : {}) } : {}),
+      ...(href ? { href, ...(hoverBg ? { hoverBgUrl: hoverBg } : {}) } : {}),
     };
   });
 }
@@ -63,6 +82,17 @@ const DEMO_HOVER_BG =
 
 /** Default demo grid with placeholder case study links on interactive cells. */
 export const DEFAULT_LOGO_GRID: CustomerLogo[] = buildLogoGrid(
-  ["#", undefined, undefined, "#", undefined, "#", "#", undefined, undefined, "#"],
+  [
+    { href: "#" },
+    undefined,
+    undefined,
+    { href: "#" },
+    undefined,
+    { href: "#" },
+    { href: "#" },
+    undefined,
+    undefined,
+    { href: "#" },
+  ],
   DEMO_HOVER_BG,
 );
