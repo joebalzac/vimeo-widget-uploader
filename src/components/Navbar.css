@@ -38,7 +38,13 @@
   background-color: transparent;
   -webkit-backdrop-filter: blur(16px);
   backdrop-filter: blur(16px);
-  transition: background-color 0.25s ease;
+  transition: background-color 0.2s ease, border-color 0.2s ease,
+    backdrop-filter 0.2s ease, -webkit-backdrop-filter 0.2s ease;
+}
+
+/* Match the mega-menu fade when returning to transparent over the hero */
+.navbar--menu-closing .navbar__container {
+  transition-duration: 1s;
 }
 
 .navbar--solid .navbar__container {
@@ -61,6 +67,14 @@
 .navbar--dark.navbar--transparent .navbar__login:hover,
 .navbar--dark.navbar--transparent .navbar__back {
   color: #fafafb;
+}
+
+.navbar--dark.navbar--transparent .navbar__login-arrow path {
+  stroke: #f5f5f7;
+}
+
+.navbar--dark.navbar--transparent .navbar__chevron path {
+  stroke: #fafafb;
 }
 
 .navbar--dark.navbar--transparent .navbar__burger {
@@ -141,7 +155,7 @@
 .navbar__nav-list {
   display: flex;
   align-items: center;
-  gap: 32px;
+  gap: 0;
   list-style: none;
   margin: 0;
   padding: 0;
@@ -149,6 +163,8 @@
 }
 
 /* ===== NAV ITEM ===== */
+/* Hit areas touch (no gap) so moving between links keeps the mega menu open.
+   Horizontal padding recreates the visual 32px spacing between labels. */
 .navbar__nav-item {
   display: flex;
   align-items: center;
@@ -158,6 +174,16 @@
   cursor: pointer;
   border-bottom: 2px solid transparent;
   transition: border-color 200ms;
+  padding: 0 16px;
+  box-sizing: border-box;
+}
+
+.navbar__nav-item:first-child {
+  padding-left: 0;
+}
+
+.navbar__nav-item:last-child {
+  padding-right: 0;
 }
 
 .navbar__nav-item--active {
@@ -173,6 +199,7 @@
   color: var(--nav-text);
   text-decoration: none;
   cursor: pointer;
+  transition: color 0.2s ease;
 }
 
 .navbar__nav-link:hover {
@@ -185,8 +212,12 @@
   height: 5px;
   width: 8px;
   color: var(--nav-text);
-  transition: transform 200ms;
+  transition: transform 200ms, color 0.2s ease;
   flex-shrink: 0;
+}
+
+.navbar__chevron path {
+  transition: stroke 0.2s ease;
 }
 
 .navbar__nav-item--active .navbar__chevron {
@@ -210,7 +241,7 @@
   font-weight: 450;
   letter-spacing: -0.16px;
   color: var(--nav-purple);
-  transition: color 200ms;
+  transition: color 0.2s ease;
   text-decoration: none;
   white-space: nowrap;
 }
@@ -220,8 +251,29 @@
 }
 
 .navbar__login-arrow {
-  width: 16px;
-  height: 16px;
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  transform: translate3d(0, 0, 0);
+  transform-style: preserve-3d;
+  transition: transform 200ms ease;
+}
+
+.navbar__login-arrow path {
+  transition: stroke 0.2s ease;
+}
+
+.navbar__login:hover .navbar__login-arrow {
+  transform: translate3d(3px, 0, 0);
+}
+
+/* Match mega-menu fade for text/icons returning to transparent */
+.navbar--menu-closing .navbar__nav-link,
+.navbar--menu-closing .navbar__chevron,
+.navbar--menu-closing .navbar__login,
+.navbar--menu-closing .navbar__chevron path,
+.navbar--menu-closing .navbar__login-arrow path {
+  transition-duration: 1s;
 }
 
 /* ===== CTA BUTTON ===== */
@@ -254,7 +306,14 @@
     0 4px 8px -4px rgba(24, 24, 25, 0.06);
   border-bottom: 1px solid var(--nav-border);
   z-index: 40;
+  opacity: 1;
   animation: navbar-mega-in 160ms ease-out;
+  transition: opacity 1s ease;
+}
+
+.navbar__mega--closing {
+  opacity: 0;
+  animation: none;
 }
 
 @keyframes navbar-mega-in {

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   menuData,
   type MegaMenuData,
@@ -88,9 +88,9 @@ const Chevron = () => (
   >
     <path
       d="M0.683105 0.682983L3.58083 3.58071L6.47856 0.682983"
-      stroke="#181819"
-      stroke-width="0.965909"
-      stroke-linecap="square"
+      stroke="currentColor"
+      strokeWidth="0.965909"
+      strokeLinecap="square"
     />
   </svg>
 );
@@ -212,10 +212,26 @@ const RightPanelView = ({ panel }: { panel: RightPanel }) => {
   );
 };
 
-const MegaMenu = ({ menu }: { menu: MegaMenuData }) => {
+const MegaMenu = ({
+  menu,
+  isClosing,
+  onMouseEnter,
+  onMouseLeave,
+}: {
+  menu: MegaMenuData;
+  isClosing?: boolean;
+  onMouseEnter?: () => void;
+  onMouseLeave?: () => void;
+}) => {
+  const megaClassName = `navbar__mega${isClosing ? " navbar__mega--closing" : ""}`;
+
   if (menu.variant === "wide") {
     return (
-      <div className="navbar__mega">
+      <div
+        className={megaClassName}
+        onMouseEnter={onMouseEnter}
+        onMouseLeave={onMouseLeave}
+      >
         <div className="navbar__mega-wide">
           {menu.sections.map((section, index) => (
             <Section key={index} section={section} />
@@ -226,7 +242,11 @@ const MegaMenu = ({ menu }: { menu: MegaMenuData }) => {
   }
 
   return (
-    <div className="navbar__mega">
+    <div
+      className={megaClassName}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
+    >
       <div className="navbar__mega-inner">
         <div className="navbar__mega-half navbar__mega-half--white navbar__mega-left">
           {menu.left.map((section, index) => (
@@ -274,12 +294,41 @@ export const Navbar = ({
 }: NavbarProps) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [mobileSubmenu, setMobileSubmenu] = useState<string | null>(null);
-  const [hoveredItem, setHoveredItem] = useState<string | null>(
-    // TEMP: keep Resources mega menu open for styling edits.
-    // Revert to `null` when done.
-    "Resources",
-  );
+  const [hoveredItem, setHoveredItem] = useState<string | null>(null);
+  const [isMenuClosing, setIsMenuClosing] = useState(false);
   const [scrolledPastHero, setScrolledPastHero] = useState(false);
+  const menuCloseTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const clearMenuCloseTimer = () => {
+    if (menuCloseTimerRef.current) {
+      clearTimeout(menuCloseTimerRef.current);
+      menuCloseTimerRef.current = null;
+    }
+  };
+
+  const openMenuItem = (label: string | null) => {
+    clearMenuCloseTimer();
+    setIsMenuClosing(false);
+    setHoveredItem(label);
+  };
+
+  const scheduleMenuClose = () => {
+    if (!hoveredItem) return;
+    setIsMenuClosing(true);
+    clearMenuCloseTimer();
+    menuCloseTimerRef.current = setTimeout(() => {
+      setHoveredItem(null);
+      setIsMenuClosing(false);
+      menuCloseTimerRef.current = null;
+    }, 1000);
+  };
+
+  const keepMenuOpen = () => {
+    clearMenuCloseTimer();
+    setIsMenuClosing(false);
+  };
+
+  useEffect(() => () => clearMenuCloseTimer(), []);
 
   const parsedNavItems: NavItem[] =
     typeof navItems === "string" ? JSON.parse(navItems) : navItems;
@@ -399,7 +448,12 @@ export const Navbar = ({
 
   // Transparent + blur over the hero; solid white once past it, or while a
   // dropdown / mobile menu is open (so mega-menu text stays legible).
-  const isSolid = scrolledPastHero || Boolean(hoveredItem) || isMobileMenuOpen;
+  // While the mega menu is fading out, drop solid immediately so the bar can
+  // ease back to transparent over the same 1s as the menu.
+  const isSolid =
+    scrolledPastHero ||
+    isMobileMenuOpen ||
+    (Boolean(hoveredItem) && !isMenuClosing);
 
   // Dark text treatment only applies while still transparent over the hero.
   const isDarkTransparent = theme === "dark" && !isSolid;
@@ -408,17 +462,13 @@ export const Navbar = ({
     "navbar",
     theme === "dark" ? "navbar--dark" : "",
     isSolid ? "navbar--solid" : "navbar--transparent",
+    isMenuClosing ? "navbar--menu-closing" : "",
   ]
     .filter(Boolean)
     .join(" ");
 
   return (
-    <nav
-      className={navClassName}
-      // TEMP: don't auto-close while styling the open mega menu.
-      // Restore: onMouseLeave={() => setHoveredItem(null)}
-      onMouseLeave={() => {}}
-    >
+    <nav className={navClassName} onMouseLeave={scheduleMenuClose}>
       <div className="navbar__container">
         {/* Logo (or Back button when a mobile submenu is open) */}
         {isMobileMenuOpen && mobileSubmenu ? (
@@ -473,11 +523,21 @@ export const Navbar = ({
               <li
                 key={index}
                 className={`navbar__nav-item${
-                  hoveredItem === item.label ? " navbar__nav-item--active" : ""
+                  hoveredItem === item.label && !isMenuClosing
+                    ? " navbar__nav-item--active"
+                    : ""
                 }`}
-                onMouseEnter={() =>
-                  setHoveredItem(hasMenu(item.label) ? item.label : null)
-                }
+                onMouseEnter={() => {
+                  if (hasMenu(item.label)) openMenuItem(item.label);
+                  else scheduleMenuClose();
+                }}
+                onMouseLeave={(event) => {
+                  const next = event.relatedTarget as HTMLElement | null;
+                  // Stay open when moving into the mega menu or another nav link.
+                  if (next?.closest?.(".navbar__mega")) return;
+                  if (next?.closest?.(".navbar__nav-item")) return;
+                  scheduleMenuClose();
+                }}
               >
                 <a
                   href={item.href}
@@ -498,15 +558,26 @@ export const Navbar = ({
               {loginText}
               <svg
                 className="navbar__login-arrow"
-                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+                width="18"
+                height="18"
+                viewBox="0 0 18 18"
                 fill="none"
-                stroke="currentColor"
+                aria-hidden="true"
               >
                 <path
+                  d="M3.75 9H14.25"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
                   strokeLinecap="round"
                   strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M5 12h14M13 6l6 6-6 6"
+                />
+                <path
+                  d="M9 3.75L14.25 9L9 14.25"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
                 />
               </svg>
             </a>
@@ -534,7 +605,14 @@ export const Navbar = ({
       </div>
 
       {/* Mega Menu */}
-      {activeMenu && <MegaMenu menu={activeMenu} />}
+      {activeMenu && (
+        <MegaMenu
+          menu={activeMenu}
+          isClosing={isMenuClosing}
+          onMouseEnter={keepMenuOpen}
+          onMouseLeave={scheduleMenuClose}
+        />
+      )}
 
       {/* Mobile Menu */}
       {isMobileMenuOpen && (
