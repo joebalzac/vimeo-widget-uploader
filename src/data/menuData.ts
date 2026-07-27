@@ -21,7 +21,10 @@ export interface MenuSection {
 export interface FeaturedCard {
   category: string;
   title: string;
+  /** Desktop mega-menu card image. Edit in menuData — shared across every navbar. */
   imageUrl?: string;
+  /** Mobile drill-down image. Falls back to imageUrl if omitted. */
+  mobileImageUrl?: string;
   href?: string;
 }
 
@@ -30,7 +33,10 @@ export interface CtaCard {
   description: string;
   ctaText: string;
   ctaHref: string;
+  /** Desktop CTA graphic (full card art). Edit in menuData for all pages. */
   imageUrl?: string;
+  /** Mobile CTA graphic. Falls back to imageUrl if omitted. */
+  mobileImageUrl?: string;
 }
 
 export type PanelBackground = "white" | "gray" | "dark";
@@ -366,19 +372,24 @@ export const menuData: Record<string, MegaMenuData> = {
       kind: "cards",
       background: "gray",
       title: "LATEST POSTS",
+      // Hardcoded images/copy — change here once for every navbar on every page.
       cards: [
         {
           category: "BLOG",
           title: "Centralization Playbook 2026: What's New in This Edition",
           imageUrl:
-            "https://cdn.prod.website-files.com/63cc1eef179b054a9306598d/689633e9c6cff4bc81232cbd_maintenance-app.avif",
+            "https://cdn.prod.website-files.com/63cc1eef179b054a9306598d/6a57ec80e3a02cc035c3b123_centralization-playbook.jpg",
+          mobileImageUrl:
+            "https://cdn.prod.website-files.com/63cc1eef179b054a9306598d/6a57ec80e3a02cc035c3b123_centralization-playbook.jpg",
           href: "/blog/centralization-playbook-2026-edition",
         },
         {
           category: "EVENTS",
           title: "Where operators master the full potential of multifamily AI",
           imageUrl:
-            "https://cdn.prod.website-files.com/63cc1eef179b054a9306598d/68b87a60d9bdd8c981911a8a_Hero-Block%20(1)%20(1).avif",
+            "https://cdn.prod.website-files.com/63cc1eef179b054a9306598d/6a58e501f7bf3b563836681c_EliseBeyond_LatestPosts.avif",
+          mobileImageUrl:
+            "https://cdn.prod.website-files.com/63cc1eef179b054a9306598d/6a58e501f7bf3b563836681c_EliseBeyond_LatestPosts.avif",
           href: "/elise-beyond",
         },
       ],
@@ -396,7 +407,7 @@ export const menuData: Record<string, MegaMenuData> = {
               title: "About Us",
               description:
                 "Learn about what drives us and where EliseAI is headed",
-              href: "/about",
+              href: "/about-us",
             },
             {
               title: "Careers",
@@ -430,8 +441,11 @@ export const menuData: Record<string, MegaMenuData> = {
           "Contact us to discuss becoming a customer & finding solutions that meet your unique needs.",
         ctaText: "Talk to Sales",
         ctaHref: "/demo",
-        // No default graphic — falls back to the CSS decorative diamond.
-        // Supply a (text-free) graphic via the "Company CTA Image" prop in Webflow.
+        // Full card art (copy is baked into the assets).
+        imageUrl:
+          "https://cdn.prod.website-files.com/63cc1eef179b054a9306598d/6a62813757a5937d710c44e9_company-cta.avif",
+        mobileImageUrl:
+          "https://cdn.prod.website-files.com/63cc1eef179b054a9306598d/6a628469766729e54dcdbcd7_company-cta-mobile.avif",
       },
     },
   },

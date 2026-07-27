@@ -2,6 +2,7 @@ import "./App.css";
 import PatientOutreach from "./components/PatientOutreach";
 import { Navbar } from "./components/Navbar";
 import CustomerStoriesLogo from "./components/CustomerStoriesLogo";
+import { DEFAULT_LOGO_GRID } from "./data/customerStoriesLogoConfig";
 
 function App() {
   return (
@@ -9,7 +10,6 @@ function App() {
       <Navbar
         theme="dark"
         heroSectionId="heroSection"
-        logoImageUrl="https://cdn.prod.website-files.com/63cc1eef179b054a9306598d/63cc1eef179b051c8e0659d0_EliseAI.svg"
         logoHref="/"
         navItems={[
           { label: "AI for Property Management", href: "/property-management" },
@@ -23,12 +23,11 @@ function App() {
         loginHref="/login"
       />
 
-      {/* Dark hero the transparent navbar sits over */}
+      {/* Dark hero — fixed transparent navbar overlays this from the top */}
       <section
         id="heroSection"
         style={{
           minHeight: "90vh",
-          marginTop: "-80px",
           background:
             "radial-gradient(120% 120% at 50% 0%, #2a1f5c 0%, #14102b 60%, #0b0820 100%)",
           color: "#fafafb",
@@ -62,8 +61,8 @@ function App() {
         </p>
       </div>
 
-      <div>
-        <CustomerStoriesLogo theme="dark" logos={[]} />
+      <div style={{ padding: "48px 24px", background: "#fff" }}>
+        <CustomerStoriesLogo theme="light" logos={DEFAULT_LOGO_GRID} />
       </div>
     </>
   );

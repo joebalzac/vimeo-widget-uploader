@@ -2,17 +2,30 @@ import { Navbar } from "./Navbar";
 import { props } from "@webflow/data-types";
 import { declareComponent } from "@webflow/react";
 
-export default declareComponent(Navbar, {
+interface AdapterProps {
+  logoHref?: string;
+  navItems?: string;
+  ctaText?: string;
+  ctaHref?: string;
+  loginText?: string;
+  loginHref?: string;
+  /** Webflow boolean — true = white text/logo over a dark hero (local `theme="dark"`). */
+  darkMode?: boolean;
+  /** Webflow boolean — true = offset nav 3.2rem for a top CTA/announcement banner. */
+  ctaBannerOnTop?: boolean;
+  heroSectionId?: string;
+}
+
+function NavbarAdapter({ darkMode = false, ...rest }: AdapterProps) {
+  return <Navbar {...rest} theme={darkMode ? "dark" : "light"} />;
+}
+
+export default declareComponent(NavbarAdapter, {
   name: "EliseAI Navbar",
   description:
-    "Responsive EliseAI navbar. Transparent + blur over the hero, solid white after. Light or dark text theme.",
+    "Responsive EliseAI navbar. Transparent + blur over the hero, solid white after. Toggle Dark mode for white text/logo over a dark hero. Mega-menu images/copy are hardcoded in menuData.ts.",
   group: "Navigation",
   props: {
-    logoImageUrl: props.Text({
-      name: "Logo Image URL",
-      defaultValue:
-        "https://cdn.prod.website-files.com/63cc1eef179b054a9306598d/63cc1eef179b051c8e0659d0_EliseAI.svg",
-    }),
     logoHref: props.Text({
       name: "Logo Link",
       defaultValue: "/",
@@ -51,52 +64,24 @@ export default declareComponent(Navbar, {
       defaultValue: "/login",
     }),
 
-    // ===== Resources → "Latest Posts" (editable in Webflow) =====
-    latestPost1Image: props.Image({
-      name: "Latest Post 1 Image",
-    }),
-    latestPost1Category: props.Text({
-      name: "Latest Post 1 Category",
-      defaultValue: "BLOG",
-    }),
-    latestPost1Title: props.Text({
-      name: "Latest Post 1 Title",
-      defaultValue: "Centralization Playbook 2026: What's New in This Edition",
-    }),
-    latestPost1Href: props.Text({
-      name: "Latest Post 1 Link",
-      defaultValue: "/blog/centralization-playbook-2026",
-    }),
-    latestPost2Image: props.Image({
-      name: "Latest Post 2 Image",
-    }),
-    latestPost2Category: props.Text({
-      name: "Latest Post 2 Category",
-      defaultValue: "EVENTS",
-    }),
-    latestPost2Title: props.Text({
-      name: "Latest Post 2 Title",
-      defaultValue: "Where operators master the full potential of multifamily AI",
-    }),
-    latestPost2Href: props.Text({
-      name: "Latest Post 2 Link",
-      defaultValue: "/events/elise-beyond",
-    }),
-
-    // ===== Company → CTA card graphic (editable in Webflow) =====
-    companyCtaImage: props.Image({
-      name: "Company CTA Image",
-    }),
-
     // ===== Appearance =====
-    theme: props.Variant({
-      name: "Theme",
-      options: ["light", "dark"],
-      defaultValue: "light",
+    darkMode: props.Boolean({
+      name: "Dark mode",
+      defaultValue: false,
+      tooltip:
+        "On: white logo/links over a dark hero (same as local theme=\"dark\"). Off: dark text (default light theme). Pair with a hero that has the Hero Section ID below.",
+    }),
+    ctaBannerOnTop: props.Boolean({
+      name: "CTA Banner on top",
+      defaultValue: false,
+      tooltip:
+        "On: adds 3.2rem margin-top so the fixed navbar sits below a sitewide CTA/announcement banner (desktop only — ignored on mobile).",
     }),
     heroSectionId: props.Text({
       name: "Hero Section ID",
       defaultValue: "heroSection",
+      tooltip:
+        'HTML id of the hero the navbar sits over (e.g. set id="heroSection" on the hero). Controls when the bar switches from transparent to solid white.',
     }),
   },
 });

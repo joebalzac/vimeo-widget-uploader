@@ -92,10 +92,17 @@ function LogoCell({
   const hasHoverPreview = Boolean(logo.href && logo.hoverBgUrl);
   const showArrow = logo.showArrow ?? hasHref;
   const Tag = hasHref ? "a" : "div";
+  const cellClass = [
+    "csl__cell",
+    hasHref ? "csl__cell--linked" : "",
+    hasHoverPreview ? "csl__cell--preview" : "",
+  ]
+    .filter(Boolean)
+    .join(" ");
 
   return (
     <Tag
-      className={`csl__cell${hasHref ? " csl__cell--linked" : ""}`}
+      className={cellClass}
       href={hasHref ? logo.href : undefined}
       target={hasHref ? "_blank" : undefined}
       rel={hasHref ? "noopener noreferrer" : undefined}
