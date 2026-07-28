@@ -135,6 +135,7 @@ function LogoCell({
 
       {showArrow && (
         <span className="csl__arrow" aria-hidden>
+          <span className="csl__arrow-label">Case Study</span>
           <ArrowIcon />
         </span>
       )}

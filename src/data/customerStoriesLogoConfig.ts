@@ -3,16 +3,16 @@ import { BRAND_LOGOS } from "../assets/customer-logos";
 
 /** Grid order: row 1 left → right, then row 2. */
 export const LOGO_SLOT_BRANDS: CustomerBrandId[] = [
+  "goldoller",
   "scion",
-  "rpm",
-  "greystar",
-  "s2",
-  "avenue5",
   "millcreek",
-  "winn",
+  "s2",
+  "greystar",
+  "avenue5",
+  "rpm",
   "cardinal",
   "olympus",
-  "goldoller",
+  "winn",
 ];
 
 /** Per-brand hover background images (case-study cells). */
@@ -45,16 +45,16 @@ const CASE_STUDY_SLOT_INDEXES = new Set(
 );
 
 const SLOT_LABELS = [
+  "Row 1 — GoldOller",
   "Row 1 — Scion",
-  "Row 1 — RPM",
-  "Row 1 — Greystar",
+  "Row 1 — Mill Creek",
   "Row 1 — S2 Residential",
-  "Row 1 — Avenue5",
-  "Row 2 — Mill Creek",
-  "Row 2 — WinnCompanies",
+  "Row 1 — Greystar",
+  "Row 2 — Avenue5",
+  "Row 2 — RPM",
   "Row 2 — Cardinal Group",
   "Row 2 — Olympus Property",
-  "Row 2 — GoldOller",
+  "Row 2 — WinnCompanies",
 ];
 
 export function slotLabel(n: number): string {
