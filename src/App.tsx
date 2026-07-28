@@ -53,7 +53,9 @@ function App() {
       </div>
 
       {/* Extra height so local preview can scroll fully past the hero */}
-      <div style={{ minHeight: "120vh", padding: "80px 24px", background: "#fff" }}>
+      <div
+        style={{ minHeight: "120vh", padding: "80px 24px", background: "#fff" }}
+      >
         <h2 style={{ fontSize: 32, color: "#181819" }}>Below the hero</h2>
         <p style={{ color: "#52525b", maxWidth: 560 }}>
           The navbar should now be solid white with dark text. Scroll back up to
@@ -61,7 +63,7 @@ function App() {
         </p>
       </div>
 
-      <div style={{ padding: "48px 24px", background: "#fff" }}>
+      <div>
         <CustomerStoriesLogo theme="light" logos={DEFAULT_LOGO_GRID} />
       </div>
     </>

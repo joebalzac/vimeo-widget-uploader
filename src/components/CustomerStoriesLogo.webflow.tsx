@@ -4,6 +4,7 @@ import { declareComponent } from "@webflow/react";
 import {
   buildLogoGrid,
   slotLabel,
+  slotLogoDefaults,
   type LogoSlotConfig,
 } from "../data/customerStoriesLogoConfig";
 
@@ -25,6 +26,7 @@ function CustomerStoriesLogoAdapter({
     return {
       href: rest[`l${n}CaseStudyUrl`],
       logoUrl: rest[`l${n}LogoUrl`],
+      logoHoverUrl: rest[`l${n}LogoHoverUrl`],
       hoverBgUrl: rest[`l${n}HoverBgUrl`],
     };
   });
@@ -39,39 +41,52 @@ function CustomerStoriesLogoAdapter({
   );
 }
 
-function caseStudyUrlProp(n: number) {
+function logoUrlProp(n: number) {
+  const { logoUrl, label } = slotLogoDefaults(n);
   return props.Text({
-    name: `${slotLabel(n)} — Case Study URL`,
-    defaultValue: "",
-    tooltip: `Optional. Links this cell on click. Arrows show on preset case-study slots automatically; add a URL here to enable the link.`,
+    name: `${slotLabel(n)} — Logo URL (black)`,
+    defaultValue: logoUrl,
+    tooltip: `Black ${label} logo for the light theme. Replace with any Webflow Asset URL to swap this cell.`,
   });
 }
 
-function logoUrlProp(n: number) {
+function logoHoverUrlProp(n: number) {
+  const { logoHoverUrl, label } = slotLogoDefaults(n);
   return props.Text({
-    name: `${slotLabel(n)} — Logo URL (override)`,
-    defaultValue: "",
-    tooltip:
-      "Optional. Replaces the bundled brand logo for this cell. Upload an SVG/PNG to Webflow Assets and paste the URL.",
+    name: `${slotLabel(n)} — Logo URL (white)`,
+    defaultValue: logoHoverUrl,
+    tooltip: `White ${label} logo for the dark theme and hover state. Replace with any Webflow Asset URL to swap this cell.`,
   });
 }
 
 function hoverBgProp(n: number) {
+  const { hoverBgUrl, label } = slotLogoDefaults(n);
   return props.Text({
     name: `${slotLabel(n)} — Hover Background URL`,
-    defaultValue: "",
-    tooltip:
-      "Optional. Hover image for this specific cell (requires a Case Study URL). Overrides the shared hover background.",
+    defaultValue: hoverBgUrl,
+    tooltip: hoverBgUrl
+      ? `Hover background for ${label}. Shown when a Case Study URL is set. Clear or replace as needed.`
+      : `Optional hover background for ${label}. Paste a Webflow Asset URL. Requires a Case Study URL to appear on hover.`,
   });
 }
 
-// Build the flat per-slot prop map: logo URL, hover bg URL, and case study URL
-// for each of the 10 grid cells.
+function caseStudyUrlProp(n: number) {
+  const { caseStudyUrl, label, hoverBgUrl } = slotLogoDefaults(n);
+  return props.Text({
+    name: `${slotLabel(n)} — Case Study URL`,
+    defaultValue: caseStudyUrl,
+    tooltip: hoverBgUrl
+      ? `Paste the ${label} case study page URL. Required for click + hover expand with the background image.`
+      : `Optional. Links this cell on click and enables the hover expand.`,
+  });
+}
+
 const slotProps = Array.from({ length: SLOT_COUNT }).reduce<
   Record<string, ReturnType<typeof props.Text>>
 >((acc, _, i) => {
   const n = i + 1;
   acc[`l${n}LogoUrl`] = logoUrlProp(n);
+  acc[`l${n}LogoHoverUrl`] = logoHoverUrlProp(n);
   acc[`l${n}HoverBgUrl`] = hoverBgProp(n);
   acc[`l${n}CaseStudyUrl`] = caseStudyUrlProp(n);
   return acc;
@@ -80,7 +95,7 @@ const slotProps = Array.from({ length: SLOT_COUNT }).reduce<
 export default declareComponent(CustomerStoriesLogoAdapter, {
   name: "Customer Stories — Logo Grid",
   description:
-    "Trusted-by logo grid with bundled company SVGs (GoldOller, RPM, Scion, Greystar). Per cell you can add a custom logo, a hover background image, and a case study link.",
+    "Trusted-by logo grid. Each cell has editable black/white logos, a case study URL, and a hover background — all prefilled where available. Paste case study page URLs to enable click + hover.",
   group: "Media",
 
   props: {
@@ -88,13 +103,13 @@ export default declareComponent(CustomerStoriesLogoAdapter, {
       name: "Theme",
       defaultValue: "light",
       tooltip:
-        '"light" = white background, dark logos. "dark" = black background, white logos.',
+        '"light" = white background, black logos. "dark" = black background, white logos.',
     }),
     hoverBgUrl: props.Text({
       name: "Shared Hover Background Image URL",
       defaultValue: "",
       tooltip:
-        "Optional fallback hover image for linked cells. Upload a hero image to Webflow Assets and paste the URL. Per-cell hover URLs override this.",
+        "Optional fallback hover image for linked cells that don't have a per-cell background. Per-cell hover URLs override this.",
     }),
     ...slotProps,
   },

@@ -44,11 +44,14 @@ function resolveLogoAssets(
     };
   }
 
+  // Custom / Webflow URLs: logoUrl = black, logoHoverUrl = white
   if (!logo.logoUrl) return null;
+  const black = logo.logoUrl;
+  const white = logo.logoHoverUrl || logo.logoUrl;
 
   return {
-    logoUrl: logo.logoUrl,
-    logoHoverUrl: logo.logoHoverUrl || logo.logoUrl,
+    logoUrl: theme === "light" ? black : white,
+    logoHoverUrl: white,
     alt: logo.alt || "",
   };
 }
