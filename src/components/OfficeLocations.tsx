@@ -31,6 +31,7 @@ const PLACEHOLDER_ITEMS: OfficeLocation[] = [
   { city: "Chicago", addressLine1: "55 2nd Street", addressLine2: "San Francisco, CA 94105" },
   { city: "Boston", addressLine1: "55 2nd Street", addressLine2: "San Francisco, CA 94105" },
   { city: "Toronto", addressLine1: "55 2nd Street", addressLine2: "San Francisco, CA 94105" },
+  { city: "Dallas", addressLine1: "55 2nd Street", addressLine2: "San Francisco, CA 94105" },
 ];
 
 function PinIcon() {

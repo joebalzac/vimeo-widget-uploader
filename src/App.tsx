@@ -3,6 +3,34 @@ import PatientOutreach from "./components/PatientOutreach";
 import { Navbar } from "./components/Navbar";
 import CustomerStoriesLogo from "./components/CustomerStoriesLogo";
 import { DEFAULT_LOGO_GRID } from "./data/customerStoriesLogoConfig";
+import OfficeLocations from "./components/OfficeLocations";
+import FeatureCardGrid from "./components/FeatureCardGrid";
+import SessionCardGrid from "./components/SessionCardGrid";
+import GatedVimeoForm from "./components/GatedVimeoForm";
+
+const FEATURE_CARDS = [
+  {
+    id: "workforce",
+    imageSrc: "/feature-cards/smarter-workforce.png",
+    title: "Smarter Workforce",
+    subtitle:
+      "Apollo gives every employee expert-level operational context from day one.",
+  },
+  {
+    id: "utilization",
+    imageSrc: "/feature-cards/product-utilization.png",
+    title: "Maximize Product Utilization",
+    subtitle:
+      "Unlock the full power of products you already have with prompt-based actions.",
+  },
+  {
+    id: "insights",
+    imageSrc: "/feature-cards/asset-performance.png",
+    title: "Asset Performance Insights",
+    subtitle:
+      "Give leaders eyes and ears to spot problems before they happen.",
+  },
+];
 
 function App() {
   return (
@@ -52,6 +80,29 @@ function App() {
         <PatientOutreach />
       </div>
 
+      <section id="gatedVimeoForm" className="gated-vimeo-preview-wrap">
+        <GatedVimeoForm vimeoId="76979871" previewSeconds={30} />
+      </section>
+
+      {/* Feature Card Grid — no background of its own, so whatever section it
+          sits in shows through. */}
+      <section id="featureCardGrid" style={{ padding: "80px 24px" }}>
+        <FeatureCardGrid cards={FEATURE_CARDS} />
+      </section>
+
+      <section id="sessionCardGrid" className="session-card-preview-wrap">
+        <div className="session-card-preview">
+          {Array.from({ length: 8 }, (_, i) => (
+            <SessionCardGrid
+              key={i}
+              title="Session Title"
+              details="Session Details..."
+              slug={`/talks/session-${i + 1}`}
+            />
+          ))}
+        </div>
+      </section>
+
       {/* Extra height so local preview can scroll fully past the hero */}
       <div
         style={{ minHeight: "120vh", padding: "80px 24px", background: "#fff" }}
@@ -65,6 +116,8 @@ function App() {
 
       <div>
         <CustomerStoriesLogo theme="light" logos={DEFAULT_LOGO_GRID} />
+
+        <OfficeLocations />
       </div>
     </>
   );

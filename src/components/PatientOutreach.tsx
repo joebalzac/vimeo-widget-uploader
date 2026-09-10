@@ -13,10 +13,14 @@ export interface OutreachFeature {
   title: string;
   /** Shown only while the feature is active. */
   description: string;
-  /** Preview image URL shown in the panel while this feature is active. */
-  imageUrl?: string;
-  /** Alt text for the preview image (defaults to the feature title). */
-  imageAlt?: string;
+  /** Vimeo video ID shown in the panel while this feature is active. */
+  vimeoId?: string;
+}
+
+/** Vimeo "background" mode: autoplays muted, loops, hides all chrome, and
+ * fills its container (Vimeo scales the video to cover, no CSS needed). */
+function vimeoEmbedUrl(vimeoId: string) {
+  return `https://player.vimeo.com/video/${vimeoId}?background=1&autoplay=1&loop=1&muted=1&byline=0&title=0&portrait=0`;
 }
 
 export interface PatientOutreachProps {
@@ -136,13 +140,15 @@ export default function PatientOutreach({
                   </button>
                   {/* Inline preview used only in the mobile column layout, where
                       every feature is expanded at once. Renders as an empty
-                      placeholder box when no image is provided. */}
+                      placeholder box when no video is provided. */}
                   <div className="po__item-panel">
-                    {feature.imageUrl && (
-                      <img
-                        className="po__panel-img"
-                        src={feature.imageUrl}
-                        alt={feature.imageAlt || feature.title}
+                    {feature.vimeoId && (
+                      <iframe
+                        className="po__panel-video"
+                        src={vimeoEmbedUrl(feature.vimeoId)}
+                        title={feature.title}
+                        allow="autoplay; fullscreen; picture-in-picture"
+                        frameBorder={0}
                       />
                     )}
                   </div>
@@ -162,12 +168,14 @@ export default function PatientOutreach({
           </ul>
 
           <div className="po__panel">
-            {activeFeature.imageUrl && (
-              <img
+            {activeFeature.vimeoId && (
+              <iframe
                 key={activeFeature.id}
-                className="po__panel-img"
-                src={activeFeature.imageUrl}
-                alt={activeFeature.imageAlt || activeFeature.title}
+                className="po__panel-video"
+                src={vimeoEmbedUrl(activeFeature.vimeoId)}
+                title={activeFeature.title}
+                allow="autoplay; fullscreen; picture-in-picture"
+                frameBorder={0}
               />
             )}
           </div>

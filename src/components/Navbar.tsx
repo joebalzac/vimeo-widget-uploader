@@ -21,6 +21,8 @@ interface NavbarProps {
   ctaHref?: string;
   loginText?: string;
   loginHref?: string;
+  /** When false, hides the Log In link on desktop and mobile. Defaults to true. */
+  showLogin?: boolean;
   // ----- Appearance -----
   /**
    * Both themes start transparent (with blur) over the hero, then become
@@ -493,6 +495,7 @@ export const Navbar = ({
   ctaHref = "/demo",
   loginText = "Log In",
   loginHref = "/login",
+  showLogin = true,
   theme = "light",
   heroSectionId = "heroSection",
   ctaBannerOnTop = false,
@@ -722,33 +725,35 @@ export const Navbar = ({
 
           {/* Right side - Log In link and CTA button */}
           <div className="navbar__actions">
-            <a href={loginHref} className="navbar__login">
-              {loginText}
-              <svg
-                className="navbar__login-arrow"
-                xmlns="http://www.w3.org/2000/svg"
-                width="18"
-                height="18"
-                viewBox="0 0 18 18"
-                fill="none"
-                aria-hidden="true"
-              >
-                <path
-                  d="M3.75 9H14.25"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-                <path
-                  d="M9 3.75L14.25 9L9 14.25"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </a>
+            {showLogin && (
+              <a href={loginHref} className="navbar__login">
+                {loginText}
+                <svg
+                  className="navbar__login-arrow"
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="18"
+                  height="18"
+                  viewBox="0 0 18 18"
+                  fill="none"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M3.75 9H14.25"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  <path
+                    d="M9 3.75L14.25 9L9 14.25"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </a>
+            )}
             <a href={ctaHref} className="navbar__cta">
               {ctaText}
             </a>
@@ -842,33 +847,35 @@ export const Navbar = ({
                 <a href={ctaHref} className="navbar__mobile-cta">
                   {ctaText}
                 </a>
-                <a href={loginHref} className="navbar__mobile-login">
-                  {loginText}
-                  <svg
-                    className="navbar__mobile-login-arrow"
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="18"
-                    height="18"
-                    viewBox="0 0 18 18"
-                    fill="none"
-                    aria-hidden="true"
-                  >
-                    <path
-                      d="M3.75 9H14.25"
-                      stroke="#7638FA"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                    <path
-                      d="M9 3.75L14.25 9L9 14.25"
-                      stroke="#7638FA"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                </a>
+                {showLogin && (
+                  <a href={loginHref} className="navbar__mobile-login">
+                    {loginText}
+                    <svg
+                      className="navbar__mobile-login-arrow"
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="18"
+                      height="18"
+                      viewBox="0 0 18 18"
+                      fill="none"
+                      aria-hidden="true"
+                    >
+                      <path
+                        d="M3.75 9H14.25"
+                        stroke="#7638FA"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                      <path
+                        d="M9 3.75L14.25 9L9 14.25"
+                        stroke="#7638FA"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                  </a>
+                )}
               </div>
             </>
           ) : (
@@ -925,33 +932,35 @@ export const Navbar = ({
                 <a href={ctaHref} className="navbar__mobile-cta">
                   {ctaText}
                 </a>
-                <a href={loginHref} className="navbar__mobile-login">
-                  {loginText}
-                  <svg
-                    className="navbar__mobile-login-arrow"
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="18"
-                    height="18"
-                    viewBox="0 0 18 18"
-                    fill="none"
-                    aria-hidden="true"
-                  >
-                    <path
-                      d="M3.75 9H14.25"
-                      stroke="#7638FA"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                    <path
-                      d="M9 3.75L14.25 9L9 14.25"
-                      stroke="#7638FA"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                </a>
+                {showLogin && (
+                  <a href={loginHref} className="navbar__mobile-login">
+                    {loginText}
+                    <svg
+                      className="navbar__mobile-login-arrow"
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="18"
+                      height="18"
+                      viewBox="0 0 18 18"
+                      fill="none"
+                      aria-hidden="true"
+                    >
+                      <path
+                        d="M3.75 9H14.25"
+                        stroke="#7638FA"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                      <path
+                        d="M9 3.75L14.25 9L9 14.25"
+                        stroke="#7638FA"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                  </a>
+                )}
               </div>
             </>
           )}

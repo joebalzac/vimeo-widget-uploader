@@ -1,0 +1,157 @@
+/* FeatureCardGrid — bordered grid of image + title + subtitle cards.
+   Figma: desktop node 21512-9164, mobile node 21291-4275.
+
+   The component is intentionally transparent: no background is painted on the
+   section, the cards, or the media area, so it can be dropped onto any section
+   background. Colors are driven by CSS variables, and the dark theme only
+   swaps those variables. */
+
+.fcg {
+  --fcg-border: #dddcda;
+  --fcg-title: #0e0d0c;
+  --fcg-subtitle: #3f3e3c;
+  /* --fcg-cols-desktop is the only var set inline by the component, so the
+     responsive column counts below can still win on smaller screens. */
+  --fcg-cols: var(--fcg-cols-desktop, 3);
+  --fcg-media-height: 286px;
+  --fcg-pad: 32px;
+
+  width: 100%;
+  box-sizing: border-box;
+  background: transparent;
+  font-family: "Intervariable", Inter, system-ui, sans-serif;
+}
+
+.fcg--dark {
+  --fcg-border: rgba(255, 255, 255, 0.2);
+  --fcg-title: #fafafb;
+  --fcg-subtitle: rgba(250, 250, 251, 0.72);
+}
+
+/* ── Grid ───────────────────────────────────────────────────────────────────── */
+/* Every card draws its own right/bottom divider; the grid is pulled 1px past
+   the container edges so the trailing dividers land on the outer border
+   instead of doubling up. This keeps the frame correct for any card count and
+   for wrapped rows. */
+.fcg__grid {
+  display: grid;
+  grid-template-columns: repeat(var(--fcg-cols), minmax(0, 1fr));
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.fcg--bordered {
+  border: 1px solid var(--fcg-border);
+}
+
+.fcg--bordered .fcg__grid {
+  margin: 0 -1px -1px 0;
+}
+
+.fcg--bordered .fcg__card {
+  border-right: 1px solid var(--fcg-border);
+  border-bottom: 1px solid var(--fcg-border);
+}
+
+/* ── Card ───────────────────────────────────────────────────────────────────── */
+.fcg__card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  min-width: 0;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.fcg__media {
+  position: relative;
+  width: 100%;
+  height: var(--fcg-media-height);
+  flex-shrink: 0;
+  overflow: hidden;
+  background: transparent;
+}
+
+.fcg__img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+}
+
+.fcg--fit-cover .fcg__img {
+  object-fit: cover;
+}
+
+.fcg__text {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-end;
+  gap: 6px;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0px 32px 32px;
+}
+
+.fcg__title {
+  margin: 0;
+  font-family: "Intervariable", Inter, sans-serif;
+  font-weight: 400;
+  font-size: 22px;
+  line-height: 1.2;
+  letter-spacing: -0.66px;
+  color: var(--fcg-title);
+  font-feature-settings: "ss07" 1;
+}
+
+.fcg__subtitle {
+  margin: 0;
+  font-family: "Intervariable", Inter, sans-serif;
+  font-weight: 400;
+  font-size: 18px;
+  line-height: 1.4;
+  letter-spacing: -0.36px;
+  color: var(--fcg-subtitle);
+  font-feature-settings: "ss07" 1;
+}
+
+/* ── Tablet ─────────────────────────────────────────────────────────────────── */
+@media (max-width: 991px) {
+  .fcg {
+    --fcg-cols: 2;
+    --fcg-media-height: 240px;
+    --fcg-pad: 24px;
+  }
+
+  /* An odd card out would leave an open half-row, so let it span the row. */
+  .fcg__grid > .fcg__card:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+  }
+
+  .fcg__title {
+    font-size: 20px;
+    letter-spacing: -0.6px;
+  }
+
+  .fcg__subtitle {
+    font-size: 16px;
+    letter-spacing: -0.32px;
+  }
+}
+
+/* ── Mobile (Figma node 21291-4275) ─────────────────────────────────────────── */
+@media (max-width: 767px) {
+  .fcg {
+    --fcg-cols: 1;
+    --fcg-media-height: 226px;
+    --fcg-pad: 24px;
+  }
+
+  .fcg__text {
+    padding: 0px 24px 24px;
+  }
+}

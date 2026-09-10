@@ -1,0 +1,264 @@
+/* SessionCard — single talk card. Place in a 3-col Collection List in Webflow.
+   Desktop: Figma 13254-25475. Mobile: Figma 13107-30011. */
+
+.scg {
+  --scg-title: #0e0d0c;
+  --scg-details: #3f3e3c;
+  --scg-link: #7a7977;
+
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 20px;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  background: transparent;
+  font-family: "Intervariable", Inter, system-ui, sans-serif;
+  color: inherit;
+  text-decoration: none;
+}
+
+a.scg {
+  cursor: pointer;
+}
+
+a.scg:hover .scg__cta {
+  color: var(--scg-title);
+}
+
+.scg__media {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 476 / 266;
+  overflow: hidden;
+  border-radius: 8px;
+  flex-shrink: 0;
+  background-color: #ecebe9;
+  background-image:
+    linear-gradient(45deg, #e4e3e1 25%, transparent 25%),
+    linear-gradient(-45deg, #e4e3e1 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, #e4e3e1 75%),
+    linear-gradient(-45deg, transparent 75%, #e4e3e1 75%);
+  background-size: 20px 20px;
+  background-position: 0 0, 0 10px, 10px -10px, -10px 0;
+  box-shadow: inset 0 0 0 0.175px rgba(0, 0, 0, 0.1);
+}
+
+.scg__thumb {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: inherit;
+}
+
+.scg__play {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.scg__play-icon {
+  width: 40px;
+  height: 40px;
+  overflow: clip;
+  flex-shrink: 0;
+}
+
+.scg__play-icon img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  transform: rotate(90deg);
+}
+
+.scg__body {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.scg__copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  width: 100%;
+  padding-right: 20px;
+  box-sizing: border-box;
+}
+
+.scg__title {
+  margin: 0;
+  font-family: "Intervariable", Inter, sans-serif;
+  font-weight: 450;
+  font-size: 22px;
+  line-height: 1.2;
+  letter-spacing: -0.66px;
+  color: var(--scg-title);
+  font-feature-settings: "ss07" 1;
+}
+
+.scg__details {
+  margin: 0;
+  font-family: "Intervariable", Inter, sans-serif;
+  font-weight: 400;
+  font-size: 18px;
+  line-height: 1.4;
+  letter-spacing: -0.36px;
+  color: var(--scg-details);
+  font-feature-settings: "ss07" 1;
+}
+
+.scg__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: "Intervariable", Inter, sans-serif;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 1.4;
+  letter-spacing: -0.32px;
+  color: var(--scg-link);
+  font-feature-settings: "ss07" 1;
+}
+
+.scg__cta-icon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  overflow: clip;
+}
+
+.scg__cta-icon img {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+@media (max-width: 767px) {
+  .scg {
+    gap: 16px;
+  }
+
+  .scg__media {
+    border-radius: 6px;
+  }
+
+  .scg__play-icon {
+    width: 23px;
+    height: 23px;
+  }
+
+  .scg__copy {
+    padding-right: 16px;
+  }
+
+  .scg__title {
+    font-size: 20px;
+    letter-spacing: -0.6px;
+  }
+
+  .scg__details {
+    font-size: 16px;
+    letter-spacing: -0.32px;
+  }
+}
+
+/* Parent Collection List / preview grid — applied by useSessionCarousel. */
+.scg-nav {
+  display: none;
+}
+
+@media (max-width: 767px) {
+  .scg-carousel {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    grid-template-columns: none !important;
+    gap: 12px !important;
+    column-gap: 12px !important;
+    row-gap: 12px !important;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
+  }
+
+  .scg-carousel::-webkit-scrollbar {
+    display: none;
+  }
+
+  .scg-carousel > * {
+    flex: 0 0 calc(100% - 24px) !important;
+    width: calc(100% - 24px) !important;
+    max-width: calc(100% - 24px) !important;
+    min-width: 0;
+    scroll-snap-align: start;
+  }
+
+  .scg-nav:not([hidden]) {
+    display: inline-flex;
+    align-items: center;
+    overflow: hidden;
+    margin-top: 32px;
+    background-color: #f5f4f2;
+    border-radius: 1000px;
+    box-shadow: inset 0 0 0 0.5px rgba(0, 0, 0, 0.1);
+  }
+
+  .scg-nav__btn {
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    padding: 0;
+    border: none;
+    background: transparent;
+    border-radius: 1000px;
+    cursor: pointer;
+    transition: background-color 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  .scg-nav__btn:not(:disabled):hover,
+  .scg-nav__btn:not(:disabled):active {
+    background-color: #ffffff;
+    box-shadow:
+      0 0 0.5px rgba(0, 0, 0, 0.2),
+      0 2px 2px rgba(0, 0, 0, 0.04);
+  }
+
+  .scg-nav__btn:disabled {
+    opacity: 0.35;
+    cursor: default;
+  }
+
+  .scg-nav__icon {
+    width: 24px;
+    height: 24px;
+    overflow: clip;
+  }
+
+  .scg-nav__icon img {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  .scg-nav__icon--prev {
+    transform: rotate(180deg);
+  }
+}

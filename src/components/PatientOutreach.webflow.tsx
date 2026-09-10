@@ -61,7 +61,7 @@ function PatientOutreachAdapter(p: AdapterProps) {
       id: d.id,
       title: get("Title", d.title),
       description: get("Desc", d.description),
-      imageUrl: get("Image", "") || undefined,
+      vimeoId: get("VimeoId", "") || undefined,
     };
   });
 
@@ -87,11 +87,11 @@ function featureProps(d: (typeof FEATURE_DEFAULTS)[number], n: number) {
       name: `Feature ${n} — Description`,
       defaultValue: d.description,
     }),
-    [`f${n}Image`]: props.Text({
-      name: `Feature ${n} — Panel URL`,
-      defaultValue: d.imageUrl ?? "",
+    [`f${n}VimeoId`]: props.Text({
+      name: `Feature ${n} — Vimeo ID`,
+      defaultValue: "",
       tooltip:
-        "URL of the image shown in the panel while this feature is active (upload it in the Webflow Asset Manager, then paste its URL here).",
+        "Vimeo video ID shown in the panel while this feature is active (e.g. the '76979871' in vimeo.com/76979871).",
     }),
   };
 }
@@ -107,7 +107,7 @@ function allFeatureProps() {
 export default declareComponent(PatientOutreachAdapter, {
   name: "Patient Outreach",
   description:
-    "Feature accordion with a preview panel. The list auto-advances through outreach features, revealing each one's description and a matching preview image. Edit each feature's text and preview image URL.",
+    "Feature accordion with a preview panel. The list auto-advances through outreach features, revealing each one's description and a matching preview video. Edit each feature's text and paste in its Vimeo video ID.",
   group: "Media",
 
   props: {

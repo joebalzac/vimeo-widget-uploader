@@ -1,0 +1,334 @@
+/* GatedVimeoForm — Stripe-style gated player + 2-step HubSpot form.
+   Preview uses Vimeo Player SDK segmented playback (`end_time`). */
+
+.gvf {
+  --gvf-accent: #7638fa;
+  --gvf-accent-hover: #5e2bd4;
+  --gvf-text: #181819;
+  --gvf-muted: #6a6a6b;
+  --gvf-border: #e6e6ea;
+  --gvf-input-bg: #f5f5f7;
+  --gvf-error: #d7234a;
+  --gvf-radius: 12px;
+  --gvf-label-w: 148px;
+
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  overflow: hidden;
+  border: 1px solid var(--gvf-border);
+  border-radius: var(--gvf-radius);
+  background: #fff;
+  font-family: Inter, "Intervariable", system-ui, sans-serif;
+  color: var(--gvf-text);
+}
+
+.gvf--unlocked {
+  border-radius: var(--gvf-radius);
+}
+
+.gvf *,
+.gvf *::before,
+.gvf *::after {
+  box-sizing: border-box;
+}
+
+/* ── Player ─────────────────────────────────────────────────────────────────── */
+
+.gvf__player {
+  background: #0b0820;
+}
+
+.gvf__frame {
+  position: relative;
+  width: 100%;
+  padding-bottom: 56.25%;
+  overflow: hidden;
+  background: #0b0820;
+}
+
+.gvf__embed,
+.gvf__poster {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.gvf__embed iframe {
+  position: absolute;
+  inset: 0;
+  width: 100% !important;
+  height: 100% !important;
+  border: 0;
+}
+
+.gvf__poster {
+  object-fit: cover;
+  display: block;
+}
+
+.gvf__poster--empty {
+  background: #14102b;
+}
+
+.gvf__overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 24px;
+  background: rgba(10, 8, 28, 0.45);
+}
+
+.gvf__preview-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  padding: 10px 18px;
+  border: 0;
+  border-radius: 999px;
+  background: #fff;
+  color: var(--gvf-text);
+  font-family: Inter, sans-serif;
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.3;
+  letter-spacing: -0.15px;
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.gvf__preview-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.22);
+}
+
+.gvf__overlay-copy {
+  margin: 0;
+  color: #fff;
+  font-family: Inter, sans-serif;
+  font-size: 16px;
+  font-weight: 450;
+  line-height: 1.4;
+  letter-spacing: -0.16px;
+  text-align: center;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.35);
+}
+
+/* ── Form ───────────────────────────────────────────────────────────────────── */
+
+.gvf__form {
+  overflow: hidden;
+  padding: 28px 32px 24px;
+  background: #fff;
+}
+
+.gvf__fields {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.gvf__more {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  overflow: hidden;
+}
+
+.gvf__row {
+  display: grid;
+  grid-template-columns: var(--gvf-label-w) minmax(0, 1fr);
+  align-items: center;
+  gap: 16px 20px;
+}
+
+.gvf__label {
+  margin: 0;
+  color: var(--gvf-text);
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.4;
+  letter-spacing: -0.15px;
+}
+
+.gvf__control {
+  position: relative;
+  min-width: 0;
+}
+
+.gvf__input {
+  width: 100%;
+  height: 44px;
+  padding: 10px 14px;
+  border: 1px solid var(--gvf-border);
+  border-radius: 8px;
+  background: var(--gvf-input-bg);
+  color: var(--gvf-text);
+  font-family: Inter, sans-serif;
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 1.4;
+  letter-spacing: -0.15px;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+
+.gvf__input:hover {
+  background: #f0f0f3;
+}
+
+.gvf__input:focus,
+.gvf__input[data-focused="true"] {
+  border-color: var(--gvf-accent);
+  background: #fff;
+  box-shadow: 0 0 0 1px var(--gvf-accent);
+}
+
+.gvf__select {
+  appearance: none;
+  padding-right: 36px;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none'><path d='M1 1.5 6 6.5 11 1.5' stroke='%236a6a6b' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  cursor: pointer;
+}
+
+.gvf__row--error .gvf__input {
+  border-color: var(--gvf-error);
+  background: #fff;
+  box-shadow: none;
+  padding-right: 40px;
+}
+
+.gvf__row--error .gvf__input:focus {
+  box-shadow: 0 0 0 1px var(--gvf-error);
+}
+
+.gvf__error-icon {
+  position: absolute;
+  top: 50%;
+  right: 12px;
+  color: var(--gvf-error);
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.gvf__disclaimer {
+  margin: 4px 0 0;
+  color: var(--gvf-muted);
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.45;
+  letter-spacing: -0.08px;
+}
+
+.gvf__api-error {
+  margin: 12px 0 0;
+  color: var(--gvf-error);
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.gvf__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 28px;
+}
+
+.gvf__legal {
+  margin: 0;
+  max-width: 360px;
+  color: var(--gvf-muted);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.45;
+}
+
+.gvf__legal a {
+  color: var(--gvf-accent);
+  text-decoration: none;
+}
+
+.gvf__legal a:hover {
+  text-decoration: underline;
+}
+
+.gvf__continue {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-width: 132px;
+  height: 44px;
+  padding: 0 22px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--gvf-accent);
+  color: #fff;
+  font-family: Inter, sans-serif;
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: -0.15px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.gvf__continue:hover:not(:disabled) {
+  background: var(--gvf-accent-hover);
+}
+
+.gvf__continue:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ── Mobile ─────────────────────────────────────────────────────────────────── */
+
+@media (max-width: 640px) {
+  .gvf__form {
+    padding: 20px 16px 16px;
+  }
+
+  .gvf__row {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+
+  .gvf__footer {
+    flex-direction: column-reverse;
+    align-items: stretch;
+    gap: 12px;
+    margin-top: 20px;
+  }
+
+  .gvf__legal {
+    max-width: none;
+    text-align: center;
+  }
+
+  .gvf__continue {
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gvf__preview-btn,
+  .gvf__input,
+  .gvf__continue {
+    transition: none;
+  }
+}

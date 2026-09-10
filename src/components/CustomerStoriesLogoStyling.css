@@ -7,11 +7,11 @@
   align-items: center;
   padding: 0;
   font-family: Inter, sans-serif;
-  background-color: #ffffff;
+  background-color: transparent;
 }
 
 .csl--dark {
-  background-color: #000000;
+  background-color: transparent;
 }
 
 .csl__grid {
@@ -19,6 +19,7 @@
   flex-direction: column;
   width: 100%;
   border: 1px solid #e6e5e3;
+  border-top: none;
   border-radius: 4px;
   overflow: hidden;
 }
@@ -54,19 +55,23 @@
   transition: flex 0.45s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.35s ease;
 }
 
+.csl__cell:last-child {
+  margin-right: 0;
+}
+
 .csl--dark .csl__cell {
   border-color: rgba(255, 255, 255, 0.2);
   background-color: #000000;
 }
 
-.csl__cell:hover,
-.csl__cell:focus-visible {
+.csl__cell--linked:hover,
+.csl__cell--linked:focus-visible {
   flex: 0 0 clamp(200px, 32vw, 360px);
   z-index: 2;
 }
 
-.csl__row:has(.csl__cell:hover) .csl__cell:not(:hover),
-.csl__row:has(.csl__cell:focus-visible) .csl__cell:not(:focus-visible) {
+.csl__row:has(.csl__cell--linked:hover) .csl__cell:not(:hover),
+.csl__row:has(.csl__cell--linked:focus-visible) .csl__cell:not(:focus-visible) {
   flex: 1 1 0;
 }
 
@@ -178,6 +183,7 @@
 .csl__cell--linked:focus-visible .csl__arrow {
   background-color: rgba(239, 238, 236, 0.2);
   color: #ffffff;
+  cursor: pointer;
 }
 
 .csl__arrow-icon {
@@ -188,8 +194,8 @@
 }
 
 @media (max-width: 1200px) {
-  .csl__cell:hover,
-  .csl__cell:focus-visible {
+  .csl__cell--linked:hover,
+  .csl__cell--linked:focus-visible {
     flex: 0 0 clamp(160px, 38vw, 280px);
   }
 }
@@ -214,8 +220,19 @@
     margin-bottom: -1px;
   }
 
-  .csl__cell:hover,
-  .csl__cell:focus-visible {
+  /* Right-column cells in the 2-col grid — keep right border visible */
+  .csl__row:nth-child(odd) .csl__cell:nth-child(even),
+  .csl__row:nth-child(even) .csl__cell:nth-child(odd) {
+    margin-right: 0;
+  }
+
+  /* No top border on the visual top row in 2-col layout */
+  .csl__row:first-child .csl__cell:nth-child(-n + 2) {
+    border-top: none;
+  }
+
+  .csl__cell--linked:hover,
+  .csl__cell--linked:focus-visible {
     flex: none;
   }
 

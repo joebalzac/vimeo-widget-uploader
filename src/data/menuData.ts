@@ -69,6 +69,11 @@ export const menuData: Record<string, MegaMenuData> = {
               href: "/platform-overview",
             },
             {
+              title: "Apollo",
+              description: "One agent for property management",
+              href: "/apollo",
+            },
+            {
               title: "EliseCRM",
               description: "Centralize contacts, conversations, & insights",
               href: "/elisecrm",
@@ -250,6 +255,11 @@ export const menuData: Record<string, MegaMenuData> = {
                 "Personalized appointment recall, reminders, waitlist management and more",
               href: "/health/outbound-calling",
             },
+            {
+              title: "Billing & Payments",
+              description: "Billing questions answered. Payments collected",
+              href: "/health/billing-payments",
+            },
           ],
         ],
       },
@@ -285,6 +295,11 @@ export const menuData: Record<string, MegaMenuData> = {
                 "Improve dermatology workflows with smart automation",
               href: "/health/dermatology",
             },
+            {
+              title: "Orthopedic",
+              description: "Streamline orthopedic operations with EliseAI",
+              href: "/health/orthopedic",
+            },
           ],
           [
             {
@@ -293,9 +308,9 @@ export const menuData: Record<string, MegaMenuData> = {
               href: "/health/ophthalmology",
             },
             {
-              title: "Orthopedic",
-              description: "Streamline orthopedic operations with EliseAI",
-              href: "/health/orthopedic",
+              title: "Primary Care",
+              description: "Automating bookings, calls, collections, recalls",
+              href: "/health/primary-care",
             },
           ],
         ],
