@@ -5,6 +5,9 @@ import { declareComponent } from "@webflow/react";
 type ImageValue = { src: string; alt?: string };
 
 interface AdapterProps {
+  theme?: string;
+  lockedVideo?: boolean | string;
+  gatedVideo?: boolean | string;
   image?: ImageValue;
   vimeoId?: string;
   title?: string;
@@ -15,6 +18,9 @@ interface AdapterProps {
 }
 
 function SessionCardGridAdapter({
+  theme,
+  lockedVideo,
+  gatedVideo,
   image,
   vimeoId,
   title,
@@ -33,6 +39,9 @@ function SessionCardGridAdapter({
       slug={slug}
       ctaLabel={ctaLabel}
       slugPrefix={slugPrefix}
+      lockedVideo={lockedVideo}
+      gatedVideo={gatedVideo}
+      darkMode={String(theme || "").toLowerCase() === "dark"}
     />
   );
 }
@@ -40,10 +49,33 @@ function SessionCardGridAdapter({
 export default declareComponent(SessionCardGridAdapter, {
   name: "Session Card",
   description:
-    "A single session talk card. The whole card links to the URL Slug. Drop it in a Collection List (3 columns on desktop) and bind Image, Vimeo ID, Session Title, Session Details, and URL Slug from the CMS.",
+    "A single session talk card. Bind Locked Video to the CMS Locked Video Switch for the lock icon and HubSpot form. Gated Video is a separate boolean and does not control the lock. Drop it in a Collection List and bind fields from the CMS.",
   group: "Media",
 
   props: {
+    theme: props.Variant({
+      name: "Theme",
+      options: ["light", "dark"],
+      defaultValue: "light",
+      tooltip:
+        "Light for light sections. Dark for dark section backgrounds (light title, subtitle, and CTA).",
+    }),
+    lockedVideo: props.Boolean({
+      name: "Locked Video",
+      defaultValue: false,
+      trueLabel: "On",
+      falseLabel: "Off",
+      tooltip:
+        "Bind this to the CMS Locked Video Switch. On: lock icon plus HubSpot form on click. Off: no lock — the card goes to the URL Slug.",
+    }),
+    gatedVideo: props.Boolean({
+      name: "Gated Video",
+      defaultValue: false,
+      trueLabel: "On",
+      falseLabel: "Off",
+      tooltip:
+        "Separate from Locked Video and from the Gated Vimeo Form component. Does not show the lock or open the session form.",
+    }),
     image: props.Image({
       name: "Image",
       tooltip:
@@ -67,13 +99,13 @@ export default declareComponent(SessionCardGridAdapter, {
       name: "URL Slug",
       defaultValue: "",
       tooltip:
-        "CMS slug or full URL. The whole card links here. Bare slugs are prefixed with the URL Prefix field.",
+        "CMS slug or full URL. Used when Locked Video is off — the whole card links here. Ignored while Locked Video is on.",
     }),
     ctaLabel: props.Text({
       name: "Link Label",
       defaultValue: "View Talk",
       tooltip:
-        "Visual label at the bottom of the card. The whole card is the link.",
+        "Visual label at the bottom of the card. The whole card is the click target.",
     }),
     slugPrefix: props.Text({
       name: "URL Prefix",

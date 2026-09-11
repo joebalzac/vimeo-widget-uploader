@@ -95,9 +95,27 @@ function App() {
           {Array.from({ length: 8 }, (_, i) => (
             <SessionCardGrid
               key={i}
-              title="Session Title"
+              title={i === 7 ? "Gated Session Title" : "Session Title"}
               details="Session Details..."
               slug={`/talks/session-${i + 1}`}
+              lockedVideo={i === 7}
+            />
+          ))}
+        </div>
+      </section>
+
+      <section
+        id="sessionCardGridDark"
+        className="session-card-preview-wrap session-card-preview-wrap--dark"
+      >
+        <div className="session-card-preview">
+          {Array.from({ length: 3 }, (_, i) => (
+            <SessionCardGrid
+              key={i}
+              title="Session Title"
+              details="Session Details..."
+              slug={`/talks/dark-${i + 1}`}
+              darkMode
             />
           ))}
         </div>
