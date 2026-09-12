@@ -7,6 +7,7 @@ import OfficeLocations from "./components/OfficeLocations";
 import FeatureCardGrid from "./components/FeatureCardGrid";
 import SessionCardGrid from "./components/SessionCardGrid";
 import GatedVimeoForm from "./components/GatedVimeoForm";
+import HeroVimeo from "./components/HeroVimeo";
 
 const FEATURE_CARDS = [
   {
@@ -51,30 +52,7 @@ function App() {
         loginHref="/login"
       />
 
-      {/* Dark hero — fixed transparent navbar overlays this from the top */}
-      <section
-        id="heroSection"
-        style={{
-          minHeight: "90vh",
-          background:
-            "radial-gradient(120% 120% at 50% 0%, #2a1f5c 0%, #14102b 60%, #0b0820 100%)",
-          color: "#fafafb",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-          textAlign: "center",
-          padding: "160px 24px 80px",
-        }}
-      >
-        <h1 style={{ fontSize: "56px", maxWidth: 800, lineHeight: 1.1 }}>
-          The AI platform for property management & healthcare
-        </h1>
-        <p style={{ fontSize: "20px", opacity: 0.8, maxWidth: 560 }}>
-          Scroll down — the transparent navbar turns solid white once you pass
-          this hero section.
-        </p>
-      </section>
+      <HeroVimeo vimeoId="1225976653" />
 
       <div>
         <PatientOutreach />

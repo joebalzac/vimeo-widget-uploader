@@ -59,8 +59,7 @@ button.scg {
   border-radius: 8px;
   flex-shrink: 0;
   background-color: #ecebe9;
-  background-image:
-    linear-gradient(45deg, #e4e3e1 25%, transparent 25%),
+  background-image: linear-gradient(45deg, #e4e3e1 25%, transparent 25%),
     linear-gradient(-45deg, #e4e3e1 25%, transparent 25%),
     linear-gradient(45deg, transparent 75%, #e4e3e1 75%),
     linear-gradient(-45deg, transparent 75%, #e4e3e1 75%);
@@ -84,10 +83,29 @@ button.scg {
   top: 20px;
   left: 20px;
   z-index: 1;
-  display: flex;
-  width: 20px;
-  height: 20px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 10px 6px;
+  border-radius: 100px;
+  background: rgba(14, 13, 12, 0.2);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   pointer-events: none;
+}
+
+.scg__lock-label {
+  color: #fff;
+  text-align: center;
+  font-feature-settings: "salt" on;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 12px;
+  text-transform: uppercase;
+  white-space: nowrap;
+  text-box: trim-both cap alphabetic;
 }
 
 .scg__overlay {
@@ -128,8 +146,10 @@ button.scg {
 
 .scg__lock svg {
   display: block;
-  width: 20px;
-  height: 20px;
+  width: 12px;
+  height: 12px;
+  flex-shrink: 0;
+  transform: translateY(1px);
 }
 
 .scg__body {
@@ -176,6 +196,7 @@ button.scg {
   -webkit-line-clamp: 3;
   line-clamp: 3;
   overflow: hidden;
+  font-feature-settings: "ss07" on, "ss08" on;
 }
 
 .scg__cta {
@@ -208,8 +229,7 @@ button.scg {
 
 .scg--dark .scg__media {
   background-color: #2a2928;
-  background-image:
-    linear-gradient(45deg, #3f3e3c 25%, transparent 25%),
+  background-image: linear-gradient(45deg, #3f3e3c 25%, transparent 25%),
     linear-gradient(-45deg, #3f3e3c 25%, transparent 25%),
     linear-gradient(45deg, transparent 75%, #3f3e3c 75%),
     linear-gradient(-45deg, transparent 75%, #3f3e3c 75%);
@@ -265,6 +285,7 @@ button.scg {
     -ms-overflow-style: none;
     -webkit-overflow-scrolling: touch;
     overscroll-behavior-x: contain;
+    box-sizing: border-box;
   }
 
   .scg-carousel::-webkit-scrollbar {
@@ -272,9 +293,9 @@ button.scg {
   }
 
   .scg-carousel > * {
-    flex: 0 0 calc(100% - 24px) !important;
-    width: calc(100% - 24px) !important;
-    max-width: calc(100% - 24px) !important;
+    flex: 0 0 100% !important;
+    width: 100% !important;
+    max-width: 100% !important;
     min-width: 0;
     scroll-snap-align: start;
   }
@@ -307,9 +328,7 @@ button.scg {
   .scg-nav__btn:not(:disabled):hover,
   .scg-nav__btn:not(:disabled):active {
     background-color: #ffffff;
-    box-shadow:
-      0 0 0.5px rgba(0, 0, 0, 0.2),
-      0 2px 2px rgba(0, 0, 0, 0.04);
+    box-shadow: 0 0 0.5px rgba(0, 0, 0, 0.2), 0 2px 2px rgba(0, 0, 0, 0.04);
   }
 
   .scg-nav__btn:disabled {

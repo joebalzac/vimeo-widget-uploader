@@ -4,6 +4,8 @@ import arrowRight from "../assets/session-grid/arrow-right.svg";
 const MQ = "(max-width: 767px)";
 const MARK = "scgCarousel";
 const STYLE_ID = "scg-carousel-global";
+/** Figma 13107:30011 — 393px frame, 24px side inset, 345px first card. */
+const FIGMA_INSET = 24;
 
 const GLOBAL_CSS = `
 @media (max-width: 767px) {
@@ -22,12 +24,13 @@ const GLOBAL_CSS = `
     scrollbar-width: none;
     -ms-overflow-style: none;
     -webkit-overflow-scrolling: touch;
+    box-sizing: border-box;
   }
   .scg-carousel::-webkit-scrollbar { display: none; }
   .scg-carousel > *:not(.scg-nav) {
-    flex: 0 0 calc(100% - 24px) !important;
-    width: calc(100% - 24px) !important;
-    max-width: calc(100% - 24px) !important;
+    flex: 0 0 100% !important;
+    width: 100% !important;
+    max-width: 100% !important;
     min-width: 0 !important;
     scroll-snap-align: start;
   }
@@ -126,6 +129,46 @@ function findListParent(card: HTMLElement): HTMLElement | null {
 
 const SAVED = "scgSavedStyle";
 
+const BLEED_PROPS = [
+  "margin-right",
+  "width",
+  "max-width",
+  "padding-left",
+  "padding-right",
+  "box-sizing",
+  "scroll-padding-left",
+] as const;
+
+function clearBleed(host: HTMLElement) {
+  for (const prop of BLEED_PROPS) host.style.removeProperty(prop);
+}
+
+/**
+ * First card fills the content column (Figma 345px in a 393px frame). The
+ * track then extends to the viewport's right edge so the next card peeks
+ * in the page margin instead of shrinking and left-aligning the first card.
+ */
+function applyPeekBleed(host: HTMLElement) {
+  const scrollLeft = host.scrollLeft;
+  clearBleed(host);
+  const rightBleed = Math.max(
+    0,
+    Math.round(window.innerWidth - host.getBoundingClientRect().right)
+  );
+  host.style.setProperty("box-sizing", "border-box", "important");
+  if (rightBleed >= 8) {
+    host.style.setProperty("width", `calc(100% + ${rightBleed}px)`, "important");
+    host.style.setProperty("max-width", "none", "important");
+    host.style.setProperty("margin-right", `-${rightBleed}px`, "important");
+    host.style.setProperty("padding-right", `${rightBleed}px`, "important");
+  } else {
+    host.style.setProperty("padding-left", `${FIGMA_INSET}px`, "important");
+    host.style.setProperty("padding-right", `${FIGMA_INSET}px`, "important");
+    host.style.setProperty("scroll-padding-left", `${FIGMA_INSET}px`, "important");
+  }
+  host.scrollLeft = scrollLeft;
+}
+
 function applyCarouselStyles(host: HTMLElement, on: boolean) {
   const items = Array.from(host.children).filter(
     (c) => !(c as HTMLElement).classList.contains("scg-nav")
@@ -140,13 +183,14 @@ function applyCarouselStyles(host: HTMLElement, on: boolean) {
     host.style.setProperty("gap", "12px", "important");
     host.style.setProperty("overflow-x", "auto", "important");
     host.style.setProperty("overflow-y", "hidden", "important");
+    applyPeekBleed(host);
     for (const item of items) {
       if (!item.dataset[SAVED]) {
         item.dataset[SAVED] = item.getAttribute("style") || "";
       }
-      item.style.setProperty("flex", "0 0 calc(100% - 24px)", "important");
-      item.style.setProperty("width", "calc(100% - 24px)", "important");
-      item.style.setProperty("max-width", "calc(100% - 24px)", "important");
+      item.style.setProperty("flex", "0 0 100%", "important");
+      item.style.setProperty("width", "100%", "important");
+      item.style.setProperty("max-width", "100%", "important");
       item.style.setProperty("min-width", "0", "important");
     }
   } else {
@@ -158,6 +202,7 @@ function applyCarouselStyles(host: HTMLElement, on: boolean) {
     host.style.removeProperty("gap");
     host.style.removeProperty("overflow-x");
     host.style.removeProperty("overflow-y");
+    clearBleed(host);
     host.scrollLeft = 0;
     for (const item of items) {
       const saved = item.dataset[SAVED];
@@ -226,18 +271,24 @@ export function useSessionCarousel(ref: RefObject<HTMLElement | null>) {
     let mq: MediaQueryList | null = null;
     const timers: number[] = [];
     let observer: MutationObserver | null = null;
+    let applying = false;
 
     const apply = () => {
-      if (!host || !nav || !mq) return;
-      if (mq.matches) {
-        applyCarouselStyles(host, true);
-        nav.hidden = false;
-        (
-          nav as HTMLDivElement & { _scgUpdate?: () => void }
-        )._scgUpdate?.();
-      } else {
-        applyCarouselStyles(host, false);
-        nav.hidden = true;
+      if (!host || !nav || !mq || applying) return;
+      applying = true;
+      try {
+        if (mq.matches) {
+          applyCarouselStyles(host, true);
+          nav.hidden = false;
+          (
+            nav as HTMLDivElement & { _scgUpdate?: () => void }
+          )._scgUpdate?.();
+        } else {
+          applyCarouselStyles(host, false);
+          nav.hidden = true;
+        }
+      } finally {
+        applying = false;
       }
     };
 
@@ -252,6 +303,7 @@ export function useSessionCarousel(ref: RefObject<HTMLElement | null>) {
       host.insertAdjacentElement("afterend", nav);
       mq = window.matchMedia(MQ);
       mq.addEventListener("change", apply);
+      window.addEventListener("resize", apply);
       apply();
       return true;
     };
@@ -271,6 +323,7 @@ export function useSessionCarousel(ref: RefObject<HTMLElement | null>) {
     return () => {
       timers.forEach(clearTimeout);
       observer?.disconnect();
+      window.removeEventListener("resize", apply);
       mq?.removeEventListener("change", apply);
       nav?.remove();
       if (host) {

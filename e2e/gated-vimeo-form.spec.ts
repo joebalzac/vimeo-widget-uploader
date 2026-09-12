@@ -20,8 +20,11 @@ for (const vp of VIEWPORTS) {
       "Complete form to watch full video."
     );
 
+    await expect(root.getByLabel("First name")).toBeVisible();
+    await expect(root.getByLabel("Last name")).toBeVisible();
     await expect(root.getByLabel("Work email")).toBeVisible();
-    await expect(root.getByLabel("First name")).toHaveCount(0);
+    await expect(root.getByLabel("Company name")).toHaveCount(0);
+    await expect(root.getByLabel("Job title")).toHaveCount(0);
 
     await root.screenshot({ path: `test-results/gvf-${vp.name}-step1.png` });
   });
@@ -35,9 +38,10 @@ test("two-step form expands, validates, then ungates", async ({ page }) => {
   await root.scrollIntoViewIfNeeded();
 
   await root.locator(".gvf__continue").click();
-  await expect(root.getByLabel("Work email")).toBeVisible();
-  await expect(root.locator(".gvf__row--error")).toHaveCount(1);
+  await expect(root.locator(".gvf__row--error")).toHaveCount(3);
 
+  await root.getByLabel("First name").fill("Jane");
+  await root.getByLabel("Last name").fill("Diaz");
   await root.getByLabel("Work email").fill("jane@gmail.com");
   await root.locator(".gvf__continue").click();
   await expect(root.locator(".gvf__row--error")).toHaveCount(1);
@@ -45,22 +49,48 @@ test("two-step form expands, validates, then ungates", async ({ page }) => {
   await root.getByLabel("Work email").fill("jane@meetelise.com");
   await root.locator(".gvf__continue").click();
 
-  await expect(root.getByLabel("First name")).toBeVisible();
-  await expect(root.getByLabel("Last name")).toBeVisible();
-  await expect(root.getByLabel("Company")).toBeVisible();
-  await expect(root.getByLabel("Country/Region")).toBeVisible();
+  await expect(root.getByLabel("Company name")).toBeVisible();
+  await expect(root.getByLabel("Job title")).toBeVisible();
+  await expect(root.getByLabel("Country/Region")).toHaveCount(0);
 
   await root.screenshot({ path: "test-results/gvf-desktop-step2.png" });
 
   await root.locator(".gvf__continue").click();
-  await expect(root.locator(".gvf__row--error")).toHaveCount(3);
+  await expect(root.locator(".gvf__row--error")).toHaveCount(2);
 
-  await root.getByLabel("First name").fill("Jane");
-  await root.getByLabel("Last name").fill("Diaz");
-  await root.getByLabel("Company").fill("Awesome Company");
+  await root.getByLabel("Company name").fill("Awesome Company");
+  await root.getByLabel("Job title").fill("PM");
   await root.locator(".gvf__continue").click();
 
   await expect(root.locator(".gvf__form")).toHaveCount(0);
   await expect(root.locator(".gvf__overlay")).toHaveCount(0);
   await expect(root).toHaveClass(/gvf--unlocked/);
+});
+
+test("blocks competitor domains and exact emails", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/");
+
+  const root = page.locator("#gatedVimeoForm .gvf");
+  await root.scrollIntoViewIfNeeded();
+  const email = root.getByLabel("Work email");
+  const continueBtn = root.locator(".gvf__continue");
+
+  await root.getByLabel("First name").fill("Jane");
+  await root.getByLabel("Last name").fill("Diaz");
+
+  await email.fill("rep@yardi.com");
+  await continueBtn.click();
+  await expect(root.locator(".gvf__row--error")).toHaveCount(1);
+  await expect(root.getByLabel("Company name")).toHaveCount(0);
+
+  await email.fill("vp@verbaflo.ai");
+  await continueBtn.click();
+  await expect(root.locator(".gvf__row--error")).toHaveCount(1);
+  await expect(root.getByLabel("Company name")).toHaveCount(0);
+
+  await email.fill("jane@meetelise.com");
+  await continueBtn.click();
+  await expect(root.getByLabel("Company name")).toBeVisible();
+  await expect(root.getByLabel("Job title")).toBeVisible();
 });

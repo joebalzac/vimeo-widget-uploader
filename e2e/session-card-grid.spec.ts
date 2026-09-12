@@ -37,6 +37,24 @@ for (const vp of VIEWPORTS) {
     if (vp.name === "mobile") {
       expect(cardBoxes[0].top).toBeCloseTo(cardBoxes[1].top, 1);
       expect(cardBoxes[1].left).toBeGreaterThan(cardBoxes[0].right - 4);
+
+      const layout = await grid.evaluate((el) => {
+        const cs = getComputedStyle(el);
+        const box = el.getBoundingClientRect();
+        const padL = parseFloat(cs.paddingLeft);
+        const padR = parseFloat(cs.paddingRight);
+        return {
+          contentLeft: box.left + padL,
+          contentWidth: box.width - padL - padR,
+          wrapRight: box.right,
+          viewWidth: window.innerWidth,
+        };
+      });
+      expect(Math.abs(cardBoxes[0].left - layout.contentLeft)).toBeLessThan(2);
+      expect(Math.abs(cardBoxes[0].width - layout.contentWidth)).toBeLessThan(2);
+      expect(cardBoxes[1].left).toBeLessThan(layout.wrapRight);
+      expect(cardBoxes[1].right).toBeGreaterThan(layout.viewWidth - 8);
+
       const nav = grid.locator(".scg-nav");
       await expect(nav).toBeVisible();
       await expect(nav.locator(".scg-nav__btn").first()).toBeDisabled();
@@ -82,6 +100,7 @@ test("gated session card opens HubSpot modal once per session", async ({
     await expect(card.locator(".scg__lock")).toHaveCount(isLocked ? 1 : 0);
   }
   await expect(locked.locator(".scg__lock")).toBeVisible();
+  await expect(locked.locator(".scg__lock-label")).toHaveText("Exclusive");
   await expect(page.locator("#sessionCardGrid .scg:not([data-scg-locked]) .scg__lock")).toHaveCount(0);
 
   await locked.click();
@@ -126,6 +145,42 @@ test("gated session card opens HubSpot modal once per session", async ({
   await expect(again).toBeVisible();
   await expect(again.getByText(/already received your request/)).toBeVisible();
   await expect(again.getByText(/Check your inbox for the recording link/)).toBeVisible();
+});
+
+test("gated session modal blocks competitor and personal emails", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/");
+
+  const locked = page.locator("#sessionCardGrid [data-scg-locked='true']");
+  await locked.scrollIntoViewIfNeeded();
+  await locked.click();
+
+  const modal = page.getByTestId("session-gated-modal");
+  await expect(modal).toBeVisible();
+
+  await modal.getByLabel("First name").fill("Jane");
+  await modal.getByLabel("Last name").fill("Smith");
+  await modal.getByLabel("Phone number").fill("555-0100");
+  await modal.getByLabel("Job title").fill("PM");
+  await modal.getByLabel("Company name").fill("EliseAI");
+
+  await modal.getByLabel("Email").fill("rep@yardi.com");
+  await modal.getByRole("button", { name: "Submit" }).click();
+  await expect(
+    modal.getByText("Please use your work email address.")
+  ).toBeVisible();
+
+  await modal.getByLabel("Email").fill("vp@verbaflo.ai");
+  await modal.getByRole("button", { name: "Submit" }).click();
+  await expect(
+    modal.getByText("Please use your work email address.")
+  ).toBeVisible();
+
+  await modal.getByLabel("Email").fill("not-an-email");
+  await modal.getByRole("button", { name: "Submit" }).click();
+  await expect(modal.getByText("Please enter a valid email.")).toBeVisible();
 });
 
 test("gated session modal returns on click if the form was not submitted", async ({

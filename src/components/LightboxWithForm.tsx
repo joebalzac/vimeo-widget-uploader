@@ -13,6 +13,7 @@
 import React, { useCallback, useState } from "react";
 import LightboxModal from "./LightboxModal";
 import MultiStepForm from "./MultiStepForm";
+import { isValidWorkEmail } from "../utils/blockedEmails";
 import { useHubSpotContactCheck } from "../hooks/useHubSpotContactCheck";
 import { useVisitTrigger } from "../hooks/useVisitTrigger";
 
@@ -47,26 +48,6 @@ interface LightboxWithFormProps {
 
 const API_BASE = "https://contact-checker-backend.vercel.app";
 
-const BLOCKED_DOMAINS = new Set([
-  "gmail.com",
-  "googlemail.com",
-  "yahoo.com",
-  "hotmail.com",
-  "outlook.com",
-  "live.com",
-  "icloud.com",
-  "me.com",
-  "mac.com",
-  "aol.com",
-  "protonmail.com",
-  "proton.me",
-  "mail.com",
-  "zoho.com",
-  "yandex.com",
-  "gmx.com",
-  "fastmail.com",
-]);
-
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 async function createContact(email: string): Promise<void> {
@@ -87,9 +68,7 @@ function pushEvent(event: string): void {
 }
 
 function validateEmail(val: string): boolean {
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)) return false;
-  const domain = val.split("@")[1].toLowerCase();
-  return !BLOCKED_DOMAINS.has(domain);
+  return isValidWorkEmail(val);
 }
 
 // ─── Component ────────────────────────────────────────────────────────────────

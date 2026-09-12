@@ -6,8 +6,8 @@
 
 # Test info
 
-- Name: gated-vimeo-form.spec.ts >> two-step form expands, validates, then ungates
-- Location: e2e/gated-vimeo-form.spec.ts:31:1
+- Name: session-card-grid.spec.ts >> gated session modal blocks competitor and personal emails
+- Location: e2e/session-card-grid.spec.ts:149:1
 
 # Error details
 

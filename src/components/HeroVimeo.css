@@ -1,0 +1,284 @@
+/* HeroVimeo — looping Vimeo background + lightbox.
+   Desktop: Figma 16224-355. Mobile: Figma 16224-455. */
+
+.hv {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 100svh;
+  padding: 96px 24px 48px;
+  overflow: hidden;
+  background: #141414;
+  font-family: "Intervariable", Inter, system-ui, sans-serif;
+  color: #ffffff;
+}
+
+.hv__media {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.hv__bg {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100vw;
+  height: 56.25vw;
+  min-width: 177.78vh;
+  min-height: 100%;
+  transform: translate(-50%, -50%);
+  border: 0;
+  display: block;
+  pointer-events: none;
+}
+
+.hv__scrim {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+}
+
+.hv__inner {
+  position: static;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  width: 100%;
+  max-width: 1160px;
+}
+
+.hv__copy {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  width: 100%;
+}
+
+.hv__text {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  text-align: center;
+}
+
+.hv__heading {
+  margin: 0;
+  font-family: "Intervariable", Inter, sans-serif;
+  font-weight: 400;
+  font-size: 48px;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  color: #ffffff;
+  font-feature-settings: "ss07" 1;
+}
+
+.hv__subtitle {
+  margin: 0;
+  max-width: 280px;
+  font-family: "Intervariable", Inter, sans-serif;
+  font-weight: 400;
+  font-size: 18px;
+  line-height: 1.4;
+  letter-spacing: -0.36px;
+  color: #dddcda;
+  font-feature-settings: "ss07" 1;
+}
+
+.hv__cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  padding: 12px 20px;
+  border-radius: 4px;
+  background: #ffffff;
+  color: #0e0d0c;
+  font-family: "Intervariable", Inter, sans-serif;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 1.4;
+  letter-spacing: -0.32px;
+  text-align: center;
+  text-decoration: none;
+  white-space: nowrap;
+  font-feature-settings: "ss07" 1;
+  transition: background 0.15s ease;
+}
+
+.hv__cta:hover {
+  background: #f2f2f1;
+}
+
+.hv__play {
+  position: absolute;
+  bottom: 54px;
+  left: 50%;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  transform: translateX(-50%);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.hv__play img {
+  display: block;
+  width: 64px;
+  height: 64px;
+}
+
+.hv__play:hover {
+  filter: brightness(1.15);
+}
+
+.hv__play:focus-visible {
+  outline: 2px solid #ffffff;
+  outline-offset: 4px;
+}
+
+/* ── Lightbox (same pattern as TeamCarousel) ──────────────────────────────── */
+
+.hv__modal {
+  position: fixed;
+  inset: 0;
+  z-index: 100000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: rgba(0, 0, 0, 0.75);
+}
+
+.hv__modal-inner {
+  position: relative;
+  width: 90vw;
+  max-width: 900px;
+}
+
+.hv__modal-close {
+  position: absolute;
+  top: -40px;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #ffffff;
+  cursor: pointer;
+}
+
+.hv__modal-frame {
+  position: relative;
+  width: 100%;
+  padding-bottom: 56.25%;
+  background: #000;
+}
+
+.hv__modal-frame iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+/* ── Desktop: Figma 1440 × 880, content pinned to the bottom ─────────────── */
+
+@media (min-width: 768px) {
+  .hv {
+    justify-content: flex-end;
+    min-height: 880px;
+    padding: 120px clamp(40px, 9.72vw, 140px);
+  }
+
+  .hv__inner {
+    position: relative;
+    flex-direction: row;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 24px;
+  }
+
+  .hv__copy {
+    align-items: flex-start;
+    gap: 32px;
+    width: auto;
+  }
+
+  .hv__text {
+    align-items: flex-start;
+    gap: 20px;
+    text-align: left;
+  }
+
+  .hv__heading {
+    font-size: 72px;
+    letter-spacing: -0.03em;
+    white-space: nowrap;
+  }
+
+  .hv__subtitle {
+    max-width: 640px;
+    font-size: 20px;
+    letter-spacing: -0.02em;
+  }
+
+  .hv__play {
+    position: static;
+    left: auto;
+    bottom: auto;
+    transform: none;
+  }
+}
+
+@media (min-width: 1440px) {
+  .hv {
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  .hv__inner {
+    width: 82.5%;
+    max-width: 82.5rem;
+  }
+}
+
+@media (min-width: 1920px) {
+  .hv__inner {
+    width: 70%;
+    max-width: 85rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hv__bg {
+    display: none;
+  }
+
+  .hv__cta,
+  .hv__play {
+    transition: none;
+  }
+}

@@ -1,5 +1,6 @@
 import { useEffect, useId, useRef, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
+import { isBlockedEmail, isValidWorkEmail, WORK_EMAIL_ERROR } from "../utils/blockedEmails";
 import { storeUtms, getUtmFields } from "../utils/utm";
 import { SESSION_GATED_MODAL_CSS } from "./SessionGatedModal.styles";
 
@@ -67,11 +68,13 @@ function pushEvent(event: string) {
 
 function ensureStyles() {
   if (typeof document === "undefined") return;
-  if (document.getElementById(STYLE_ID)) return;
-  const style = document.createElement("style");
-  style.id = STYLE_ID;
+  let style = document.getElementById(STYLE_ID) as HTMLStyleElement | null;
+  if (!style) {
+    style = document.createElement("style");
+    style.id = STYLE_ID;
+    document.head.appendChild(style);
+  }
   style.textContent = SESSION_GATED_MODAL_CSS;
-  document.head.appendChild(style);
 }
 
 function ContactLine() {
@@ -89,12 +92,14 @@ function ThanksCopy({ titleId }: { titleId: string }) {
       <h2 id={titleId} className="sgm-title">
         Thank you for your submission.
       </h2>
-      <p className="sgm-lede">You&rsquo;re all set.</p>
-      <p className="sgm-lede">
-        Check your inbox — the recording will arrive within the next 30 minutes.
-        If you don&rsquo;t see it, check your spam folder.
-      </p>
-      <ContactLine />
+      <div className="sgm-copy">
+        <p className="sgm-lede">You&rsquo;re all set.</p>
+        <p className="sgm-lede">
+          Check your inbox — the recording will arrive within the next 30 minutes.
+          If you don&rsquo;t see it, check your spam folder.
+        </p>
+        <ContactLine />
+      </div>
     </div>
   );
 }
@@ -106,11 +111,13 @@ function AlreadyCopy({ titleId }: { titleId: string }) {
         We&rsquo;ve already received your request to access all exclusive
         recordings.
       </h2>
-      <p className="sgm-lede">
-        Check your inbox for the recording link. If you don&rsquo;t see it, check
-        your spam folder.
-      </p>
-      <ContactLine />
+      <div className="sgm-copy">
+        <p className="sgm-lede">
+          Check your inbox for the recording link. If you don&rsquo;t see it, check
+          your spam folder.
+        </p>
+        <ContactLine />
+      </div>
     </div>
   );
 }
@@ -179,8 +186,10 @@ export default function SessionGatedModal({
     if (!form.lastname.trim()) next.lastname = "Last name is required.";
     if (!form.phone.trim()) next.phone = "Phone number is required.";
     if (!form.email.trim()) next.email = "Email is required.";
-    else if (!validateEmail(form.email.trim()))
-      next.email = "Please enter a valid email.";
+    else if (!isValidWorkEmail(form.email.trim()))
+      next.email = isBlockedEmail(form.email.trim())
+        ? WORK_EMAIL_ERROR
+        : "Please enter a valid email.";
     if (!form.jobtitle.trim()) next.jobtitle = "Job title is required.";
     if (!form.company.trim()) next.company = "Company name is required.";
     setErrors(next);
@@ -216,7 +225,11 @@ export default function SessionGatedModal({
           }),
         }
       );
-      if (!res.ok) throw new Error(String(res.status));
+      if (!res.ok) {
+        const detail = await res.text().catch(() => "");
+        console.error("[SessionGatedModal] HubSpot submit failed", res.status, detail);
+        throw new Error(String(res.status));
+      }
       setGatedSessionCookie();
       pushEvent("gated_session_form_submit");
       onSubmitted();

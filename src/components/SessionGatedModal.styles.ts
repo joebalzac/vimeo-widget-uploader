@@ -94,8 +94,24 @@ export const SESSION_GATED_MODAL_CSS = `
   font-feature-settings: "ss07" 1, "ss08" 1;
 }
 
+.sgm-lede {
+  margin: 0;
+  color: #3f3e3c;
+  font-family: "Intervariable", "Inter Variable", Inter, sans-serif;
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 1.4;
+  letter-spacing: -0.36px;
+  font-feature-settings: "ss07" 1;
+}
+
 .sgm-lede a {
   color: #7638fa;
+  font: inherit;
+  font-size: inherit;
+  letter-spacing: inherit;
+  line-height: inherit;
   text-decoration: none;
 }
 
@@ -273,6 +289,13 @@ export const SESSION_GATED_MODAL_CSS = `
 .sgm-thanks .sgm-header {
   margin-bottom: 24px;
   padding-right: 32px;
+  gap: 24px;
+}
+
+.sgm-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
 .sgm-thanks-btn {

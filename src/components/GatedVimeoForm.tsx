@@ -2,15 +2,16 @@ import { useEffect, useId, useRef, useState, type ReactNode } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import Player from "@vimeo/player";
 import type { VimeoEmbedParameters, VimeoEvent } from "@vimeo/player";
+import { isValidWorkEmail, WORK_EMAIL_ERROR } from "../utils/blockedEmails";
 import { storeUtms, getUtmFields } from "../utils/utm";
 import "./GatedVimeoForm.css";
 
 type FormFields = {
-  email: string;
   firstname: string;
   lastname: string;
+  email: string;
   company: string;
-  country: string;
+  jobtitle: string;
 };
 
 type FieldName = keyof FormFields;
@@ -31,50 +32,6 @@ const PORTAL_ID = "45321630";
 const FORM_GUID = "89c343f5-4dc8-435c-a2ab-96e0e3759756";
 const API_BASE = "https://contact-checker-backend.vercel.app";
 const THUMB_WIDTH = 1280;
-
-const BLOCKED_DOMAINS = new Set([
-  "gmail.com",
-  "googlemail.com",
-  "yahoo.com",
-  "hotmail.com",
-  "outlook.com",
-  "live.com",
-  "icloud.com",
-  "me.com",
-  "mac.com",
-  "aol.com",
-  "protonmail.com",
-  "proton.me",
-  "mail.com",
-  "zoho.com",
-  "yandex.com",
-  "gmx.com",
-  "fastmail.com",
-]);
-
-const COUNTRIES = [
-  "United States",
-  "Canada",
-  "United Kingdom",
-  "Australia",
-  "Germany",
-  "France",
-  "India",
-  "Ireland",
-  "Netherlands",
-  "New Zealand",
-  "Singapore",
-  "Spain",
-  "Sweden",
-  "Switzerland",
-  "United Arab Emirates",
-  "Brazil",
-  "Mexico",
-  "Japan",
-  "South Korea",
-  "Italy",
-  "Other",
-];
 
 function parseVimeoId(raw: string): string {
   const v = raw.trim();
@@ -120,11 +77,6 @@ function playerOptions(vimeoId: string, previewSeconds: number, unlocked: boolea
 function getCookie(name: string): string {
   const match = document.cookie.match(new RegExp(`(?:^|; )${name}=([^;]+)`));
   return match ? decodeURIComponent(match[1]) : "";
-}
-
-function validateWorkEmail(val: string): boolean {
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)) return false;
-  return !BLOCKED_DOMAINS.has(val.split("@")[1].toLowerCase());
 }
 
 function pushEvent(event: string) {
@@ -239,11 +191,11 @@ export default function GatedVimeoForm({
   const [thumb, setThumb] = useState("");
   const [step, setStep] = useState<1 | 2>(1);
   const [form, setForm] = useState<FormFields>({
-    email: "",
     firstname: "",
     lastname: "",
+    email: "",
     company: "",
-    country: "United States",
+    jobtitle: "",
   });
   const [errors, setErrors] = useState<Partial<Record<FieldName, string>>>({});
   const [submitting, setSubmitting] = useState(false);
@@ -336,9 +288,11 @@ export default function GatedVimeoForm({
     setApiError("");
     if (step === 1) {
       const next: Partial<Record<FieldName, string>> = {};
+      if (!form.firstname.trim()) next.firstname = "First name is required.";
+      if (!form.lastname.trim()) next.lastname = "Last name is required.";
       if (!form.email.trim()) next.email = "Work email is required.";
-      else if (!validateWorkEmail(form.email.trim()))
-        next.email = "Please use your work email address.";
+      else if (!isValidWorkEmail(form.email.trim()))
+        next.email = WORK_EMAIL_ERROR;
       setErrors(next);
       if (Object.keys(next).length) return;
       void createContact(form.email.trim());
@@ -348,9 +302,8 @@ export default function GatedVimeoForm({
     }
 
     const next: Partial<Record<FieldName, string>> = {};
-    if (!form.firstname.trim()) next.firstname = "First name is required.";
-    if (!form.lastname.trim()) next.lastname = "Last name is required.";
-    if (!form.company.trim()) next.company = "Company is required.";
+    if (!form.company.trim()) next.company = "Company name is required.";
+    if (!form.jobtitle.trim()) next.jobtitle = "Job title is required.";
     setErrors(next);
     if (Object.keys(next).length) return;
 
@@ -365,11 +318,11 @@ export default function GatedVimeoForm({
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
               fields: [
-                { name: "email", value: form.email.trim() },
                 { name: "firstname", value: form.firstname.trim() },
                 { name: "lastname", value: form.lastname.trim() },
+                { name: "email", value: form.email.trim() },
                 { name: "company", value: form.company.trim() },
-                { name: "country", value: form.country },
+                { name: "jobtitle", value: form.jobtitle.trim() },
                 ...getUtmFields(),
               ],
               context: {
@@ -392,11 +345,11 @@ export default function GatedVimeoForm({
   };
 
   const ids: Record<FieldName, string> = {
-    email: `${uid}-email`,
     firstname: `${uid}-firstname`,
     lastname: `${uid}-lastname`,
+    email: `${uid}-email`,
     company: `${uid}-company`,
-    country: `${uid}-country`,
+    jobtitle: `${uid}-jobtitle`,
   };
 
   const showOverlay = !unlocked && !playing;
@@ -452,6 +405,27 @@ export default function GatedVimeoForm({
             noValidate
           >
             <div className="gvf__fields">
+              <FieldRow id={ids.firstname} label="First name" error={errors.firstname}>
+                <input
+                  id={ids.firstname}
+                  className="gvf__input"
+                  type="text"
+                  autoComplete="given-name"
+                  autoFocus
+                  value={form.firstname}
+                  onChange={(e) => setField("firstname", e.target.value)}
+                />
+              </FieldRow>
+              <FieldRow id={ids.lastname} label="Last name" error={errors.lastname}>
+                <input
+                  id={ids.lastname}
+                  className="gvf__input"
+                  type="text"
+                  autoComplete="family-name"
+                  value={form.lastname}
+                  onChange={(e) => setField("lastname", e.target.value)}
+                />
+              </FieldRow>
               <FieldRow id={ids.email} label="Work email" error={errors.email}>
                 <input
                   id={ids.email}
@@ -473,50 +447,26 @@ export default function GatedVimeoForm({
                     exit={{ height: 0, opacity: 0 }}
                     transition={{ duration: 0.35, ease: [0.25, 0.46, 0.45, 0.94] }}
                   >
-                    <FieldRow id={ids.firstname} label="First name" error={errors.firstname}>
-                      <input
-                        id={ids.firstname}
-                        className="gvf__input"
-                        type="text"
-                        autoComplete="given-name"
-                        autoFocus
-                        value={form.firstname}
-                        onChange={(e) => setField("firstname", e.target.value)}
-                      />
-                    </FieldRow>
-                    <FieldRow id={ids.lastname} label="Last name" error={errors.lastname}>
-                      <input
-                        id={ids.lastname}
-                        className="gvf__input"
-                        type="text"
-                        autoComplete="family-name"
-                        value={form.lastname}
-                        onChange={(e) => setField("lastname", e.target.value)}
-                      />
-                    </FieldRow>
-                    <FieldRow id={ids.company} label="Company" error={errors.company}>
+                    <FieldRow id={ids.company} label="Company name" error={errors.company}>
                       <input
                         id={ids.company}
                         className="gvf__input"
                         type="text"
                         autoComplete="organization"
+                        autoFocus
                         value={form.company}
                         onChange={(e) => setField("company", e.target.value)}
                       />
                     </FieldRow>
-                    <FieldRow id={ids.country} label="Country/Region">
-                      <select
-                        id={ids.country}
-                        className="gvf__input gvf__select"
-                        value={form.country}
-                        onChange={(e) => setField("country", e.target.value)}
-                      >
-                        {COUNTRIES.map((c) => (
-                          <option key={c} value={c}>
-                            {c}
-                          </option>
-                        ))}
-                      </select>
+                    <FieldRow id={ids.jobtitle} label="Job title" error={errors.jobtitle}>
+                      <input
+                        id={ids.jobtitle}
+                        className="gvf__input"
+                        type="text"
+                        autoComplete="organization-title"
+                        value={form.jobtitle}
+                        onChange={(e) => setField("jobtitle", e.target.value)}
+                      />
                     </FieldRow>
                     <p className="gvf__disclaimer">
                       You may receive marketing communications from {brandName}. You can opt

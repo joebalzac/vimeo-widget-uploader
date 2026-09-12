@@ -6,13 +6,13 @@
 
 # Test info
 
-- Name: session-card-grid.spec.ts >> light mode session card CTA darkens on hover
-- Location: e2e/session-card-grid.spec.ts:143:1
+- Name: gated-vimeo-form.spec.ts >> blocks competitor domains and exact emails
+- Location: e2e/gated-vimeo-form.spec.ts:68:1
 
 # Error details
 
 ```
-Error: browserType.launch: Executable doesn't exist at /var/folders/7q/8j5v_4fj3fq9b28yq_3dvfxr0000gn/T/cursor-sandbox-cache/44b4270e6bd734a4fadcfdc5ee5b5e10/playwright/chromium_headless_shell-1223/chrome-headless-shell-mac-arm64/chrome-headless-shell
+Error: browserType.launch: Executable doesn't exist at /var/folders/7q/8j5v_4fj3fq9b28yq_3dvfxr0000gn/T/cursor-sandbox-cache/af7c3a6c064dc2f318131037e61e15f9/playwright/chromium_headless_shell-1223/chrome-headless-shell-mac-arm64/chrome-headless-shell
 ╔════════════════════════════════════════════════════════════╗
 ║ Looks like Playwright was just installed or updated.       ║
 ║ Please run the following command to download new browsers: ║

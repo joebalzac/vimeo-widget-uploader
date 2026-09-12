@@ -1,6 +1,7 @@
 import { useState, useCallback, useEffect } from "react";
 import { motion, AnimatePresence, type Variants } from "framer-motion";
 import "./MultiFormStyling.css";
+import { isValidWorkEmail } from "../utils/blockedEmails";
 import { storeUtms, getUtmFields } from "../utils/utm";
 
 // ─── Default SDK types ────────────────────────────────────────────────────────
@@ -225,49 +226,6 @@ const INITIAL_FORM: FormData = {
   how_did_you_hear: "",
 };
 
-const BLOCKED_DOMAINS = new Set([
-  "gmail.com",
-  "googlemail.com",
-  "yahoo.com",
-  "yahoo.co.uk",
-  "yahoo.co.in",
-  "yahoo.fr",
-  "yahoo.es",
-  "yahoo.de",
-  "hotmail.com",
-  "hotmail.co.uk",
-  "hotmail.fr",
-  "hotmail.es",
-  "hotmail.de",
-  "outlook.com",
-  "outlook.co.uk",
-  "outlook.fr",
-  "live.com",
-  "live.co.uk",
-  "live.fr",
-  "msn.com",
-  "icloud.com",
-  "me.com",
-  "mac.com",
-  "aol.com",
-  "protonmail.com",
-  "proton.me",
-  "mail.com",
-  "email.com",
-  "zoho.com",
-  "yandex.com",
-  "yandex.ru",
-  "gmx.com",
-  "gmx.de",
-  "gmx.net",
-  "tutanota.com",
-  "tutamail.com",
-  "fastmail.com",
-  "fastmail.fm",
-  "hey.com",
-  "duck.com",
-]);
-
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 function pushEvent(event: string) {
@@ -276,8 +234,7 @@ function pushEvent(event: string) {
 }
 
 function validateEmail(val: string): boolean {
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)) return false;
-  return !BLOCKED_DOMAINS.has(val.split("@")[1].toLowerCase());
+  return isValidWorkEmail(val);
 }
 
 function getCookie(name: string): string {

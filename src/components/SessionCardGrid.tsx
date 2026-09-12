@@ -43,20 +43,19 @@ function LockIcon() {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      width="20"
-      height="20"
-      viewBox="0 0 20 20"
+      width="12"
+      height="12"
+      viewBox="0 0 12 12"
       fill="none"
       aria-hidden="true"
     >
       <path
-        d="M15.8333 9.16699H4.16667C3.24619 9.16699 2.5 9.91318 2.5 10.8337V16.667C2.5 17.5875 3.24619 18.3337 4.16667 18.3337H15.8333C16.7538 18.3337 17.5 17.5875 17.5 16.667V10.8337C17.5 9.91318 16.7538 9.16699 15.8333 9.16699Z"
+        d="M9.5 5.5H2.5C1.94772 5.5 1.5 5.94772 1.5 6.5V10C1.5 10.5523 1.94772 11 2.5 11H9.5C10.0523 11 10.5 10.5523 10.5 10V6.5C10.5 5.94772 10.0523 5.5 9.5 5.5Z"
         fill="white"
       />
       <path
-        d="M5.83594 9.16699V5.83366C5.83594 4.72859 6.27492 3.66878 7.05633 2.88738C7.83773 2.10598 8.89754 1.66699 10.0026 1.66699C11.1077 1.66699 12.1675 2.10598 12.9489 2.88738C13.7303 3.66878 14.1693 4.72859 14.1693 5.83366V9.16699"
+        d="M3.5 5.5V3.5C3.5 2.83696 3.76339 2.20107 4.23223 1.73223C4.70107 1.26339 5.33696 1 6 1C6.66304 1 7.29893 1.26339 7.76777 1.73223C8.23661 2.20107 8.5 2.83696 8.5 3.5V5.5"
         stroke="white"
-        strokeWidth="1.66667"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
@@ -248,6 +247,7 @@ export default function SessionCardGrid({
         {locked && (
           <span className="scg__lock">
             <LockIcon />
+            <span className="scg__lock-label">Exclusive</span>
           </span>
         )}
         <span className="scg__overlay" aria-hidden="true">
