@@ -6,6 +6,9 @@ import { isValidWorkEmail, WORK_EMAIL_ERROR } from "../utils/blockedEmails";
 import { storeUtms, getUtmFields } from "../utils/utm";
 import "./GatedVimeoForm.css";
 
+const GATED_VIMEO_COOKIE = "elise_gated_vimeo";
+const GATED_VIMEO_EVENT = "elise-gated-vimeo-submitted";
+
 type FormFields = {
   firstname: string;
   lastname: string;
@@ -77,6 +80,19 @@ function playerOptions(vimeoId: string, previewSeconds: number, unlocked: boolea
 function getCookie(name: string): string {
   const match = document.cookie.match(new RegExp(`(?:^|; )${name}=([^;]+)`));
   return match ? decodeURIComponent(match[1]) : "";
+}
+
+function hasGatedVimeoCookie(): boolean {
+  if (typeof document === "undefined") return false;
+  return document.cookie
+    .split("; ")
+    .some((part) => part.startsWith(`${GATED_VIMEO_COOKIE}=`));
+}
+
+function setGatedVimeoCookie(): void {
+  const secure = window.location.protocol === "https:" ? "; Secure" : "";
+  document.cookie = `${GATED_VIMEO_COOKIE}=1; path=/; SameSite=Lax${secure}`;
+  window.dispatchEvent(new Event(GATED_VIMEO_EVENT));
 }
 
 function pushEvent(event: string) {
@@ -187,7 +203,7 @@ export default function GatedVimeoForm({
   const [playing, setPlaying] = useState(false);
   const [ended, setEnded] = useState(false);
   const [previewKey, setPreviewKey] = useState(0);
-  const [unlocked, setUnlocked] = useState(false);
+  const [unlocked, setUnlocked] = useState(hasGatedVimeoCookie);
   const [thumb, setThumb] = useState("");
   const [step, setStep] = useState<1 | 2>(1);
   const [form, setForm] = useState<FormFields>({
@@ -206,6 +222,12 @@ export default function GatedVimeoForm({
 
   useEffect(() => {
     storeUtms();
+  }, []);
+
+  useEffect(() => {
+    const unlock = () => setUnlocked(true);
+    window.addEventListener(GATED_VIMEO_EVENT, unlock);
+    return () => window.removeEventListener(GATED_VIMEO_EVENT, unlock);
   }, []);
 
   useEffect(() => {
@@ -335,6 +357,7 @@ export default function GatedVimeoForm({
         );
         if (!res.ok) throw new Error(String(res.status));
       }
+      setGatedVimeoCookie();
       pushEvent("gated_vimeo_form_complete");
       setUnlocked(true);
     } catch {
