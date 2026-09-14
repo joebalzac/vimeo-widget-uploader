@@ -255,6 +255,8 @@ function Arrow({ direction }: { direction: "left" | "right" }) {
       strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"
+      aria-hidden="true"
+      focusable="false"
       style={{ transform: direction === "left" ? "rotate(180deg)" : undefined }}
     >
       <path d="M5 12H19" />

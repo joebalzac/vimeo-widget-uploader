@@ -80,7 +80,9 @@ const Logo = () => (
     viewBox="0 0 61 20"
     fill="none"
     aria-hidden="true"
+    focusable="false"
   >
+    <title>EliseAI</title>
     <path
       d="M18.3629 4.20111H20.1678V19.9982H18.3629V4.20111ZM18.3629 2.6854H20.1696V0.821243H18.3629V2.6854ZM0 19.9982H11.6817V18.2699H1.8049V10.8057H9.90235V9.07747H1.80855L1.8049 1.72826H11.6817V0H0V19.9982ZM15.4092 17.9049C15.1865 17.6439 15.0734 17.3027 15.0734 16.8848V0.00364796H13.2685V16.8848C13.2685 17.7753 13.5605 18.5163 14.1445 19.1094C14.7285 19.7025 15.4603 20 16.3363 20H16.7743V18.2717H16.3363C15.9603 18.2699 15.6501 18.1495 15.4092 17.9049ZM41.4634 4.19564C37.505 4.19564 34.2967 7.73246 34.2967 12.096C34.2967 16.4595 37.505 19.9963 41.4634 19.9963C44.5421 19.9963 47.1665 17.8556 48.1812 14.8517H46.2157C45.3087 16.8683 43.4435 18.1586 41.4634 18.1586C38.6858 18.1586 36.1345 15.6164 36.1345 12.0942C36.1345 8.57195 38.684 6.02974 41.4634 6.02974C43.8906 6.02974 46.1427 7.96971 46.6737 10.8076H38.339V12.6453H48.6119C48.6228 12.4628 48.6283 12.2785 48.6283 12.0942C48.6301 7.73428 45.4218 4.19564 41.4634 4.19564ZM30.7809 11.6489C30.1276 11.408 29.414 11.1945 28.6402 11.0047C27.8664 10.8149 27.1529 10.6616 26.4995 10.5411C25.8462 10.4207 25.295 10.1798 24.8497 9.82024C24.419 9.44247 24.2055 8.93512 24.2055 8.30002C24.2055 7.63026 24.5158 7.06269 25.1344 6.59914C25.7695 6.11735 26.5269 5.87827 27.4029 5.87827C28.2971 5.87827 29.0527 6.13559 29.6732 6.65206C30.3083 7.16671 30.6276 7.82006 30.6276 8.61027H32.407C32.407 7.33826 31.9179 6.29072 30.9379 5.46582C29.9579 4.62451 28.7807 4.20294 27.4047 4.20294C26.0287 4.20294 24.8424 4.59896 23.846 5.38918C22.8495 6.1794 22.3513 7.15029 22.3513 8.30185C22.3513 9.22894 22.5667 9.98631 22.9955 10.5703C23.4427 11.1543 23.992 11.5503 24.6453 11.7565C25.2987 11.9628 26.0122 12.1526 26.786 12.3241C27.5598 12.4957 28.2734 12.6508 28.9267 12.7877C29.5801 12.9245 30.1221 13.2165 30.551 13.6637C30.9981 14.1108 31.2207 14.7039 31.2207 15.4412C31.2207 16.2314 30.843 16.9103 30.0856 17.476C29.3282 18.0436 28.4358 18.3265 27.4029 18.3265C26.3535 18.3265 25.452 18.0345 24.6946 17.4505C23.9555 16.8501 23.585 16.0927 23.585 15.182H21.7545C21.7545 16.6074 22.2966 17.768 23.3788 18.6605C24.4793 19.5547 25.8206 20 27.401 20C28.9833 20 30.3247 19.5711 31.4233 18.7116C32.5238 17.8356 33.0731 16.7442 33.0731 15.4394C33.0731 14.4429 32.8486 13.6272 32.4033 12.9921C31.9763 12.3369 31.4343 11.8898 30.7809 11.6489Z"
       fill="currentColor"
@@ -103,8 +105,11 @@ const Chevron = () => (
     height="5"
     viewBox="0 0 8 5"
     fill="none"
-    aria-hidden="true"
+    role="img"
+    aria-label="Open menu"
+    focusable="false"
   >
+    <title>Open menu</title>
     <path
       d="M0.683105 0.682983L3.58083 3.58071L6.47856 0.682983"
       stroke="currentColor"
@@ -226,7 +231,10 @@ const RightPanelView = ({ panel }: { panel: RightPanel }) => {
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
+            aria-hidden="true"
+            focusable="false"
           >
+            <title>Go</title>
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -412,7 +420,7 @@ const MobileCardsPanel = ({
             {(card.mobileImageUrl || card.imageUrl) && (
               <img
                 src={card.mobileImageUrl || card.imageUrl}
-                alt=""
+                alt={card.title}
                 className="navbar__mobile-post-img"
               />
             )}
@@ -465,7 +473,9 @@ const MobileCtaPanel = ({
             viewBox="0 0 18 18"
             fill="none"
             aria-hidden="true"
+            focusable="false"
           >
+            <title>Go</title>
             <path
               d="M3.75 9H14.25"
               stroke="currentColor"
@@ -659,7 +669,10 @@ export const Navbar = ({
               height="18"
               viewBox="0 0 18 18"
               fill="none"
+              aria-hidden="true"
+              focusable="false"
             >
+              <title>Back</title>
               <path
                 d="M14.25 9L3.75005 9"
                 stroke="#515152"
@@ -736,7 +749,9 @@ export const Navbar = ({
                   viewBox="0 0 18 18"
                   fill="none"
                   aria-hidden="true"
+                  focusable="false"
                 >
+                  <title>Log in</title>
                   <path
                     d="M3.75 9H14.25"
                     stroke="currentColor"
@@ -858,7 +873,9 @@ export const Navbar = ({
                       viewBox="0 0 18 18"
                       fill="none"
                       aria-hidden="true"
+                      focusable="false"
                     >
+                      <title>Log in</title>
                       <path
                         d="M3.75 9H14.25"
                         stroke="#7638FA"
@@ -888,6 +905,7 @@ export const Navbar = ({
                       key={index}
                       className="navbar__mobile-link navbar__mobile-link--drill"
                       onClick={() => setMobileSubmenu(item.label)}
+                      aria-label={`${item.label}, open menu`}
                     >
                       {item.label}
                       <svg
@@ -898,7 +916,9 @@ export const Navbar = ({
                         viewBox="0 0 18 18"
                         fill="none"
                         aria-hidden="true"
+                        focusable="false"
                       >
+                        <title>Open menu</title>
                         <path
                           d="M3.75 9H14.25"
                           stroke="#515152"
@@ -943,7 +963,9 @@ export const Navbar = ({
                       viewBox="0 0 18 18"
                       fill="none"
                       aria-hidden="true"
+                      focusable="false"
                     >
+                      <title>Log in</title>
                       <path
                         d="M3.75 9H14.25"
                         stroke="#7638FA"

@@ -221,12 +221,12 @@ function makeNav(host: HTMLElement): HTMLDivElement {
   nav.innerHTML = `
     <button class="scg-nav__btn" type="button" aria-label="Previous" disabled>
       <span class="scg-nav__icon scg-nav__icon--prev">
-        <img src="${arrowRight}" alt="" width="24" height="24" />
+        <img src="${arrowRight}" alt="Previous" width="24" height="24" aria-hidden="true" />
       </span>
     </button>
     <button class="scg-nav__btn" type="button" aria-label="Next">
       <span class="scg-nav__icon">
-        <img src="${arrowRight}" alt="" width="24" height="24" />
+        <img src="${arrowRight}" alt="Next" width="24" height="24" aria-hidden="true" />
       </span>
     </button>
   `;

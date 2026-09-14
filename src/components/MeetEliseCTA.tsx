@@ -99,7 +99,8 @@ async function submitToHubSpot(
 
 function PhoneIcon({ size = 16 }: { size?: number }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
+      <title>Phone</title>
       <path d="M6.6 10.8C7.8 13.2 9.8 15.2 12.2 16.4L14 14.6C14.3 14.3 14.7 14.2 15 14.4C16.1 14.8 17.3 15 18.5 15C19 15 19.5 15.5 19.5 16V18.5C19.5 19 19 19.5 18.5 19.5C10 19.5 4.5 14 4.5 5.5C4.5 5 5 4.5 5.5 4.5H8C8.5 4.5 9 5 9 5.5C9 6.7 9.2 7.9 9.6 9C9.7 9.3 9.6 9.7 9.4 10L6.6 10.8Z" />
     </svg>
   );
@@ -116,7 +117,10 @@ function CopyIcon() {
       strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"
+      aria-hidden="true"
+      focusable="false"
     >
+      <title>Copy</title>
       <rect x="9" y="9" width="13" height="13" rx="2" />
       <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
     </svg>
@@ -134,8 +138,10 @@ function CheckIcon() {
       strokeWidth="2.5"
       strokeLinecap="round"
       strokeLinejoin="round"
+      aria-hidden="true"
+      focusable="false"
     >
-      <path d="M20 6L9 17l-5-5" />
+      <title>Copied</title>
     </svg>
   );
 }
@@ -148,6 +154,8 @@ function WaveIcon() {
       viewBox="0 0 36 14"
       fill="none"
       style={{ flexShrink: 0 }}
+      aria-hidden="true"
+      focusable="false"
     >
       {[0, 5, 10, 15, 20, 25, 30].map((x, i) => (
         <rect
@@ -313,7 +321,8 @@ export default function MeetEliseCTA({
               onClick={closeModal}
               aria-label="Close"
             >
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
+                <title>Close</title>
                 <path
                   d="M18 6L6 18M6 6l12 12"
                   stroke="currentColor"

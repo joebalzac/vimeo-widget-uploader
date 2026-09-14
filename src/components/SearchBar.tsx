@@ -54,6 +54,8 @@ export const SearchBar = ({ value, onChange }: Props) => {
           height="18"
           viewBox="0 0 18 18"
           fill="none"
+          aria-hidden="true"
+          focusable="false"
           style={{ position: "absolute", left: 12, flexShrink: 0 }}
         >
           <circle

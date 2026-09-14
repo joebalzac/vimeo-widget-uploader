@@ -400,12 +400,12 @@ export const menuData: Record<string, MegaMenuData> = {
         },
         {
           category: "EVENTS",
-          title: "Where operators master the full potential of multifamily AI",
+          title: "Elise Beyond 2026: Watch the Sessions",
           imageUrl:
-            "https://cdn.prod.website-files.com/63cc1eef179b054a9306598d/6a58e501f7bf3b563836681c_EliseBeyond_LatestPosts.avif",
+            "https://cdn.prod.website-files.com/63cc1eef179b054a9306598d/6aa44b10fc9b6480d6675872_Sessions_Preview.png",
           mobileImageUrl:
-            "https://cdn.prod.website-files.com/63cc1eef179b054a9306598d/6a58e501f7bf3b563836681c_EliseBeyond_LatestPosts.avif",
-          href: "/elise-beyond",
+            "https://cdn.prod.website-files.com/63cc1eef179b054a9306598d/6aa44b10fc9b6480d6675872_Sessions_Preview.png",
+          href: "/elise-beyond/sessions",
         },
       ],
     },

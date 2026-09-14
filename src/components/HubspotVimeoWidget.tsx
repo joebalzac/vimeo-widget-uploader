@@ -575,7 +575,10 @@ export default function HubSpotVimeoWidget({
                     height="16"
                     viewBox="0 0 16 16"
                     fill="none"
+                    aria-hidden="true"
+                    focusable="false"
                   >
+                    <title>Upload</title>
                     <g clipPath="url(#clip0_461_528)">
                       <path
                         d="M15.3334 12.1453V13.4207C15.3332 13.9279 15.1317 14.4143 14.773 14.7729C14.4144 15.1316 13.928 15.3331 13.4207 15.3333H2.57941C2.07214 15.3333 1.58565 15.1318 1.22696 14.7731C0.868261 14.4144 0.666748 13.9279 0.666748 13.4207V12.1453"
@@ -637,7 +640,10 @@ export default function HubSpotVimeoWidget({
                         height="18"
                         viewBox="0 0 18 18"
                         fill="none"
+                        aria-hidden="true"
+                        focusable="false"
                       >
+                        <title>Replace file</title>
                         <g clipPath="url(#clip0_629_325)">
                           <path
                             d="M4.25587 10.58V13.7428H1.09302"

@@ -135,10 +135,11 @@ export default function HeroVimeo({
           >
             <img
               src={PLAY_ICON}
-              alt=""
+              alt="Play video"
               width={64}
               height={64}
               draggable={false}
+              aria-hidden="true"
             />
           </button>
         )}

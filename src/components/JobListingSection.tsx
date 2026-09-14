@@ -75,6 +75,8 @@ const MinusIcon = () => (
     height="24"
     viewBox="0 0 24 24"
     fill="none"
+    aria-hidden="true"
+    focusable="false"
   >
     <path
       d="M5 12H19"
@@ -93,6 +95,8 @@ const PlusIcon = () => (
     height="24"
     viewBox="0 0 24 24"
     fill="none"
+    aria-hidden="true"
+    focusable="false"
   >
     <path
       d="M5 12H19"
@@ -118,6 +122,8 @@ const SearchIcon = () => (
     height="24"
     viewBox="0 0 24 24"
     fill="none"
+    aria-hidden="true"
+    focusable="false"
   >
     <path
       d="M21.0002 21.0002L16.6602 16.6602"
@@ -144,7 +150,10 @@ const SelectChevron = () => (
       height="24"
       viewBox="0 0 24 24"
       fill="none"
+      aria-hidden="true"
+      focusable="false"
     >
+      <title>Toggle dropdown</title>
       <path
         d="M6 9L12 15L18 9"
         stroke="#A9A8A6"
