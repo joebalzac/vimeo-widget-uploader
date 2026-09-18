@@ -552,7 +552,9 @@ export default function HubSpotVimeoWidget({
               <div style={styles.promptQuestion}>{questionText}</div>
             </div>
             {videoErrorMessage && (
-              <div style={styles.errorMessage}>{videoErrorMessage}</div>
+              <div style={styles.errorMessage} role="alert">
+                {videoErrorMessage}
+              </div>
             )}
             <div style={styles.uploadBox}>
               <input
@@ -561,6 +563,7 @@ export default function HubSpotVimeoWidget({
                 accept="video/mp4,video/quicktime,video/x-m4v"
                 disabled={isUploading}
                 hidden
+                aria-label="Upload a video file"
                 onChange={(e) => {
                   const f = e.target.files?.[0];
                   if (f) startUpload(f);
@@ -706,7 +709,14 @@ export default function HubSpotVimeoWidget({
 
               <div style={styles.uploadStatusContainer}>
                 {isUploading && pct !== null && (
-                  <div style={styles.loadingBarContainer}>
+                  <div
+                    style={styles.loadingBarContainer}
+                    role="progressbar"
+                    aria-label="Upload progress"
+                    aria-valuenow={pct}
+                    aria-valuemin={0}
+                    aria-valuemax={100}
+                  >
                     <div style={{ ...styles.loadingBar, width: `${pct}%` }} />
                   </div>
                 )}

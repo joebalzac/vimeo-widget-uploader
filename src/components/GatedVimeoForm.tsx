@@ -185,6 +185,11 @@ function FieldRow({
         {children}
         {error && <ErrorIcon />}
       </div>
+      {error && (
+        <p id={`${id}-error`} className="gvf__error-text">
+          {error}
+        </p>
+      )}
     </div>
   );
 }
@@ -418,6 +423,7 @@ export default function GatedVimeoForm({
         {!unlocked && (
           <motion.form
             className="gvf__form"
+            aria-label="Unlock the full video"
             initial={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.35, ease: [0.25, 0.46, 0.45, 0.94] }}
@@ -435,6 +441,10 @@ export default function GatedVimeoForm({
                   type="text"
                   autoComplete="given-name"
                   autoFocus
+                  required
+                  aria-required="true"
+                  aria-invalid={Boolean(errors.firstname)}
+                  aria-describedby={errors.firstname ? `${ids.firstname}-error` : undefined}
                   value={form.firstname}
                   onChange={(e) => setField("firstname", e.target.value)}
                 />
@@ -445,6 +455,10 @@ export default function GatedVimeoForm({
                   className="gvf__input"
                   type="text"
                   autoComplete="family-name"
+                  required
+                  aria-required="true"
+                  aria-invalid={Boolean(errors.lastname)}
+                  aria-describedby={errors.lastname ? `${ids.lastname}-error` : undefined}
                   value={form.lastname}
                   onChange={(e) => setField("lastname", e.target.value)}
                 />
@@ -455,6 +469,10 @@ export default function GatedVimeoForm({
                   className="gvf__input"
                   type="email"
                   autoComplete="email"
+                  required
+                  aria-required="true"
+                  aria-invalid={Boolean(errors.email)}
+                  aria-describedby={errors.email ? `${ids.email}-error` : undefined}
                   value={form.email}
                   onChange={(e) => setField("email", e.target.value)}
                 />
@@ -477,6 +495,10 @@ export default function GatedVimeoForm({
                         type="text"
                         autoComplete="organization"
                         autoFocus
+                        required
+                        aria-required="true"
+                        aria-invalid={Boolean(errors.company)}
+                        aria-describedby={errors.company ? `${ids.company}-error` : undefined}
                         value={form.company}
                         onChange={(e) => setField("company", e.target.value)}
                       />
@@ -487,6 +509,10 @@ export default function GatedVimeoForm({
                         className="gvf__input"
                         type="text"
                         autoComplete="organization-title"
+                        required
+                        aria-required="true"
+                        aria-invalid={Boolean(errors.jobtitle)}
+                        aria-describedby={errors.jobtitle ? `${ids.jobtitle}-error` : undefined}
                         value={form.jobtitle}
                         onChange={(e) => setField("jobtitle", e.target.value)}
                       />
@@ -500,7 +526,11 @@ export default function GatedVimeoForm({
               </AnimatePresence>
             </div>
 
-            {apiError && <p className="gvf__api-error">{apiError}</p>}
+            {apiError && (
+              <p className="gvf__api-error" role="alert">
+                {apiError}
+              </p>
+            )}
 
             <div className="gvf__footer">
               <p className="gvf__legal">

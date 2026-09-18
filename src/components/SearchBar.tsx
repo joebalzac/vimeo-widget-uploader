@@ -73,10 +73,11 @@ export const SearchBar = ({ value, onChange }: Props) => {
           />
         </svg>
         <input
-          type="text"
+          type="search"
           value={value}
           onChange={(e) => onChange(e.target.value)}
           placeholder="Search by name..."
+          aria-label="Search by name"
           style={{
             width: "100%",
             paddingLeft: 36,

@@ -34,10 +34,6 @@ export default function OneInputForm({ className = "" }: Props) {
     window.location.href = `${REDIRECT_BASE}?coupon=${encodeURIComponent(normalized)}`;
   }
 
-  function handleKeyDown(e: React.KeyboardEvent) {
-    if (e.key === "Enter") handleSubmit();
-  }
-
   function handleWaitlistClick(e: React.MouseEvent<HTMLAnchorElement>) {
     e.preventDefault();
     document.body.style.overflow = "hidden";
@@ -48,8 +44,18 @@ export default function OneInputForm({ className = "" }: Props) {
   }
 
   return (
-    <div className="hsf-one-input">
-      <h1 className="oif__title">Enter Your Invite Code</h1>
+    <form
+      className="hsf-one-input"
+      onSubmit={(e) => {
+        e.preventDefault();
+        handleSubmit();
+      }}
+      noValidate
+      aria-labelledby="oif-title"
+    >
+      <h1 id="oif-title" className="oif__title">
+        Enter Your Invite Code
+      </h1>
       <p className="oif__subtitle">Enter your invite code to unlock early access.</p>
       <div className="hsf__fields">
         <label className="field-label field-label-required" htmlFor="invite-code">
@@ -66,17 +72,22 @@ export default function OneInputForm({ className = "" }: Props) {
               setCode(e.target.value);
               if (error) setError("");
             }}
-            onKeyDown={handleKeyDown}
             autoComplete="off"
+            aria-required="true"
+            aria-invalid={Boolean(error)}
+            aria-describedby={error ? "invite-code-error" : undefined}
           />
         </div>
-        {error && <span className="fieldError">{error}</span>}
+        {error && (
+          <span id="invite-code-error" className="fieldError">
+            {error}
+          </span>
+        )}
       </div>
       <div className="oif__footer">
         <button
           className="defaultButton oif__submit-btn"
-          type="button"
-          onClick={handleSubmit}
+          type="submit"
         >
           Submit
         </button>
@@ -85,6 +96,6 @@ export default function OneInputForm({ className = "" }: Props) {
           <a href="#" className="oif__waitlist-link" onClick={handleWaitlistClick}>Join the waitlist</a>
         </p>
       </div>
-    </div>
+    </form>
   );
 }

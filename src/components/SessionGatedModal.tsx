@@ -232,8 +232,8 @@ export default function SessionGatedModal({
       }
       setGatedSessionCookie();
       pushEvent("gated_session_form_submit");
-      onSubmitted();
       setSubmitted(true);
+      onSubmitted();
     } catch {
       setApiError("We couldn't submit the form. Please try again.");
     } finally {
@@ -280,12 +280,12 @@ export default function SessionGatedModal({
           </svg>
         </button>
 
-        {alreadySubmitted || submitted ? (
+        {submitted || alreadySubmitted ? (
           <div className="sgm-thanks">
-            {alreadySubmitted ? (
-              <AlreadyCopy titleId={`${uid}-title`} />
-            ) : (
+            {submitted ? (
               <ThanksCopy titleId={`${uid}-title`} />
+            ) : (
+              <AlreadyCopy titleId={`${uid}-title`} />
             )}
             <button
               type="button"
@@ -302,6 +302,7 @@ export default function SessionGatedModal({
               void handleSubmit();
             }}
             noValidate
+            aria-labelledby={`${uid}-title`}
           >
             <div className="sgm-header">
               <h2 id={`${uid}-title`} className="sgm-title">
@@ -329,6 +330,10 @@ export default function SessionGatedModal({
                     className={`sgm-input${errors.firstname ? " sgm-input--error" : ""}`}
                     type="text"
                     autoComplete="given-name"
+                    required
+                    aria-required="true"
+                    aria-invalid={Boolean(errors.firstname)}
+                    aria-describedby={errors.firstname ? `${ids.firstname}-error` : undefined}
                     value={form.firstname}
                     onChange={(e) => setField("firstname", e.target.value)}
                   />
@@ -343,6 +348,10 @@ export default function SessionGatedModal({
                     className={`sgm-input${errors.lastname ? " sgm-input--error" : ""}`}
                     type="text"
                     autoComplete="family-name"
+                    required
+                    aria-required="true"
+                    aria-invalid={Boolean(errors.lastname)}
+                    aria-describedby={errors.lastname ? `${ids.lastname}-error` : undefined}
                     value={form.lastname}
                     onChange={(e) => setField("lastname", e.target.value)}
                   />
@@ -361,6 +370,10 @@ export default function SessionGatedModal({
                     type="tel"
                     autoComplete="tel"
                     inputMode="tel"
+                    required
+                    aria-required="true"
+                    aria-invalid={Boolean(errors.phone)}
+                    aria-describedby={errors.phone ? `${ids.phone}-error` : undefined}
                     value={form.phone}
                     onChange={(e) =>
                       setField(
@@ -376,6 +389,10 @@ export default function SessionGatedModal({
                     className={`sgm-input${errors.email ? " sgm-input--error" : ""}`}
                     type="email"
                     autoComplete="email"
+                    required
+                    aria-required="true"
+                    aria-invalid={Boolean(errors.email)}
+                    aria-describedby={errors.email ? `${ids.email}-error` : undefined}
                     value={form.email}
                     onChange={(e) => setField("email", e.target.value)}
                   />
@@ -393,6 +410,10 @@ export default function SessionGatedModal({
                     className={`sgm-input${errors.jobtitle ? " sgm-input--error" : ""}`}
                     type="text"
                     autoComplete="organization-title"
+                    required
+                    aria-required="true"
+                    aria-invalid={Boolean(errors.jobtitle)}
+                    aria-describedby={errors.jobtitle ? `${ids.jobtitle}-error` : undefined}
                     value={form.jobtitle}
                     onChange={(e) => setField("jobtitle", e.target.value)}
                   />
@@ -407,6 +428,10 @@ export default function SessionGatedModal({
                     className={`sgm-input${errors.company ? " sgm-input--error" : ""}`}
                     type="text"
                     autoComplete="organization"
+                    required
+                    aria-required="true"
+                    aria-invalid={Boolean(errors.company)}
+                    aria-describedby={errors.company ? `${ids.company}-error` : undefined}
                     value={form.company}
                     onChange={(e) => setField("company", e.target.value)}
                   />
@@ -414,15 +439,21 @@ export default function SessionGatedModal({
               </div>
             </div>
 
-            {apiError && <p className="sgm-api-error">{apiError}</p>}
+            {apiError && (
+              <p className="sgm-api-error" role="alert">
+                {apiError}
+              </p>
+            )}
 
             <div className="sgm-submit-wrap">
               <button
                 type="submit"
                 className="sgm-submit"
                 disabled={submitting}
+                aria-busy={submitting}
+                aria-label={submitting ? "Submitting" : undefined}
               >
-                {submitting ? <span className="sgm-spinner" /> : "Submit"}
+                {submitting ? <span className="sgm-spinner" aria-hidden="true" /> : "Submit"}
               </button>
               <p className="sgm-privacy">
                 By submitting you agree to our{" "}
@@ -458,7 +489,11 @@ function Field({
         {label}
       </label>
       {children}
-      {error && <p className="sgm-error">{error}</p>}
+      {error && (
+        <p id={`${id}-error`} className="sgm-error">
+          {error}
+        </p>
+      )}
     </div>
   );
 }

@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useId } from "react";
 import "./MeetEliseCTA.css";
 import "./MultiFormStyling.css";
 import { storeUtms, getUtmFields } from "../utils/utm";
@@ -195,6 +195,7 @@ export default function MeetEliseCTA({
 
   const overlayRef = useRef<HTMLDivElement>(null);
   const firstInputRef = useRef<HTMLInputElement>(null);
+  const titleId = useId();
 
   // First-touch capture of UTMs into sessionStorage on mount.
   useEffect(() => {
@@ -277,10 +278,6 @@ export default function MeetEliseCTA({
     });
   }
 
-  const onKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter") void handleSubmit();
-  };
-
   // Raw digits for tel: link
   const phoneDigits = phoneDisplay.replace(/\D/g, "");
 
@@ -311,9 +308,9 @@ export default function MeetEliseCTA({
           }}
           role="dialog"
           aria-modal="true"
-          aria-label="Try Elise VoiceAI"
+          aria-labelledby={titleId}
         >
-          <div className="me-modal" onKeyDown={onKeyDown}>
+          <div className="me-modal">
             {/* Close — always visible */}
             <button
               type="button"
@@ -334,7 +331,13 @@ export default function MeetEliseCTA({
 
             {!submitted ? (
               /* ── FORM ─────────────────────────────────────────────────── */
-              <>
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  void handleSubmit();
+                }}
+                noValidate
+              >
                 <div className="me-header">
                   <p
                     className="above-eye-brow"
@@ -343,6 +346,7 @@ export default function MeetEliseCTA({
                     hear elise in action
                   </p>
                   <h2
+                    id={titleId}
                     className="step-heading"
                     style={{
                       textAlign: "left",
@@ -385,9 +389,17 @@ export default function MeetEliseCTA({
                         placeholder="Jane"
                         value={form.firstname}
                         onChange={(e) => setField("firstname", e.target.value)}
+                        autoComplete="given-name"
+                        aria-required="true"
+                        aria-invalid={Boolean(errors.firstname)}
+                        aria-describedby={
+                          errors.firstname ? "me-firstname-error" : undefined
+                        }
                       />
                       {errors.firstname && (
-                        <span className="fieldError">{errors.firstname}</span>
+                        <span id="me-firstname-error" className="fieldError">
+                          {errors.firstname}
+                        </span>
                       )}
                     </div>
                     <div className="hsf__col">
@@ -406,9 +418,17 @@ export default function MeetEliseCTA({
                         placeholder="Smith"
                         value={form.lastname}
                         onChange={(e) => setField("lastname", e.target.value)}
+                        autoComplete="family-name"
+                        aria-required="true"
+                        aria-invalid={Boolean(errors.lastname)}
+                        aria-describedby={
+                          errors.lastname ? "me-lastname-error" : undefined
+                        }
                       />
                       {errors.lastname && (
-                        <span className="fieldError">{errors.lastname}</span>
+                        <span id="me-lastname-error" className="fieldError">
+                          {errors.lastname}
+                        </span>
                       )}
                     </div>
                   </div>
@@ -430,9 +450,17 @@ export default function MeetEliseCTA({
                       placeholder="jane@company.com"
                       value={form.email}
                       onChange={(e) => setField("email", e.target.value)}
+                      autoComplete="email"
+                      aria-required="true"
+                      aria-invalid={Boolean(errors.email)}
+                      aria-describedby={
+                        errors.email ? "me-email-error" : undefined
+                      }
                     />
                     {errors.email && (
-                      <span className="fieldError">{errors.email}</span>
+                      <span id="me-email-error" className="fieldError">
+                        {errors.email}
+                      </span>
                     )}
                   </div>
 
@@ -459,22 +487,35 @@ export default function MeetEliseCTA({
                           e.target.value.replace(/[^\d\s\-().+]/g, ""),
                         )
                       }
+                      autoComplete="tel"
+                      aria-required="true"
+                      aria-invalid={Boolean(errors.phone)}
+                      aria-describedby={
+                        errors.phone ? "me-phone-error" : undefined
+                      }
                     />
                     {errors.phone && (
-                      <span className="fieldError">{errors.phone}</span>
+                      <span id="me-phone-error" className="fieldError">
+                        {errors.phone}
+                      </span>
                     )}
                   </div>
 
                   {/* API error */}
-                  {apiError && <p className="hsf__api-error">{apiError}</p>}
+                  {apiError && (
+                    <p className="hsf__api-error" role="alert">
+                      {apiError}
+                    </p>
+                  )}
 
                   {/* Submit */}
                   <div className="me-submit-wrap">
                     <button
-                      type="button"
+                      type="submit"
                       className="defaultButton"
-                      onClick={handleSubmit}
                       disabled={loading}
+                      aria-busy={loading}
+                      aria-label={loading ? "Submitting" : undefined}
                       style={{
                         display: "flex",
                         alignItems: "center",
@@ -484,7 +525,7 @@ export default function MeetEliseCTA({
                       data-meetelise-submit
                     >
                       {loading ? (
-                        <span className="me-spinner" />
+                        <span className="me-spinner" aria-hidden="true" />
                       ) : (
                         "Unlock the Demo Line →"
                       )}
@@ -503,13 +544,13 @@ export default function MeetEliseCTA({
                     </p>
                   </div>
                 </div>
-              </>
+              </form>
             ) : (
               /* ── CONFIRMATION ─────────────────────────────────────────── */
               <div className="me-confirm">
                 {/* Check + heading */}
                 <div className="me-confirm__check">
-                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
                     <path
                       d="M5 12.5L9.5 17L19 7"
                       stroke="#7638fa"
@@ -527,6 +568,7 @@ export default function MeetEliseCTA({
                     you're in
                   </p>
                   <h2
+                    id={titleId}
                     className="step-heading"
                     style={{
                       textAlign: "left",

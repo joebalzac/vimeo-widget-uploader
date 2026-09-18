@@ -16,6 +16,7 @@ import MultiStepForm from "./MultiStepForm";
 import { isValidWorkEmail } from "../utils/blockedEmails";
 import { useHubSpotContactCheck } from "../hooks/useHubSpotContactCheck";
 import { useVisitTrigger } from "../hooks/useVisitTrigger";
+import "./MultiFormStyling.css";
 
 interface LightboxWithFormProps {
   headline?: string;
@@ -178,29 +179,47 @@ export default function LightboxWithForm({
           onClose={handleClose}
           pushEvent={pushEvent}
         >
-          <div className="lb-email-capture">
+          <form
+            className="lb-email-capture"
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleClaim();
+            }}
+            noValidate
+          >
+            <label htmlFor="lb-email" className="sr-only">
+              {emailInputPlaceholder}
+            </label>
             <div
               className={`emailCapture${
                 emailError ? " emailCapture--error" : ""
               }`}
             >
               <input
+                id="lb-email"
                 type="email"
                 className="emailCapture__input"
                 placeholder={emailInputPlaceholder}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && handleClaim()}
+                autoComplete="email"
+                aria-required="true"
+                aria-invalid={Boolean(emailError)}
+                aria-describedby={emailError ? "lb-email-error" : undefined}
               />
               <button
+                type="submit"
                 className="defaultButton emailCapture__btn"
-                onClick={handleClaim}
               >
                 {emailCTAText}
               </button>
             </div>
-            {emailError && <span className="fieldError">{emailError}</span>}
-          </div>
+            {emailError && (
+              <span id="lb-email-error" className="fieldError">
+                {emailError}
+              </span>
+            )}
+          </form>
         </LightboxModal>
       )}
 

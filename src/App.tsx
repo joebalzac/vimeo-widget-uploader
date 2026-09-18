@@ -1,6 +1,7 @@
 import "./App.css";
 import PatientOutreach from "./components/PatientOutreach";
 import { Navbar } from "./components/Navbar";
+import { NavbarHealth } from "./components/NavbarHealth";
 import CustomerStoriesLogo from "./components/CustomerStoriesLogo";
 import { DEFAULT_LOGO_GRID } from "./data/customerStoriesLogoConfig";
 import OfficeLocations from "./components/OfficeLocations";
@@ -8,6 +9,11 @@ import FeatureCardGrid from "./components/FeatureCardGrid";
 import SessionCardGrid from "./components/SessionCardGrid";
 import GatedVimeoForm from "./components/GatedVimeoForm";
 import HeroVimeo from "./components/HeroVimeo";
+import MultiStepForm from "./components/MultiStepForm";
+import MultiStepFormHealth from "./components/MultiStepFormHealth";
+import MultiStepFormUniversal from "./components/MultiStepFormUniversal";
+import MeetEliseCTA from "./components/MeetEliseCTA";
+import OneInputForm from "./components/OneInputForm";
 
 const FEATURE_CARDS = [
   {
@@ -34,23 +40,78 @@ const FEATURE_CARDS = [
 ];
 
 function App() {
+  const params = new URLSearchParams(window.location.search);
+  const form = params.get("form");
+  const useHealthNav = params.get("nav") === "health";
+
+  if (form === "health") {
+    return (
+      <div style={{ padding: 40 }}>
+        <MultiStepFormHealth />
+      </div>
+    );
+  }
+  if (form === "housing") {
+    return (
+      <div style={{ padding: 40 }}>
+        <MultiStepForm />
+      </div>
+    );
+  }
+  if (form === "universal") {
+    return (
+      <div style={{ padding: 40 }}>
+        <MultiStepFormUniversal />
+      </div>
+    );
+  }
+  if (form === "meetelise") {
+    return (
+      <div style={{ padding: 40 }}>
+        <MeetEliseCTA />
+      </div>
+    );
+  }
+  if (form === "oneinput") {
+    return (
+      <div style={{ padding: 40 }}>
+        <OneInputForm />
+      </div>
+    );
+  }
+
   return (
     <>
-      <Navbar
-        theme="dark"
-        heroSectionId="heroSection"
-        logoHref="/"
-        navItems={[
-          { label: "AI for Property Management", href: "/property-management" },
-          { label: "AI for Healthcare", href: "/healthcare" },
-          { label: "Resources", href: "/resources" },
-          { label: "Company", href: "/company" },
-        ]}
-        ctaText="Request Demo"
-        ctaHref="/demo"
-        loginText="Log In"
-        loginHref="/login"
-      />
+      {useHealthNav ? (
+        <NavbarHealth
+          theme="dark"
+          heroSectionId="heroSection"
+          logoHref="/"
+          ctaText="Request Demo"
+          ctaHref="/demo"
+          loginText="Log In"
+          loginHref="/login"
+        />
+      ) : (
+        <Navbar
+          theme="dark"
+          heroSectionId="heroSection"
+          logoHref="/"
+          navItems={[
+            {
+              label: "AI for Property Management",
+              href: "/property-management",
+            },
+            { label: "AI for Healthcare", href: "/healthcare" },
+            { label: "Resources", href: "/resources" },
+            { label: "Company", href: "/company" },
+          ]}
+          ctaText="Request Demo"
+          ctaHref="/demo"
+          loginText="Log In"
+          loginHref="/login"
+        />
+      )}
 
       <HeroVimeo vimeoId="1225976653" />
 

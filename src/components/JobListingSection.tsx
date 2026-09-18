@@ -326,10 +326,13 @@ export default function JobListingSection({
       <div className="filters-wrapper">
         <div className="search-input-wrapper">
           <SearchIcon />
+          <label htmlFor="job-search" className="sr-only">
+            Search jobs
+          </label>
           <input
             id="job-search"
             className="search-input"
-            type="text"
+            type="search"
             placeholder="Search"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
@@ -337,6 +340,9 @@ export default function JobListingSection({
         </div>
 
         <div className="select-wrapper">
+          <label htmlFor="department-filter" className="sr-only">
+            Department
+          </label>
           <select
             id="department-filter"
             className="filters-select"
@@ -354,6 +360,9 @@ export default function JobListingSection({
         </div>
 
         <div className="select-wrapper">
+          <label htmlFor="location-filter" className="sr-only">
+            Location
+          </label>
           <select
             id="location-filter"
             className="filters-select"

@@ -215,6 +215,16 @@
   pointer-events: none;
 }
 
+.gvf__error-text {
+  grid-column: 2;
+  margin: -8px 0 0;
+  color: var(--gvf-error);
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.4;
+  letter-spacing: -0.08px;
+}
+
 .gvf__disclaimer {
   margin: 4px 0 0;
   color: var(--gvf-muted);
@@ -297,6 +307,11 @@
   .gvf__row {
     grid-template-columns: 1fr;
     gap: 6px;
+  }
+
+  .gvf__error-text {
+    grid-column: 1;
+    margin-top: 0;
   }
 
   .gvf__footer {

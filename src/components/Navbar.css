@@ -213,6 +213,14 @@
 
 /* ===== NAV LINK ===== */
 .navbar__nav-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 100%;
+  padding: 0;
+  border: none;
+  background: none;
+  font-family: inherit;
   font-size: 16px;
   font-weight: 400;
   letter-spacing: -0.16px;
@@ -220,6 +228,7 @@
   color: var(--nav-text);
   text-decoration: none;
   cursor: pointer;
+  appearance: none;
   transition: color 0.2s ease;
 }
 
@@ -816,6 +825,7 @@
   text-transform: uppercase;
   letter-spacing: 0.05em;
   padding: 16px 0 8px;
+  margin: 0;
 }
 
 /* ===== MOBILE SUBMENU ITEM ===== */

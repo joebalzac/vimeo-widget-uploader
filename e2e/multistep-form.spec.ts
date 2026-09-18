@@ -28,7 +28,7 @@ async function fillEmail(page: Page, email = "test@acme.com") {
 test.describe("Email step", () => {
   test.beforeEach(async ({ page }) => {
     await mockAPIs(page);
-    await page.goto("/");
+    await page.goto("/?form=universal");
   });
 
   test("shows error for empty email", async ({ page }) => {
@@ -68,7 +68,7 @@ test.describe("Email step", () => {
 test.describe("Picker step", () => {
   test.beforeEach(async ({ page }) => {
     await mockAPIs(page);
-    await page.goto("/");
+    await page.goto("/?form=universal");
     await fillEmail(page);
   });
 
@@ -112,7 +112,7 @@ test.describe("Picker step", () => {
 test.describe("Housing flow", () => {
   test.beforeEach(async ({ page }) => {
     await mockAPIs(page);
-    await page.goto("/");
+    await page.goto("/?form=universal");
     await fillEmail(page);
     await page.click(".msf__picker-card:first-child"); // Housing
     await page.click(".hsf__nav button"); // Continue
@@ -188,7 +188,7 @@ test.describe("Housing flow", () => {
 test.describe("Healthcare flow", () => {
   test.beforeEach(async ({ page }) => {
     await mockAPIs(page);
-    await page.goto("/");
+    await page.goto("/?form=universal");
     await fillEmail(page);
     await page.click(".msf__picker-card:last-child"); // Healthcare
     await page.click(".hsf__nav button"); // Continue

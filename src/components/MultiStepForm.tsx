@@ -258,7 +258,6 @@ function ContentPanel({
   contentHeadline,
   contentBody,
   contentImageUrl,
-  contentImageAlt,
   contentBackgroundColor,
   contentOnlyLogoUrl,
   contentLogoAlt,
@@ -279,11 +278,7 @@ function ContentPanel({
     : { backgroundColor: contentBackgroundColor };
 
   return (
-    <div
-      className="msf__content-col"
-      style={bgStyle}
-      aria-label={contentImageAlt}
-    >
+    <div className="msf__content-col" style={bgStyle}>
       <div className="msf__content-inner">
         {/* Headline + body */}
         {(contentHeadline || contentBody) && (
@@ -750,6 +745,11 @@ export default function MultiStepForm({
                   placeholder={emailInputPlaceholder}
                   value={form.email}
                   onChange={(e) => set("email", e.target.value)}
+                  aria-label={emailInputPlaceholder || "Work email"}
+                  aria-invalid={Boolean(errors.email)}
+                  aria-describedby={errors.email ? "hsf-email-error" : undefined}
+                  aria-required="true"
+                  autoComplete="email"
                 />
                 <button
                   className="defaultButton emailCapture__btn"
@@ -768,7 +768,9 @@ export default function MultiStepForm({
                 </button>
               </div>
               {errors.email && (
-                <span className="fieldError">{errors.email}</span>
+                <span id="hsf-email-error" className="fieldError">
+                  {errors.email}
+                </span>
               )}
             </div>
 
@@ -918,9 +920,11 @@ export default function MultiStepForm({
                   <div
                     className="hsf__progress-track"
                     role="progressbar"
+                    aria-label="Form progress"
                     aria-valuenow={progress}
                     aria-valuemin={0}
                     aria-valuemax={100}
+                    aria-valuetext={`Step ${flowStep} of ${flowTotal}`}
                   >
                     <motion.div
                       className="hsf__progress-fill"
@@ -932,8 +936,10 @@ export default function MultiStepForm({
 
                   {/* Back + step count */}
                   <div className="hsf__nav-back-container">
-                    <div
+                    <button
+                      type="button"
                       className="hsf__nav-back"
+                      aria-label="Back"
                       onClick={() => {
                         pushEvent(eventStepBack);
                         if (step === 2 && onBack) onBack();
@@ -946,6 +952,8 @@ export default function MultiStepForm({
                         height="18"
                         viewBox="0 0 18 18"
                         fill="none"
+                        aria-hidden="true"
+                        focusable="false"
                       >
                         <path
                           d="M14.25 9H3.75005"
@@ -962,7 +970,7 @@ export default function MultiStepForm({
                           strokeLinejoin="round"
                         />
                       </svg>
-                    </div>
+                    </button>
                     <p className="hsf__step-count">
                       {flowStep} / {flowTotal}
                     </p>
@@ -1017,9 +1025,20 @@ export default function MultiStepForm({
                                     set("firstname", e.target.value)
                                   }
                                   autoFocus
+                                  autoComplete="given-name"
+                                  aria-required="true"
+                                  aria-invalid={Boolean(errors.firstname)}
+                                  aria-describedby={
+                                    errors.firstname
+                                      ? "hsf-firstname-error"
+                                      : undefined
+                                  }
                                 />
                                 {errors.firstname && (
-                                  <span className="fieldError">
+                                  <span
+                                    id="hsf-firstname-error"
+                                    className="fieldError"
+                                  >
                                     {errors.firstname}
                                   </span>
                                 )}
@@ -1042,9 +1061,20 @@ export default function MultiStepForm({
                                   onChange={(e) =>
                                     set("lastname", e.target.value)
                                   }
+                                  autoComplete="family-name"
+                                  aria-required="true"
+                                  aria-invalid={Boolean(errors.lastname)}
+                                  aria-describedby={
+                                    errors.lastname
+                                      ? "hsf-lastname-error"
+                                      : undefined
+                                  }
                                 />
                                 {errors.lastname && (
-                                  <span className="fieldError">
+                                  <span
+                                    id="hsf-lastname-error"
+                                    className="fieldError"
+                                  >
                                     {errors.lastname}
                                   </span>
                                 )}
@@ -1073,9 +1103,18 @@ export default function MultiStepForm({
                                     e.target.value.replace(/[^\d-]/g, ""),
                                   )
                                 }
+                                autoComplete="tel"
+                                aria-required="true"
+                                aria-invalid={Boolean(errors.phone)}
+                                aria-describedby={
+                                  errors.phone ? "hsf-phone-error" : undefined
+                                }
                               />
                               {errors.phone && (
-                                <span className="fieldError">
+                                <span
+                                  id="hsf-phone-error"
+                                  className="fieldError"
+                                >
                                   {errors.phone}
                                 </span>
                               )}
@@ -1103,9 +1142,20 @@ export default function MultiStepForm({
                                 value={form.company}
                                 onChange={(e) => set("company", e.target.value)}
                                 autoFocus
+                                autoComplete="organization"
+                                aria-required="true"
+                                aria-invalid={Boolean(errors.company)}
+                                aria-describedby={
+                                  errors.company
+                                    ? "hsf-company-error"
+                                    : undefined
+                                }
                               />
                               {errors.company && (
-                                <span className="fieldError">
+                                <span
+                                  id="hsf-company-error"
+                                  className="fieldError"
+                                >
                                   {errors.company}
                                 </span>
                               )}
@@ -1128,6 +1178,12 @@ export default function MultiStepForm({
                                 onChange={(e) =>
                                   set("units_managed", e.target.value)
                                 }
+                                aria-invalid={Boolean(errors.units_managed)}
+                                aria-describedby={
+                                  errors.units_managed
+                                    ? "hsf-units-error"
+                                    : undefined
+                                }
                               >
                                 <option value="">Please select</option>
                                 {UNITS_MANAGED_OPTIONS.map((o) => (
@@ -1137,7 +1193,10 @@ export default function MultiStepForm({
                                 ))}
                               </select>
                               {errors.units_managed && (
-                                <span className="fieldError">
+                                <span
+                                  id="hsf-units-error"
+                                  className="fieldError"
+                                >
                                   {errors.units_managed}
                                 </span>
                               )}
@@ -1157,6 +1216,12 @@ export default function MultiStepForm({
                                 onChange={(e) =>
                                   set("pms_compatability", e.target.value)
                                 }
+                                aria-invalid={Boolean(errors.pms_compatability)}
+                                aria-describedby={
+                                  errors.pms_compatability
+                                    ? "hsf-pms-error"
+                                    : undefined
+                                }
                               >
                                 <option value="">Please select</option>
                                 {PMS_OPTIONS.map((o) => (
@@ -1166,7 +1231,7 @@ export default function MultiStepForm({
                                 ))}
                               </select>
                               {errors.pms_compatability && (
-                                <span className="fieldError">
+                                <span id="hsf-pms-error" className="fieldError">
                                   {errors.pms_compatability}
                                 </span>
                               )}
@@ -1194,9 +1259,17 @@ export default function MultiStepForm({
                                     e.target.value,
                                   )
                                 }
+                                aria-invalid={Boolean(
+                                  errors.in_which_areas_of_your_operations_are_you_looking_to_implement_ai_,
+                                )}
+                                aria-describedby={
+                                  errors.in_which_areas_of_your_operations_are_you_looking_to_implement_ai_
+                                    ? "hsf-ai-error"
+                                    : undefined
+                                }
                               />
                               {errors.in_which_areas_of_your_operations_are_you_looking_to_implement_ai_ && (
-                                <span className="fieldError">
+                                <span id="hsf-ai-error" className="fieldError">
                                   {
                                     errors.in_which_areas_of_your_operations_are_you_looking_to_implement_ai_
                                   }
@@ -1252,7 +1325,11 @@ export default function MultiStepForm({
                     )}
                   </div>
 
-                  {apiError && <p className="hsf__api-error">{apiError}</p>}
+                  {apiError && (
+                    <p className="hsf__api-error" role="alert">
+                      {apiError}
+                    </p>
+                  )}
                 </div>
               </div>
             </div>

@@ -303,7 +303,6 @@ function ContentPanel({
   contentHeadline,
   contentBody,
   contentImageUrl,
-  contentImageAlt,
   contentBackgroundColor,
   contentOnlyLogoUrl,
   contentLogoAlt,
@@ -324,11 +323,7 @@ function ContentPanel({
     : { backgroundColor: contentBackgroundColor };
 
   return (
-    <div
-      className="msf__content-col"
-      style={bgStyle}
-      aria-label={contentImageAlt}
-    >
+    <div className="msf__content-col" style={bgStyle}>
       <div className="msf__content-inner">
         {(contentHeadline || contentBody) && (
           <div className="msf__content-headline-body">
@@ -1020,6 +1015,11 @@ export default function MultiStepFormUniversal({
                   placeholder={emailInputPlaceholder}
                   value={form.email}
                   onChange={(e) => set("email", e.target.value)}
+                  aria-label={emailInputPlaceholder || "Work email"}
+                  aria-invalid={Boolean(errors.email)}
+                  aria-describedby={errors.email ? "msfu-email-error" : undefined}
+                  aria-required="true"
+                  autoComplete="email"
                 />
                 <button
                   className="defaultButton emailCapture__btn"
@@ -1030,7 +1030,9 @@ export default function MultiStepFormUniversal({
                 </button>
               </div>
               {errors.email && (
-                <span className="fieldError">{errors.email}</span>
+                <span id="msfu-email-error" className="fieldError">
+                  {errors.email}
+                </span>
               )}
             </div>
 
@@ -1189,9 +1191,11 @@ export default function MultiStepFormUniversal({
                     <div
                       className="hsf__progress-track"
                       role="progressbar"
+                      aria-label="Form progress"
                       aria-valuenow={0}
                       aria-valuemin={0}
                       aria-valuemax={100}
+                      aria-valuetext="Industry selection"
                     >
                       <div
                         className="hsf__progress-fill"
@@ -1199,13 +1203,20 @@ export default function MultiStepFormUniversal({
                       />
                     </div>
                     <div className="hsf__nav-back-container">
-                      <div className="hsf__nav-back" onClick={handleBack}>
+                      <button
+                        type="button"
+                        className="hsf__nav-back"
+                        aria-label="Back"
+                        onClick={handleBack}
+                      >
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
                           width="18"
                           height="18"
                           viewBox="0 0 18 18"
                           fill="none"
+                          aria-hidden="true"
+                          focusable="false"
                         >
                           <path
                             d="M14.25 9H3.75005"
@@ -1222,7 +1233,7 @@ export default function MultiStepFormUniversal({
                             strokeLinejoin="round"
                           />
                         </svg>
-                      </div>
+                      </button>
                     </div>
                     <div
                       style={{
@@ -1303,9 +1314,11 @@ export default function MultiStepFormUniversal({
                     <div
                       className="hsf__progress-track"
                       role="progressbar"
+                      aria-label="Form progress"
                       aria-valuenow={progress}
                       aria-valuemin={0}
                       aria-valuemax={100}
+                      aria-valuetext={`Step ${flowStep} of ${flowTotal}`}
                     >
                       <motion.div
                         className="hsf__progress-fill"
@@ -1316,13 +1329,20 @@ export default function MultiStepFormUniversal({
                     </div>
 
                     <div className="hsf__nav-back-container">
-                      <div className="hsf__nav-back" onClick={handleBack}>
+                      <button
+                        type="button"
+                        className="hsf__nav-back"
+                        aria-label="Back"
+                        onClick={handleBack}
+                      >
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
                           width="18"
                           height="18"
                           viewBox="0 0 18 18"
                           fill="none"
+                          aria-hidden="true"
+                          focusable="false"
                         >
                           <path
                             d="M14.25 9H3.75005"
@@ -1339,7 +1359,7 @@ export default function MultiStepFormUniversal({
                             strokeLinejoin="round"
                           />
                         </svg>
-                      </div>
+                      </button>
                       <p className="hsf__step-count">
                         {flowStep} / {flowTotal}
                       </p>
@@ -1398,9 +1418,20 @@ export default function MultiStepFormUniversal({
                                       set("firstname", e.target.value)
                                     }
                                     autoFocus
+                                    autoComplete="given-name"
+                                    aria-required="true"
+                                    aria-invalid={Boolean(errors.firstname)}
+                                    aria-describedby={
+                                      errors.firstname
+                                        ? "msfu-firstname-error"
+                                        : undefined
+                                    }
                                   />
                                   {errors.firstname && (
-                                    <span className="fieldError">
+                                    <span
+                                      id="msfu-firstname-error"
+                                      className="fieldError"
+                                    >
                                       {errors.firstname}
                                     </span>
                                   )}
@@ -1423,9 +1454,20 @@ export default function MultiStepFormUniversal({
                                     onChange={(e) =>
                                       set("lastname", e.target.value)
                                     }
+                                    autoComplete="family-name"
+                                    aria-required="true"
+                                    aria-invalid={Boolean(errors.lastname)}
+                                    aria-describedby={
+                                      errors.lastname
+                                        ? "msfu-lastname-error"
+                                        : undefined
+                                    }
                                   />
                                   {errors.lastname && (
-                                    <span className="fieldError">
+                                    <span
+                                      id="msfu-lastname-error"
+                                      className="fieldError"
+                                    >
                                       {errors.lastname}
                                     </span>
                                   )}
@@ -1448,9 +1490,20 @@ export default function MultiStepFormUniversal({
                                   placeholder="(555) 555-5555"
                                   value={form.phone}
                                   onChange={(e) => set("phone", e.target.value)}
+                                  autoComplete="tel"
+                                  aria-required="true"
+                                  aria-invalid={Boolean(errors.phone)}
+                                  aria-describedby={
+                                    errors.phone
+                                      ? "msfu-phone-error"
+                                      : undefined
+                                  }
                                 />
                                 {errors.phone && (
-                                  <span className="fieldError">
+                                  <span
+                                    id="msfu-phone-error"
+                                    className="fieldError"
+                                  >
                                     {errors.phone}
                                   </span>
                                 )}
@@ -1480,9 +1533,20 @@ export default function MultiStepFormUniversal({
                                     set("company", e.target.value)
                                   }
                                   autoFocus
+                                  autoComplete="organization"
+                                  aria-required="true"
+                                  aria-invalid={Boolean(errors.company)}
+                                  aria-describedby={
+                                    errors.company
+                                      ? "msfu-company-error"
+                                      : undefined
+                                  }
                                 />
                                 {errors.company && (
-                                  <span className="fieldError">
+                                  <span
+                                    id="msfu-company-error"
+                                    className="fieldError"
+                                  >
                                     {errors.company}
                                   </span>
                                 )}
@@ -1586,9 +1650,21 @@ export default function MultiStepFormUniversal({
                                           e.target.value.replace(/[^\d]/g, ""),
                                         )
                                       }
+                                      aria-required="true"
+                                      aria-invalid={Boolean(
+                                        errors.monthly_call_volume,
+                                      )}
+                                      aria-describedby={
+                                        errors.monthly_call_volume
+                                          ? "msfu-callvol-error"
+                                          : undefined
+                                      }
                                     />
                                     {errors.monthly_call_volume && (
-                                      <span className="fieldError">
+                                      <span
+                                        id="msfu-callvol-error"
+                                        className="fieldError"
+                                      >
                                         {errors.monthly_call_volume}
                                       </span>
                                     )}
@@ -1609,6 +1685,13 @@ export default function MultiStepFormUniversal({
                                       onChange={(e) =>
                                         set("ehr", e.target.value)
                                       }
+                                      aria-required="true"
+                                      aria-invalid={Boolean(errors.ehr)}
+                                      aria-describedby={
+                                        errors.ehr
+                                          ? "msfu-ehr-error"
+                                          : undefined
+                                      }
                                     >
                                       <option value="">Please select</option>
                                       {EHR_OPTIONS.map((o) => (
@@ -1618,7 +1701,10 @@ export default function MultiStepFormUniversal({
                                       ))}
                                     </select>
                                     {errors.ehr && (
-                                      <span className="fieldError">
+                                      <span
+                                        id="msfu-ehr-error"
+                                        className="fieldError"
+                                      >
                                         {errors.ehr}
                                       </span>
                                     )}
@@ -1641,6 +1727,13 @@ export default function MultiStepFormUniversal({
                                       onChange={(e) =>
                                         set("specialty", e.target.value)
                                       }
+                                      aria-required="true"
+                                      aria-invalid={Boolean(errors.specialty)}
+                                      aria-describedby={
+                                        errors.specialty
+                                          ? "msfu-specialty-error"
+                                          : undefined
+                                      }
                                     >
                                       <option value="">Please select</option>
                                       {SPECIALTY_OPTIONS.map((o) => (
@@ -1650,7 +1743,10 @@ export default function MultiStepFormUniversal({
                                       ))}
                                     </select>
                                     {errors.specialty && (
-                                      <span className="fieldError">
+                                      <span
+                                        id="msfu-specialty-error"
+                                        className="fieldError"
+                                      >
                                         {errors.specialty}
                                       </span>
                                     )}
@@ -1679,9 +1775,21 @@ export default function MultiStepFormUniversal({
                                           e.target.value.replace(/[^\d]/g, ""),
                                         )
                                       }
+                                      aria-required="true"
+                                      aria-invalid={Boolean(
+                                        errors.num_providers,
+                                      )}
+                                      aria-describedby={
+                                        errors.num_providers
+                                          ? "msfu-providers-error"
+                                          : undefined
+                                      }
                                     />
                                     {errors.num_providers && (
-                                      <span className="fieldError">
+                                      <span
+                                        id="msfu-providers-error"
+                                        className="fieldError"
+                                      >
                                         {errors.num_providers}
                                       </span>
                                     )}
@@ -1708,6 +1816,7 @@ export default function MultiStepFormUniversal({
                               )}
                             </div>
                           )}
+
                         </motion.div>
                       </AnimatePresence>
                     </div>
@@ -1739,7 +1848,11 @@ export default function MultiStepFormUniversal({
                       )}
                     </div>
 
-                    {apiError && <p className="hsf__api-error">{apiError}</p>}
+                    {apiError && (
+                      <p className="hsf__api-error" role="alert">
+                        {apiError}
+                      </p>
+                    )}
                   </div>
                 )}
 

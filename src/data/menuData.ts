@@ -379,6 +379,12 @@ export const menuData: Record<string, MegaMenuData> = {
                 "See what's next in property management in one hour with live demos and customer stories",
               href: "/now",
             },
+            {
+              title: "Elise Beyond",
+              description:
+                "EliseAI’s largest conference on mastering AI in multifamily. Watch 2026 recordings and register for 2027",
+              href: "/elise-beyond",
+            },
           ],
         ],
       },

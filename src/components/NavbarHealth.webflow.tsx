@@ -1,0 +1,90 @@
+import { NavbarHealth } from "./NavbarHealth";
+import { props } from "@webflow/data-types";
+import { declareComponent } from "@webflow/react";
+
+interface AdapterProps {
+  logoHref?: string;
+  navItems?: string;
+  ctaText?: string;
+  ctaHref?: string;
+  loginText?: string;
+  loginHref?: string;
+  /** Webflow boolean — false hides the Log In link on desktop and mobile. */
+  showLogin?: boolean;
+  /** Webflow boolean — true = white text/logo over a dark hero (local `theme="dark"`). */
+  darkMode?: boolean;
+  /** Webflow boolean — true = offset nav 3.2rem for a top CTA/announcement banner. */
+  ctaBannerOnTop?: boolean;
+  heroSectionId?: string;
+}
+
+function NavbarHealthAdapter({ darkMode = false, ...rest }: AdapterProps) {
+  return <NavbarHealth {...rest} theme={darkMode ? "dark" : "light"} />;
+}
+
+export default declareComponent(NavbarHealthAdapter, {
+  name: "EliseAI Navbar — Health",
+  description:
+    "Healthcare-site navbar. Same look as EliseAI Navbar, without Property Management. Mega-menu copy lives in menuDataHealth.ts.",
+  group: "Navigation",
+  props: {
+    logoHref: props.Text({
+      name: "Logo Link",
+      defaultValue: "/",
+    }),
+    navItems: props.Text({
+      name: "Navigation Items (JSON)",
+      defaultValue: JSON.stringify([
+        {
+          label: "AI for Healthcare",
+          href: "/healthcare",
+          isExternal: false,
+        },
+        { label: "Resources", href: "/resources", isExternal: false },
+        { label: "Company", href: "/company", isExternal: false },
+      ]),
+    }),
+    ctaText: props.Text({
+      name: "CTA Button Text",
+      defaultValue: "Request Demo",
+    }),
+    ctaHref: props.Text({
+      name: "CTA Button Link",
+      defaultValue: "/demo",
+    }),
+    loginText: props.Text({
+      name: "Login Link Text",
+      defaultValue: "Log In",
+    }),
+    loginHref: props.Text({
+      name: "Login Link",
+      defaultValue: "/login",
+    }),
+    showLogin: props.Boolean({
+      name: "Show Login",
+      defaultValue: true,
+      tooltip:
+        "On: show the Log In link on desktop and mobile. Off: hide it entirely.",
+    }),
+
+    // ===== Appearance =====
+    darkMode: props.Boolean({
+      name: "Dark mode",
+      defaultValue: false,
+      tooltip:
+        'On: white logo/links over a dark hero (same as local theme="dark"). Off: dark text (default light theme). Pair with a hero that has the Hero Section ID below.',
+    }),
+    ctaBannerOnTop: props.Boolean({
+      name: "CTA Banner on top",
+      defaultValue: false,
+      tooltip:
+        "On: adds 3.2rem margin-top so the fixed navbar sits below a sitewide CTA/announcement banner (desktop only — ignored on mobile).",
+    }),
+    heroSectionId: props.Text({
+      name: "Hero Section ID",
+      defaultValue: "heroSection",
+      tooltip:
+        'HTML id of the hero the navbar sits over (e.g. set id="heroSection" on the hero). Controls when the bar switches from transparent to solid white.',
+    }),
+  },
+});

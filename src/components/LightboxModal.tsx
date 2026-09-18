@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useId } from "react";
 import "./LightboxModal.css";
 
 interface LightboxModalProps {
@@ -26,6 +26,8 @@ export default function LightboxModal({
   pushEvent,
   children,
 }: LightboxModalProps): React.ReactElement {
+  const titleId = useId();
+
   return (
     <>
       {/* Overlay */}
@@ -42,6 +44,8 @@ export default function LightboxModal({
       {/* Dialog */}
       <div
         role="dialog"
+        aria-modal="true"
+        aria-labelledby={titleId}
         data-state="open"
         data-testid="lightbox-content"
         tabIndex={-1}
@@ -53,7 +57,7 @@ export default function LightboxModal({
             <div className="lb-copy">
               <div className="lb-eyebrow">{eyebrow}</div>
               <div className="lb-headline">
-                <h2>{headline}</h2>
+                <h2 id={titleId}>{headline}</h2>
               </div>
 
               <div className="lb-body">{bodyText}</div>

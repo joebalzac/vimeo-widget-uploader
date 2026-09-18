@@ -8,13 +8,13 @@ import {
 } from "../data/menuData";
 import "./Navbar.css";
 
-interface NavItem {
+export interface NavItem {
   label: string;
   href: string;
   isExternal?: boolean;
 }
 
-interface NavbarProps {
+export interface NavbarProps {
   logoHref?: string;
   navItems?: NavItem[] | string;
   ctaText?: string;
@@ -44,6 +44,10 @@ interface NavbarProps {
    * (≤1023px) when the hamburger menu takes over.
    */
   ctaBannerOnTop?: boolean;
+  /** Mega-menu content keyed by top-level nav label. Defaults to property-management menus. */
+  menus?: Record<string, MegaMenuData>;
+  /** Fallback top-level items when `navItems` is empty or invalid. */
+  defaultNavItems?: NavItem[];
 }
 
 const DEFAULT_NAV_ITEMS: NavItem[] = [
@@ -57,7 +61,10 @@ const DEFAULT_NAV_ITEMS: NavItem[] = [
 ];
 
 /** Webflow may pass JSON strings, empty values, or stale props after schema changes. */
-const parseNavItems = (navItems?: NavItem[] | string): NavItem[] => {
+const parseNavItems = (
+  navItems?: NavItem[] | string,
+  fallback: NavItem[] = DEFAULT_NAV_ITEMS,
+): NavItem[] => {
   if (Array.isArray(navItems) && navItems.length > 0) return navItems;
   if (typeof navItems === "string" && navItems.trim()) {
     try {
@@ -67,7 +74,7 @@ const parseNavItems = (navItems?: NavItem[] | string): NavItem[] => {
       // fall through to defaults
     }
   }
-  return DEFAULT_NAV_ITEMS;
+  return fallback;
 };
 
 /** EliseAI wordmark — color via CSS `currentColor` so theme swaps can transition. */
@@ -105,11 +112,9 @@ const Chevron = () => (
     height="5"
     viewBox="0 0 8 5"
     fill="none"
-    role="img"
-    aria-label="Open menu"
+    aria-hidden="true"
     focusable="false"
   >
-    <title>Open menu</title>
     <path
       d="M0.683105 0.682983L3.58083 3.58071L6.47856 0.682983"
       stroke="currentColor"
@@ -187,7 +192,7 @@ const RightPanelView = ({ panel }: { panel: RightPanel }) => {
                 {card.imageUrl && (
                   <img
                     src={card.imageUrl}
-                    alt={card.title}
+                    alt=""
                     className="navbar__card-img"
                   />
                 )}
@@ -212,7 +217,7 @@ const RightPanelView = ({ panel }: { panel: RightPanel }) => {
       >
         <img
           src={panel.cta.imageUrl}
-          alt={panel.cta.title}
+          alt=""
           className="navbar__cta-card-full-img"
         />
       </a>
@@ -359,8 +364,11 @@ const MegaMenu = ({
   return (
     <div
       ref={shellRef}
+      id="navbar-mega-menu"
       className={megaClassName}
       style={{ height }}
+      role="region"
+      aria-label={`${menuKey} menu`}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
     >
@@ -411,7 +419,7 @@ const MobileCardsPanel = ({
 }) => (
   <div className="navbar__mobile-posts">
     {panel.title && (
-      <div className="navbar__mobile-section-title">{panel.title}</div>
+      <h3 className="navbar__mobile-section-title">{panel.title}</h3>
     )}
     <div className="navbar__mobile-posts-list">
       {panel.cards.map((card, index) => (
@@ -420,7 +428,7 @@ const MobileCardsPanel = ({
             {(card.mobileImageUrl || card.imageUrl) && (
               <img
                 src={card.mobileImageUrl || card.imageUrl}
-                alt={card.title}
+                alt=""
                 className="navbar__mobile-post-img"
               />
             )}
@@ -451,7 +459,7 @@ const MobileCtaPanel = ({
       >
         <img
           src={imageSrc}
-          alt={panel.cta.title}
+          alt=""
           className="navbar__mobile-cta-card-full-img"
         />
       </a>
@@ -509,6 +517,8 @@ export const Navbar = ({
   theme = "light",
   heroSectionId = "heroSection",
   ctaBannerOnTop = false,
+  menus = menuData,
+  defaultNavItems = DEFAULT_NAV_ITEMS,
 }: NavbarProps) => {
   // Webflow Variant can send "Dark"/"Light"; normalize so the class + logo
   // fill still flip when the Designer option is toggled.
@@ -551,7 +561,21 @@ export const Navbar = ({
 
   useEffect(() => () => clearMenuCloseTimer(), []);
 
-  const parsedNavItems = parseNavItems(navItems);
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== "Escape") return;
+      if (isMobileMenuOpen) {
+        if (mobileSubmenu) setMobileSubmenu(null);
+        else setIsMobileMenuOpen(false);
+        return;
+      }
+      scheduleMenuClose();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [isMobileMenuOpen, mobileSubmenu, hoveredItem]);
+
+  const parsedNavItems = parseNavItems(navItems, defaultNavItems);
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
@@ -618,10 +642,10 @@ export const Navbar = ({
     };
   }, [heroSectionId]);
 
-  const hasMenu = (label: string) => Boolean(menuData[label]);
+  const hasMenu = (label: string) => Boolean(menus[label]);
 
   const getMenu = (label: string): MegaMenuData | undefined =>
-    menuData[label];
+    menus[label];
 
   const activeMenu = hoveredItem ? getMenu(hoveredItem) : undefined;
   const activeMobileMenu = mobileSubmenu
@@ -653,11 +677,16 @@ export const Navbar = ({
     .join(" ");
 
   return (
-    <nav className={navClassName} onMouseLeave={scheduleMenuClose}>
+    <nav
+      className={navClassName}
+      aria-label="Primary"
+      onMouseLeave={scheduleMenuClose}
+    >
       <div className="navbar__container">
         {/* Logo (or Back button when a mobile submenu is open) */}
         {isMobileMenuOpen && mobileSubmenu ? (
           <button
+            type="button"
             className="navbar__back"
             onClick={() => setMobileSubmenu(null)}
             aria-label="Back"
@@ -720,7 +749,29 @@ export const Navbar = ({
                 }}
               >
                 {hasMenu(item.label) ? (
-                  <span className="navbar__nav-link">{item.label}</span>
+                  <button
+                    type="button"
+                    className="navbar__nav-link"
+                    aria-expanded={
+                      hoveredItem === item.label && !isMenuClosing
+                    }
+                    aria-haspopup="true"
+                    aria-controls={
+                      hoveredItem === item.label && !isMenuClosing
+                        ? "navbar-mega-menu"
+                        : undefined
+                    }
+                    onClick={() => {
+                      if (hoveredItem === item.label && !isMenuClosing) {
+                        scheduleMenuClose();
+                      } else {
+                        openMenuItem(item.label);
+                      }
+                    }}
+                  >
+                    {item.label}
+                    <Chevron />
+                  </button>
                 ) : (
                   <a
                     href={item.href}
@@ -731,7 +782,6 @@ export const Navbar = ({
                     {item.label}
                   </a>
                 )}
-                {hasMenu(item.label) && <Chevron />}
               </li>
             ))}
           </ul>
@@ -777,18 +827,18 @@ export const Navbar = ({
 
         {/* Mobile Menu Button */}
         <button
+          type="button"
           className={`navbar__mobile-btn${
             isMobileMenuOpen ? " navbar__mobile-btn--open" : ""
           }`}
           onClick={toggleMobileMenu}
-          aria-label={
-            isMobileMenuOpen ? "Close mobile menu" : "Open mobile menu"
-          }
+          aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
           aria-expanded={isMobileMenuOpen}
+          aria-controls={isMobileMenuOpen ? "navbar-mobile-menu" : undefined}
         >
-          <span className="navbar__burger" />
-          <span className="navbar__burger" />
-          <span className="navbar__burger" />
+          <span className="navbar__burger" aria-hidden="true" />
+          <span className="navbar__burger" aria-hidden="true" />
+          <span className="navbar__burger" aria-hidden="true" />
         </button>
       </div>
 
@@ -805,7 +855,12 @@ export const Navbar = ({
 
       {/* Mobile Menu */}
       {isMobileMenuOpen && (
-        <div className="navbar__mobile-menu navbar__mobile-menu--open">
+        <div
+          id="navbar-mobile-menu"
+          className="navbar__mobile-menu navbar__mobile-menu--open"
+          role="region"
+          aria-label="Menu"
+        >
           {activeMobileMenu ? (
             /* Submenu drill-down view */
             <>
@@ -814,18 +869,18 @@ export const Navbar = ({
                   (section, sectionIndex) => (
                     <div key={sectionIndex} className="navbar__mobile-section">
                       {section.title && (
-                        <div className="navbar__mobile-section-title">
+                        <h3 className="navbar__mobile-section-title">
                           {section.title}
-                        </div>
+                        </h3>
                       )}
                       {section.columns.flat().map((item, itemIndex) =>
                         item.isSubheading ? (
-                          <div
+                          <h4
                             key={itemIndex}
                             className="navbar__mobile-section-title"
                           >
                             {item.title}
-                          </div>
+                          </h4>
                         ) : (
                           <a
                             key={itemIndex}
@@ -902,10 +957,12 @@ export const Navbar = ({
                 {parsedNavItems.map((item, index) =>
                   hasMenu(item.label) ? (
                     <button
+                      type="button"
                       key={index}
                       className="navbar__mobile-link navbar__mobile-link--drill"
                       onClick={() => setMobileSubmenu(item.label)}
-                      aria-label={`${item.label}, open menu`}
+                      aria-haspopup="true"
+                      aria-expanded="false"
                     >
                       {item.label}
                       <svg
