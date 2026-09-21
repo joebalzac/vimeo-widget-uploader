@@ -116,6 +116,7 @@ async function createContact(email: string): Promise<void> {
 function PlayIcon() {
   return (
     <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+      <title>Play</title>
       <path d="M3 2.2v9.6L12 7 3 2.2Z" fill="currentColor" />
     </svg>
   );
@@ -124,6 +125,7 @@ function PlayIcon() {
 function RewatchIcon() {
   return (
     <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+      <title>Rewatch</title>
       <path
         d="M3.2 8A4.8 4.8 0 1 1 8 12.8"
         stroke="currentColor"
@@ -144,6 +146,7 @@ function RewatchIcon() {
 function ChevronIcon() {
   return (
     <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+      <title>Continue</title>
       <path
         d="M5 2.5 10 7 5 11.5"
         stroke="currentColor"
@@ -158,6 +161,7 @@ function ChevronIcon() {
 function ErrorIcon() {
   return (
     <svg className="gvf__error-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+      <title>Error</title>
       <circle cx="8" cy="8" r="7" stroke="currentColor" strokeWidth="1.4" />
       <path d="M8 4.5v5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
       <circle cx="8" cy="11.4" r="0.8" fill="currentColor" />

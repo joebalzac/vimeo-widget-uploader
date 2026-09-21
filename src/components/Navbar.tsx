@@ -115,6 +115,7 @@ const Chevron = () => (
     aria-hidden="true"
     focusable="false"
   >
+    <title>Open menu</title>
     <path
       d="M0.683105 0.682983L3.58083 3.58071L6.47856 0.682983"
       stroke="currentColor"

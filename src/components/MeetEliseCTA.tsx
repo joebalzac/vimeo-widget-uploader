@@ -157,6 +157,7 @@ function WaveIcon() {
       aria-hidden="true"
       focusable="false"
     >
+      <title>Audio waveform</title>
       {[0, 5, 10, 15, 20, 25, 30].map((x, i) => (
         <rect
           key={i}
@@ -551,6 +552,7 @@ export default function MeetEliseCTA({
                 {/* Check + heading */}
                 <div className="me-confirm__check">
                   <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
+                    <title>Success</title>
                     <path
                       d="M5 12.5L9.5 17L19 7"
                       stroke="#7638fa"

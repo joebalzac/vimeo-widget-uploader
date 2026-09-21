@@ -527,6 +527,7 @@ function StarIcon() {
       xmlns="http://www.w3.org/2000/svg"
       aria-hidden="true"
     >
+      <title>Thinking</title>
       <defs>
         <linearGradient id={gradId} x1="0%" y1="0%" x2="100%" y2="100%">
           <stop offset="0%" stopColor="#C1BAFE" />
@@ -564,6 +565,7 @@ function Waveform() {
       xmlns="http://www.w3.org/2000/svg"
       aria-hidden="true"
     >
+      <title>Audio waveform</title>
       <defs>
         <linearGradient
           id={gradId}
@@ -601,6 +603,7 @@ function SpeakerIcon() {
       xmlns="http://www.w3.org/2000/svg"
       aria-hidden="true"
     >
+      <title>Speaker</title>
       <path d="M11 5L6 9H2v6h4l5 4V5z" fill="white" />
       <path
         d="M15.54 8.46a5 5 0 010 7.07"
@@ -626,6 +629,7 @@ function SpeakerOffIcon() {
       xmlns="http://www.w3.org/2000/svg"
       aria-hidden="true"
     >
+      <title>Speaker off</title>
       <path
         d="M16 9C16.5044 9.67234 16.8311 10.461 16.95 11.293"
         stroke="white"

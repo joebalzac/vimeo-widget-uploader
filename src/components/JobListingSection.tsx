@@ -78,6 +78,7 @@ const MinusIcon = () => (
     aria-hidden="true"
     focusable="false"
   >
+    <title>Collapse</title>
     <path
       d="M5 12H19"
       stroke="#0E0D0C"
@@ -98,6 +99,7 @@ const PlusIcon = () => (
     aria-hidden="true"
     focusable="false"
   >
+    <title>Expand</title>
     <path
       d="M5 12H19"
       stroke="#A9A8A6"
@@ -125,6 +127,7 @@ const SearchIcon = () => (
     aria-hidden="true"
     focusable="false"
   >
+    <title>Search</title>
     <path
       d="M21.0002 21.0002L16.6602 16.6602"
       stroke="#A9A8A6"

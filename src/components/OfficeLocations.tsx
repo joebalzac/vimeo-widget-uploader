@@ -47,6 +47,7 @@ function PinIcon() {
       strokeLinejoin="round"
       aria-hidden="true"
     >
+      <title>Location</title>
       <path d="M20 10c0 4.418-8 12-8 12s-8-7.582-8-12a8 8 0 0 1 16 0z" />
       <circle cx="12" cy="10" r="3" />
     </svg>
@@ -66,6 +67,7 @@ function ArrowIcon() {
       strokeLinejoin="round"
       aria-hidden="true"
     >
+      <title>Open</title>
       <path d="M7 17 17 7M8 7h9v9" />
     </svg>
   );

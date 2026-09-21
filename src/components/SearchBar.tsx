@@ -58,7 +58,8 @@ export const SearchBar = ({ value, onChange }: Props) => {
           focusable="false"
           style={{ position: "absolute", left: 12, flexShrink: 0 }}
         >
-          <circle
+          <title>Search</title>
+          <circle>
             cx="7.68333"
             cy="7.68333"
             r="6.93333"

@@ -351,6 +351,7 @@ function Arrow({ direction }: { direction: "left" | "right" }) {
       focusable="false"
       style={{ transform: direction === "left" ? "rotate(180deg)" : undefined }}
     >
+      <title>{direction === "left" ? "Previous" : "Next"}</title>
       <path
         d="M5 12H19"
         stroke="currentColor"
@@ -383,6 +384,7 @@ function CloseIcon() {
       aria-hidden="true"
       focusable="false"
     >
+      <title>Close</title>
       <path d="M18 6 6 18M6 6l12 12" />
     </svg>
   );

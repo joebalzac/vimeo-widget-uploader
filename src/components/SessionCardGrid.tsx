@@ -49,6 +49,7 @@ function LockIcon() {
       fill="none"
       aria-hidden="true"
     >
+      <title>Locked</title>
       <path
         d="M9.5 5.5H2.5C1.94772 5.5 1.5 5.94772 1.5 6.5V10C1.5 10.5523 1.94772 11 2.5 11H9.5C10.0523 11 10.5 10.5523 10.5 10V6.5C10.5 5.94772 10.0523 5.5 9.5 5.5Z"
         fill="white"
@@ -66,6 +67,7 @@ function LockIcon() {
 function ArrowNeIcon() {
   return (
     <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+      <title>Open</title>
       <path
         d="M4.7 11.3 11.3 4.7"
         stroke="currentColor"

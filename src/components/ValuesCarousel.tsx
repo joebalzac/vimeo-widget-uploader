@@ -259,6 +259,7 @@ function Arrow({ direction }: { direction: "left" | "right" }) {
       focusable="false"
       style={{ transform: direction === "left" ? "rotate(180deg)" : undefined }}
     >
+      <title>{direction === "left" ? "Previous" : "Next"}</title>
       <path d="M5 12H19" />
       <path d="M12 5L19 12L12 19" />
     </svg>

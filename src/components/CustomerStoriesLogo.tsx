@@ -64,6 +64,7 @@ function ArrowIcon() {
       fill="none"
       aria-hidden
     >
+      <title>Open</title>
       <path
         d="M1 4h5.5"
         stroke="currentColor"

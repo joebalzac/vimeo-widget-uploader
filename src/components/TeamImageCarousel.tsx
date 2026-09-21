@@ -254,6 +254,7 @@ function QuoteMark() {
       fill="#ffffff"
       aria-hidden="true"
     >
+      <title>Quote</title>
       <path d="M0 16V9.04C0 4.06 3.07 0.78 8.04 0V3.13C5.62 3.78 4.3 5.4 4.18 7.83H7.83V16H0Z" />
       <path d="M13.13 16V9.04C13.13 4.06 16.2 0.78 21.17 0V3.13C18.75 3.78 17.43 5.4 17.31 7.83H20.96V16H13.13Z" />
     </svg>
@@ -275,6 +276,7 @@ function Arrow({ direction }: { direction: "left" | "right" }) {
       focusable="false"
       style={{ transform: direction === "left" ? "rotate(180deg)" : undefined }}
     >
+      <title>{direction === "left" ? "Previous" : "Next"}</title>
       <path d="M5 12H19" />
       <path d="M12 5L19 12L12 19" />
     </svg>
