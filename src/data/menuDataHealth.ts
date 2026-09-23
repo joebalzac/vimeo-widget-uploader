@@ -11,19 +11,19 @@ export const menuDataHealth: Record<string, MegaMenuData> = {
             {
               title: "Platform Overview",
               description: "See how EliseAI powers healthcare practices",
-              href: "/healthai",
+              href: "/",
             },
             {
               title: "VoiceAI",
               description:
                 "Handle patient calls with intelligent voice automation",
-              href: "/health/voiceai",
+              href: "/voiceai",
             },
             {
               title: "Online Scheduling",
               description:
                 "Book verified, correctly routed appointments from your website",
-              href: "/health/online-scheduling",
+              href: "/online-scheduling",
             },
           ],
           [
@@ -31,12 +31,12 @@ export const menuDataHealth: Record<string, MegaMenuData> = {
               title: "Outbound Calling",
               description:
                 "Personalized appointment recall, reminders, waitlist management and more",
-              href: "/health/outbound-calling",
+              href: "/outbound-calling",
             },
             {
               title: "Billing & Payments",
               description: "Billing questions answered. Payments collected",
-              href: "/health/billing-payments",
+              href: "/billing-payments",
             },
           ],
         ],
@@ -52,30 +52,30 @@ export const menuDataHealth: Record<string, MegaMenuData> = {
             {
               title: "Women's Health",
               description: "AI solutions tailored for OB/GYN care",
-              href: "/health/womens-health",
+              href: "/womens-health",
             },
             {
               title: "Dermatology",
               description:
                 "Improve dermatology workflows with smart automation",
-              href: "/health/dermatology",
+              href: "/dermatology",
             },
             {
               title: "Orthopedic",
               description: "Streamline orthopedic operations with EliseAI",
-              href: "/health/orthopedic",
+              href: "/orthopedic",
             },
           ],
           [
             {
               title: "Ophthalmology",
               description: "Enhance patient care in eye health with AI",
-              href: "/health/ophthalmology",
+              href: "/ophthalmology",
             },
             {
               title: "Primary Care",
               description: "Automating bookings, calls, collections, recalls",
-              href: "/health/primary-care",
+              href: "/primary-care",
             },
           ],
         ],
@@ -94,7 +94,7 @@ export const menuDataHealth: Record<string, MegaMenuData> = {
               title: "Blog",
               description:
                 "Stay up-to-date with EliseAI and industry news and trends",
-              href: "/health/blog",
+              href: "/blog",
             },
           ],
           [
@@ -102,7 +102,7 @@ export const menuDataHealth: Record<string, MegaMenuData> = {
               title: "Customer Stories",
               description:
                 "Explore real-world success stories straight from EliseAI customers",
-              href: "/health/customer-stories",
+              href: "/customer-stories",
             },
           ],
         ],
