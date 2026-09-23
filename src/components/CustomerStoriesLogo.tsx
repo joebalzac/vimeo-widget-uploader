@@ -24,7 +24,7 @@ export interface CustomerLogo {
 
 export interface CustomerStoriesLogoProps {
   theme?: "light" | "dark";
-  logos?: CustomerLogo[];
+  logos?: (CustomerLogo | null | undefined)[];
 }
 
 const ROW_SIZE = 5;
@@ -144,10 +144,15 @@ function LogoCell({
   );
 }
 
-function chunkRows<T>(items: T[], size: number): T[][] {
-  const rows: T[][] = [];
-  for (let i = 0; i < items.length; i += size) {
-    rows.push(items.slice(i, i + size));
+function rowsOfLogos(
+  logos: (CustomerLogo | null | undefined)[],
+): CustomerLogo[][] {
+  const rows: CustomerLogo[][] = [];
+  for (let i = 0; i < logos.length; i += ROW_SIZE) {
+    const row = logos.slice(i, i + ROW_SIZE).filter((logo): logo is CustomerLogo =>
+      Boolean(logo && (logo.brand || logo.logoUrl)),
+    );
+    if (row.length > 0) rows.push(row);
   }
   return rows;
 }
@@ -156,15 +161,12 @@ export default function CustomerStoriesLogo({
   theme = "light",
   logos = [],
 }: CustomerStoriesLogoProps) {
-  const filled = logos.filter(
-    (l) => l.brand || l.logoUrl,
-  );
   const rootClass = `csl${theme === "dark" ? " csl--dark" : ""}`;
-  const rows = chunkRows(filled, ROW_SIZE);
+  const rows = rowsOfLogos(logos);
 
   return (
     <section className={rootClass}>
-      {filled.length > 0 && (
+      {rows.length > 0 && (
         <div className="csl__grid">
           {rows.map((row, rowIndex) => (
             <div className="csl__row" key={rowIndex}>

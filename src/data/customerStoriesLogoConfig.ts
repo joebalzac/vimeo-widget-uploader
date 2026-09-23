@@ -93,14 +93,16 @@ export interface LogoSlotConfig {
 }
 
 /**
- * Build the 10-logo grid from optional per-slot config.
- * Logos / hover BGs default to preset CDN values — Webflow props override them.
- * Hover preview requires both a case study URL + a hover background URL.
+ * Build the logo grid from optional per-slot config.
+ * A slot with both logo URLs cleared is omitted — no preset brand is substituted.
+ * Slots that don't pass logo URLs at all (local demo) still use the brand preset.
+ * Hover preview requires both a case study URL and a hover background URL.
+ * Null entries keep the original row so later logos don't shift up a row.
  */
 export function buildLogoGrid(
   slots: (LogoSlotConfig | undefined)[],
   fallbackHoverBgUrl?: string,
-): CustomerLogo[] {
+): (CustomerLogo | null)[] {
   const fallbackBg = fallbackHoverBgUrl?.trim();
 
   return LOGO_SLOT_BRANDS.map((brand, i) => {
@@ -112,28 +114,34 @@ export function buildLogoGrid(
       slot.hoverBgUrl?.trim() || BRAND_HOVER_BGS[brand] || fallbackBg;
     const showArrow = CASE_STUDY_SLOT_INDEXES.has(i) || Boolean(href);
     const defaults = BRAND_LOGOS[brand];
+    const link = href
+      ? { href, ...(hoverBg ? { hoverBgUrl: hoverBg } : {}) }
+      : {};
 
-    // Prefer explicit Webflow URLs; otherwise keep the brand preset.
     if (logoUrl || logoHoverUrl) {
       return {
-        logoUrl: logoUrl || defaults.dark,
-        logoHoverUrl: logoHoverUrl || defaults.light,
+        logoUrl: logoUrl || logoHoverUrl,
+        logoHoverUrl: logoHoverUrl || logoUrl,
         alt: defaults.label,
         showArrow,
-        ...(href ? { href, ...(hoverBg ? { hoverBgUrl: hoverBg } : {}) } : {}),
+        ...link,
       };
     }
+
+    const logoCleared =
+      slot.logoUrl !== undefined || slot.logoHoverUrl !== undefined;
+    if (logoCleared) return null;
 
     return {
       brand,
       showArrow,
-      ...(href ? { href, ...(hoverBg ? { hoverBgUrl: hoverBg } : {}) } : {}),
+      ...link,
     };
   });
 }
 
 /** Local / default grid with case-study links on the five linked brands. */
-export const DEFAULT_LOGO_GRID: CustomerLogo[] = buildLogoGrid(
+export const DEFAULT_LOGO_GRID: (CustomerLogo | null)[] = buildLogoGrid(
   LOGO_SLOT_BRANDS.map((brand) =>
     BRAND_CASE_STUDY_URLS[brand]
       ? { href: BRAND_CASE_STUDY_URLS[brand] }

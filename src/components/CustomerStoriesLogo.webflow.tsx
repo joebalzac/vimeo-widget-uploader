@@ -25,8 +25,8 @@ function CustomerStoriesLogoAdapter({
     const n = i + 1;
     return {
       href: rest[`l${n}CaseStudyUrl`],
-      logoUrl: rest[`l${n}LogoUrl`],
-      logoHoverUrl: rest[`l${n}LogoHoverUrl`],
+      logoUrl: rest[`l${n}LogoUrl`] ?? "",
+      logoHoverUrl: rest[`l${n}LogoHoverUrl`] ?? "",
       hoverBgUrl: rest[`l${n}HoverBgUrl`],
     };
   });
@@ -46,7 +46,7 @@ function logoUrlProp(n: number) {
   return props.Text({
     name: `${slotLabel(n)} — Logo URL (black)`,
     defaultValue: logoUrl,
-    tooltip: `Black ${label} logo for the light theme. Replace with any Webflow Asset URL to swap this cell.`,
+    tooltip: `Black ${label} logo for the light theme. Clear both logo URLs to remove this cell. Replace with any Webflow Asset URL to swap it.`,
   });
 }
 
@@ -55,7 +55,7 @@ function logoHoverUrlProp(n: number) {
   return props.Text({
     name: `${slotLabel(n)} — Logo URL (white)`,
     defaultValue: logoHoverUrl,
-    tooltip: `White ${label} logo for the dark theme and hover state. Replace with any Webflow Asset URL to swap this cell.`,
+    tooltip: `White ${label} logo for the dark theme and hover state. Clear both logo URLs to remove this cell. Replace with any Webflow Asset URL to swap it.`,
   });
 }
 

@@ -200,14 +200,22 @@
   }
 }
 
-/* iPad and down — Figma node 19816-24341: flat 2-column grid, 140px cells */
+/* iPad and down — flat 2-column grid, 140px cells. Gap draws dividers so a short row has no empty box. */
 @media (max-width: 991px) {
   .csl__grid {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1px;
+    background-color: #e6e5e3;
+    border: none;
+    padding: 0 1px 1px;
   }
 
-  /* Flatten desktop rows of 5 so all cells flow into the 2-col grid */
+  .csl--dark .csl__grid {
+    background-color: rgba(255, 255, 255, 0.2);
+  }
+
+  /* Flatten desktop rows so remaining cells flow into the 2-col grid */
   .csl__row {
     display: contents;
   }
@@ -216,19 +224,8 @@
     flex: none;
     width: auto;
     height: 140px;
-    margin-right: -1px;
-    margin-bottom: -1px;
-  }
-
-  /* Right-column cells in the 2-col grid — keep right border visible */
-  .csl__row:nth-child(odd) .csl__cell:nth-child(even),
-  .csl__row:nth-child(even) .csl__cell:nth-child(odd) {
-    margin-right: 0;
-  }
-
-  /* No top border on the visual top row in 2-col layout */
-  .csl__row:first-child .csl__cell:nth-child(-n + 2) {
-    border-top: none;
+    margin: 0;
+    border: none;
   }
 
   .csl__cell--linked:hover,
