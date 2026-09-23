@@ -48,6 +48,8 @@ export interface NavbarProps {
   menus?: Record<string, MegaMenuData>;
   /** Fallback top-level items when `navItems` is empty or invalid. */
   defaultNavItems?: NavItem[];
+  /** When set, any menu item href of exactly "/" resolves to this URL instead. */
+  homeHref?: string;
 }
 
 const DEFAULT_NAV_ITEMS: NavItem[] = [
@@ -132,7 +134,11 @@ const slugify = (text: string) =>
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "");
 
-const getLinkHref = (link: { title?: string; href?: string }) => {
+const getLinkHref = (
+  link: { title?: string; href?: string },
+  homeHref?: string,
+) => {
+  if (link.href === "/" && homeHref) return homeHref;
   if (link.href) return link.href;
   if (link.title) return `/${slugify(link.title)}`;
   return "#";
@@ -140,7 +146,13 @@ const getLinkHref = (link: { title?: string; href?: string }) => {
 
 /* ===== Shared renderers ===== */
 
-const Column = ({ items }: { items: MenuItem[] }) => (
+const Column = ({
+  items,
+  homeHref,
+}: {
+  items: MenuItem[];
+  homeHref?: string;
+}) => (
   <ul className="navbar__link-list">
     {items.map((item, index) =>
       item.isSubheading ? (
@@ -149,7 +161,7 @@ const Column = ({ items }: { items: MenuItem[] }) => (
         </li>
       ) : (
         <li key={index}>
-          <a href={getLinkHref(item)} className="navbar__link">
+          <a href={getLinkHref(item, homeHref)} className="navbar__link">
             <span className="navbar__link-title">{item.title}</span>
             {item.description && (
               <span className="navbar__link-desc">{item.description}</span>
@@ -161,7 +173,13 @@ const Column = ({ items }: { items: MenuItem[] }) => (
   </ul>
 );
 
-const Section = ({ section }: { section: MenuSection }) => (
+const Section = ({
+  section,
+  homeHref,
+}: {
+  section: MenuSection;
+  homeHref?: string;
+}) => (
   <div className="navbar__section">
     {section.title && <h3 className="navbar__panel-title">{section.title}</h3>}
     <div
@@ -171,15 +189,21 @@ const Section = ({ section }: { section: MenuSection }) => (
       }}
     >
       {section.columns.map((column, index) => (
-        <Column key={index} items={column} />
+        <Column key={index} items={column} homeHref={homeHref} />
       ))}
     </div>
   </div>
 );
 
-const RightPanelView = ({ panel }: { panel: RightPanel }) => {
+const RightPanelView = ({
+  panel,
+  homeHref,
+}: {
+  panel: RightPanel;
+  homeHref?: string;
+}) => {
   if (panel.kind === "links") {
-    return <Section section={panel.section} />;
+    return <Section section={panel.section} homeHref={homeHref} />;
   }
 
   if (panel.kind === "cards") {
@@ -188,7 +212,11 @@ const RightPanelView = ({ panel }: { panel: RightPanel }) => {
         {panel.title && <h3 className="navbar__panel-title">{panel.title}</h3>}
         <div className="navbar__cards">
           {panel.cards.map((card, index) => (
-            <a key={index} href={getLinkHref(card)} className="navbar__card">
+            <a
+              key={index}
+              href={getLinkHref(card, homeHref)}
+              className="navbar__card"
+            >
               <div className="navbar__card-img-wrap">
                 {card.imageUrl && (
                   <img
@@ -265,12 +293,14 @@ const MegaMenu = ({
   isClosing,
   onMouseEnter,
   onMouseLeave,
+  homeHref,
 }: {
   menu: MegaMenuData;
   menuKey: string;
   isClosing?: boolean;
   onMouseEnter?: () => void;
   onMouseLeave?: () => void;
+  homeHref?: string;
 }) => {
   const shellRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
@@ -382,20 +412,20 @@ const MegaMenu = ({
         {displayMenu.variant === "wide" ? (
           <div className="navbar__mega-wide">
             {displayMenu.sections.map((section, index) => (
-              <Section key={index} section={section} />
+              <Section key={index} section={section} homeHref={homeHref} />
             ))}
           </div>
         ) : (
           <div className="navbar__mega-inner">
             <div className="navbar__mega-half navbar__mega-half--white navbar__mega-left">
               {displayMenu.left.map((section, index) => (
-                <Section key={index} section={section} />
+                <Section key={index} section={section} homeHref={homeHref} />
               ))}
             </div>
             <div
               className={`navbar__mega-half navbar__mega-half--${displayMenu.right.background}`}
             >
-              <RightPanelView panel={displayMenu.right} />
+              <RightPanelView panel={displayMenu.right} homeHref={homeHref} />
             </div>
           </div>
         )}
@@ -415,8 +445,10 @@ const collectMobileSections = (menu: MegaMenuData): MenuSection[] => {
 
 const MobileCardsPanel = ({
   panel,
+  homeHref,
 }: {
   panel: Extract<RightPanel, { kind: "cards" }>;
+  homeHref?: string;
 }) => (
   <div className="navbar__mobile-posts">
     {panel.title && (
@@ -424,7 +456,11 @@ const MobileCardsPanel = ({
     )}
     <div className="navbar__mobile-posts-list">
       {panel.cards.map((card, index) => (
-        <a key={index} href={getLinkHref(card)} className="navbar__mobile-post">
+        <a
+          key={index}
+          href={getLinkHref(card, homeHref)}
+          className="navbar__mobile-post"
+        >
           <div className="navbar__mobile-post-img-wrap">
             {(card.mobileImageUrl || card.imageUrl) && (
               <img
@@ -520,6 +556,7 @@ export const Navbar = ({
   ctaBannerOnTop = false,
   menus = menuData,
   defaultNavItems = DEFAULT_NAV_ITEMS,
+  homeHref,
 }: NavbarProps) => {
   // Webflow Variant can send "Dark"/"Light"; normalize so the class + logo
   // fill still flip when the Designer option is toggled.
@@ -851,6 +888,7 @@ export const Navbar = ({
           isClosing={isMenuClosing}
           onMouseEnter={keepMenuOpen}
           onMouseLeave={scheduleMenuClose}
+          homeHref={homeHref}
         />
       )}
 
@@ -885,7 +923,7 @@ export const Navbar = ({
                         ) : (
                           <a
                             key={itemIndex}
-                            href={getLinkHref(item)}
+                            href={getLinkHref(item, homeHref)}
                             className="navbar__mobile-item"
                           >
                             <div className="navbar__mobile-item-title">
@@ -905,7 +943,10 @@ export const Navbar = ({
 
                 {activeMobileMenu.variant === "split" &&
                   activeMobileMenu.right.kind === "cards" && (
-                    <MobileCardsPanel panel={activeMobileMenu.right} />
+                    <MobileCardsPanel
+                      panel={activeMobileMenu.right}
+                      homeHref={homeHref}
+                    />
                   )}
 
                 {activeMobileMenu.variant === "split" &&

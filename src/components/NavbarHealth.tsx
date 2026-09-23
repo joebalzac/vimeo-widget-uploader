@@ -15,5 +15,6 @@ export const NavbarHealth = (
     {...props}
     menus={menuDataHealth}
     defaultNavItems={DEFAULT_HEALTH_NAV_ITEMS}
+    homeHref="https://health.eliseai.com"
   />
 );

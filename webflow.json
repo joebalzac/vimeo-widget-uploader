@@ -1,6 +1,6 @@
 {
   "library": {
-    "name": "HubSpot + Vimeo Upload",
+    "name": "HubSpot Vimeo Upload",
     "components": ["./src/**/*.webflow.@(js|jsx|mjs|ts|tsx)"],
     "description": "Webpage Components ",
     "id": "custom-webflow-components"
