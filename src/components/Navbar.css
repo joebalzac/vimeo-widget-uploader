@@ -423,6 +423,17 @@
   min-width: 0;
 }
 
+/* Gray link panel: titled columns such as Resources | Specialties */
+.navbar__mega-links {
+  display: flex;
+  gap: 40px;
+}
+
+.navbar__mega-links .navbar__section {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
 /* ===== SECTION ===== */
 .navbar__section {
   min-width: 0;

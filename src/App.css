@@ -16,6 +16,11 @@ body {
   background: #14102b;
 }
 
+.patient-outreach-preview--dark {
+  background: #14102b;
+  padding: 80px 24px;
+}
+
 .session-card-preview {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));

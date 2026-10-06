@@ -42,7 +42,7 @@ export interface CtaCard {
 export type PanelBackground = "white" | "gray" | "dark";
 
 export type RightPanel =
-  | { kind: "links"; background: PanelBackground; section: MenuSection }
+  | { kind: "links"; background: PanelBackground; sections: MenuSection[] }
   | {
       kind: "cards";
       background: PanelBackground;
@@ -255,23 +255,22 @@ export const menuData: Record<string, MegaMenuData> = {
                 "Personalized appointment recall, reminders, waitlist management and more",
               href: "/health/outbound-calling",
             },
+          ],
+          [
             {
               title: "Billing & Payments",
               description: "Billing questions answered. Payments collected",
               href: "/health/billing-payments",
             },
-          ],
-        ],
-      },
-      {
-        title: "RESOURCES",
-        columns: [
-          [
             {
-              title: "Customer Stories",
-              description:
-                "Explore real-world success stories straight from EliseAI customers",
-              href: "/health/customer-stories",
+              title: "Patient Intake",
+              description: "Collect patient forms, verify coverage, and prepare every chart before the visit",
+              href: "/health/patient-intake",
+            },
+            {
+              title: "Referrals",
+              description: "Capture every incoming referral and convert it into a booked appointment, automatically",
+              href: "/health/referrals",
             },
           ],
         ],
@@ -280,41 +279,54 @@ export const menuData: Record<string, MegaMenuData> = {
     right: {
       kind: "links",
       background: "gray",
-      section: {
-        title: "SPECIALTIES",
-        columns: [
-          [
-            {
-              title: "Women's Health",
-              description: "AI solutions tailored for OB/GYN care",
-              href: "/health/womens-health",
-            },
-            {
-              title: "Dermatology",
-              description:
-                "Improve dermatology workflows with smart automation",
-              href: "/health/dermatology",
-            },
-            {
-              title: "Orthopedic",
-              description: "Streamline orthopedic operations with EliseAI",
-              href: "/health/orthopedic",
-            },
+      sections: [
+        {
+          title: "RESOURCES",
+          columns: [
+            [
+              {
+                title: "Customer Stories",
+                description:
+                  "Explore real-world success stories straight from EliseAI customers",
+                href: "/health/customer-stories",
+              },
+            ],
           ],
-          [
-            {
-              title: "Ophthalmology",
-              description: "Enhance patient care in eye health with AI",
-              href: "/health/ophthalmology",
-            },
-            {
-              title: "Primary Care",
-              description: "Automating bookings, calls, collections, recalls",
-              href: "/health/primary-care",
-            },
+        },
+        {
+          title: "SPECIALTIES",
+          columns: [
+            [
+              {
+                title: "Women's Health",
+                description: "AI solutions tailored for OB/GYN care",
+                href: "/health/womens-health",
+              },
+              {
+                title: "Dermatology",
+                description:
+                  "Improve dermatology workflows with smart automation",
+                href: "/health/dermatology",
+              },
+              {
+                title: "Orthopedic",
+                description: "Streamline orthopedic operations with EliseAI",
+                href: "/health/orthopedic",
+              },
+              {
+                title: "Ophthalmology",
+                description: "Enhance patient care in eye health with AI",
+                href: "/health/ophthalmology",
+              },
+              {
+                title: "Primary Care",
+                description: "Automating bookings, calls, collections, recalls",
+                href: "/health/primary-care",
+              },
+            ],
           ],
-        ],
-      },
+        },
+      ],
     },
   },
 

@@ -82,6 +82,68 @@
   color: #3f3e3c;
 }
 
+/* Centered headline: eyebrow, heading, and body stacked and centered. */
+.po--center .po__head {
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 12px;
+  max-width: 640px;
+  margin-inline: auto;
+}
+
+.po--center .po__head-left {
+  align-items: center;
+  flex: none;
+  width: 100%;
+  text-align: center;
+}
+
+.po--center .po__eyebrow {
+  justify-content: center;
+}
+
+.po--center .po__heading,
+.po--center .po__body {
+  width: 100%;
+  text-align: center;
+}
+
+.po--center .po__body {
+  flex: none;
+}
+
+/* Dark theme: transparent so the section behind it shows through. */
+.po--dark {
+  background: transparent;
+}
+
+.po--dark .po__eyebrow {
+  color: #dddcda;
+}
+
+.po--dark .po__eyebrow-dot {
+  background-color: #c1bafe;
+}
+
+.po--dark .po__heading {
+  max-width: 550px;
+  color: #fff;
+}
+
+.po--dark .po__body,
+.po--dark .po__item-desc {
+  color: #dddcda;
+}
+
+.po--dark .po__item.is-active .po__item-title {
+  color: #fff;
+}
+
+.po--dark .po__item:not(.is-active):hover .po__item-title {
+  color: #dddcda;
+}
+
 /* ── Content — list + panel ───────────────────────────────────────────────────── */
 .po__content {
   display: grid;
@@ -122,6 +184,30 @@
   text-align: left;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
+}
+
+.po__item-kicker {
+  display: none;
+  align-items: center;
+  gap: 10px;
+  font-family: "IBM Plex Mono", monospace;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 1.1;
+  text-transform: uppercase;
+  color: #6b4fff;
+  font-feature-settings: "salt" 1;
+}
+
+.po__item.is-active .po__item-kicker {
+  display: flex;
+}
+
+.po__item-kicker-dot {
+  width: 3.2px;
+  height: 3.2px;
+  background: #6b4fff;
+  flex-shrink: 0;
 }
 
 .po__item-title {
@@ -197,7 +283,8 @@
   box-shadow: inset 0 0 0 0.5px rgba(0, 0, 0, 0.1);
 }
 
-.po__panel-video {
+.po__panel-video,
+.po__panel-image {
   position: absolute;
   inset: 0;
   width: 100%;
@@ -206,6 +293,10 @@
   border: none;
   pointer-events: none;
   animation: poFadeIn 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.po__panel-image {
+  object-fit: cover;
 }
 
 @keyframes poFadeIn {
@@ -281,6 +372,10 @@
     color: #0e0d0c;
   }
 
+  .po--dark .po__item-title {
+    color: #fff;
+  }
+
   .po__item-desc {
     font-size: 16px;
     letter-spacing: -0.32px;
@@ -302,9 +397,14 @@
     gap: 6px;
   }
 
-  /* Reveal every description, not just the active one. */
+  /* Reveal every description and step eyebrow, not just the active one. */
   .po__item:not(.is-active) .po__item-desc {
     display: block;
+  }
+
+  .po__item .po__item-kicker {
+    display: flex;
+    font-size: 14px;
   }
 
   /* Each feature stacks image → title → description (image on top via order),
@@ -320,7 +420,8 @@
     box-shadow: inset 0 0 0 0.5px rgba(0, 0, 0, 0.1);
   }
 
-  .po__item-panel .po__panel-video {
+  .po__item-panel .po__panel-video,
+  .po__item-panel .po__panel-image {
     border-radius: 10px;
   }
 
@@ -335,7 +436,8 @@
 /* ── Reduced motion ─────────────────────────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
   .po__progress,
-  .po__panel-video {
+  .po__panel-video,
+  .po__panel-image {
     animation: none;
   }
   .po__progress {

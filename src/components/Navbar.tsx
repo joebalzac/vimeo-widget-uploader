@@ -203,7 +203,13 @@ const RightPanelView = ({
   homeHref?: string;
 }) => {
   if (panel.kind === "links") {
-    return <Section section={panel.section} homeHref={homeHref} />;
+    return (
+      <div className="navbar__mega-links">
+        {panel.sections.map((section, index) => (
+          <Section key={index} section={section} homeHref={homeHref} />
+        ))}
+      </div>
+    );
   }
 
   if (panel.kind === "cards") {
@@ -439,7 +445,7 @@ const MegaMenu = ({
 const collectMobileSections = (menu: MegaMenuData): MenuSection[] => {
   if (menu.variant === "wide") return menu.sections;
   const sections = [...menu.left];
-  if (menu.right.kind === "links") sections.push(menu.right.section);
+  if (menu.right.kind === "links") sections.push(...menu.right.sections);
   return sections;
 };
 

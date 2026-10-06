@@ -14,6 +14,7 @@ import MultiStepFormHealth from "./components/MultiStepFormHealth";
 import MultiStepFormUniversal from "./components/MultiStepFormUniversal";
 import MeetEliseCTA from "./components/MeetEliseCTA";
 import OneInputForm from "./components/OneInputForm";
+import SimpleImageCarousel from "./components/SimpleImageCarousel";
 
 const FEATURE_CARDS = [
   {
@@ -118,6 +119,14 @@ function App() {
       <div>
         <PatientOutreach />
       </div>
+
+      <section className="patient-outreach-preview--dark">
+        <PatientOutreach theme="dark" />
+      </section>
+
+      <section id="simpleImageCarousel" style={{ padding: "80px 0" }}>
+        <SimpleImageCarousel />
+      </section>
 
       <section id="gatedVimeoForm" className="gated-vimeo-preview-wrap">
         <GatedVimeoForm vimeoId="76979871" previewSeconds={30} />

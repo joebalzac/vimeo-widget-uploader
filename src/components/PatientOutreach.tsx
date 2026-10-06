@@ -11,9 +11,16 @@ export interface OutreachFeature {
   id: string;
   /** Feature title shown in the list. */
   title: string;
+  /**
+   * Label above the title while the feature is active.
+   * "Step 1 - document capture" renders as STEP 1 • DOCUMENT CAPTURE.
+   */
+  eyebrow?: string;
   /** Shown only while the feature is active. */
   description: string;
-  /** Vimeo video ID shown in the panel while this feature is active. */
+  /** Image URL shown in the panel. Used instead of the Vimeo video when set. */
+  imageUrl?: string;
+  /** Vimeo video ID shown in the panel when no image URL is set. */
   vimeoId?: string;
 }
 
@@ -23,11 +30,61 @@ function vimeoEmbedUrl(vimeoId: string) {
   return `https://player.vimeo.com/video/${vimeoId}?background=1&autoplay=1&loop=1&muted=1&byline=0&title=0&portrait=0`;
 }
 
+function FeatureEyebrow({ text }: { text: string }) {
+  const parts = text
+    .trim()
+    .split(/\s+[-–—•·]\s+/)
+    .map((part) => part.trim())
+    .filter(Boolean);
+  if (!parts.length) return null;
+  const [lead, ...rest] = parts;
+  const tail = rest.join(" ");
+  return (
+    <span className="po__item-kicker">
+      <span>{lead}</span>
+      {tail && (
+        <>
+          <span className="po__item-kicker-dot" aria-hidden="true" />
+          <span>{tail}</span>
+        </>
+      )}
+    </span>
+  );
+}
+
+function FeatureMedia({ feature }: { feature: OutreachFeature }) {
+  if (feature.imageUrl) {
+    return (
+      <img
+        className="po__panel-image"
+        src={feature.imageUrl}
+        alt={feature.title}
+      />
+    );
+  }
+  if (feature.vimeoId) {
+    return (
+      <iframe
+        className="po__panel-video"
+        src={vimeoEmbedUrl(feature.vimeoId)}
+        title={feature.title}
+        allow="autoplay; fullscreen; picture-in-picture"
+        frameBorder={0}
+      />
+    );
+  }
+  return null;
+}
+
 export interface PatientOutreachProps {
   eyebrow?: string;
   heading?: string;
   body?: string;
   features?: OutreachFeature[];
+  /** Stack and center the eyebrow, heading, and body. */
+  centerHeadline?: boolean;
+  /** Light keeps the cream background. Dark is transparent with light text. */
+  theme?: "light" | "dark" | string;
   /** Auto-advance interval in ms (0 disables auto-advance). */
   autoAdvanceMs?: number;
   /** GTM dataLayer event fired when a feature is selected. */
@@ -78,23 +135,33 @@ export default function PatientOutreach({
   heading = "Patient Outreach That Drives Engagement",
   body = "VoiceAI, SMS, and secure messaging that reaches patients with natural interactions, freeing your team to focus on the patients in front of them.",
   features = PLACEHOLDER_FEATURES,
+  centerHeadline = false,
+  theme = "light",
   autoAdvanceMs = 6000,
   eventSelect = "patient_outreach_select",
 }: PatientOutreachProps) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [paused, setPaused] = useState(false);
-  const activeFeature = features[activeIndex] ?? features[0];
+  // A feature with no title is treated as unused and left out of the list.
+  const visibleFeatures = features.filter((feature) => feature.title.trim());
+  const activeFeature = visibleFeatures[activeIndex] ?? visibleFeatures[0];
+
+  useEffect(() => {
+    if (activeIndex > 0 && activeIndex >= visibleFeatures.length) {
+      setActiveIndex(0);
+    }
+  }, [activeIndex, visibleFeatures.length]);
 
   // Auto-advance through the features so the section feels "always-on". The
   // progress bar under the active item is driven by a CSS animation keyed on
   // activeIndex, so it restarts cleanly on every change.
   useEffect(() => {
-    if (!autoAdvanceMs || paused || features.length <= 1) return;
+    if (!autoAdvanceMs || paused || visibleFeatures.length <= 1) return;
     const t = window.setTimeout(() => {
-      setActiveIndex((i) => (i + 1) % features.length);
+      setActiveIndex((i) => (i + 1) % visibleFeatures.length);
     }, autoAdvanceMs);
     return () => window.clearTimeout(t);
-  }, [activeIndex, paused, autoAdvanceMs, features.length]);
+  }, [activeIndex, paused, autoAdvanceMs, visibleFeatures.length]);
 
   const select = (i: number) => {
     if (i === activeIndex) return;
@@ -102,8 +169,14 @@ export default function PatientOutreach({
     pushEvent(eventSelect);
   };
 
+  const isDark = String(theme).toLowerCase() === "dark";
+
   return (
-    <section className="po">
+    <section
+      className={`po${centerHeadline ? " po--center" : ""}${
+        isDark ? " po--dark" : ""
+      }`}
+    >
       <div className="po__inner">
         <div className="po__head">
           <div className="po__head-left">
@@ -122,7 +195,7 @@ export default function PatientOutreach({
           onMouseLeave={() => setPaused(false)}
         >
           <ul className="po__list">
-            {features.map((feature, i) => {
+            {visibleFeatures.map((feature, i) => {
               const active = i === activeIndex;
               return (
                 <li
@@ -135,22 +208,17 @@ export default function PatientOutreach({
                     aria-expanded={active}
                     onClick={() => select(i)}
                   >
+                    {feature.eyebrow?.trim() && (
+                      <FeatureEyebrow text={feature.eyebrow} />
+                    )}
                     <span className="po__item-title">{feature.title}</span>
                     <span className="po__item-desc">{feature.description}</span>
                   </button>
                   {/* Inline preview used only in the mobile column layout, where
                       every feature is expanded at once. Renders as an empty
-                      placeholder box when no video is provided. */}
+                      placeholder box when no image or video is provided. */}
                   <div className="po__item-panel">
-                    {feature.vimeoId && (
-                      <iframe
-                        className="po__panel-video"
-                        src={vimeoEmbedUrl(feature.vimeoId)}
-                        title={feature.title}
-                        allow="autoplay; fullscreen; picture-in-picture"
-                        frameBorder={0}
-                      />
-                    )}
+                    <FeatureMedia feature={feature} />
                   </div>
                   {active && (
                     <span
@@ -168,15 +236,8 @@ export default function PatientOutreach({
           </ul>
 
           <div className="po__panel">
-            {activeFeature.vimeoId && (
-              <iframe
-                key={activeFeature.id}
-                className="po__panel-video"
-                src={vimeoEmbedUrl(activeFeature.vimeoId)}
-                title={activeFeature.title}
-                allow="autoplay; fullscreen; picture-in-picture"
-                frameBorder={0}
-              />
+            {activeFeature && (
+              <FeatureMedia key={activeFeature.id} feature={activeFeature} />
             )}
           </div>
         </div>

@@ -45,41 +45,43 @@ export const menuDataHealth: Record<string, MegaMenuData> = {
     right: {
       kind: "links",
       background: "gray",
-      section: {
-        title: "SPECIALTIES",
-        columns: [
-          [
-            {
-              title: "Women's Health",
-              description: "AI solutions tailored for OB/GYN care",
-              href: "/womens-health",
-            },
-            {
-              title: "Dermatology",
-              description:
-                "Improve dermatology workflows with smart automation",
-              href: "/dermatology",
-            },
-            {
-              title: "Orthopedic",
-              description: "Streamline orthopedic operations with EliseAI",
-              href: "/orthopedic",
-            },
+      sections: [
+        {
+          title: "SPECIALTIES",
+          columns: [
+            [
+              {
+                title: "Women's Health",
+                description: "AI solutions tailored for OB/GYN care",
+                href: "/womens-health",
+              },
+              {
+                title: "Dermatology",
+                description:
+                  "Improve dermatology workflows with smart automation",
+                href: "/dermatology",
+              },
+              {
+                title: "Orthopedic",
+                description: "Streamline orthopedic operations with EliseAI",
+                href: "/orthopedic",
+              },
+            ],
+            [
+              {
+                title: "Ophthalmology",
+                description: "Enhance patient care in eye health with AI",
+                href: "/ophthalmology",
+              },
+              {
+                title: "Primary Care",
+                description: "Automating bookings, calls, collections, recalls",
+                href: "/primary-care",
+              },
+            ],
           ],
-          [
-            {
-              title: "Ophthalmology",
-              description: "Enhance patient care in eye health with AI",
-              href: "/ophthalmology",
-            },
-            {
-              title: "Primary Care",
-              description: "Automating bookings, calls, collections, recalls",
-              href: "/primary-care",
-            },
-          ],
-        ],
-      },
+        },
+      ],
     },
   },
 

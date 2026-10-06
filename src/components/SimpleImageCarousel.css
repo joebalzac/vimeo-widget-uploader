@@ -1,0 +1,313 @@
+/* SimpleImageCarousel — full-bleed image cards with a title/subtitle pinned
+   bottom-left. Each card is a single link; no hover effects on the card.
+   Assumes Inter (variable) + IBM Plex Mono load globally. */
+
+.sic {
+  --container-max: 90rem;
+  position: relative;
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background-color: transparent;
+  padding: 0;
+  overflow: hidden;
+  font-family: Inter, sans-serif;
+}
+
+@media (min-width: 1440px) {
+  .sic {
+    --container-max: 100rem;
+  }
+}
+
+@media (min-width: 1920px) {
+  .sic {
+    --container-max: 120rem;
+  }
+}
+
+.sic__container {
+  position: relative;
+  z-index: 11;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  max-width: var(--container-max);
+  width: 90%;
+  margin: 0 auto 48px;
+}
+
+.sic__head {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 20px;
+  min-width: 0;
+}
+
+.sic__eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  font-family: "IBM Plex Mono", monospace;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 1.1;
+  text-transform: uppercase;
+  color: #3f3e3c;
+  font-feature-settings: "salt" 1;
+}
+
+.sic__eyebrow-dot {
+  display: block;
+  width: 8px;
+  height: 8px;
+  background-color: #6b4fff;
+  flex-shrink: 0;
+}
+
+.sic__heading {
+  margin: 0;
+  font-weight: 400;
+  font-size: 48px;
+  line-height: 1.1;
+  letter-spacing: -1.44px;
+  color: #0e0d0c;
+}
+
+.sic__splide {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.sic .splide__list {
+  align-items: flex-start;
+}
+
+.sic .splide__arrow svg {
+  fill: none;
+}
+
+/* ─── Nav ───────────────────────────────────────────────────────────────── */
+.sic__nav {
+  display: inline-flex;
+  align-items: center;
+  background-color: #f5f4f2;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  border-radius: 1000px;
+  overflow: hidden;
+  z-index: 12;
+}
+
+.sic__nav--desktop {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.sic__nav--mobile {
+  display: none;
+}
+
+.sic__nav-btn {
+  position: static;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  border-radius: 1000px;
+  color: #0e0d0c;
+  cursor: pointer;
+  opacity: 1;
+  transform: none;
+  transition: background-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.sic__nav-btn:not(:disabled):hover,
+.sic__nav-btn:not(:disabled):active {
+  background-color: #ffffff;
+  box-shadow: 0px 0px 0.49px rgba(0, 0, 0, 0.4),
+    0px 3.918px 1.959px rgba(0, 0, 0, 0.04);
+}
+
+.sic__nav-btn:disabled {
+  opacity: 0.3;
+  color: #a9a8a6;
+  cursor: default;
+}
+
+.sic__nav-btn svg {
+  width: 20px;
+  height: 20px;
+}
+
+.sic--no-header .sic__nav--mobile {
+  display: inline-flex;
+  align-self: flex-start;
+  margin-top: 48px;
+  margin-left: max(5vw, calc((100vw - var(--container-max)) / 2));
+  border: 0.5px solid rgba(0, 0, 0, 0.1);
+}
+
+/* ─── Card ──────────────────────────────────────────────────────────────── */
+.sic__card {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 100%;
+  box-sizing: border-box;
+  color: inherit;
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+a.sic__card {
+  cursor: pointer;
+}
+
+.sic__card:focus-visible {
+  outline: 2px solid #6b4fff;
+  outline-offset: 4px;
+  border-radius: 12px;
+}
+
+.sic__media {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background-color: #f0eeec;
+  border-radius: 12px;
+}
+
+.sic__img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+  user-select: none;
+}
+
+.sic__meta {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-right: 20px;
+  box-sizing: border-box;
+}
+
+.sic__title,
+.sic__subtitle {
+  margin: 0;
+  font-family: "Intervariable", "Inter Variable", Inter, sans-serif;
+  font-style: normal;
+  font-feature-settings: "ss07" on;
+  word-break: break-word;
+}
+
+.sic__title {
+  font-size: 22px;
+  font-weight: 450;
+  line-height: 120%;
+  letter-spacing: -0.66px;
+  color: #0e0d0c;
+}
+
+.sic__subtitle {
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 140%;
+  letter-spacing: -0.36px;
+  color: #3f3e3c;
+}
+
+.sic__cta {
+  display: inline-flex;
+  align-items: flex-start;
+  padding: 12px 20px;
+  border: 1px solid #dfdbff;
+  border-radius: 4px;
+  box-sizing: border-box;
+  font-family: "Intervariable", "Inter Variable", Inter, sans-serif;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 140%;
+  letter-spacing: -0.32px;
+  font-feature-settings: "ss07" on;
+  color: #6b4fff;
+  text-align: center;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.sic__cta:focus-visible {
+  outline: 2px solid #6b4fff;
+  outline-offset: 2px;
+}
+
+/* ─── Tablet ─────────────────────────────────────────────────────────────── */
+@media (max-width: 991px) {
+  .sic__container {
+    max-width: none;
+    width: 100%;
+    margin: 0 0 48px;
+  }
+  .sic--no-header .sic__nav--mobile {
+    margin-left: 0;
+  }
+  .sic__heading {
+    font-size: 40px;
+    letter-spacing: -1.2px;
+  }
+}
+
+/* ─── Mobile ─────────────────────────────────────────────────────────────── */
+@media (max-width: 767px) {
+  .sic__container {
+    width: 90%;
+    max-width: 72.5rem;
+    margin: 0 auto 32px;
+  }
+  .sic__heading {
+    font-size: 36px;
+    letter-spacing: -1.08px;
+  }
+  .sic__eyebrow {
+    font-size: 14px;
+  }
+  .sic__title {
+    font-size: 20px;
+    letter-spacing: -0.6px;
+  }
+  .sic__subtitle {
+    font-size: 16px;
+    letter-spacing: -0.32px;
+  }
+  .sic__nav--desktop {
+    display: none;
+  }
+  .sic__nav--mobile,
+  .sic--no-header .sic__nav--mobile {
+    display: inline-flex;
+    align-self: flex-start;
+    margin: 32px 0 0 5vw;
+    border: 0.5px solid rgba(0, 0, 0, 0.1);
+  }
+  .sic__card {
+    gap: 20px;
+  }
+  .sic__media {
+    border-radius: 10px;
+  }
+}

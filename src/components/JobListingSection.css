@@ -83,6 +83,21 @@
   width: 100%;
 }
 
+/* Keep the Collection List in the layout so every item renders, without showing it. */
+.job-listing-cms {
+  position: relative;
+}
+
+.job-cms-slot {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  opacity: 0;
+  pointer-events: none;
+  z-index: -1;
+}
+
 /* =========================================================
    ACCORDION DEPARTMENT STYLES
    ========================================================= */
@@ -175,12 +190,24 @@
 
 .job-item-name {
   color: #0e0d0c;
-  font-family: "Intervariable", sans-serif;
+  font-family: "Intervariable", "Inter Variable", Inter, sans-serif;
   font-size: 18px;
   font-weight: 400;
   line-height: 140%;
   letter-spacing: -0.36px;
   font-style: normal;
+  font-feature-settings: "ss07" on;
+}
+
+.job-item-company {
+  color: var(--type-body-secondary, #7a7977);
+  font-family: "Intervariable", "Inter Variable", Inter, sans-serif;
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 140%;
+  letter-spacing: -0.36px;
+  font-feature-settings: "ss07" on;
 }
 
 .job-item-location {
@@ -193,7 +220,8 @@
 }
 
 .job-item-content:hover .job-item-name,
-.job-item-content:hover .job-item-location {
+.job-item-content:hover .job-item-location,
+.job-item-content:hover .job-item-company {
   color: #b9b9bb;
 }
 
@@ -282,7 +310,8 @@
   }
 
   .job-item-name,
-  .job-item-location {
+  .job-item-location,
+  .job-item-company {
     font-size: 16px;
     letter-spacing: -0.32px;
   }
@@ -294,7 +323,8 @@
   }
 
   .job-item-content:hover .job-item-name,
-  .job-item-content:hover .job-item-location {
+  .job-item-content:hover .job-item-location,
+  .job-item-content:hover .job-item-company {
     color: #181819;
   }
 
