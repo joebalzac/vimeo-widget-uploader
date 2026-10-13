@@ -4,43 +4,6 @@ import "./MultiFormStyling.css";
 import { isValidWorkEmail } from "../utils/blockedEmails";
 import { storeUtms, getUtmFields } from "../utils/utm";
 
-// ─── Default SDK types ────────────────────────────────────────────────────────
-
-interface DefaultQuestion {
-  id: string;
-  name: string;
-  type: string;
-  options?: Array<string | number>;
-  lead_attribute?: string;
-}
-
-interface DefaultSubmission {
-  form_id: number;
-  team_id: number;
-  responses: Record<string, string>;
-  questions: DefaultQuestion[];
-}
-
-interface DefaultCallbacks {
-  onSuccess?: (data: unknown) => void;
-  onError?: (error: Error) => void;
-  onSchedulerDisplayed?: (data: unknown) => void;
-  onSchedulerClosed?: (data: { redirectUrl?: string }) => void;
-  onMeetingBooked?: (data: { payload: unknown }) => void;
-}
-
-declare global {
-  interface Window {
-    DefaultSDK?: {
-      submit: (
-        submission: DefaultSubmission,
-        callbacks?: DefaultCallbacks,
-      ) => Promise<void>;
-      helloWorld: () => void;
-    };
-  }
-}
-
 function pushEvent(event: string) {
   (window as any).dataLayer = (window as any).dataLayer || [];
   (window as any).dataLayer.push({ event });
@@ -129,8 +92,6 @@ interface Props {
 const PORTAL_ID = "45321630";
 const FORM_GUID = "0b77026b-30dc-4521-afc4-009261739448";
 const API_BASE = "https://contact-checker-backend.vercel.app";
-const DEFAULT_FORM_ID = 539717;
-const DEFAULT_TEAM_ID = 588;
 
 const UNITS_MANAGED_OPTIONS = [
   "<450",
@@ -179,18 +140,6 @@ function getCookie(name: string): string {
 
 function validateEmail(val: string): boolean {
   return isValidWorkEmail(val);
-}
-
-function loadDefaultSDK(): Promise<void> {
-  return new Promise((resolve, reject) => {
-    if (window.DefaultSDK) return resolve();
-    const script = document.createElement("script");
-    script.src = "https://import-cdn.default.com/sdk.js";
-    script.async = true;
-    script.onload = () => resolve();
-    script.onerror = () => reject(new Error("Failed to load Default SDK"));
-    document.head.appendChild(script);
-  });
 }
 
 async function createContact(email: string): Promise<void> {
@@ -440,10 +389,6 @@ export default function MultiStepForm({
   const [submitting, setSubmitting] = useState<boolean>(false);
   const [apiError, setApiError] = useState<string>("");
 
-  useEffect(() => {
-    loadDefaultSDK().catch((err) => console.warn("[Default SDK]", err));
-  }, []);
-
   // First-touch capture of UTMs into sessionStorage on mount.
   useEffect(() => {
     storeUtms();
@@ -580,82 +525,6 @@ export default function MultiStepForm({
         },
       );
       if (!res.ok) throw new Error(`HubSpot responded with ${res.status}`);
-
-      await loadDefaultSDK();
-
-      window.DefaultSDK!.submit(
-        {
-          form_id: DEFAULT_FORM_ID,
-          team_id: DEFAULT_TEAM_ID,
-          responses: {
-            email: form.email,
-            firstname: form.firstname,
-            lastname: form.lastname,
-            phone: form.phone,
-            company: form.company,
-            units_managed: form.units_managed,
-            pms_compatability: form.pms_compatability,
-            ai_areas:
-              form.in_which_areas_of_your_operations_are_you_looking_to_implement_ai_,
-          },
-          questions: [
-            { id: "email", name: "Email", type: "email" },
-            {
-              id: "firstname",
-              name: "First Name",
-              type: "input",
-              lead_attribute: "first_name",
-            },
-            {
-              id: "lastname",
-              name: "Last Name",
-              type: "input",
-              lead_attribute: "last_name",
-            },
-            {
-              id: "phone",
-              name: "Phone Number",
-              type: "tel",
-              lead_attribute: "phone",
-            },
-            {
-              id: "company",
-              name: "Company Name",
-              type: "input",
-              lead_attribute: "company",
-            },
-            {
-              id: "units_managed",
-              name: "Units Managed",
-              type: "select",
-              options: UNITS_MANAGED_OPTIONS,
-            },
-            {
-              id: "pms_compatability",
-              name: "PMS Compatibility",
-              type: "select",
-              options: PMS_OPTIONS,
-            },
-            {
-              id: "ai_areas",
-              name: "AI Implementation Areas",
-              type: "textarea",
-            },
-          ],
-        },
-        {
-          onSuccess: (d) => console.log("[Default] success", d),
-          onError: (e) => console.error("[Default] error", e),
-          onSchedulerDisplayed: (d) => {
-            console.log("[Default] scheduler displayed", d);
-            measurePixel("custom", { type: "custom" }, { custom_event_name: "default_demo_scheduled" });
-          },
-          onSchedulerClosed: (d) =>
-            console.log("[Default] scheduler closed", d),
-          onMeetingBooked: (d) =>
-            console.log("[Default] meeting booked", d.payload),
-        },
-      );
 
       setSubmitted(true);
     } catch (err) {

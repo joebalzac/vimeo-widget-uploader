@@ -7,13 +7,6 @@ async function mockAPIs(page: Page) {
   await page.route("https://contact-checker-backend.vercel.app/**", (route) =>
     route.fulfill({ status: 200, body: JSON.stringify({ ok: true }) })
   );
-  await page.route("https://import-cdn.default.com/**", (route) =>
-    route.fulfill({
-      status: 200,
-      contentType: "application/javascript",
-      body: "window.DefaultSDK = { submit: () => Promise.resolve(), helloWorld: () => {} };",
-    })
-  );
 }
 
 async function fillEmail(page: Page, email = "test@acme.com") {
