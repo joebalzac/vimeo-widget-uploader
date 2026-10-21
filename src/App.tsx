@@ -91,7 +91,6 @@ function App() {
           ctaText="Request Demo"
           ctaHref="/demo"
           loginText="Log In"
-          loginHref="/login"
         />
       ) : (
         <Navbar
@@ -110,7 +109,6 @@ function App() {
           ctaText="Request Demo"
           ctaHref="/demo"
           loginText="Log In"
-          loginHref="/login"
         />
       )}
 

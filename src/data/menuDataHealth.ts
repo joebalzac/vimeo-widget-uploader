@@ -140,13 +140,13 @@ export const menuDataHealth: Record<string, MegaMenuData> = {
               title: "About Us",
               description:
                 "Learn about what drives us and where EliseAI is headed",
-              href: "/about-us",
+              href: "eliseai.com/about-us",
             },
             {
               title: "Careers",
               description:
                 "Find open roles to help us reinvent housing and healthcare",
-              href: "/careers",
+              href: "eliseai.com/careers",
             },
           ],
           [
@@ -154,12 +154,12 @@ export const menuDataHealth: Record<string, MegaMenuData> = {
               title: "Engineering & Research",
               description:
                 "See how our unique engineering culture sets us apart",
-              href: "/engineering",
+              href: "eliseai.com/engineering",
             },
             {
               title: "Contact Us",
               description: "Get in touch with the EliseAI team",
-              href: "/contact",
+              href: "eliseai.com/contact",
             },
           ],
         ],

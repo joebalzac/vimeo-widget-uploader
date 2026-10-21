@@ -8,7 +8,6 @@ interface AdapterProps {
   ctaText?: string;
   ctaHref?: string;
   loginText?: string;
-  loginHref?: string;
   /** Webflow boolean — false hides the Log In link on desktop and mobile. */
   showLogin?: boolean;
   /** Webflow boolean — true = white text/logo over a dark hero (local `theme="dark"`). */
@@ -60,10 +59,6 @@ export default declareComponent(NavbarAdapter, {
     loginText: props.Text({
       name: "Login Link Text",
       defaultValue: "Log In",
-    }),
-    loginHref: props.Text({
-      name: "Login Link",
-      defaultValue: "/login",
     }),
     showLogin: props.Boolean({
       name: "Show Login",

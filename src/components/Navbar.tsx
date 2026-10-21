@@ -20,7 +20,6 @@ export interface NavbarProps {
   ctaText?: string;
   ctaHref?: string;
   loginText?: string;
-  loginHref?: string;
   /** When false, hides the Log In link on desktop and mobile. Defaults to true. */
   showLogin?: boolean;
   // ----- Appearance -----
@@ -51,6 +50,8 @@ export interface NavbarProps {
   /** When set, any menu item href of exactly "/" resolves to this URL instead. */
   homeHref?: string;
 }
+
+const LOGIN_HREF = "https://app.meetelise.com";
 
 const DEFAULT_NAV_ITEMS: NavItem[] = [
   {
@@ -555,7 +556,6 @@ export const Navbar = ({
   ctaText = "Request Demo",
   ctaHref = "/demo",
   loginText = "Log In",
-  loginHref = "/login",
   showLogin = true,
   theme = "light",
   heroSectionId = "heroSection",
@@ -833,7 +833,7 @@ export const Navbar = ({
           {/* Right side - Log In link and CTA button */}
           <div className="navbar__actions">
             {showLogin && (
-              <a href={loginHref} className="navbar__login">
+              <a href={LOGIN_HREF} className="navbar__login">
                 {loginText}
                 <svg
                   className="navbar__login-arrow"
@@ -966,7 +966,7 @@ export const Navbar = ({
                   {ctaText}
                 </a>
                 {showLogin && (
-                  <a href={loginHref} className="navbar__mobile-login">
+                  <a href={LOGIN_HREF} className="navbar__mobile-login">
                     {loginText}
                     <svg
                       className="navbar__mobile-login-arrow"
@@ -1058,7 +1058,7 @@ export const Navbar = ({
                   {ctaText}
                 </a>
                 {showLogin && (
-                  <a href={loginHref} className="navbar__mobile-login">
+                  <a href={LOGIN_HREF} className="navbar__mobile-login">
                     {loginText}
                     <svg
                       className="navbar__mobile-login-arrow"
