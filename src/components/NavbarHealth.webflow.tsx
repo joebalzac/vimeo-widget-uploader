@@ -49,7 +49,7 @@ export default declareComponent(NavbarHealthAdapter, {
     }),
     ctaHref: props.Text({
       name: "CTA Button Link",
-      defaultValue: "/demo",
+      defaultValue: "/book-a-demo",
     }),
     loginText: props.Text({
       name: "Login Link Text",

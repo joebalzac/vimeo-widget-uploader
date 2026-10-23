@@ -38,6 +38,16 @@ export const menuDataHealth: Record<string, MegaMenuData> = {
               description: "Billing questions answered. Payments collected",
               href: "/billing-payments",
             },
+            {
+              title: "Patient Intake",
+              description: "Collect patient forms, verify coverage, and prepare every chart before the visit",
+              href: "/patient-intake",
+            },
+            {
+              title: "Referrals",
+              description: "Capture every incoming referral and convert it into a booked appointment, automatically",
+              href: "/referrals",
+            },
           ],
         ],
       },
@@ -140,13 +150,13 @@ export const menuDataHealth: Record<string, MegaMenuData> = {
               title: "About Us",
               description:
                 "Learn about what drives us and where EliseAI is headed",
-              href: "eliseai.com/about-us",
+              href: "https://eliseai.com/about-us",
             },
             {
               title: "Careers",
               description:
                 "Find open roles to help us reinvent housing and healthcare",
-              href: "eliseai.com/careers",
+              href: "https://eliseai.com/careers",
             },
           ],
           [
@@ -154,12 +164,12 @@ export const menuDataHealth: Record<string, MegaMenuData> = {
               title: "Engineering & Research",
               description:
                 "See how our unique engineering culture sets us apart",
-              href: "eliseai.com/engineering",
+              href: "https://eliseai.com/engineering",
             },
             {
               title: "Contact Us",
               description: "Get in touch with the EliseAI team",
-              href: "eliseai.com/contact",
+              href: "/book-a-demo",
             },
           ],
         ],
