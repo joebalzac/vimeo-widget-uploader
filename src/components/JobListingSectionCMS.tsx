@@ -8,9 +8,10 @@ import {
 
 /**
  * Drop the Jobs Collection List into the Jobs slot. Each Collection Item
- * should contain the job title, category, category subtitle, company,
- * department, and location text, plus a link for the apply URL. Custom
- * attributes on the item are used when present.
+ * should contain the job title, category, company, department, and location
+ * text, plus a link for the apply URL. Category subtitles are passed in
+ * separately and matched by category name. Custom attributes on the item
+ * are used when present.
  */
 
 interface JobListingSectionCMSProps {
@@ -21,6 +22,8 @@ interface JobListingSectionCMSProps {
   singleOpen?: boolean;
   /** When true, only Engineering, Product, and Research are shown. */
   engineeringOnly?: boolean;
+  /** Subtitle under each category name, keyed by that name. */
+  categorySubtitles?: Record<string, string>;
 }
 
 const FOCUSED_DEPARTMENTS = ["engineering", "product", "research"];
@@ -98,10 +101,6 @@ function parseItem(el: HTMLElement, index: number): CmsJob | null {
     readAttr(el, "data-category") ||
     readChildText(el, "[data-job-category]") ||
     "";
-  const categorySubtitle =
-    readAttr(el, "data-category-subtitle") ||
-    readChildText(el, "[data-job-category-subtitle]") ||
-    "";
   const attrUrl = readAttr(el, "data-url") || readChildUrl(el, "[data-job-url]");
   const url = attrUrl || (href && href !== "#" ? href : "");
   const baseId =
@@ -116,8 +115,19 @@ function parseItem(el: HTMLElement, index: number): CmsJob | null {
     url,
     company,
     category,
-    categorySubtitle,
   };
+}
+
+function subtitleFor(
+  label: string,
+  map: Record<string, string> | undefined,
+): string {
+  if (!map) return "";
+  if (map[label]) return map[label];
+  const key = Object.keys(map).find(
+    (name) => name.toLowerCase() === label.toLowerCase(),
+  );
+  return key ? map[key] : "";
 }
 
 function isItem(el: HTMLElement): boolean {
@@ -412,6 +422,7 @@ export default function JobListingSectionCMS({
   sourceSelector = DEFAULT_SOURCE,
   singleOpen = false,
   engineeringOnly = false,
+  categorySubtitles,
 }: JobListingSectionCMSProps) {
   const [allJobs, setAllJobs] = useState<CmsJob[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -497,7 +508,7 @@ export default function JobListingSectionCMS({
     const group = groupLabel(job);
     const loc = job.location.toLowerCase();
     const company = job.company.toLowerCase();
-    const subtitle = job.categorySubtitle.toLowerCase();
+    const subtitle = subtitleFor(group, categorySubtitles).toLowerCase();
     const q = searchQuery.toLowerCase();
 
     const matchesSearch =
@@ -518,14 +529,10 @@ export default function JobListingSectionCMS({
   });
 
   const grouped: Record<string, CmsJob[]> = {};
-  const subtitles: Record<string, string> = {};
   filteredJobs.forEach((job) => {
     const dept = groupLabel(job);
     if (!grouped[dept]) grouped[dept] = [];
     grouped[dept].push(job);
-    if (!subtitles[dept] && job.categorySubtitle) {
-      subtitles[dept] = job.categorySubtitle;
-    }
   });
   const sortedDepts = Object.keys(grouped).sort();
 
@@ -635,7 +642,7 @@ export default function JobListingSectionCMS({
           <DepartmentAccordion
             key={dept}
             department={dept}
-            subtitle={subtitles[dept]}
+            subtitle={subtitleFor(dept, categorySubtitles)}
             jobs={grouped[dept]}
             isOpen={openDepartments.has(dept)}
             onToggle={handleToggle}

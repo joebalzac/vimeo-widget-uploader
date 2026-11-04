@@ -1,18 +1,43 @@
+import type { ComponentProps } from "react";
 import JobListingSectionCMS from "./JobListingSectionCMS";
 import { props } from "@webflow/data-types";
 import { declareComponent } from "@webflow/react";
 
-export default declareComponent(JobListingSectionCMS, {
+/** Shown once under each category. Matched to the job's Category field. */
+const CATEGORY_SUBTITLES: Record<string, string> = {
+  Centralization:
+    "Central teams, regional leasing, and shared-service operations",
+  Experience: "Customer experience, training, and team enablement",
+  "AI & Technology": "Automation, product management, data, and systems",
+  "Corporate Strategy":
+    "Performance, optimization, strategic initiatives, and growth",
+};
+
+function JobListingSectionCMSAdapter(
+  props: Omit<
+    ComponentProps<typeof JobListingSectionCMS>,
+    "categorySubtitles"
+  >,
+) {
+  return (
+    <JobListingSectionCMS
+      {...props}
+      categorySubtitles={CATEGORY_SUBTITLES}
+    />
+  );
+}
+
+export default declareComponent(JobListingSectionCMSAdapter, {
   name: "Job Listing Section CMS",
   description:
-    "Groups CMS jobs by category in collapsible accordions. Each category shows a subtitle, and the company name appears in gray after the job title. Includes search plus function, company, and location filters. Drop the Jobs Collection List into the Jobs slot. UTM params on the page are forwarded to each apply link.",
+    "Groups CMS jobs by category in collapsible accordions. Category subtitles are hardcoded here, and the company name appears in gray after the job title. Includes search plus function, company, and location filters. Drop the Jobs Collection List into the Jobs slot. UTM params on the page are forwarded to each apply link.",
   group: "Careers",
 
   props: {
     jobs: props.Slot({
       name: "Jobs",
       tooltip:
-        "Drop the Jobs Collection List here. Each item needs the job title, category, category subtitle, company, department, location, and an apply link.",
+        "Drop the Jobs Collection List here. Each item needs the job title, category, company, department, location, and an apply link.",
     }),
 
     sourceSelector: props.Text({

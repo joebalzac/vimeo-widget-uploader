@@ -9,7 +9,6 @@ interface JobCmsItemProps {
   jobId?: string;
   company?: string;
   category?: string;
-  categorySubtitle?: string;
 }
 
 /** Invisible row. Drop it inside a Collection Item and bind the CMS fields. */
@@ -21,7 +20,6 @@ export default function JobCmsItem({
   jobId = "",
   company = "",
   category = "",
-  categorySubtitle = "",
 }: JobCmsItemProps) {
   useEffect(() => {
     const name = title.trim();
@@ -36,11 +34,10 @@ export default function JobCmsItem({
       url: url.trim(),
       company: company.trim(),
       category: category.trim(),
-      categorySubtitle: categorySubtitle.trim(),
     });
 
     return () => unregisterCmsJob(id);
-  }, [title, department, location, url, jobId, company, category, categorySubtitle]);
+  }, [title, department, location, url, jobId, company, category]);
 
   return null;
 }

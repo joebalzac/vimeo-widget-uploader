@@ -10,7 +10,6 @@ interface AdapterProps {
   jobId?: string;
   company?: string;
   category?: string;
-  categorySubtitle?: string;
 }
 
 function JobCmsItemAdapter({
@@ -21,7 +20,6 @@ function JobCmsItemAdapter({
   jobId,
   company,
   category,
-  categorySubtitle,
 }: AdapterProps) {
   return (
     <JobCmsItem
@@ -32,7 +30,6 @@ function JobCmsItemAdapter({
       jobId={jobId}
       company={company}
       category={category}
-      categorySubtitle={categorySubtitle}
     />
   );
 }
@@ -68,13 +65,7 @@ export default declareComponent(JobCmsItemAdapter, {
       name: "Category",
       defaultValue: "",
       tooltip:
-        'Bind this to the Category field. Jobs with the same category are grouped together. Example: "Centralization".',
-    }),
-    categorySubtitle: props.Text({
-      name: "Category Subtitle",
-      defaultValue: "",
-      tooltip:
-        'Short line under the category name. Example: "Central teams, regional leasing, and shared-service operations".',
+        'Bind this to the Category field. Jobs with the same category are grouped together. Example: "Centralization". The subtitle under that name is set on Job Listing Section CMS.',
     }),
     company: props.Text({
       name: "Company",
