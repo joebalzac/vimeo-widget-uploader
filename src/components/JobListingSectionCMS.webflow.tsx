@@ -5,14 +5,14 @@ import { declareComponent } from "@webflow/react";
 export default declareComponent(JobListingSectionCMS, {
   name: "Job Listing Section CMS",
   description:
-    "Groups CMS jobs by department in collapsible accordions, with search plus department and location filters. Drop the Jobs Collection List into the Jobs slot. UTM params on the page are forwarded to each apply link.",
+    "Groups CMS jobs by category in collapsible accordions. Each category shows a subtitle, and the company name appears in gray after the job title. Includes search plus function, company, and location filters. Drop the Jobs Collection List into the Jobs slot. UTM params on the page are forwarded to each apply link.",
   group: "Careers",
 
   props: {
     jobs: props.Slot({
       name: "Jobs",
       tooltip:
-        "Drop the Jobs Collection List here. Each item needs the job title, company, department, location, and an apply link.",
+        "Drop the Jobs Collection List here. Each item needs the job title, category, category subtitle, company, department, location, and an apply link.",
     }),
 
     sourceSelector: props.Text({

@@ -9,6 +9,8 @@ interface AdapterProps {
   url?: { href: string; target?: string };
   jobId?: string;
   company?: string;
+  category?: string;
+  categorySubtitle?: string;
 }
 
 function JobCmsItemAdapter({
@@ -18,6 +20,8 @@ function JobCmsItemAdapter({
   url,
   jobId,
   company,
+  category,
+  categorySubtitle,
 }: AdapterProps) {
   return (
     <JobCmsItem
@@ -27,6 +31,8 @@ function JobCmsItemAdapter({
       url={url?.href || ""}
       jobId={jobId}
       company={company}
+      category={category}
+      categorySubtitle={categorySubtitle}
     />
   );
 }
@@ -58,11 +64,23 @@ export default declareComponent(JobCmsItemAdapter, {
       name: "Apply URL",
       tooltip: "Bind this to the Apply URL link field.",
     }),
+    category: props.Text({
+      name: "Category",
+      defaultValue: "",
+      tooltip:
+        'Bind this to the Category field. Jobs with the same category are grouped together. Example: "Centralization".',
+    }),
+    categorySubtitle: props.Text({
+      name: "Category Subtitle",
+      defaultValue: "",
+      tooltip:
+        'Short line under the category name. Example: "Central teams, regional leasing, and shared-service operations".',
+    }),
     company: props.Text({
       name: "Company",
       defaultValue: "",
       tooltip:
-        "Bind this to the Company field. It appears in gray beside the job title when the department is open.",
+        "Bind this to the Company field. It appears in gray after the job title.",
     }),
     jobId: props.Text({
       name: "Slug",

@@ -8,8 +8,9 @@ import {
 
 /**
  * Drop the Jobs Collection List into the Jobs slot. Each Collection Item
- * should contain the job title, company, department, and location text, plus a
- * link for the apply URL. Custom attributes on the item are used when present.
+ * should contain the job title, category, category subtitle, company,
+ * department, and location text, plus a link for the apply URL. Custom
+ * attributes on the item are used when present.
  */
 
 interface JobListingSectionCMSProps {
@@ -93,13 +94,30 @@ function parseItem(el: HTMLElement, index: number): CmsJob | null {
     readAttr(el, "data-company") ||
     readChildText(el, "[data-job-company]") ||
     "";
+  const category =
+    readAttr(el, "data-category") ||
+    readChildText(el, "[data-job-category]") ||
+    "";
+  const categorySubtitle =
+    readAttr(el, "data-category-subtitle") ||
+    readChildText(el, "[data-job-category-subtitle]") ||
+    "";
   const attrUrl = readAttr(el, "data-url") || readChildUrl(el, "[data-job-url]");
   const url = attrUrl || (href && href !== "#" ? href : "");
   const baseId =
     readAttr(el, "data-id") || readChildText(el, "[data-job-id]") || title;
   const id = `${baseId}-${index}`;
 
-  return { id, title, department, location, url, company };
+  return {
+    id,
+    title,
+    department,
+    location,
+    url,
+    company,
+    category,
+    categorySubtitle,
+  };
 }
 
 function isItem(el: HTMLElement): boolean {
@@ -301,8 +319,12 @@ const SelectChevron = () => (
   </span>
 );
 
+const groupLabel = (job: CmsJob): string =>
+  job.category || job.department || "Other";
+
 interface DepartmentAccordionProps {
   department: string;
+  subtitle?: string;
   jobs: CmsJob[];
   isOpen: boolean;
   onToggle: (dept: string) => void;
@@ -310,6 +332,7 @@ interface DepartmentAccordionProps {
 
 const DepartmentAccordion = ({
   department,
+  subtitle,
   jobs,
   isOpen,
   onToggle,
@@ -322,7 +345,12 @@ const DepartmentAccordion = ({
         aria-expanded={isOpen}
         onClick={() => onToggle(department)}
       >
-        <span className="department-name">{department}</span>
+        <span className="department-heading">
+          <span className="department-name">{department}</span>
+          {subtitle ? (
+            <span className="department-subtitle">{subtitle}</span>
+          ) : null}
+        </span>
         <span className="department-meta">
           <span className="department-count">{jobs.length}</span>
           <span className="department-chevron" aria-hidden="true">
@@ -387,7 +415,8 @@ export default function JobListingSectionCMS({
 }: JobListingSectionCMSProps) {
   const [allJobs, setAllJobs] = useState<CmsJob[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedDept, setSelectedDept] = useState("");
+  const [selectedFunction, setSelectedFunction] = useState("");
+  const [selectedCompany, setSelectedCompany] = useState("");
   const [selectedLoc, setSelectedLoc] = useState("");
   const [openDepartments, setOpenDepartments] = useState<Set<string>>(
     new Set(),
@@ -465,35 +494,47 @@ export default function JobListingSectionCMS({
 
   const filteredJobs = visibleJobs.filter((job) => {
     const title = job.title.toLowerCase();
-    const dept = job.department || "Other";
+    const group = groupLabel(job);
     const loc = job.location.toLowerCase();
     const company = job.company.toLowerCase();
+    const subtitle = job.categorySubtitle.toLowerCase();
     const q = searchQuery.toLowerCase();
 
     const matchesSearch =
       !q ||
       title.includes(q) ||
-      dept.toLowerCase().includes(q) ||
+      group.toLowerCase().includes(q) ||
+      subtitle.includes(q) ||
       loc.includes(q) ||
-      company.includes(q);
+      company.includes(q) ||
+      job.department.toLowerCase().includes(q);
 
-    const matchesDept = !selectedDept || dept === selectedDept;
+    const matchesFunction = !selectedFunction || group === selectedFunction;
+    const matchesCompany = !selectedCompany || job.company === selectedCompany;
     const matchesLoc =
       !selectedLoc || loc.includes(selectedLoc.toLowerCase());
 
-    return matchesSearch && matchesDept && matchesLoc;
+    return matchesSearch && matchesFunction && matchesCompany && matchesLoc;
   });
 
   const grouped: Record<string, CmsJob[]> = {};
+  const subtitles: Record<string, string> = {};
   filteredJobs.forEach((job) => {
-    const dept = job.department || "Other";
+    const dept = groupLabel(job);
     if (!grouped[dept]) grouped[dept] = [];
     grouped[dept].push(job);
+    if (!subtitles[dept] && job.categorySubtitle) {
+      subtitles[dept] = job.categorySubtitle;
+    }
   });
   const sortedDepts = Object.keys(grouped).sort();
 
-  const departments = Array.from(
-    new Set(visibleJobs.map((job) => job.department || "Other")),
+  const functions = Array.from(
+    new Set(visibleJobs.map((job) => groupLabel(job))),
+  ).sort();
+
+  const companies = Array.from(
+    new Set(visibleJobs.map((job) => job.company).filter(Boolean)),
   ).sort();
 
   const locationOptions = Array.from(
@@ -522,19 +563,39 @@ export default function JobListingSectionCMS({
         </div>
 
         <div className="select-wrapper">
-          <label htmlFor="job-cms-department-filter" className="sr-only">
-            Department
+          <label htmlFor="job-cms-function-filter" className="sr-only">
+            Function
           </label>
           <select
-            id="job-cms-department-filter"
+            id="job-cms-function-filter"
             className="filters-select"
-            value={selectedDept}
-            onChange={(e) => setSelectedDept(e.target.value)}
+            value={selectedFunction}
+            onChange={(e) => setSelectedFunction(e.target.value)}
           >
-            <option value="">All Departments</option>
-            {departments.map((dept) => (
-              <option key={dept} value={dept}>
-                {dept}
+            <option value="">All Functions</option>
+            {functions.map((name) => (
+              <option key={name} value={name}>
+                {name}
+              </option>
+            ))}
+          </select>
+          <SelectChevron />
+        </div>
+
+        <div className="select-wrapper">
+          <label htmlFor="job-cms-company-filter" className="sr-only">
+            Company
+          </label>
+          <select
+            id="job-cms-company-filter"
+            className="filters-select"
+            value={selectedCompany}
+            onChange={(e) => setSelectedCompany(e.target.value)}
+          >
+            <option value="">All Companies</option>
+            {companies.map((name) => (
+              <option key={name} value={name}>
+                {name}
               </option>
             ))}
           </select>
@@ -574,6 +635,7 @@ export default function JobListingSectionCMS({
           <DepartmentAccordion
             key={dept}
             department={dept}
+            subtitle={subtitles[dept]}
             jobs={grouped[dept]}
             isOpen={openDepartments.has(dept)}
             onToggle={handleToggle}

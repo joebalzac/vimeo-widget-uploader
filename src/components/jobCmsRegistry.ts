@@ -5,6 +5,10 @@ export interface CmsJob {
   location: string;
   url: string;
   company: string;
+  /** Group label shown as the accordion title, e.g. "Centralization". */
+  category: string;
+  /** Line under the category title. */
+  categorySubtitle: string;
 }
 
 export const CMS_JOBS_CHANGE_EVENT = "elise-cms-jobs-change";

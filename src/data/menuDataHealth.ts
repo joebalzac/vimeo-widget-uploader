@@ -25,14 +25,14 @@ export const menuDataHealth: Record<string, MegaMenuData> = {
                 "Book verified, correctly routed appointments from your website",
               href: "/online-scheduling",
             },
-          ],
-          [
             {
               title: "Outbound Calling",
               description:
                 "Personalized appointment recall, reminders, waitlist management and more",
               href: "/outbound-calling",
             },
+          ],
+          [
             {
               title: "Billing & Payments",
               description: "Billing questions answered. Payments collected",
@@ -40,12 +40,14 @@ export const menuDataHealth: Record<string, MegaMenuData> = {
             },
             {
               title: "Patient Intake",
-              description: "Collect patient forms, verify coverage, and prepare every chart before the visit",
+              description:
+                "Collect patient forms, verify coverage, and prepare every chart before the visit",
               href: "/patient-intake",
             },
             {
               title: "Referrals",
-              description: "Capture every incoming referral and convert it into a booked appointment, automatically",
+              description:
+                "Capture every incoming referral and convert it into a booked appointment, automatically",
               href: "/referrals",
             },
           ],
@@ -126,14 +128,20 @@ export const menuDataHealth: Record<string, MegaMenuData> = {
       title: "LATEST POSTS",
       cards: [
         {
-          category: "BLOG",
-          title: "Placeholder: How AI is transforming patient scheduling",
-          href: "#",
+          category: "Blog",
+          title: "Patient Guide for AI in Healthcare",
+          imageUrl:
+            "https://cdn.prod.website-files.com/6a5d770c1dbe3179dcc6a62b/6aa9f3d76e90a92960b34795_6aa824b8b05551d9339a5e18_69fe63f339aed055bbe65003_Guide_HowToTalkToYourPatientsAboutAI_Thumbnail_05072025.png",
+          mobileImageUrl:
+            "https://cdn.prod.website-files.com/6a5d770c1dbe3179dcc6a62b/6aa9f3d76e90a92960b34795_6aa824b8b05551d9339a5e18_69fe63f339aed055bbe65003_Guide_HowToTalkToYourPatientsAboutAI_Thumbnail_05072025.png",
+          href: "/blog/patient-guide-for-ai-in-healthcare",
         },
         {
-          category: "BLOG",
-          title: "Placeholder: Latest from the EliseAI healthcare blog",
-          href: "#",
+          category: "Blog",
+          title: "How OutboundAI Helps Healthcare Practices Improve Provider Utilization",
+          imageUrl: "https://cdn.prod.website-files.com/6a5d770c1dbe3179dcc6a62b/6ac7f737341a999a78149425_Blog_How%20OutboundAI%20Helps%20Healthcare%20Practices_Cover.avif",
+          mobileImageUrl: "https://cdn.prod.website-files.com/6a5d770c1dbe3179dcc6a62b/6ac7f737341a999a78149425_Blog_How%20OutboundAI%20Helps%20Healthcare%20Practices_Cover.avif",
+          href: "health.eliseai.com/blog/outboundai-provider-utilization-improvement",
         },
       ],
     },
