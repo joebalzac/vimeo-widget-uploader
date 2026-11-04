@@ -15,6 +15,8 @@ import MultiStepFormUniversal from "./components/MultiStepFormUniversal";
 import MeetEliseCTA from "./components/MeetEliseCTA";
 import OneInputForm from "./components/OneInputForm";
 import SimpleImageCarousel from "./components/SimpleImageCarousel";
+import JobListingSectionCMS from "./components/JobListingSectionCMS";
+import JobCmsItem from "./components/JobCmsItem";
 
 const FEATURE_CARDS = [
   {
@@ -77,6 +79,51 @@ function App() {
     return (
       <div style={{ padding: 40 }}>
         <OneInputForm />
+      </div>
+    );
+  }
+  if (form === "jobs") {
+    return (
+      <div style={{ background: "#fdfcfb", padding: "48px 80px" }}>
+        <JobListingSectionCMS
+          jobs={
+            <>
+              <JobCmsItem
+                title="Full Stack Engineer, Healthcare"
+                category="Centralization"
+                company="Greystar"
+                department="Greystar"
+                location="NYC, San Francisco"
+                url="https://example.com/jobs/1"
+                jobId="job-1"
+              />
+              <JobCmsItem
+                title="Customer Experience Lead"
+                category="Experience"
+                company="Avenue5"
+                location="NYC"
+                url="https://example.com/jobs/2"
+                jobId="job-2"
+              />
+              <JobCmsItem
+                title="Product Manager"
+                category="AI & Technology"
+                company="EliseAI"
+                location="San Francisco"
+                url="https://example.com/jobs/3"
+                jobId="job-3"
+              />
+              <JobCmsItem
+                title="Strategy Associate"
+                category="Corporate Strategy"
+                company="Greystar"
+                location="NYC"
+                url="https://example.com/jobs/4"
+                jobId="job-4"
+              />
+            </>
+          }
+        />
       </div>
     );
   }

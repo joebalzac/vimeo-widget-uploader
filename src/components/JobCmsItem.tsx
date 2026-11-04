@@ -39,5 +39,19 @@ export default function JobCmsItem({
     return () => unregisterCmsJob(id);
   }, [title, department, location, url, jobId, company, category]);
 
-  return null;
+  if (!title.trim()) return null;
+
+  return (
+    <span
+      hidden
+      data-job-cms-item=""
+      data-title={title}
+      data-department={department}
+      data-location={location}
+      data-url={url}
+      data-id={jobId || title}
+      data-company={company}
+      data-category={category}
+    />
+  );
 }
