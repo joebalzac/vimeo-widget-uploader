@@ -63,10 +63,29 @@ const readChildUrl = (el: HTMLElement, selector: string): string => {
   return (node.textContent || "").trim();
 };
 
+function pickField(preferred: string, fallback: string): string {
+  return preferred.trim() || fallback.trim();
+}
+
+function mergeJob(preferred: CmsJob, fallback: CmsJob): CmsJob {
+  return {
+    id: preferred.id || fallback.id,
+    title: pickField(preferred.title, fallback.title),
+    department: pickField(preferred.department, fallback.department),
+    location: pickField(preferred.location, fallback.location),
+    url: pickField(preferred.url, fallback.url),
+    company: pickField(preferred.company, fallback.company),
+    category: pickField(preferred.category, fallback.category),
+  };
+}
+
 function mergeJobs(primary: CmsJob[], secondary: CmsJob[]): CmsJob[] {
   const map = new Map<string, CmsJob>();
   secondary.forEach((job) => map.set(job.id, job));
-  primary.forEach((job) => map.set(job.id, job));
+  primary.forEach((job) => {
+    const existing = map.get(job.id);
+    map.set(job.id, existing ? mergeJob(job, existing) : job);
+  });
   return Array.from(map.values());
 }
 
@@ -83,12 +102,25 @@ function leafTexts(el: HTMLElement): string[] {
   return texts;
 }
 
+/** Direct child text, including empty slots so category stays in position 2. */
+function fieldTexts(el: HTMLElement): string[] {
+  return Array.from(el.children).map((child) =>
+    (child.textContent || "").replace(/\s+/g, " ").trim(),
+  );
+}
+
+function sameText(a: string, b: string): boolean {
+  return a.trim().toLowerCase() === b.trim().toLowerCase();
+}
+
 function parseItem(el: HTMLElement, index: number): CmsJob | null {
   const texts = leafTexts(el);
+  const fields = fieldTexts(el);
   const href = (el.querySelector("a")?.getAttribute("href") || "").trim();
   const title =
     readAttr(el, "data-title") ||
     readChildText(el, "[data-job-title]") ||
+    fields.find(Boolean) ||
     texts[0] ||
     "";
   if (!title) return null;
@@ -98,26 +130,57 @@ function parseItem(el: HTMLElement, index: number): CmsJob | null {
     readChildText(el, "[data-job-department]") ||
     el.querySelector("[data-department]")?.getAttribute("data-department") ||
     "";
-  const location =
+  const locationAttr =
     readAttr(el, "data-location") ||
     readChildText(el, "[data-job-location]") ||
     el.querySelector("[data-location]")?.getAttribute("data-location") ||
-    texts[texts[0] === title ? 2 : 1] ||
     "";
-  const company =
+  const companyAttr =
     readAttr(el, "data-company") ||
     readChildText(el, "[data-job-company]") ||
     el.querySelector("[data-company]")?.getAttribute("data-company") ||
     "";
-  const category =
-    canonicalCategory(
-      readAttr(el, "data-category") ||
-        readChildText(el, "[data-job-category]") ||
-        el.querySelector("[data-category]")?.getAttribute("data-category") ||
-        "",
-    ) ||
+  const categoryAttr =
+    readAttr(el, "data-category") ||
+    readChildText(el, "[data-job-category]") ||
+    el.querySelector("[data-category]")?.getAttribute("data-category") ||
+    "";
+
+  // Collection item order: title, category, company, location.
+  // The category element stays in the DOM even when the CMS value is empty.
+  const categorySlot = fields.length >= 4 ? fields[1] : "";
+  const companySlot = fields.length >= 4 ? fields[2] : "";
+  const locationSlot = fields.length >= 4 ? fields[3] : "";
+  const categoryFromText =
+    fields.map((text) => canonicalCategory(text)).find(Boolean) ||
     texts.map((text) => canonicalCategory(text)).find(Boolean) ||
+    "";
+  const category =
+    canonicalCategory(categoryAttr) ||
+    categoryAttr.trim() ||
+    canonicalCategory(categorySlot) ||
+    categorySlot.trim() ||
+    categoryFromText ||
     canonicalCategory(department);
+
+  const used = new Set(
+    [title, locationAttr, category, categorySlot, categoryFromText]
+      .map((value) => value.trim().toLowerCase())
+      .filter(Boolean),
+  );
+  const leftovers = fields.filter(
+    (text) => text && !used.has(text.trim().toLowerCase()),
+  );
+  const company =
+    companyAttr.trim() ||
+    companySlot.trim() ||
+    leftovers.find((text) => !sameText(text, locationSlot)) ||
+    "";
+  const location =
+    locationAttr.trim() ||
+    locationSlot.trim() ||
+    leftovers.find((text) => !sameText(text, company)) ||
+    "";
   const attrUrl = readAttr(el, "data-url") || readChildUrl(el, "[data-job-url]");
   const url = attrUrl || (href && href !== "#" ? href : "");
   const explicitId =
@@ -138,12 +201,17 @@ function parseItem(el: HTMLElement, index: number): CmsJob | null {
 }
 
 function canonicalCategory(value: string): string {
-  const label = value.trim();
+  const label = value.trim().replace(/\s+/g, " ");
   if (!label) return "";
   if (CATEGORY_SUBTITLES[label]) return label;
-  const key = CATEGORY_ORDER.find(
-    (name) => name.toLowerCase() === label.toLowerCase(),
-  );
+  const normalize = (text: string) =>
+    text
+      .toLowerCase()
+      .replace(/&/g, "and")
+      .replace(/[^a-z0-9]+/g, " ")
+      .trim();
+  const target = normalize(label);
+  const key = CATEGORY_ORDER.find((name) => normalize(name) === target);
   return key || "";
 }
 
@@ -354,6 +422,7 @@ const SelectChevron = () => (
 /** Company names stay on the job row. The accordion title is the category. */
 const groupLabel = (job: CmsJob): string =>
   canonicalCategory(job.category) ||
+  job.category.trim() ||
   canonicalCategory(job.department) ||
   "Other";
 
