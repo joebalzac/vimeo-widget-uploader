@@ -1,20 +1,12 @@
 import "./App.css";
-import PatientOutreach from "./components/PatientOutreach";
-import { Navbar } from "./components/Navbar";
-import { NavbarHealth } from "./components/NavbarHealth";
-import CustomerStoriesLogo from "./components/CustomerStoriesLogo";
-import { DEFAULT_LOGO_GRID } from "./data/customerStoriesLogoConfig";
-import OfficeLocations from "./components/OfficeLocations";
-import FeatureCardGrid from "./components/FeatureCardGrid";
-import SessionCardGrid from "./components/SessionCardGrid";
-import GatedVimeoForm from "./components/GatedVimeoForm";
+import BentoCard from "./components/BentoCard";
+import RecordTheTour from "./components/RecordTheTour";
+import AutomatePostTourAdmin from "./components/AutomatePostTourAdmin";
+import PortfolioInsights from "./components/PortfolioInsights";
+import CoachEveryTour from "./components/CoachEveryTour";
+
 import HeroVimeo from "./components/HeroVimeo";
-import MultiStepForm from "./components/MultiStepForm";
-import MultiStepFormHealth from "./components/MultiStepFormHealth";
-import MultiStepFormUniversal from "./components/MultiStepFormUniversal";
-import MeetEliseCTA from "./components/MeetEliseCTA";
-import OneInputForm from "./components/OneInputForm";
-import SimpleImageCarousel from "./components/SimpleImageCarousel";
+
 
 const FEATURE_CARDS = [
   {
@@ -41,148 +33,53 @@ const FEATURE_CARDS = [
 ];
 
 function App() {
-  const params = new URLSearchParams(window.location.search);
-  const form = params.get("form");
-  const useHealthNav = params.get("nav") === "health";
-
-  if (form === "health") {
-    return (
-      <div style={{ padding: 40 }}>
-        <MultiStepFormHealth />
-      </div>
-    );
-  }
-  if (form === "housing") {
-    return (
-      <div style={{ padding: 40 }}>
-        <MultiStepForm />
-      </div>
-    );
-  }
-  if (form === "universal") {
-    return (
-      <div style={{ padding: 40 }}>
-        <MultiStepFormUniversal />
-      </div>
-    );
-  }
-  if (form === "meetelise") {
-    return (
-      <div style={{ padding: 40 }}>
-        <MeetEliseCTA />
-      </div>
-    );
-  }
-  if (form === "oneinput") {
-    return (
-      <div style={{ padding: 40 }}>
-        <OneInputForm />
-      </div>
-    );
-  }
 
   return (
     <>
-      {useHealthNav ? (
-        <NavbarHealth
-          theme="dark"
-          heroSectionId="heroSection"
-          logoHref="/"
-          ctaText="Request Demo"
-          ctaHref="/demo"
-          loginText="Log In"
-        />
-      ) : (
-        <Navbar
-          theme="dark"
-          heroSectionId="heroSection"
-          logoHref="/"
-          navItems={[
-            {
-              label: "AI for Property Management",
-              href: "/property-management",
-            },
-            { label: "AI for Healthcare", href: "/healthcare" },
-            { label: "Resources", href: "/resources" },
-            { label: "Company", href: "/company" },
-          ]}
-          ctaText="Request Demo"
-          ctaHref="/demo"
-          loginText="Log In"
-        />
-      )}
+     
 
       <HeroVimeo vimeoId="1225976653" />
 
-      <div>
-        <PatientOutreach />
-      </div>
-
-      <section className="patient-outreach-preview--dark">
-        <PatientOutreach theme="dark" />
-      </section>
-
-      <section id="simpleImageCarousel" style={{ padding: "80px 0" }}>
-        <SimpleImageCarousel />
-      </section>
-
-      <section id="gatedVimeoForm" className="gated-vimeo-preview-wrap">
-        <GatedVimeoForm vimeoId="76979871" previewSeconds={30} />
-      </section>
-
-      {/* Feature Card Grid — no background of its own, so whatever section it
-          sits in shows through. */}
-      <section id="featureCardGrid" style={{ padding: "80px 24px" }}>
-        <FeatureCardGrid cards={FEATURE_CARDS} />
-      </section>
-
-      <section id="sessionCardGrid" className="session-card-preview-wrap">
-        <div className="session-card-preview">
-          {Array.from({ length: 8 }, (_, i) => (
-            <SessionCardGrid
-              key={i}
-              title={i === 7 ? "Gated Session Title" : "Session Title"}
-              details="Session Details..."
-              slug={`/talks/session-${i + 1}`}
-              lockedVideo={i === 7}
+      <section id="bento" style={{ padding: "80px 24px" }}>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: 12,
+            maxWidth: 1160,
+            margin: "0 auto",
+          }}
+        >
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 12 }}>
+            <BentoCard
+              title="Record The Tour"
+              subtitle="Elise records so agents can focus on the prospect, with points for recording tours and following up promptly."
+              media={<RecordTheTour />}
+              width={430}
             />
-          ))}
+            <BentoCard
+              title="Automate Post-Tour Admin"
+              subtitle="Elise updates tour status and guest cards in EliseCRM, and drafts personalized follow-ups agents can send in one tap."
+              media={<AutomatePostTourAdmin />}
+              width={718}
+            />
+          </div>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 12 }}>
+            <BentoCard
+              title="See Portfolio-Level Insights"
+              subtitle="Elise surfaces agent performance, property insights, and top objections so leaders know where to invest."
+              media={<PortfolioInsights />}
+              width={718}
+            />
+            <BentoCard
+              title="Coach Every Tour"
+              subtitle="Elise scores each tour against a customizable rubric and flags areas for improvement."
+              media={<CoachEveryTour />}
+              width={430}
+            />
+          </div>
         </div>
       </section>
-
-      <section
-        id="sessionCardGridDark"
-        className="session-card-preview-wrap session-card-preview-wrap--dark"
-      >
-        <div className="session-card-preview">
-          {Array.from({ length: 3 }, (_, i) => (
-            <SessionCardGrid
-              key={i}
-              title="Session Title"
-              details="Session Details..."
-              slug={`/talks/dark-${i + 1}`}
-              darkMode
-            />
-          ))}
-        </div>
-      </section>
-
-      {/* Extra height so local preview can scroll fully past the hero */}
-      <div
-        style={{ minHeight: "120vh", padding: "80px 24px", background: "#fff" }}
-      >
-        <h2 style={{ fontSize: 32, color: "#181819" }}>Below the hero</h2>
-        <p style={{ color: "#52525b", maxWidth: 560 }}>
-          The navbar should now be solid white with dark text. Scroll back up to
-          see it go transparent again over the hero.
-        </p>
-      </div>
-
-      <div>
-        <CustomerStoriesLogo theme="light" logos={DEFAULT_LOGO_GRID} />
-
-        <OfficeLocations />
-      </div>
     </>
   );
 }

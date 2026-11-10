@@ -1,0 +1,92 @@
+/* CoachEveryTour — rubric score bars preview.
+   Figma: node 330:29043 (.com_2027). */
+
+.cet {
+  --cet-default: #0e0d0c;
+  --cet-secondary: #7a7977;
+  --cet-mint: #00b080;
+  --cet-coral: #f25530;
+  --cet-amber: #ffbc00;
+  --cet-card: #f6f4f2;
+
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px;
+  background: var(--cet-card);
+  font-family: inter-variable, Inter, system-ui, sans-serif;
+}
+
+.cet__rows {
+  display: flex;
+  flex-direction: column;
+  gap: 33px;
+  width: 100%;
+  max-width: 366px;
+}
+
+.cet__row {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+}
+
+.cet__labels {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  font-size: 16px;
+  letter-spacing: -0.32px;
+  font-feature-settings: "ss07" 1;
+}
+
+.cet__label {
+  color: var(--cet-default);
+  line-height: 1.3;
+}
+
+.cet__points {
+  color: var(--cet-secondary);
+  line-height: 1.3;
+}
+
+.cet__track {
+  position: relative;
+  width: 100%;
+  height: 8px;
+  display: flex;
+  align-items: center;
+}
+
+.cet__track-line {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 100%;
+  height: 1px;
+  display: block;
+}
+
+.cet__bar {
+  position: relative;
+  height: 8px;
+  border-radius: 89px;
+  border-right: 1px solid var(--cet-card);
+}
+
+.cet__bar--mint {
+  background: var(--cet-mint);
+}
+
+.cet__bar--coral {
+  background: var(--cet-coral);
+}
+
+.cet__bar--amber {
+  background: var(--cet-amber);
+}

@@ -1,0 +1,89 @@
+/* FlexGridSection — wrapping flex grid of image + headline items.
+   Figma: node 214-15375 (.com_2027). The sizes, spacing, and type below are
+   provisional and have not been compared against the design yet. */
+
+.fgs {
+  /* --fgs-cols-desktop is the only var set inline by the component, so the
+     responsive column counts below can still win on smaller screens. */
+  --fgs-cols: var(--fgs-cols-desktop, 3);
+  --fgs-gap: 32px;
+  --fgs-headline: #0e0d0c;
+
+  width: 100%;
+  box-sizing: border-box;
+  font-family: inter-variable, Inter, system-ui, sans-serif;
+}
+
+.fgs__grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--fgs-gap);
+}
+
+.fgs__item {
+  /* Fixed width per column, so a partial last row keeps the same item size. */
+  flex: 0 0
+    calc(
+      (100% - var(--fgs-gap) * (var(--fgs-cols) - 1)) / var(--fgs-cols)
+    );
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.fgs__media {
+  width: 100%;
+  overflow: hidden;
+}
+
+.fgs__media:has(.fgs__img) {
+  aspect-ratio: 4 / 3;
+}
+
+.fgs__img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.fgs__headline {
+  margin: 0;
+  font-family: inter-variable, Inter, sans-serif;
+  font-weight: 400;
+  font-size: 22px;
+  line-height: 1.2;
+  letter-spacing: -0.66px;
+  color: var(--fgs-headline);
+  font-feature-settings: "ss07" 1;
+}
+
+.fgs__caption {
+  margin: 0;
+  font-family: inter-variable, Inter, sans-serif;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--fgs-caption, #7a7977);
+  white-space: pre-line;
+}
+
+@media (max-width: 991px) {
+  .fgs {
+    --fgs-cols: 2;
+    --fgs-gap: 24px;
+  }
+
+  .fgs__headline {
+    font-size: 20px;
+    letter-spacing: -0.6px;
+  }
+}
+
+@media (max-width: 767px) {
+  .fgs {
+    --fgs-cols: 1;
+  }
+}

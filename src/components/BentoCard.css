@@ -1,0 +1,55 @@
+/* BentoCard — card chrome for a single "Bento" feature card.
+   Figma: node 330:29920 ("Bento"), .com_2027. */
+
+.bc {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+  border-radius: 12px;
+  background: #f6f4f2;
+  font-family: inter-variable, Inter, system-ui, sans-serif;
+}
+
+.bc__text {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 32px 32px 0;
+}
+
+.bc__title {
+  margin: 0;
+  font-size: 22px;
+  line-height: 1.2;
+  letter-spacing: -0.66px;
+  color: #0e0d0c;
+  font-feature-settings: "ss07" 1, "ss08" 1;
+}
+
+.bc__subtitle {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.4;
+  letter-spacing: -0.32px;
+  color: #3f3e3c;
+  font-feature-settings: "ss07" 1, "ss08" 1;
+}
+
+.bc__media {
+  width: 100%;
+  margin-top: 32px;
+}
+
+.bc__border {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  box-shadow: inset 0px 0px 0px 0.5px rgba(0, 0, 0, 0.1);
+}
