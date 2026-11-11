@@ -1,6 +1,8 @@
+import "../utils/interVariableFont";
 import { useState, useEffect, useCallback, useRef } from "react";
 import { Splide, SplideSlide, SplideTrack } from "@splidejs/react-splide";
 import "@splidejs/react-splide/css";
+import { useSplideWheel } from "./useSplideWheel";
 import "./TeamCarouselStyling.css";
 
 export interface TeamMember {
@@ -109,6 +111,7 @@ export default function TeamCarousel({
   // nav lives inside the header container and is driven manually through this
   // ref, mirroring the disabled state Splide reports via onArrowsUpdated.
   const splideRef = useRef<Splide>(null);
+  useSplideWheel(splideRef);
   const [arrows, setArrows] = useState({
     prevDisabled: true,
     nextDisabled: false,

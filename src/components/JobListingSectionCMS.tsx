@@ -1,3 +1,4 @@
+import "../utils/interVariableFont";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import "./JobListingSection.css";
 import {
@@ -17,7 +18,7 @@ import {
 /** Subtitle under each category. Matched to the job's Category field. */
 const CATEGORY_SUBTITLES: Record<string, string> = {
   Centralization:
-    "Central teams, regional lesaing, and shared-service operations",
+    "Central teams, regional leasing, and shared-service operations",
   Experience: "Customer experience, training, and team enablement",
   "AI & Technology": "Automation, product management, data, and systems",
   "Corporate Strategy":
@@ -313,11 +314,35 @@ const buildJobUrl = (url: string): string => {
   }
 };
 
-const locationParts = (location: string): string[] =>
+/** Different spellings of one city, keyed by lowercase name. */
+const CITY_ALIASES: Record<string, string> = {
+  "new york city": "New York",
+  nyc: "New York",
+};
+
+/** State codes ("MA", "D.C.") and country names, which aren't cities. */
+const isRegion = (part: string): boolean => {
+  const text = part.replace(/\./g, "");
+  return /^[A-Z]{2}$/.test(text) || /^(usa|united states)$/i.test(text);
+};
+
+/** The cities in a location field: "Boston, MA; NYC" -> Boston, New York. */
+const jobCities = (location: string): string[] =>
   location
-    .split(",")
-    .map((part) => part.trim())
-    .filter(Boolean);
+    .split(/[,;|/]/)
+    .map((part) => part.replace(/\s+/g, " ").trim())
+    .filter((part) => part && !isRegion(part))
+    .map((part) => CITY_ALIASES[part.toLowerCase()] || part);
+
+/** Each city once, ignoring case, in alphabetical order. */
+const uniqueCities = (jobs: CmsJob[]): string[] => {
+  const cities = new Map<string, string>();
+  jobs.flatMap((job) => jobCities(job.location)).forEach((city) => {
+    const key = city.toLowerCase();
+    if (!cities.has(key)) cities.set(key, city);
+  });
+  return Array.from(cities.values()).sort((a, b) => a.localeCompare(b));
+};
 
 const MinusIcon = () => (
   <svg
@@ -448,7 +473,7 @@ const DepartmentAccordion = ({
   onToggle,
 }: DepartmentAccordionProps) => {
   return (
-    <div className={`${isOpen ? " is-open" : ""}`}>
+    <div className={`department-group${isOpen ? " is-open" : ""}`}>
       <button
         type="button"
         className="department-title"
@@ -538,6 +563,7 @@ export default function JobListingSectionCMS({
 
   useEffect(() => {
     let stopped = false;
+    let lastSignature = "";
     const cleanups: Array<() => void> = [];
 
     const publish = () => {
@@ -546,6 +572,11 @@ export default function JobListingSectionCMS({
         listCmsJobs(),
         readCmsJobs(sourceSelector, slotRef.current),
       );
+      // Only re-render when the job data actually changed. Otherwise our own
+      // DOM updates trigger the MutationObserver and loop forever.
+      const signature = JSON.stringify(merged);
+      if (signature === lastSignature) return;
+      lastSignature = signature;
       setAllJobs(merged);
       if (merged.length) setReady(true);
     };
@@ -625,7 +656,8 @@ export default function JobListingSectionCMS({
     const matchesCompany =
       !selectedCompany || companyLabel(job) === selectedCompany;
     const matchesLoc =
-      !selectedLoc || loc.includes(selectedLoc.toLowerCase());
+      !selectedLoc ||
+      jobCities(job.location).some((city) => sameText(city, selectedLoc));
 
     return matchesSearch && matchesFunction && matchesCompany && matchesLoc;
   });
@@ -653,9 +685,7 @@ export default function JobListingSectionCMS({
     new Set(visibleJobs.map((job) => companyLabel(job)).filter(Boolean)),
   ).sort();
 
-  const locationOptions = Array.from(
-    new Set(visibleJobs.flatMap((job) => locationParts(job.location))),
-  ).sort();
+  const locationOptions = uniqueCities(visibleJobs);
 
   return (
     <div className="job-listing-wrapper job-listing-cms">

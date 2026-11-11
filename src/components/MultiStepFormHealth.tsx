@@ -2,7 +2,7 @@ import { useState, useCallback, useEffect } from "react";
 import { motion, AnimatePresence, type Variants } from "framer-motion";
 import "./MultiFormStyling.css";
 import { isValidWorkEmail } from "../utils/blockedEmails";
-import { storeUtms, getUtmFields } from "../utils/utm";
+import { storeUtms, getUtmFields } from "../utils/utmHealth";
 
 function pushEvent(event: string) {
   (window as any).dataLayer = (window as any).dataLayer || [];
@@ -17,7 +17,9 @@ interface FormData {
   lastname: string;
   phone: string;
   company: string;
+  monthly_call_volume: string;
   ehr: string;
+  ehr_other: string;
   specialty: string;
   how_did_you_hear_about_us: string;
 }
@@ -76,8 +78,8 @@ interface Props {
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
-const PORTAL_ID = "45321630";
-const FORM_GUID = "46995898-7b5b-405d-a9b9-0d9673bf0c89";
+const PORTAL_ID = "50980387";
+const FORM_GUID = "525bcff2-6f04-4ef5-b81e-977f27b7a1eb";
 const API_BASE = "https://contact-checker-backend.vercel.app";
 
 const EHR_OPTIONS = [
@@ -109,7 +111,9 @@ const INITIAL_FORM: FormData = {
   lastname: "",
   phone: "",
   company: "",
+  monthly_call_volume: "",
   ehr: "",
+  ehr_other: "",
   specialty: "",
   how_did_you_hear_about_us: "",
 };
@@ -450,6 +454,10 @@ export default function MultiStepForm({
     }
     if (step === 3) {
       if (!form.company) errs.company = "Company name is required.";
+      if (!form.monthly_call_volume)
+        errs.monthly_call_volume = "Monthly call volume is required.";
+      if (!form.ehr) errs.ehr = "EHR is required.";
+      if (!form.ehr_other) errs.ehr_other = "Please list your EHR.";
     }
     setErrors(errs);
     return Object.keys(errs).length === 0;
@@ -484,9 +492,11 @@ export default function MultiStepForm({
       { name: "firstname", value: form.firstname },
       { name: "lastname", value: form.lastname },
       { name: "phone", value: form.phone },
+      { name: "0-2/phone", value: form.phone },
       { name: "company", value: form.company },
-      { name: "jobtitle", value: "" },
-      { name: "what_ehr_do_you_use_", value: form.ehr },
+      { name: "0-2/monthly_call_volume__c", value: form.monthly_call_volume },
+      { name: "ehr_selfreported", value: form.ehr },
+      { name: "ehr_other_selfreported", value: form.ehr_other },
       { name: "what_s_your_speciality_", value: form.specialty },
       { name: "how_did_you_hear_about_us", value: form.how_did_you_hear_about_us },
     ].filter((f) => f.value !== "");
@@ -1054,6 +1064,49 @@ export default function MultiStepForm({
                             <div className="hsf__col">
                               <label
                                 className="field-label field-label-required"
+                                htmlFor="hsf-callvol"
+                              >
+                                Monthly Call Volume
+                              </label>
+                              <input
+                                id="hsf-callvol"
+                                className={`formInput${
+                                  errors.monthly_call_volume
+                                    ? " formInput--error"
+                                    : ""
+                                }`}
+                                type="text"
+                                inputMode="numeric"
+                                placeholder="e.g. 5000"
+                                value={form.monthly_call_volume}
+                                onChange={(e) =>
+                                  set(
+                                    "monthly_call_volume",
+                                    e.target.value.replace(/[^\d]/g, ""),
+                                  )
+                                }
+                                aria-required="true"
+                                aria-invalid={Boolean(
+                                  errors.monthly_call_volume,
+                                )}
+                                aria-describedby={
+                                  errors.monthly_call_volume
+                                    ? "hsf-callvol-error"
+                                    : undefined
+                                }
+                              />
+                              {errors.monthly_call_volume && (
+                                <span
+                                  id="hsf-callvol-error"
+                                  className="fieldError"
+                                >
+                                  {errors.monthly_call_volume}
+                                </span>
+                              )}
+                            </div>
+                            <div className="hsf__col">
+                              <label
+                                className="field-label field-label-required"
                                 htmlFor="hsf-ehr"
                               >
                                 What EHR Do You Use?
@@ -1085,6 +1138,41 @@ export default function MultiStepForm({
                               {errors.ehr && (
                                 <span id="hsf-ehr-error" className="fieldError">
                                   {errors.ehr}
+                                </span>
+                              )}
+                            </div>
+                            <div className="hsf__col">
+                              <label
+                                className="field-label field-label-required"
+                                htmlFor="hsf-ehr-other"
+                              >
+                                Please list your EHR below
+                              </label>
+                              <input
+                                id="hsf-ehr-other"
+                                className={`formInput${
+                                  errors.ehr_other ? " formInput--error" : ""
+                                }`}
+                                type="text"
+                                placeholder="Please list your EHR"
+                                value={form.ehr_other}
+                                onChange={(e) =>
+                                  set("ehr_other", e.target.value)
+                                }
+                                aria-required="true"
+                                aria-invalid={Boolean(errors.ehr_other)}
+                                aria-describedby={
+                                  errors.ehr_other
+                                    ? "hsf-ehr-other-error"
+                                    : undefined
+                                }
+                              />
+                              {errors.ehr_other && (
+                                <span
+                                  id="hsf-ehr-other-error"
+                                  className="fieldError"
+                                >
+                                  {errors.ehr_other}
                                 </span>
                               )}
                             </div>

@@ -208,7 +208,7 @@ a.sic__card {
 .sic__title,
 .sic__subtitle {
   margin: 0;
-  font-family: "Intervariable", "Inter Variable", Inter, sans-serif;
+  font-family: inter-variable, "Inter Variable", Inter, sans-serif;
   font-style: normal;
   font-feature-settings: "ss07" on;
   word-break: break-word;
@@ -237,7 +237,7 @@ a.sic__card {
   border: 1px solid #dfdbff;
   border-radius: 4px;
   box-sizing: border-box;
-  font-family: "Intervariable", "Inter Variable", Inter, sans-serif;
+  font-family: inter-variable, "Inter Variable", Inter, sans-serif;
   font-size: 16px;
   font-style: normal;
   font-weight: 400;

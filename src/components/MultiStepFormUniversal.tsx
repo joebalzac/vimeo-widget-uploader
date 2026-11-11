@@ -3,6 +3,10 @@ import { motion, AnimatePresence, type Variants } from "framer-motion";
 import "./MultiFormStyling.css";
 import { isValidWorkEmail } from "../utils/blockedEmails";
 import { storeUtms, getUtmFields } from "../utils/utm";
+import {
+  storeUtms as storeHealthUtms,
+  getUtmFields as getHealthUtmFields,
+} from "../utils/utmHealth";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -56,6 +60,8 @@ interface ContentPanelProps {
 interface Props {
   portalId?: string;
   formGuid?: string;
+  healthcarePortalId?: string;
+  healthcareFormGuid?: string;
   className?: string;
   enableNavTrigger?: boolean;
   eventEmailSubmit?: string;
@@ -128,6 +134,9 @@ interface Props {
 
 const PORTAL_ID = "45321630";
 const FORM_GUID = "2e281015-dc06-4517-be23-42f379977b10";
+// Healthcare submissions go to the dedicated healthcare HubSpot portal/form.
+const HEALTHCARE_PORTAL_ID = "50980387";
+const HEALTHCARE_FORM_GUID = "525bcff2-6f04-4ef5-b81e-977f27b7a1eb";
 const API_BASE = "https://contact-checker-backend.vercel.app";
 
 const UNITS_MANAGED_OPTIONS = [
@@ -462,6 +471,8 @@ function HealthcareIcon() {
 export default function MultiStepFormUniversal({
   portalId = PORTAL_ID,
   formGuid = FORM_GUID,
+  healthcarePortalId = HEALTHCARE_PORTAL_ID,
+  healthcareFormGuid = HEALTHCARE_FORM_GUID,
   className = "",
   enableNavTrigger = false,
   eventEmailSubmit = "multi_form_email_submit",
@@ -541,6 +552,7 @@ export default function MultiStepFormUniversal({
   // First-touch capture of UTMs into sessionStorage on mount.
   useEffect(() => {
     storeUtms();
+    storeHealthUtms();
   }, []);
 
   // Scroll lock while overlay is open
@@ -681,8 +693,9 @@ export default function MultiStepFormUniversal({
     setSubmitting(true);
     setApiError("");
 
-    const industryValue =
-      selectedVertical === "housing" ? "Real Estate" : "Healthcare";
+    const isHealthcare = selectedVertical === "healthcare";
+    const targetPortalId = isHealthcare ? healthcarePortalId : portalId;
+    const targetFormGuid = isHealthcare ? healthcareFormGuid : formGuid;
 
     const fields: HubSpotField[] = [
       { name: "email", value: form.email },
@@ -690,11 +703,24 @@ export default function MultiStepFormUniversal({
       { name: "lastname", value: form.lastname },
       { name: "phone", value: form.phone },
       { name: "company", value: form.company },
-      { name: "what_industry_are_you_in_", value: industryValue },
     ];
 
-    if (selectedVertical === "housing") {
+    if (isHealthcare) {
+      // Field names match the healthcare form (same as MultiStepFormHealth).
       fields.push(
+        { name: "0-2/phone", value: form.phone },
+        {
+          name: "0-2/monthly_call_volume__c",
+          value: form.monthly_call_volume,
+        },
+        { name: "ehr_selfreported", value: form.ehr },
+        { name: "what_s_your_speciality_", value: form.specialty },
+        { name: "how_did_you_hear_about_us", value: form.how_did_you_hear },
+        ...getHealthUtmFields(),
+      );
+    } else {
+      fields.push(
+        { name: "what_industry_are_you_in_", value: "Real Estate" },
         { name: "units_managed", value: form.units_managed },
         { name: "pms_compatability", value: form.pms_compatability },
         {
@@ -702,26 +728,10 @@ export default function MultiStepFormUniversal({
           value: form.ai_areas,
         },
       );
-    } else {
-      fields.push(
-        {
-          name: "whats_your_monthly_call_volume",
-          value: form.monthly_call_volume,
-        },
-        { name: "what_ehr_do_you_use_", value: form.ehr },
-        { name: "what_s_your_speciality_", value: form.specialty },
-        { name: "how_many_providers_do_you_have_", value: form.num_providers },
-        {
-          name: "how_did_you_hear_about_us_form__c",
-          value: form.how_did_you_hear,
-        },
-      );
+      if (promoOffering)
+        fields.push({ name: "promo_offering", value: promoOffering });
+      fields.push(...getUtmFields());
     }
-
-    if (promoOffering)
-      fields.push({ name: "promo_offering", value: promoOffering });
-
-    fields.push(...getUtmFields());
 
     const hutk = getCookie("hubspotutk");
     const payload: HubSpotPayload = {
@@ -735,7 +745,7 @@ export default function MultiStepFormUniversal({
 
     try {
       const res = await fetch(
-        `https://api.hsforms.com/submissions/v3/integration/submit/${portalId}/${formGuid}`,
+        `https://api.hsforms.com/submissions/v3/integration/submit/${targetPortalId}/${targetFormGuid}`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -750,8 +760,8 @@ export default function MultiStepFormUniversal({
       }
 
       console.log("[HubSpot] submission success", {
-        portalId,
-        formGuid,
+        portalId: targetPortalId,
+        formGuid: targetFormGuid,
         fields: payload.fields,
       });
 
@@ -778,6 +788,8 @@ export default function MultiStepFormUniversal({
     selectedVertical,
     portalId,
     formGuid,
+    healthcarePortalId,
+    healthcareFormGuid,
     promoOffering,
     enableWebflowEvent,
     onComplete,

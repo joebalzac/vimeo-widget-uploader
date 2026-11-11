@@ -13,7 +13,7 @@
   padding: 96px 24px 48px;
   overflow: hidden;
   background: #141414;
-  font-family: "Intervariable", Inter, system-ui, sans-serif;
+  font-family: inter-variable, Inter, system-ui, sans-serif;
   color: #ffffff;
 }
 
@@ -76,7 +76,7 @@
 
 .hv__heading {
   margin: 0;
-  font-family: "Intervariable", Inter, sans-serif;
+  font-family: inter-variable, Inter, sans-serif;
   font-weight: 400;
   font-size: 48px;
   line-height: 1.1;
@@ -88,7 +88,7 @@
 .hv__subtitle {
   margin: 0;
   max-width: 280px;
-  font-family: "Intervariable", Inter, sans-serif;
+  font-family: inter-variable, Inter, sans-serif;
   font-weight: 400;
   font-size: 18px;
   line-height: 1.4;
@@ -106,7 +106,7 @@
   border-radius: 4px;
   background: #ffffff;
   color: #0e0d0c;
-  font-family: "Intervariable", Inter, sans-serif;
+  font-family: inter-variable, Inter, sans-serif;
   font-weight: 400;
   font-size: 16px;
   line-height: 1.4;

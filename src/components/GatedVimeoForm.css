@@ -21,7 +21,7 @@
   border: 1px solid var(--gvf-border);
   border-radius: var(--gvf-radius);
   background: #fff;
-  font-family: Inter, "Intervariable", system-ui, sans-serif;
+  font-family: Inter, inter-variable, system-ui, sans-serif;
   color: var(--gvf-text);
 }
 

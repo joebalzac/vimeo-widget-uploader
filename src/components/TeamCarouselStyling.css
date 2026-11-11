@@ -82,7 +82,7 @@
 .tc__heading {
   color: #0e0d0c;
   text-align: center;
-  font-family: "Intervariable";
+  font-family: inter-variable, Inter, sans-serif;
   font-size: 48px;
   font-style: normal;
   font-weight: 400;
@@ -257,7 +257,7 @@
 }
 
 .tc__badge-duration {
-  font-family: "Intervariable", sans-serif;
+  font-family: inter-variable, sans-serif;
   font-size: 14px;
   font-weight: 400;
   line-height: 140%;
@@ -288,7 +288,7 @@
   margin: 0;
   font-size: 22px;
   color: #0e0d0c;
-  font-family: "Intervariable", sans-serif;
+  font-family: inter-variable, sans-serif;
   font-weight: 450;
   line-height: 120%;
   letter-spacing: -0.66px;
@@ -296,7 +296,7 @@
 
 .tc__card-label {
   margin: 0;
-  font-family: "Intervariable", sans-serif;
+  font-family: inter-variable, sans-serif;
   font-size: 18px;
   font-weight: 400;
   line-height: 140%;

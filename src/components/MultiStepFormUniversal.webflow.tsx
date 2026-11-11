@@ -21,13 +21,25 @@ export default declareComponent(MultiStepFormUniversal, {
     portalId: props.Text({
       name: "HubSpot Portal ID",
       defaultValue: "45321630",
-      tooltip: "Your HubSpot portalId (string).",
+      tooltip: "Your HubSpot portalId (string) for Housing submissions.",
     }),
 
     formGuid: props.Text({
       name: "HubSpot Form GUID",
       defaultValue: "2e281015-dc06-4517-be23-42f379977b10",
-      tooltip: "Your HubSpot formId / GUID for the universal form.",
+      tooltip: "Your HubSpot formId / GUID for Housing submissions.",
+    }),
+
+    healthcarePortalId: props.Text({
+      name: "HubSpot Healthcare Portal ID",
+      defaultValue: "50980387",
+      tooltip: "HubSpot portalId used when the Healthcare vertical is selected.",
+    }),
+
+    healthcareFormGuid: props.Text({
+      name: "HubSpot Healthcare Form GUID",
+      defaultValue: "525bcff2-6f04-4ef5-b81e-977f27b7a1eb",
+      tooltip: "HubSpot formId / GUID used when the Healthcare vertical is selected.",
     }),
 
     promoOffering: props.Text({

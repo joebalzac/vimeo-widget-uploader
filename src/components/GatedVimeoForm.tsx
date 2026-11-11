@@ -1,3 +1,4 @@
+import "../utils/interVariableFont";
 import { useEffect, useId, useRef, useState, type ReactNode } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import Player from "@vimeo/player";

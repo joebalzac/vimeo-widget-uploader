@@ -1,3 +1,4 @@
+import "../utils/interVariableFont";
 import { Navbar, type NavbarProps } from "./Navbar";
 import { menuDataHealth } from "../data/menuDataHealth";
 

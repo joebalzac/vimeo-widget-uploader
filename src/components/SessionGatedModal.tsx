@@ -1,3 +1,4 @@
+import "../utils/interVariableFont";
 import { useEffect, useId, useRef, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { isBlockedEmail, isValidWorkEmail, WORK_EMAIL_ERROR } from "../utils/blockedEmails";

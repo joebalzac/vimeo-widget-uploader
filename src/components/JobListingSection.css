@@ -27,7 +27,7 @@
 
 .filters-title {
   color: #181819;
-  font-family: "Intervariable", sans-serif;
+  font-family: inter-variable, sans-serif;
   font-size: 30px;
   font-weight: 450;
   line-height: 140%;
@@ -51,7 +51,12 @@
 }
 
 .search-input {
-  font-family: "Intervariable", sans-serif;
+  -webkit-appearance: none;
+  appearance: none;
+  background-color: transparent;
+  border-radius: 0;
+  box-shadow: none;
+  font-family: inter-variable, sans-serif;
   font-size: 18px;
   font-weight: 400;
   line-height: 140%;
@@ -71,7 +76,7 @@
   justify-content: space-between;
   align-items: center;
   cursor: pointer;
-  font-family: "Intervariable", sans-serif;
+  font-family: inter-variable, sans-serif;
   font-size: 16px;
   font-weight: 400;
   line-height: 140%;
@@ -113,7 +118,7 @@
   background: transparent;
   cursor: pointer;
   color: #181819;
-  font-family: "Intervariable", sans-serif;
+  font-family: inter-variable, sans-serif;
   font-size: 22px;
   font-style: normal;
   font-weight: 450;
@@ -190,7 +195,7 @@
 
 .job-item-name {
   color: #0e0d0c;
-  font-family: "Intervariable", "Inter Variable", Inter, sans-serif;
+  font-family: inter-variable, "Inter Variable", Inter, sans-serif;
   font-size: 18px;
   font-weight: 400;
   line-height: 140%;
@@ -201,7 +206,7 @@
 
 .job-item-company {
   color: var(--type-body-secondary, #7a7977);
-  font-family: "Intervariable", "Inter Variable", Inter, sans-serif;
+  font-family: inter-variable, "Inter Variable", Inter, sans-serif;
   font-size: 18px;
   font-style: normal;
   font-weight: 400;
@@ -212,7 +217,7 @@
 
 .job-item-location {
   color: #7a7977;
-  font-family: "Intervariable", sans-serif;
+  font-family: inter-variable, sans-serif;
   font-size: 18px;
   font-weight: 400;
   line-height: 140%;
@@ -293,7 +298,7 @@
   align-items: center;
   gap: 24px;
   border-bottom-color: #c7c6c4;
-  padding: 20px 0;
+  padding: 32px 0;
   color: #0e0d0c;
   font-weight: 400;
   font-size: 22px;
@@ -319,7 +324,7 @@
 
 .job-listing-cms .department-subtitle {
   color: #7a7977;
-  font-family: "Intervariable", "Inter Variable", Inter, sans-serif;
+  font-family: inter-variable, "Inter Variable", Inter, sans-serif;
   font-size: 18px;
   font-weight: 400;
   line-height: 1.4;
@@ -334,13 +339,19 @@
   font-size: 16px;
 }
 
+/* Jobs sit indented under their category so the two levels read apart. */
 .job-listing-cms .department-jobs {
-  padding: 0;
+  padding: 0 32px;
+  border-bottom: 1px solid #c7c6c4;
 }
 
 .job-listing-cms .job-item-content {
   padding: 20px 0;
-  border-bottom-color: #dddcda;
+  border-bottom-color: #e6e5e3;
+}
+
+.job-listing-cms .job-item:last-child .job-item-content {
+  border-bottom: 0;
 }
 
 /* =========================================================
@@ -415,8 +426,17 @@
   }
 
   .job-listing-cms .department-title {
+    padding: 24px 0;
     font-size: 20px;
     letter-spacing: -0.6px;
+  }
+
+  .job-listing-cms .department-jobs {
+    padding: 0 16px;
+  }
+
+  .job-listing-cms .job-item-content {
+    padding: 16px 0;
   }
 
   .job-listing-cms .department-name {

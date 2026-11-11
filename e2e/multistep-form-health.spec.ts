@@ -67,21 +67,25 @@ test.describe("MultiStepFormHealth (Healthcare)", () => {
     await page.fill("#hsf-lastname", "Doe");
     await page.fill("#hsf-phone", "5555559876");
     await page.click(".hsf__nav button");
+    await expect(page.locator("#hsf-callvol")).toBeVisible();
     await expect(page.locator("#hsf-ehr")).toBeVisible();
+    await expect(page.locator("#hsf-ehr-other")).toBeVisible();
     await expect(page.locator("#hsf-specialty")).toBeVisible();
     await expect(page.locator("#hsf-how_did_you_hear_about_us")).toBeVisible();
   });
 
-  test("step 3 validates company required", async ({ page }) => {
+  test("step 3 validates required fields", async ({ page }) => {
     await fillEmail(page);
     await page.fill("#hsf-firstname", "Dr. John");
     await page.fill("#hsf-lastname", "Doe");
     await page.fill("#hsf-phone", "5555559876");
     await page.click(".hsf__nav button");
     await page.click(".hsf__nav button");
-    await expect(page.locator(".fieldError")).toContainText(
-      "Company name is required."
-    );
+    const errors = page.locator(".fieldError");
+    await expect(errors).toContainText("Company name is required.");
+    await expect(errors).toContainText("Monthly call volume is required.");
+    await expect(errors).toContainText("EHR is required.");
+    await expect(errors).toContainText("Please list your EHR.");
   });
 
   test("completes full healthcare submission and shows success", async ({
@@ -94,7 +98,9 @@ test.describe("MultiStepFormHealth (Healthcare)", () => {
     await page.click(".hsf__nav button");
 
     await page.fill("#hsf-company", "City Clinic");
+    await page.fill("#hsf-callvol", "3000");
     await page.selectOption("#hsf-ehr", "Epic");
+    await page.fill("#hsf-ehr-other", "Epic");
     await page.selectOption("#hsf-specialty", "Dermatology");
     await page.fill("#hsf-how_did_you_hear_about_us", "Google search");
     await page.click(".hsf__nav button");

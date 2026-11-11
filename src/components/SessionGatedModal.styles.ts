@@ -32,7 +32,7 @@ export const SESSION_GATED_MODAL_CSS = `
   box-shadow:
     0 24px 64px rgba(0, 0, 0, 0.16),
     0 4px 16px rgba(0, 0, 0, 0.07);
-  font-family: Inter, "Intervariable", system-ui, sans-serif;
+  font-family: Inter, inter-variable, system-ui, sans-serif;
   color: #181819;
   animation: sgmModalIn 0.28s cubic-bezier(0.34, 1.3, 0.64, 1) forwards;
   scrollbar-width: thin;
@@ -85,7 +85,7 @@ export const SESSION_GATED_MODAL_CSS = `
 .sgm-title {
   margin: 0;
   color: #0d0d0c;
-  font-family: "Intervariable", "Inter Variable", Inter, sans-serif;
+  font-family: inter-variable, "Inter Variable", Inter, sans-serif;
   font-size: 36px;
   font-style: normal;
   font-weight: 400;
@@ -97,7 +97,7 @@ export const SESSION_GATED_MODAL_CSS = `
 .sgm-lede {
   margin: 0;
   color: #3f3e3c;
-  font-family: "Intervariable", "Inter Variable", Inter, sans-serif;
+  font-family: inter-variable, "Inter Variable", Inter, sans-serif;
   font-size: 18px;
   font-style: normal;
   font-weight: 400;

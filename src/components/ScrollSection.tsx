@@ -1,3 +1,4 @@
+import "../utils/interVariableFont";
 import { useRef } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import "./ScrollSectionStyling.css";

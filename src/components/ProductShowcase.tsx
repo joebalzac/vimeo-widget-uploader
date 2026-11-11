@@ -1,3 +1,4 @@
+import "../utils/interVariableFont";
 import { useEffect, useId, useRef, useState } from "react";
 import "./ProductShowcase.css";
 import { AUDIO } from "../assets/audio";

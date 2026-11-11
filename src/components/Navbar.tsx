@@ -1,3 +1,4 @@
+import "../utils/interVariableFont";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import {
   menuData,

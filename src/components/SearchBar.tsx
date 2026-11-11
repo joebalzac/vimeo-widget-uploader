@@ -82,7 +82,11 @@ export const SearchBar = ({ value, onChange }: Props) => {
           style={{
             width: "100%",
             paddingLeft: 36,
-            background: "transparent",
+            WebkitAppearance: "none",
+            appearance: "none",
+            backgroundColor: "transparent",
+            borderRadius: 0,
+            boxShadow: "none",
             border: "none",
             outline: "none",
             color: "#fafafb",

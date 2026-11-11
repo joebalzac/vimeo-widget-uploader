@@ -8,6 +8,9 @@
 // The React MultiStep forms POST directly to the HubSpot Forms API instead of
 // rendering a HubSpot embed, so the `onFormReady` patch never touches them.
 // These helpers give them the same cross-page persistence.
+//
+// Housing and other non-healthcare forms use this helper. Healthcare uses
+// `utmHealth.ts` (most-recent UTMs, click IDs, and GA4 client ID).
 
 export const UTM_KEYS = [
   "utm_source",

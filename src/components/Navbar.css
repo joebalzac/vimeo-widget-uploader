@@ -28,7 +28,7 @@
   z-index: 9999;
   width: 100%;
   background-color: transparent;
-  font-family: "Intervariable", Inter, sans-serif;
+  font-family: inter-variable, Inter, sans-serif;
 }
 
 .navbar--cta-banner {
@@ -505,7 +505,7 @@
 .navbar__link-desc {
   display: block;
   font-size: 12px;
-  font-style: "Intervariable", Inter, sans-serif;
+  font-family: inter-variable, Inter, sans-serif;
   font-weight: 400;
   line-height: 150%;
   letter-spacing: -0.14px;
@@ -812,7 +812,7 @@
   border-right: none;
   border-top: none;
   font-size: 16px;
-  font-family: "Intervariable", Inter, sans-serif;
+  font-family: inter-variable, Inter, sans-serif;
   font-weight: 400;
   line-height: 115%;
   letter-spacing: -0.16px;
@@ -1065,7 +1065,7 @@
   width: 100%;
   color: var(--nav-purple);
   text-align: center;
-  font-family: "Intervariable", Inter, sans-serif;
+  font-family: inter-variable, Inter, sans-serif;
   font-size: 16px;
   font-style: normal;
   font-weight: 450;

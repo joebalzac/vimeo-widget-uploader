@@ -1,3 +1,4 @@
+import "../utils/interVariableFont";
 import "./OfficeLocations.css";
 
 export interface OfficeLocation {

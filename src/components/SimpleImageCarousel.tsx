@@ -1,6 +1,8 @@
+import "../utils/interVariableFont";
 import { useRef, useState } from "react";
 import { Splide, SplideSlide, SplideTrack } from "@splidejs/react-splide";
 import "@splidejs/react-splide/css";
+import { useSplideWheel } from "./useSplideWheel";
 import "./SimpleImageCarousel.css";
 
 export interface SimpleImageSlide {
@@ -72,6 +74,7 @@ export default function SimpleImageCarousel({
   // the track) is the Splide-controlled set. The desktop nav in the header is
   // driven manually via this ref, mirroring the disabled state Splide reports.
   const splideRef = useRef<Splide>(null);
+  useSplideWheel(splideRef);
   const [arrows, setArrows] = useState({
     prevDisabled: true,
     nextDisabled: false,

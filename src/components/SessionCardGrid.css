@@ -15,7 +15,7 @@
   min-width: 0;
   box-sizing: border-box;
   background: transparent;
-  font-family: "Intervariable", Inter, system-ui, sans-serif;
+  font-family: inter-variable, Inter, system-ui, sans-serif;
   color: inherit;
   text-decoration: none;
   cursor: pointer;
@@ -173,7 +173,7 @@ button.scg {
 
 .scg__title {
   margin: 0;
-  font-family: "Intervariable", Inter, sans-serif;
+  font-family: inter-variable, Inter, sans-serif;
   font-weight: 450;
   font-size: 22px;
   line-height: 1.2;
@@ -184,7 +184,7 @@ button.scg {
 
 .scg__details {
   margin: 0;
-  font-family: "Intervariable", Inter, sans-serif;
+  font-family: inter-variable, Inter, sans-serif;
   font-weight: 400;
   font-size: 18px;
   line-height: 1.4;
@@ -203,7 +203,7 @@ button.scg {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  font-family: "Intervariable", Inter, sans-serif;
+  font-family: inter-variable, Inter, sans-serif;
   font-weight: 400;
   font-size: 16px;
   line-height: 1.4;

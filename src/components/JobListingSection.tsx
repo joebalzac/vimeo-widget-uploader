@@ -1,3 +1,4 @@
+import "../utils/interVariableFont";
 import { useEffect, useRef, useState } from "react";
 import "./JobListingSection.css";
 

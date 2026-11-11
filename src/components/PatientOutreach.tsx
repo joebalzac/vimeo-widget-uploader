@@ -1,3 +1,4 @@
+import "../utils/interVariableFont";
 import { useEffect, useState } from "react";
 import "./PatientOutreach.css";
 

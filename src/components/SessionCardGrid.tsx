@@ -1,3 +1,4 @@
+import "../utils/interVariableFont";
 import { useEffect, useRef, useState, type MouseEvent, type Ref } from "react";
 import { useSessionCarousel } from "./useSessionCarousel";
 import SessionGatedModal, {
