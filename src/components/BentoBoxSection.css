@@ -1,0 +1,22 @@
+/* BentoBoxSection — "Tour Intelligence" bento showcase.
+   Figma: node 330:29920 ("Bento"), .com_2027. No outer padding or max-width
+   here by design — drop this into a Container in Webflow for page margins. */
+
+.bbs {
+  width: 100%;
+  box-sizing: border-box;
+  font-family: inter-variable, Inter, system-ui, sans-serif;
+}
+
+.bbs__grid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+}
+
+.bbs__row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
