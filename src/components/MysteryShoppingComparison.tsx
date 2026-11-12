@@ -2,16 +2,11 @@ import "../utils/interVariableFont";
 import { Fragment, type ReactNode } from "react";
 import { motion, type Variants } from "framer-motion";
 import "./MysteryShoppingComparison.css";
-import SectionHeading from "./SectionHeading";
 import check from "../assets/mystery/check.svg";
 import check16 from "../assets/mystery/check-16.svg";
 
 export interface MysteryShoppingComparisonProps {
   className?: string;
-  /** When set, renders as a full section: paints this background, adds section padding and a container. */
-  background?: string;
-  /** Section heading shown above the table (only in section mode). Empty = no heading. */
-  heading?: string;
 }
 
 interface Row {
@@ -75,20 +70,7 @@ const delay = (col: number, row: number) => (row * 70 + col * 40) / 1000;
  * Figma: node 204:8277 (.com_2027). White text: place on a dark section (#131115) and pair
  * with SectionHeading (theme "dark"). Desktop: 3-column grid. <=480px: two stacked tables.
  */
-export default function MysteryShoppingComparison({ className, background, heading }: MysteryShoppingComparisonProps) {
-  const table = <ComparisonTable className={background ? undefined : className} />;
-  if (!background) return table;
-  return (
-    <section className={["msc-section", className].filter(Boolean).join(" ")} style={{ background }}>
-      <div className="msc-section__wrap">
-        {heading?.trim() ? <SectionHeading heading={heading} theme="dark" maxWidth={474} /> : null}
-        {table}
-      </div>
-    </section>
-  );
-}
-
-function ComparisonTable({ className }: { className?: string }) {
+export default function MysteryShoppingComparison({ className }: MysteryShoppingComparisonProps) {
   return (
     <div className={["msc", className].filter(Boolean).join(" ")}>
       {/* desktop / tablet */}
