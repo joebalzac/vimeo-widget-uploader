@@ -1,0 +1,150 @@
+/* GENERATED from Figma node 421:12184 — see FloorPlanFurniture.tsx. */
+.fpf-0{position:relative;width:100%;height:100%}
+.fpf-1{position:absolute;align-content:stretch;display:flex;flex-direction:column;height:271px;align-items:flex-start;left:424.03px;overflow:clip;top:61px;width:234px}
+.fpf-2{align-content:stretch;display:flex;flex:1 0 0;align-items:center;min-height:1px;position:relative}
+.fpf-3{background:#fdfcfb;border-width:1.75px;border-color:#f0eeec;border-style:solid;height:100%;position:relative;flex-shrink:0;width:24.429px}
+.fpf-4{position:absolute;height:678px;left:662px;overflow:clip;top:113px;width:691px}
+.fpf-5{position:absolute;display:flex;align-items:center;justify-content:center;left:-393.17px;width:1477.334px;height:1477.334px;top:-399.67px}
+.fpf-6{flex:none;transform:rotate(-45deg)}
+.fpf-7{align-content:stretch;display:flex;height:994px;align-items:center;overflow:clip;position:relative;border-radius:7px;width:1095.266px}
+.fpf-8{background:#fdfcfb;border-width:1.75px;border-color:#dfdbff;border-style:solid;flex:1 0 0;height:100%;min-width:1px;position:relative}
+.fpf-9{position:absolute;display:contents;inset:6.82% 4.17% 6.82% 4.39%}
+.fpf-10{position:absolute;align-content:stretch;display:flex;flex-direction:column;height:239px;align-items:flex-start;left:418px;overflow:clip;top:578px;width:200px}
+.fpf-11{align-content:stretch;display:flex;flex:1 0 0;align-items:center;min-height:1px;position:relative;width:100%}
+.fpf-12{background:#fdfcfb;border-width:1.75px;border-color:#f0eeec;border-style:solid;flex:1 0 0;height:100%;min-width:1px;position:relative}
+.fpf-13{position:absolute;inset:39.94% 78.48% 53.44% 4.39%}
+.fpf-14{position:absolute;inset:-1.5% -0.35%}
+.fpf-15{display:block;max-width:none;width:100%;height:100%}
+.fpf-16{position:absolute;align-content:stretch;display:flex;gap:9px;align-items:center;left:80.07px;top:362.5px}
+.fpf-17{align-content:stretch;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;flex-shrink:0}
+.fpf-18{background:#c1bafe;height:8px;position:relative;flex-shrink:0;width:4px}
+.fpf-19{background:#dddcda;height:20px;position:relative;flex-shrink:0;width:1.75px}
+.fpf-20{display:flex;height:36.209px;align-items:center;justify-content:center;position:relative;flex-shrink:0;width:8.873px}
+.fpf-21{flex:none;transform:rotate(-7.84deg)}
+.fpf-22{align-content:stretch;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative}
+.fpf-23{flex:none;transform:rotate(-172.16deg) scaleY(-1)}
+.fpf-24{position:absolute;inset:47.31% 71.21% 46.34% 4.39%}
+.fpf-25{position:absolute;inset:-1.56% -0.25%}
+.fpf-26{position:absolute;align-content:stretch;display:flex;gap:9px;align-items:center;left:80.07px;top:426.14px}
+.fpf-27{position:absolute;inset:43.07% 78.89% 56.93% 4.58%}
+.fpf-28{position:absolute;inset:-0.88px 0}
+.fpf-29{position:absolute;inset:50.63% 71.67% 49.38% 4.58%}
+.fpf-30{position:absolute;inset:6.82% 15.14% 87.27% 53.54%}
+.fpf-31{position:absolute;inset:0 -0.19% -1.68% 0}
+.fpf-32{position:absolute;inset:6.82% 9.86% 85.91% 84.86%}
+.fpf-33{position:absolute;inset:0 -1.15% -1.37% -1.15%}
+.fpf-34{position:absolute;inset:6.82% 4.17% 85.91% 90.14%}
+.fpf-35{position:absolute;inset:0 0 -1.37% -1.07%}
+.fpf-36{position:absolute;inset:13.41% 5.56% 86.59% 85.83%}
+.fpf-37{position:absolute;inset:8.81% 35.17% 88.58% 62.85%}
+.fpf-38{position:absolute;inset:-3.8% -3.07%}
+.fpf-39{position:absolute;inset:8.81% 32.99% 88.58% 65.03%}
+.fpf-40{position:absolute;inset:8.18% 22.36% 87.95% 73.61%}
+.fpf-41{position:absolute;inset:-2.57% -1.51%}
+.fpf-42{position:absolute;bottom:90.11%;left:74.24%;right:25%;top:8.64%}
+.fpf-43{position:absolute;inset:-7.95%}
+.fpf-44{position:absolute;inset:8.64% 22.99% 90.11% 76.25%}
+.fpf-45{position:absolute;bottom:88.41%;left:74.24%;right:25%;top:10.34%}
+.fpf-46{position:absolute;inset:10.34% 22.99% 88.41% 76.25%}
+.fpf-47{position:absolute;inset:24.66% 17.08% 63.26% 62.16%}
+.fpf-48{position:absolute;inset:-0.82% -0.29%}
+.fpf-49{position:absolute;inset:7.27% 54.31% 79.89% 45.28%}
+.fpf-50{position:absolute;inset:0 -14.58%}
+.fpf-51{position:absolute;inset:59.35% 54.04% 6.82% 45.96%}
+.fpf-52{position:absolute;inset:0 -0.88px}
+.fpf-53{position:absolute;inset:83.3% 54.04% 16.7% 43.09%}
+.fpf-54{position:absolute;inset:61.14% 55.28% 17.95% 44.72%}
+.fpf-55{position:absolute;inset:60.51% 58.06% 35.63% 39.44%}
+.fpf-56{position:absolute;inset:-2.57% -2.43%}
+.fpf-57{position:absolute;inset:61.19% 58.54% 36.31% 39.93%}
+.fpf-58{position:absolute;inset:-3.98%}
+.fpf-59{position:absolute;inset:61.82% 58.92% 36.93% 40.31%}
+.fpf-60{position:absolute;inset:9.2% 60.17% 85.34% 31.42%}
+.fpf-61{position:absolute;inset:-1.82% -0.72%}
+.fpf-62{position:absolute;inset:9.94% 60.69% 86.08% 31.94%}
+.fpf-63{position:absolute;inset:-2.5% -0.83%}
+.fpf-64{position:absolute;inset:11.68% 61.51% 87.82% 38.18%}
+.fpf-65{position:absolute;inset:-19.89%}
+.fpf-66{position:absolute;inset:27.67% 55.63% 64.83% 41.81%}
+.fpf-67{position:absolute;inset:-1.33% -2.36%}
+.fpf-68{position:absolute;inset:28.86% 56.04% 66.02% 42.22%}
+.fpf-69{position:absolute;inset:-1.94% -3.5%}
+.fpf-70{position:absolute;inset:31.33% 66.03% 61.95% 33.97%}
+.fpf-71{position:absolute;inset:31.42% 61.67% 61.95% 33.97%}
+.fpf-72{position:absolute;inset:-1.5% -1.4% 0 0}
+.fpf-73{position:absolute;inset:84.66% 65.76% 7.27% 29.1%}
+.fpf-74{position:absolute;inset:-1.23% -1.18%}
+.fpf-75{position:absolute;inset:88.52% 68.19% 10.91% 31.46%}
+.fpf-76{position:absolute;inset:-17.5%}
+.fpf-77{position:absolute;inset:76.25% 57.74% 16.7% 38.89%}
+.fpf-78{position:absolute;inset:-1.41% -1.8%}
+.fpf-79{position:absolute;inset:77.39% 58.54% 17.84% 39.65%}
+.fpf-80{position:absolute;inset:-2.08% -3.37%}
+.fpf-81{position:absolute;inset:64.89% 65.76% 28.05% 34.24%}
+.fpf-82{position:absolute;inset:64.86% 65.71% 28.07% 30.14%}
+.fpf-83{position:absolute;inset:0 0 -1.41% -1.46%}
+.fpf-84{position:absolute;inset:14.43% 79.72% 70% 6.25%}
+.fpf-85{position:absolute;inset:-0.64% -0.43%}
+.fpf-86{position:absolute;display:flex;inset:15.04% 80% 70.57% 7.15%;align-items:center;justify-content:center}
+.fpf-87{flex:none;height:100cqh;width:100cqw;transform:rotate(180deg)}
+.fpf-88{position:absolute;inset:-0.69% -0.47%}
+.fpf-89{position:absolute;inset:14.37% 93.19% 70.06% 6.25%}
+.fpf-90{position:absolute;inset:-0.64% -10.94%}
+.fpf-91{position:absolute;inset:15.06% 90.63% 78.18% 7.15%}
+.fpf-92{position:absolute;inset:-1.47% -2.73%}
+.fpf-93{position:absolute;inset:22.5% 90.63% 70.74% 7.15%}
+.fpf-94{position:absolute;inset:14.37% 89.86% 70.06% 10.14%}
+.fpf-95{position:absolute;inset:14.72% 88.33% 70.06% 10.14%}
+.fpf-96{position:absolute;inset:-0.19% -3.82% -0.18% -3.8%}
+.fpf-97{position:absolute;inset:10.68% 91.6% 86.36% 6.32%}
+.fpf-98{position:absolute;inset:-3.37% -2.92%}
+.fpf-99{position:absolute;inset:11.42% 92.19% 87.1% 6.91%}
+.fpf-100{position:absolute;inset:-6.73%}
+.fpf-101{position:absolute;inset:30.57% 91.6% 66.48% 6.32%}
+.fpf-102{position:absolute;inset:31.31% 92.19% 67.22% 6.91%}
+.fpf-103{position:absolute;inset:61.48% 79.72% 19.26% 6.25%}
+.fpf-104{position:absolute;inset:-0.52% -0.43%}
+.fpf-105{position:absolute;display:flex;inset:61.93% 80% 19.89% 7.15%;align-items:center;justify-content:center}
+.fpf-106{position:absolute;inset:-0.55% -0.47%}
+.fpf-107{position:absolute;inset:61.42% 93.19% 19.32% 6.25%}
+.fpf-108{position:absolute;inset:-0.52% -10.94%}
+.fpf-109{position:absolute;inset:62.1% 90.63% 29.29% 7.15%}
+.fpf-110{position:absolute;inset:-1.16% -2.73%}
+.fpf-111{position:absolute;inset:71.39% 90.63% 20% 7.15%}
+.fpf-112{position:absolute;inset:61.42% 89.86% 19.32% 10.14%}
+.fpf-113{position:absolute;inset:61.76% 88.33% 19.32% 10.14%}
+.fpf-114{position:absolute;inset:-0.13% -3.87% -0.12% -3.86%}
+.fpf-115{position:absolute;inset:57.73% 91.6% 39.32% 6.32%}
+.fpf-116{position:absolute;inset:58.47% 92.19% 40.06% 6.91%}
+.fpf-117{position:absolute;inset:81.36% 91.6% 15.68% 6.32%}
+.fpf-118{position:absolute;inset:82.1% 92.19% 16.42% 6.91%}
+.fpf-119{position:absolute;inset:46.1% 70.96% 53.9% 24.99%}
+.fpf-120{position:absolute;inset:38.86% 70.96% 53.9% 24.99%}
+.fpf-121{position:absolute;inset:-1.37% 0 0 -1.5%}
+.fpf-122{position:absolute;inset:64.97% 71.49% 35.03% 22.26%}
+.fpf-123{position:absolute;inset:54.13% 71.51% 35.03% 22.26%}
+.fpf-124{position:absolute;inset:-0.92% 0 0 -0.98%}
+.fpf-125{position:absolute;inset:6.82% 46.46% 81.59% 53.54%}
+.fpf-126{position:absolute;inset:7.5% 46.46% 81.59% 46.92%}
+.fpf-127{position:absolute;inset:0 0 -0.91% -0.92%}
+.fpf-128{position:absolute;inset:63.59% 41.44% 27.77% 53.28%}
+.fpf-129{position:absolute;inset:-1.15%}
+.fpf-130{position:absolute;inset:49.72% 32.07% 17.05% 53.06%}
+.fpf-131{position:absolute;inset:-0.3% -0.41%}
+.fpf-132{position:absolute;align-content:stretch;display:flex;gap:19px;align-items:center;left:928.5px;top:330.13px}
+.fpf-133{display:flex;height:22px;align-items:center;justify-content:center;position:relative;flex-shrink:0;width:40px}
+.fpf-134{flex:none;transform:rotate(-90deg)}
+.fpf-135{height:40px;position:relative;width:22px}
+.fpf-136{position:absolute;inset:-2.19% -3.98%}
+.fpf-137{position:absolute;height:259px;left:1089px;top:450px;width:171px}
+.fpf-138{position:absolute;inset:-0.34% -0.51%}
+.fpf-139{position:absolute;inset:25.91% 25.69% 70.23% 69.44%}
+.fpf-140{position:absolute;inset:-2.57% -1.25%}
+.fpf-141{position:absolute;inset:26.41% 28.01% 73.23% 71.76%}
+.fpf-142{position:absolute;inset:-27.34%}
+.fpf-143{position:absolute;align-content:stretch;display:flex;flex-direction:column;height:692px;align-items:flex-start;left:1353px;top:124px;width:24px}
+.fpf-144{background:#fdfcfb;border-width:1.75px;border-color:#c1bafe;border-style:solid;flex:1 0 0;min-height:1px;position:relative;width:100%}
+.fpf-145{position:absolute;display:flex;height:25px;align-items:center;justify-content:center;left:662px;top:791px;width:691px}
+.fpf-146{flex:none;transform:rotate(90deg)}
+.fpf-147{align-content:stretch;display:flex;flex-direction:column;height:691px;align-items:flex-start;position:relative;width:25px}
+.fpf-148{background:#fdfcfb;border-width:1.75px;border-color:#c7c6c4;border-style:solid;flex:1 0 0;min-height:1px;position:relative;width:100%}

@@ -6,7 +6,8 @@ import tseslint from 'typescript-eslint'
 import { defineConfig, globalIgnores } from 'eslint/config'
 
 export default defineConfig([
-  globalIgnores(['dist']),
+  // src/lib holds Figma's shader runtime + effect modules, copied verbatim from Figma.
+  globalIgnores(['dist', 'src/lib']),
   {
     files: ['**/*.{ts,tsx}'],
     extends: [

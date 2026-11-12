@@ -1,0 +1,69 @@
+/* SectionHeading — 48px .com_2027 section headline (Headline 48 text style). */
+
+.sh {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+  box-sizing: border-box;
+  font-family: inter-variable, Inter, system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+.sh--center {
+  align-items: center;
+  text-align: center;
+}
+.sh--left {
+  align-items: flex-start;
+  text-align: left;
+}
+
+.sh__title {
+  margin: 0;
+  font-size: clamp(34px, calc(3.34vw + 6px), 48px);
+  line-height: 1.1;
+  font-weight: 400;
+  letter-spacing: -0.03em;
+  font-feature-settings: "ss07" 1, "ss08" 1;
+  text-wrap: balance;
+  color: #0e0d0c;
+}
+.sh--dark .sh__title {
+  color: #fff;
+}
+
+.sh__eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 1.1;
+  font-feature-settings: "salt" 1;
+  text-transform: uppercase;
+  color: #3f3e3c;
+}
+.sh--dark .sh__eyebrow {
+  color: #dddcda;
+}
+.sh__marker {
+  display: block;
+  width: 8px;
+  height: 8px;
+  background: #6b4fff;
+}
+
+/* Figma mobile (204:14193): section headings are 36px and left-aligned */
+@media (max-width: 480px) {
+  .sh,
+  .sh--center {
+    align-items: flex-start;
+    text-align: left;
+  }
+  .sh__title {
+    font-size: 36px;
+    letter-spacing: -1.08px;
+    max-width: none !important;
+  }
+}

@@ -1,0 +1,106 @@
+/* OperatorTestimonials — Figma 204:8333 (desktop) / 214:15428 (mobile), .com_2027. */
+
+.opt {
+  display: flex;
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid #dddcda;
+  font-family: inter-variable, Inter, system-ui, sans-serif;
+  font-feature-settings: "ss07" 1, "ss08" 1;
+  -webkit-font-smoothing: antialiased;
+  color: #0e0d0c;
+}
+.opt *,
+.opt *::before,
+.opt *::after {
+  box-sizing: border-box;
+}
+
+.opt__card {
+  flex: 1 0 0;
+  min-width: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 48px;
+  padding: 32px;
+  overflow: hidden;
+  background-color: rgba(250, 249, 247, 0);
+  transition: background-color 0.3s;
+}
+.opt__card--first {
+  justify-content: flex-start;
+}
+.opt__card + .opt__card {
+  border-left: 1px solid #dddcda;
+}
+.opt__card:hover {
+  background-color: rgba(250, 249, 247, 1);
+}
+
+.opt__quote {
+  margin: 0;
+  font-size: 20px;
+  line-height: 1.4;
+  letter-spacing: -0.4px;
+}
+.opt__person {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.opt__avatar {
+  display: block;
+  flex: none;
+  width: 52px;
+  height: 52px;
+  border-radius: 26px;
+  background: #f0eeec;
+  object-fit: cover;
+}
+.opt__who {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  font-size: 18px;
+  line-height: 1.4;
+  letter-spacing: -0.36px;
+}
+.opt__role {
+  color: #3f3e3c;
+}
+
+@media (max-width: 1000px) {
+  .opt {
+    flex-direction: column;
+  }
+  .opt__card {
+    flex: none;
+  }
+  .opt__card + .opt__card {
+    border-left: 0;
+    border-top: 1px solid #dddcda;
+  }
+}
+
+/* Figma mobile 214:15428: padding 24, quote 18px, 48px avatar, 24px gap */
+@media (max-width: 480px) {
+  .opt__card {
+    gap: 24px;
+    padding: 24px;
+  }
+  .opt__quote {
+    font-size: 18px;
+    letter-spacing: -0.36px;
+  }
+  .opt__avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 24px;
+  }
+  .opt__who {
+    font-size: 16px;
+    letter-spacing: -0.32px;
+  }
+}

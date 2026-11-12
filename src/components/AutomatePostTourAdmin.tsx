@@ -1,5 +1,6 @@
 import "../utils/interVariableFont";
-import { useEffect, useRef, useState, type CSSProperties } from "react";
+import { useEffect, useRef, useState } from "react";
+import { animate, motion, useInView, useMotionValue, useReducedMotion, type TargetAndTransition } from "framer-motion";
 import "./AutomatePostTourAdmin.css";
 import iconCheck from "../assets/bento/icon-check.svg";
 import iconPlay from "../assets/bento/icon-play-triangle.svg";
@@ -18,185 +19,231 @@ const ROWS: AdminRow[] = [
   { label: "Pets", value: "Dog (1), Corgi named Biscuit", time: "7:05" },
 ];
 
-const DESIGN_WIDTH = 718;
 /** Pointer tip inside the 48x48 cursor.svg, so the tip (not the box corner) lands on target. */
 const CURSOR_TIP = { x: 16.5, y: 14.7 };
+const EZ = [0.22, 0.8, 0.24, 1] as const;
+const CSS_EASE = [0.25, 0.1, 0.25, 1] as const;
+const RING_E = [0.16, 0.84, 0.3, 1] as const;
+const MOVE = { duration: 0.6, ease: [0.65, 0, 0.35, 1] as const };
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
-interface Point {
-  x: number;
-  y: number;
-}
+type Phase = "list" | "converge" | "fade" | "emit" | "settled";
 
-/** Position of `el`'s center, in the unscaled 718-wide canvas coordinate space. */
-function centerInCanvas(el: Element | null, canvas: Element | null): Point {
-  if (!el || !canvas) return { x: 0, y: 0 };
-  const canvasRect = canvas.getBoundingClientRect();
-  const elRect = el.getBoundingClientRect();
-  const scale = canvasRect.width / DESIGN_WIDTH || 1;
-  return {
-    x: (elRect.left - canvasRect.left + elRect.width / 2) / scale,
-    y: (elRect.top - canvasRect.top + elRect.height / 2) / scale,
-  };
-}
-
-/**
- * Drives the "cards in → cursor checks each in sequence → converge → success"
- * loop. Positions are measured live off the DOM (in canvas space) so the
- * cursor and convergence always land exactly on the rendered checkboxes.
- */
-function useAdminSequence(count: number) {
-  const canvasRef = useRef<HTMLDivElement>(null);
-  const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
-  const checkboxRefs = useRef<(HTMLSpanElement | null)[]>([]);
-
-  const [entered, setEntered] = useState(false);
-  const [checked, setChecked] = useState<boolean[]>(() => Array(count).fill(false));
-  const [cursor, setCursor] = useState<{ pos: Point; visible: boolean; clickKey: number }>({
-    pos: { x: 0, y: 0 },
-    visible: false,
-    clickKey: 0,
-  });
-  const [converging, setConverging] = useState(false);
-  const [convergeOffsets, setConvergeOffsets] = useState<number[]>(() => Array(count).fill(0));
-  const [cardsGone, setCardsGone] = useState(false);
-  const [showSuccess, setShowSuccess] = useState(false);
-
-  useEffect(() => {
-    let cancelled = false;
-    const timers: ReturnType<typeof setTimeout>[] = [];
-    const after = (fn: () => void, ms: number) => {
-      timers.push(setTimeout(() => !cancelled && fn(), ms));
-    };
-
-    const run = () => {
-      setShowSuccess(false);
-      setCardsGone(false);
-      setConverging(false);
-      setChecked(Array(count).fill(false));
-      setCursor((c) => ({ ...c, visible: false }));
-      setEntered(false);
-
-      after(() => setEntered(true), 60);
-
-      after(() => {
-        const checkNext = (i: number) => {
-          const pos = centerInCanvas(checkboxRefs.current[i], canvasRef.current);
-          setCursor({ pos, visible: true, clickKey: i });
-
-          after(() => {
-            setCursor((c) => ({ ...c, clickKey: c.clickKey + 100 }));
-            setChecked((prev) => {
-              const next = [...prev];
-              next[i] = true;
-              return next;
-            });
-
-            if (i < count - 1) {
-              after(() => checkNext(i + 1), 340);
-            } else {
-              after(() => {
-                setCursor((c) => ({ ...c, visible: false }));
-
-                const centers = cardRefs.current.map((el) =>
-                  centerInCanvas(el, canvasRef.current)
-                );
-                const avgY =
-                  centers.reduce((sum, p) => sum + p.y, 0) / (centers.length || 1);
-                setConvergeOffsets(centers.map((p) => avgY - p.y));
-                setConverging(true);
-
-                after(() => {
-                  setCardsGone(true);
-                  setShowSuccess(true);
-                  after(run, 2400);
-                }, 480);
-              }, 420);
-            }
-          }, 460);
-        };
-
-        checkNext(0);
-      }, 760);
-    };
-
-    run();
-    return () => {
-      cancelled = true;
-      timers.forEach(clearTimeout);
-    };
-  }, [count]);
-
-  return {
-    canvasRef,
-    cardRefs,
-    checkboxRefs,
-    entered,
-    checked,
-    cursor,
-    converging,
-    convergeOffsets,
-    cardsGone,
-    showSuccess,
-  };
+function Ring({ size, dur, delay }: { size: number; dur: number; delay: number }) {
+  return (
+    <motion.div
+      className="apa__ring"
+      style={{ width: size, height: size, x: "-50%", y: "-50%" }}
+      initial={{ opacity: 0, scale: 0.15 }}
+      animate={{ opacity: [0, 0.45, 0], scale: 1.9 }}
+      transition={{
+        scale: { duration: dur, delay, ease: RING_E },
+        opacity: { duration: dur, delay, times: [0, 0.22, 1], ease: [RING_E, RING_E] },
+      }}
+    />
+  );
 }
 
 /**
  * AutomatePostTourAdmin — guest-card checklist preview for the "Automate
- * Post-Tour Admin" bento card. Figma: node 325:27255 (.com_2027).
+ * Post-Tour Admin" bento card. Figma: node 408:10588 (.com_2027).
  *
- * Loops: cards animate in → the cursor checks each one in sequence → the
- * checked stack converges and gives way to a success state → resets.
+ * Plays when 35% visible and replays on every re-entry: rows animate in, the cursor
+ * ticks each checkbox, the rows converge into the green success card, and two
+ * rings emit from it and fade out.
  */
 export default function AutomatePostTourAdmin() {
-  const {
-    canvasRef,
-    cardRefs,
-    checkboxRefs,
-    entered,
-    checked,
-    cursor,
-    converging,
-    convergeOffsets,
-    cardsGone,
-    showSuccess,
-  } = useAdminSequence(ROWS.length);
+  const ref = useRef<HTMLDivElement>(null);
+  const listRef = useRef<HTMLDivElement>(null);
+  const rowRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const boxRefs = useRef<(HTMLSpanElement | null)[]>([]);
+  const play = useInView(ref, { amount: 0.35 });
+  const reduce = useReducedMotion();
+  const [st, setSt] = useState<{ phase: Phase; run: number; checked: number; dy: number[] }>({
+    phase: "settled",
+    run: 0,
+    checked: 0,
+    dy: [0, 0, 0, 0],
+  });
+  const [cur, setCur] = useState({ on: false, click: false });
+  const cx = useMotionValue(0);
+  const cy = useMotionValue(0);
+
+  useEffect(() => {
+    if (!play || reduce) {
+      setCur({ on: false, click: false });
+      setSt((s) => ({ ...s, phase: "settled" }));
+      return;
+    }
+    let alive = true;
+    const ok = () => alive;
+    (async () => {
+      const vis = ref.current;
+      if (!vis) return;
+      /* 1. rows animate in, cursor parked below the card */
+      setSt((s) => ({ phase: "list", run: s.run + 1, checked: 0, dy: [0, 0, 0, 0] }));
+      cx.set(vis.clientWidth * 0.7 - CURSOR_TIP.x);
+      cy.set(vis.clientHeight + 30 - CURSOR_TIP.y);
+      await sleep(700);
+      if (!ok()) return;
+      setCur({ on: true, click: false });
+      /* 2. cursor ticks each checkbox */
+      const CE = { duration: 0.4, ease: [0.45, 0, 0.2, 1] as const };
+      for (let i = 0; i < ROWS.length; i++) {
+        const box = boxRefs.current[i];
+        if (!box) return;
+        const vr = vis.getBoundingClientRect();
+        const b = box.getBoundingClientRect();
+        animate(cx, b.left - vr.left + b.width / 2 - CURSOR_TIP.x, CE);
+        animate(cy, b.top - vr.top + b.height / 2 - CURSOR_TIP.y, CE);
+        await sleep(420);
+        if (!ok()) return;
+        setCur({ on: true, click: true });
+        await sleep(90);
+        if (!ok()) return;
+        setSt((s) => ({ ...s, checked: i + 1 }));
+        setCur({ on: true, click: false });
+        await sleep(140);
+        if (!ok()) return;
+      }
+      await sleep(350);
+      if (!ok()) return;
+      setCur({ on: false, click: false });
+      /* 3. rows converge into the success card */
+      const list = listRef.current;
+      if (!list) return;
+      const lr = list.getBoundingClientRect();
+      const mid = lr.top + lr.height / 2;
+      const dy = rowRefs.current.map((r) => {
+        if (!r) return 0;
+        const rr = r.getBoundingClientRect();
+        return mid - (rr.top + rr.height / 2);
+      });
+      setSt((s) => ({ ...s, phase: "converge", dy }));
+      await sleep(300);
+      if (!ok()) return;
+      setSt((s) => ({ ...s, phase: "fade" }));
+      /* 4. success: rings emit from the centre, then disappear */
+      await sleep(220);
+      if (!ok()) return;
+      setSt((s) => ({ ...s, phase: "emit" }));
+      await sleep(2000);
+      if (!ok()) return;
+      setSt((s) => ({ ...s, phase: "settled" }));
+    })();
+    return () => {
+      alive = false;
+    };
+  }, [play, reduce, cx, cy]);
+
+  const listShown = st.phase === "list" || st.phase === "converge";
+  const rowAnim = (i: number): TargetAndTransition => {
+    if (st.phase === "list")
+      return {
+        opacity: 1,
+        y: 0,
+        scale: 1,
+        transition: {
+          opacity: { duration: 0.4, ease: CSS_EASE, delay: i * 0.08 },
+          y: { duration: 0.55, ease: EZ, delay: i * 0.08 },
+        },
+      };
+    if (st.phase === "converge") return { opacity: 1, y: st.dy[i], scale: 0.94, transition: { y: MOVE, scale: MOVE } };
+    if (st.phase === "settled") return { opacity: 0, transition: { duration: 0 } };
+    return {
+      opacity: 0,
+      y: st.dy[i],
+      scale: 0.94,
+      transition: { y: MOVE, scale: MOVE, opacity: { duration: 0.3, ease: CSS_EASE } },
+    };
+  };
 
   return (
-    <div className="apa__wrap">
-      <div className="apa" ref={canvasRef}>
-        {!cardsGone && (
-          <div className="apa__cards">
-            {ROWS.map((row, i) => (
-              <div
-                className={
-                  "apa__card" +
-                  (entered ? " apa__card--in" : "") +
-                  (converging ? " apa__card--converge" : "")
-                }
-                style={
-                  {
-                    transitionDelay: entered && !converging ? `${i * 70}ms` : "0ms",
-                    transform: converging
-                      ? `translateY(${convergeOffsets[i]}px) scale(0.92)`
-                      : undefined,
-                  } as CSSProperties
-                }
-                ref={(el) => {
-                  cardRefs.current[i] = el;
-                }}
+    <div className="apa" ref={ref}>
+      {/* success state */}
+      <motion.div
+        className="apa__layer"
+        initial={false}
+        animate={{ opacity: listShown ? 0 : 1 }}
+        transition={{ duration: 0.45, ease: CSS_EASE }}
+      >
+        {st.phase === "emit" && (
+          <div key={st.run}>
+            <Ring size={603.5} dur={1.9} delay={0.18} />
+            <Ring size={269.7} dur={1.5} delay={0} />
+          </div>
+        )}
+        <motion.div
+          className="apa__success"
+          style={{ x: "-50%", y: "-50%" }}
+          initial={false}
+          animate={{ scale: listShown ? 0.86 : 1 }}
+          transition={{ duration: 0.8, ease: EZ }}
+        >
+          <span className="apa__success-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+              <motion.path
+                key={st.run}
+                d="M20 6L9 17L4 12"
+                stroke="white"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                initial={reduce ? false : { pathLength: 0 }}
+                animate={{ pathLength: listShown ? 0 : 1 }}
+                transition={{ duration: 0.6, delay: listShown ? 0 : 0.5, ease: CSS_EASE }}
+              />
+            </svg>
+          </span>
+          <span className="apa__success-text">
+            <span className="apa__success-title">Guest Card Updates</span>
+            <span className="apa__success-subtitle">4 fields written to Lia’s guest card</span>
+          </span>
+        </motion.div>
+      </motion.div>
+
+      {/* checklist state */}
+      <motion.div
+        className="apa__layer apa__layer--list"
+        style={{ y: listShown ? 0 : 14 }}
+        initial={false}
+        animate={{ opacity: listShown ? 1 : 0 }}
+        transition={{ duration: 0.45, ease: CSS_EASE }}
+      >
+        <div className="apa__cards" ref={listRef} key={st.run}>
+          {ROWS.map((row, i) => {
+            const on = st.checked > i;
+            return (
+              <motion.div
+                className="apa__card"
                 key={row.label}
+                ref={(el) => {
+                  rowRefs.current[i] = el;
+                }}
+                initial={{ opacity: 0, y: 14, scale: 1 }}
+                animate={rowAnim(i)}
               >
                 <div className="apa__card-left">
-                  <span
-                    className={
-                      "apa__checkbox" + (checked[i] ? " apa__checkbox--checked" : "")
-                    }
+                  <motion.span
+                    className="apa__checkbox"
                     ref={(el) => {
-                      checkboxRefs.current[i] = el;
+                      boxRefs.current[i] = el;
                     }}
+                    initial={false}
+                    animate={{
+                      backgroundColor: on ? "#6b4fff" : "#ffffff",
+                      boxShadow: on ? "inset 0 0 0 0px rgba(214,212,210,0)" : "inset 0 0 0 1px rgba(214,212,210,1)",
+                    }}
+                    transition={{ duration: 0.2 }}
                   >
-                    {checked[i] && <img key="on" src={iconCheck} alt="" />}
-                  </span>
+                    <motion.img
+                      src={iconCheck}
+                      alt=""
+                      initial={false}
+                      animate={{ opacity: on ? 1 : 0, scale: on ? 1 : 0.6 }}
+                      transition={{ opacity: { duration: 0.2 }, scale: { duration: 0.25, ease: EZ } }}
+                    />
+                  </motion.span>
                   <span className="apa__card-text">
                     <span className="apa__card-label">{row.label}</span>
                     <span className="apa__card-value">{row.value}</span>
@@ -206,45 +253,27 @@ export default function AutomatePostTourAdmin() {
                   <img className="apa__chip-icon" src={iconPlay} alt="" />
                   {row.time}
                 </span>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {cursor.visible && (
-          <>
-            <img
-              className="apa__cursor"
-              style={{
-                transform: `translate(${cursor.pos.x - CURSOR_TIP.x}px, ${
-                  cursor.pos.y - CURSOR_TIP.y
-                }px)`,
-              }}
-              src={cursorArrow}
-              alt=""
-            />
-            <span
-              className="apa__ripple"
-              key={cursor.clickKey}
-              style={{ left: cursor.pos.x, top: cursor.pos.y }}
-            />
-          </>
-        )}
-
-        {showSuccess && (
-          <div className="apa__success">
-            <span className="apa__success-icon">
-              <img src={iconCheck} alt="" />
-            </span>
-            <span className="apa__success-text">
-              <span className="apa__success-title">Guest card updated</span>
-              <span className="apa__success-subtitle">
-                Synced to EliseCRM — follow-up drafted.
-              </span>
-            </span>
-          </div>
-        )}
-      </div>
+              </motion.div>
+            );
+          })}
+        </div>
+        <motion.div
+          className="apa__cursor"
+          style={{ x: cx, y: cy }}
+          initial={false}
+          animate={{ opacity: cur.on ? 1 : 0 }}
+          transition={{ duration: 0.25 }}
+        >
+          <motion.img
+            src={cursorArrow}
+            alt=""
+            style={{ transformOrigin: `${CURSOR_TIP.x}px ${CURSOR_TIP.y}px` }}
+            initial={false}
+            animate={{ scale: cur.click ? 0.86 : 1 }}
+            transition={{ duration: 0.12 }}
+          />
+        </motion.div>
+      </motion.div>
     </div>
   );
 }

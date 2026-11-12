@@ -1,0 +1,473 @@
+/* TourHero — Tour Intelligence hero. Figma: node 421:12169, .com_2027.
+   Full-bleed: place outside any Container in Webflow. */
+
+.tih {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  background: #fdfcfb;
+  font-family: inter-variable, Inter, system-ui, sans-serif;
+  font-feature-settings: "ss07" 1, "ss08" 1;
+  -webkit-font-smoothing: antialiased;
+}
+.tih *,
+.tih *::before,
+.tih *::after {
+  box-sizing: border-box;
+}
+.tih p,
+.tih h1 {
+  margin: 0;
+}
+
+/* ---------- camera + 1440 x 880 stage ---------- */
+.tih-layer {
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+.tih-layer--chips {
+  z-index: 15;
+}
+.tih-stage {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 1440px;
+  height: 880px;
+  transform-origin: top left;
+}
+/* Figma 421:12857 — soft blob behind the copy */
+.tih-stage__text-blur {
+  position: absolute;
+  left: 353.17px;
+  top: 257.14px;
+  width: 733.33px;
+  height: 368.59px;
+  border-radius: 1000px;
+  background: #fdfcfb;
+  filter: blur(60px);
+  pointer-events: none;
+}
+
+/* ---------- floor plan ---------- */
+.tih-plan {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.tih-plan img {
+  display: block;
+  max-width: none;
+}
+/* 421:12170 — vector at (687.80, 402.69), asset inset -0.37% / -0.24% */
+.tih-plan__rug {
+  position: absolute;
+  left: 686.93px;
+  top: 401.82px;
+}
+.tih-plan__furniture {
+  position: absolute;
+  inset: 0;
+}
+/* 421:12805 "Thick" — frame at (60, 58.70), asset inset -0.35% -0.3% -0.53% */
+.tih-plan__walls {
+  position: absolute;
+  left: 56.04px;
+  top: 56.04px;
+}
+.tih-plan__windows {
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+.tih-plan__labels {
+  position: absolute;
+  inset: 0;
+}
+.tih-plan__label {
+  position: absolute;
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-weight: 500;
+  font-size: 10px;
+  line-height: normal;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: #7a7977;
+}
+.tih-plan__label--chip {
+  padding: 4px 8px;
+  background: #fdfcfb;
+}
+.tih-plan__door {
+  position: absolute;
+}
+.tih-plan__door--top {
+  left: 426.23px;
+  top: 163.95px;
+}
+.tih-plan__door--bottom {
+  left: 422.89px;
+  top: 685.13px;
+}
+.tih-plan__vignette {
+  position: absolute;
+  inset: 0;
+  box-shadow: inset 0 4px 100px 115px #fdfcfb;
+}
+.tih-plan__vignette--half {
+  opacity: 0.5;
+}
+
+/* ---------- timestamp chip (421:12851) ---------- */
+.tih-clicker {
+  position: absolute;
+  pointer-events: none;
+}
+.tih-clicker__inner {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.tih-clicker__dot {
+  position: relative;
+  display: block;
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+}
+.tih-clicker__dot-img {
+  position: relative;
+  display: block;
+  width: 32px;
+  height: 32px;
+}
+.tih-clicker__halo {
+  position: absolute;
+  inset: -5px;
+  border-radius: 999px;
+  background: rgba(107, 79, 255, 0.1);
+}
+.tih-clicker__ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 999px;
+  border: 1px solid rgba(107, 79, 255, 0.4);
+}
+.tih-clicker__chip {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 5px 10px;
+  border-radius: 4px;
+  background: #26134a;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  color: #fff;
+  font-size: 16px;
+  line-height: 1.4;
+  letter-spacing: -0.32px;
+  white-space: nowrap;
+}
+.tih-clicker__play {
+  display: block;
+  width: 8.571px;
+  height: 9.897px;
+}
+
+/* ---------- room card ---------- */
+.trc {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 14px;
+  border-radius: 6px;
+  background: #fff;
+  text-align: left;
+  box-shadow: 0 32px 40px -10px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.04),
+    0 1px 2px rgba(0, 0, 0, 0.04), 0 0 0 0.5px rgba(0, 0, 0, 0.1);
+}
+.trc__title {
+  font-size: 16px;
+  line-height: 1.2;
+  font-weight: 450;
+  letter-spacing: -0.48px;
+  color: #0e0d0c;
+}
+.trc__desc {
+  margin-top: 2px !important;
+  font-size: 14px;
+  line-height: 1.4;
+  color: #3f3e3c;
+}
+.trc__rule {
+  height: 1px;
+  background: #f0eeec;
+}
+.trc__mono {
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-weight: 500;
+  font-size: 10px;
+  line-height: 1.1;
+  text-transform: uppercase;
+  color: #7a7977;
+}
+.trc__muted {
+  color: #7a7977;
+}
+.trc__kitchen {
+  min-height: 28px;
+  display: flex;
+  align-items: center;
+}
+.trc__row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: #3f3e3c;
+}
+.trc__price {
+  position: relative;
+  transition: color 0.25s;
+}
+.trc__strike {
+  position: absolute;
+  left: -1px;
+  right: -1px;
+  top: 52%;
+  height: 1px;
+  background: currentColor;
+  transform-origin: left;
+}
+.trc__complete {
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-weight: 500;
+  font-size: 10px;
+  line-height: 1.1;
+  text-transform: uppercase;
+  color: #00b080;
+  background: #eefdf8;
+  border-radius: 3px;
+  padding: 5px 6px;
+}
+.trc__cols {
+  display: flex;
+  gap: 12px;
+}
+.trc__col-divider {
+  width: 1px;
+  align-self: stretch;
+  background: #f0eeec;
+}
+.trc__col {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+.trc__col-value {
+  height: 20px;
+  display: grid;
+  align-items: center;
+}
+.trc__skeleton,
+.trc__col-text {
+  grid-area: 1 / 1;
+}
+.trc__skeleton {
+  display: block;
+  width: 56px;
+  height: 6px;
+  border-radius: 999px;
+  background: linear-gradient(to right, #e7e5e4, #f5f5f4, #e7e5e4);
+  background-size: 300% 100%;
+}
+.trc__col-text {
+  font-size: 14px;
+  color: #3f3e3c;
+}
+.trc__score {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-bottom: 4px;
+}
+.trc__score-head {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  line-height: 1.4;
+  color: #3f3e3c;
+}
+.trc__segs {
+  display: flex;
+  gap: 2px;
+}
+.trc__seg {
+  position: relative;
+  flex: 1;
+  height: 4px;
+  border-radius: 999px;
+  background: #f0eeec;
+  overflow: hidden;
+}
+.trc__seg-fill {
+  position: absolute;
+  inset: 0;
+  background: #ffbc00;
+  transform-origin: left;
+}
+.trc__coaching {
+  height: 33px;
+  border: 1px solid #dfdbff;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 12px;
+  color: #3f3e3c;
+}
+
+/* ---------- copy (421:12858) ---------- */
+.tih-copy-wrap {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0 max(16px, env(safe-area-inset-right, 0px)) 0 max(16px, env(safe-area-inset-left, 0px));
+  pointer-events: none;
+}
+.tih-copy {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 32px;
+  width: 450px;
+  max-width: 100%;
+  text-align: center;
+  pointer-events: auto;
+}
+.tih-copy__header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  width: 100%;
+}
+.tih-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 1.1;
+  font-feature-settings: "salt" 1;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: #3f3e3c;
+}
+.tih-eyebrow__marker {
+  display: block;
+  width: 8px;
+  height: 8px;
+  background: #6b4fff;
+}
+.tih-copy__title {
+  font-size: 64px;
+  line-height: 1.1;
+  font-weight: 400;
+  letter-spacing: -1.92px;
+  color: #0e0d0c;
+}
+.tih-copy__subtitle {
+  font-size: 18px;
+  line-height: 1.4;
+  letter-spacing: -0.36px;
+  color: #3f3e3c;
+}
+.tih-copy__cta {
+  display: inline-flex;
+  padding: 12px 20px;
+  border-radius: 4px;
+  background: #6b4fff;
+  color: #fff;
+  font-size: 16px;
+  line-height: 1.4;
+  letter-spacing: -0.32px;
+  font-feature-settings: "ss07" 1;
+  text-decoration: none;
+  transition: background-color 0.2s;
+}
+.tih-copy__cta:hover {
+  background: #5a3ff0;
+}
+.tih-copy__cta:focus-visible {
+  outline: 2px solid #6b4fff;
+  outline-offset: 2px;
+}
+
+/* ---------- mobile (<768px) ---------- */
+.tih--mobile .tih-copy-wrap {
+  align-items: flex-start;
+  padding-top: 96px;
+  padding-left: max(24px, env(safe-area-inset-left, 0px));
+  padding-right: max(24px, env(safe-area-inset-right, 0px));
+}
+.tih--mobile .tih-copy__header {
+  gap: 16px;
+}
+.tih--mobile .tih-copy__title {
+  font-size: 48px;
+}
+.tih--mobile .tih-eyebrow {
+  font-size: 14px;
+}
+.tih-mobile-card {
+  position: absolute;
+  left: 0;
+  right: 0;
+  z-index: 16;
+  pointer-events: none;
+}
+.tih-mobile-vignette {
+  position: absolute;
+  inset: 0;
+  z-index: 12;
+  pointer-events: none;
+  box-shadow: inset 0 0 48px 24px #fdfcfb;
+}
+.tih-mobile-backdrop {
+  position: absolute;
+  left: 50%;
+  z-index: 12;
+  width: 150vw;
+  height: 560px;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  background: radial-gradient(
+    closest-side,
+    rgba(253, 252, 251, 0.97) 52%,
+    rgba(253, 252, 251, 0.85) 68%,
+    rgba(253, 252, 251, 0) 100%
+  );
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tih *,
+  .tih *::before,
+  .tih *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}

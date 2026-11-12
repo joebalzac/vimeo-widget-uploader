@@ -34,6 +34,7 @@
     "@webflow/data-types": "^1.2.0",
     "@webflow/react": "^1.2.0",
     "@webflow/webflow-cli": "^1.12.0",
+    "@webgpu/types": "^0.1.60",
     "eslint": "^9.39.1",
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-react-refresh": "^0.4.24",

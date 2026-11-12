@@ -8,15 +8,43 @@
   font-family: inter-variable, Inter, system-ui, sans-serif;
 }
 
+/* 430 + 12 + 276 + 12 + 430 = 1160 (Figma Bento width).
+   Row 1: Record (430) | Automate (276 + 12 + 430 = 718)
+   Row 2: Insights (430 + 12 + 276 = 718) | Coach (430) */
 .bbs__grid {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: minmax(0, 430fr) minmax(0, 276fr) minmax(0, 430fr);
+  grid-auto-rows: auto;
   gap: 12px;
   width: 100%;
 }
 
-.bbs__row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
+.bbs__record {
+  grid-column: 1 / 2;
+  grid-row: 1;
+}
+.bbs__automate {
+  grid-column: 2 / 4;
+  grid-row: 1;
+}
+.bbs__insights {
+  grid-column: 1 / 3;
+  grid-row: 2;
+}
+.bbs__coach {
+  grid-column: 3 / 4;
+  grid-row: 2;
+}
+
+@media (max-width: 1000px) {
+  .bbs__grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .bbs__record,
+  .bbs__automate,
+  .bbs__insights,
+  .bbs__coach {
+    grid-column: 1;
+    grid-row: auto;
+  }
 }

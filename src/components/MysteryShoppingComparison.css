@@ -1,0 +1,156 @@
+/* MysteryShoppingComparison — Figma node 204:8277 (.com_2027).
+   Transparent background, white text: sits inside a dark (#131115) Webflow section. */
+
+.msc {
+  width: 100%;
+  box-sizing: border-box;
+  font-family: inter-variable, Inter, system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  color: #fff;
+}
+.msc *,
+.msc *::before,
+.msc *::after {
+  box-sizing: border-box;
+}
+
+/* ---------- desktop grid (3 equal columns, 1160 / 3) ---------- */
+.msc__grid {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  overflow-x: auto;
+}
+.msc__row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  min-width: 760px;
+}
+.msc__cell {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 66px;
+  padding: 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+.msc__row:last-child .msc__cell {
+  border-bottom: 0;
+}
+.msc__row--head .msc__cell {
+  min-height: 67px;
+}
+.msc__row--tall .msc__cell {
+  min-height: 91px;
+}
+.msc__cell--label {
+  padding-left: 0;
+}
+/* Tour Intelligence column tint (Figma card/primary) */
+.msc__cell--ti {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.msc__head {
+  font-size: 22px;
+  line-height: 1.2;
+  font-weight: 450;
+  letter-spacing: -0.66px;
+  font-feature-settings: "ss07" 1, "ss08" 1;
+  white-space: nowrap;
+  color: #fff;
+}
+.msc__label {
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 1.1;
+  font-feature-settings: "salt" 1;
+  text-transform: uppercase;
+  color: #fff;
+}
+.msc__value {
+  font-size: 18px;
+  line-height: 1.4;
+  letter-spacing: -0.36px;
+  font-feature-settings: "ss07" 1;
+  color: #dddcda;
+}
+.msc__value-text {
+  flex: 1 0 0;
+  min-width: 0;
+}
+.msc__tick {
+  display: block;
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  align-self: flex-start;
+  margin-top: 2.5px;
+}
+.msc__tick--small {
+  width: 16px;
+  height: 16px;
+}
+
+/* ---------- phone: two stacked tables ---------- */
+.msc__stack {
+  display: none;
+}
+
+@media (max-width: 480px) {
+  .msc__grid {
+    display: none;
+  }
+  .msc__stack {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+  .msc__table {
+    display: flex;
+    flex-direction: column;
+  }
+  .msc__table-title {
+    margin: 0;
+    height: 57px;
+    padding: 16px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    font-size: 20px;
+    line-height: 1.2;
+    font-weight: 450;
+    letter-spacing: -0.6px;
+    color: #fff;
+  }
+  .msc__table-row {
+    display: flex;
+    align-items: center;
+    padding: 16px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  .msc__table-row--ms {
+    min-height: 63px;
+  }
+  .msc__table-row:last-child {
+    border-bottom: 0;
+  }
+  .msc__table-label {
+    width: 110px;
+    flex: none;
+    font-size: 14px;
+  }
+  .msc__table-value {
+    display: flex;
+    gap: 8px;
+    padding: 0 20px;
+    flex: 1;
+    min-width: 0;
+    font-size: 16px;
+    line-height: 1.4;
+    letter-spacing: -0.32px;
+    color: #dddcda;
+  }
+  .msc__table-value .msc__tick {
+    margin-top: 2px;
+  }
+}

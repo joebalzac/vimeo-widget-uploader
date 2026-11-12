@@ -3,7 +3,8 @@
     "name": "HubSpot Vimeo Upload",
     "components": ["./src/**/*.webflow.@(js|jsx|mjs|ts|tsx)"],
     "description": "Webpage Components ",
-    "id": "custom-webflow-components"
+    "id": "custom-webflow-components",
+    "bundleConfig": "./webpack.webflow.cjs"
   },
   "telemetry": {
     "global": {

@@ -1,5 +1,6 @@
 import "../utils/interVariableFont";
 import { useEffect, useRef, useState } from "react";
+import { animate, motion, useInView, useMotionValue, useReducedMotion, useTransform } from "framer-motion";
 import "./CoachEveryTour.css";
 import trackLine from "../assets/bento/track-line.svg";
 
@@ -18,105 +19,86 @@ const ROWS: ScoreRow[] = [
 
 /** The design's bars scale at 24.4px per point against a 366px track. */
 const MAX_POINTS = 15;
+const GROW_S = 1.8;
+const START_DELAY_MS = 350;
+const outCubic = (k: number) => 1 - Math.pow(1 - k, 3);
 
-const ROW_DELAY_MS = 90;
-const GROW_MS = 1100;
-const HOLD_MS = 1800;
+/** zero = empty, grow = animating in, rest = final values (static). */
+type Phase = "zero" | "grow" | "rest";
 
-function easeOutCubic(t: number) {
-  return 1 - (1 - t) ** 3;
-}
-
-/**
- * Drives each row's progress (0..1) so its bar fill and point counter climb
- * together and land on their final values at the same instant, then holds
- * and loops.
- */
-function useScoreReveal(rows: ScoreRow[]) {
-  const [progress, setProgress] = useState<number[]>(() => rows.map(() => 0));
-
+function CoachRow({ row, ph }: { row: ScoreRow; ph: Phase }) {
+  const mv = useMotionValue(ph === "rest" ? row.points : 0);
+  const txt = useTransform(mv, (v) => `${Math.round(v)}pts`);
   useEffect(() => {
-    const reduceMotion =
-      typeof window !== "undefined" &&
-      window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
-    const rowDelay = reduceMotion ? 0 : ROW_DELAY_MS;
-    const growMs = reduceMotion ? 1 : GROW_MS;
-
-    let raf = 0;
-    let cancelled = false;
-    let start: number | null = null;
-    let holding = false;
-    let holdStart = 0;
-
-    const tick = (t: number) => {
-      if (cancelled) return;
-      if (start === null) start = t;
-      const elapsed = t - start;
-
-      if (!holding) {
-        setProgress(
-          rows.map((_, i) => {
-            const rowElapsed = elapsed - i * rowDelay;
-            const p = Math.min(Math.max(rowElapsed / growMs, 0), 1);
-            return easeOutCubic(p);
-          })
-        );
-
-        const totalNeeded = (rows.length - 1) * rowDelay + growMs;
-        if (elapsed >= totalNeeded) {
-          holding = true;
-          holdStart = t;
-        }
-      } else if (t - holdStart >= HOLD_MS) {
-        start = null;
-        holding = false;
-        setProgress(rows.map(() => 0));
-      }
-
-      raf = requestAnimationFrame(tick);
-    };
-
-    raf = requestAnimationFrame(tick);
-    return () => {
-      cancelled = true;
-      cancelAnimationFrame(raf);
-    };
-  }, [rows]);
-
-  return progress;
+    if (ph === "zero") {
+      mv.stop();
+      mv.set(0);
+    } else if (ph === "grow") {
+      const c = animate(mv, row.points, { duration: GROW_S, ease: outCubic });
+      return () => c.stop();
+    } else if (!mv.isAnimating()) {
+      mv.set(row.points);
+    }
+  }, [ph, mv, row.points]);
+  const width = `${(row.points / MAX_POINTS) * 100}%`;
+  return (
+    <div className="cet__row">
+      <div className="cet__labels">
+        <span className="cet__label">{row.label}</span>
+        <motion.span className="cet__points">{txt}</motion.span>
+      </div>
+      <div className="cet__track">
+        <img className="cet__track-line" src={trackLine} alt="" />
+        <motion.div
+          className={`cet__bar cet__bar--${row.color}`}
+          initial={false}
+          animate={{ width: ph === "zero" ? "0%" : width }}
+          transition={ph === "grow" ? { duration: GROW_S, ease: outCubic } : { duration: 0 }}
+        />
+      </div>
+    </div>
+  );
 }
 
 /**
  * CoachEveryTour — scoring rubric preview for the "Coach Every Tour" bento
- * card. Figma: node 330:29043 (.com_2027).
+ * card. Figma: node 408:10883 (.com_2027).
  *
- * Loops: each bar fills left to right while its point total counts up, both
- * finishing together — then holds and resets.
+ * Plays when 35% visible and replays on every re-entry: after 350ms each bar
+ * grows from zero over 1.8s while its points count up over the same duration.
  */
 export default function CoachEveryTour() {
-  const progress = useScoreReveal(ROWS);
+  const ref = useRef<HTMLDivElement>(null);
+  const play = useInView(ref, { amount: 0.35 });
+  const reduce = useReducedMotion();
+  const [seq, setSeq] = useState<{ run: number; grown: boolean }>({ run: 0, grown: false });
+
+  useEffect(() => {
+    if (!play || reduce) return;
+    const t0 = setTimeout(() => setSeq((s) => ({ run: s.run + 1, grown: false })), 0);
+    const t1 = setTimeout(() => setSeq((s) => ({ ...s, grown: true })), START_DELAY_MS);
+    return () => {
+      clearTimeout(t0);
+      clearTimeout(t1);
+    };
+  }, [play, reduce]);
+
+  /* before the first play: empty; in view: zero -> grow; once played and out of view: rest */
+  const ph: Phase = reduce
+    ? "rest"
+    : play
+      ? seq.grown
+        ? "grow"
+        : "zero"
+      : seq.run > 0
+        ? "rest"
+        : "zero";
 
   return (
-    <div className="cet">
+    <div className="cet" ref={ref}>
       <div className="cet__rows">
-        {ROWS.map((row, i) => (
-          <div className="cet__row" key={row.label}>
-            <div className="cet__labels">
-              <span className="cet__label">{row.label}</span>
-              <span className="cet__points">
-                {Math.round(row.points * progress[i])}pts
-              </span>
-            </div>
-            <div className="cet__track">
-              <img className="cet__track-line" src={trackLine} alt="" />
-              <div
-                className={`cet__bar cet__bar--${row.color}`}
-                style={{
-                  width: `${(row.points / MAX_POINTS) * 100 * progress[i]}%`,
-                }}
-              />
-            </div>
-          </div>
+        {ROWS.map((row) => (
+          <CoachRow key={row.label} row={row} ph={ph} />
         ))}
       </div>
     </div>

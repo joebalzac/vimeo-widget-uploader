@@ -7,6 +7,8 @@
   flex-direction: column;
   align-items: flex-start;
   width: 100%;
+  min-width: 0;
+  height: 100%;
   box-sizing: border-box;
   overflow: hidden;
   border-radius: 12px;
@@ -41,9 +43,48 @@
   font-feature-settings: "ss07" 1, "ss08" 1;
 }
 
+.bc--wide .bc__text {
+  padding-right: 180px;
+}
+
+/* Visual area: Figma media frames sit directly under the 108px header and are 372px
+   tall (320px on phones). Media components fill this box and clip to the card. */
 .bc__media {
+  position: relative;
   width: 100%;
-  margin-top: 32px;
+  height: 372px;
+  flex: none;
+  margin-top: auto;
+  overflow: hidden;
+}
+
+@media (max-width: 1201px) {
+  .bc--wide .bc__text {
+    padding-right: 32px;
+  }
+}
+
+@media (max-width: 481px) {
+  .bc__text,
+  .bc--wide .bc__text {
+    padding: 24px 24px 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .bc {
+    border-radius: 10px;
+  }
+  .bc__text,
+  .bc--wide .bc__text {
+    padding-bottom: 24px;
+  }
+  .bc__title {
+    font-size: 20px;
+  }
+  .bc__media {
+    height: 320px;
+  }
 }
 
 .bc__border {

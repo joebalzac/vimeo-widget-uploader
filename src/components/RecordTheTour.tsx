@@ -1,5 +1,6 @@
 import "../utils/interVariableFont";
-import { useEffect, useState, type CSSProperties } from "react";
+import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type RefObject } from "react";
+import { useInView, useReducedMotion } from "framer-motion";
 import "./RecordTheTour.css";
 import chevronDown from "../assets/bento/chevron-down.svg";
 import dotsFilled from "../assets/bento/dots-filled.svg";
@@ -27,79 +28,87 @@ const CHIPS = [
   { icon: iconFileText, label: "Transcript", muted: true },
 ];
 
-/** Live-transcript lines, typed out one at a time, then looped. */
+/** Live-transcript notes, typed out one at a time. */
 const TRANSCRIPT_LINES = [
   "Loved the kitchen, worried about storage",
   "Prefers a higher floor",
 ];
 
-/** Deterministic pseudo-random 0..1, so each bar's timing is stable across renders. */
-function seeded(i: number) {
-  const x = Math.sin(i * 12.9898) * 43758.5453;
-  return x - Math.floor(x);
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+const FINAL = { a: TRANSCRIPT_LINES[0], b: TRANSCRIPT_LINES[1], at: 2 };
+
+/**
+ * Types the notes in (34ms per character, after 500ms) each time the card becomes
+ * 35% visible; replays on re-entry. Reduced motion shows the final text.
+ */
+function useTypedTranscript(play: boolean, reduce: boolean) {
+  const [t, setT] = useState(FINAL);
+  useEffect(() => {
+    if (!play || reduce) return;
+    let alive = true;
+    (async () => {
+      const [a, b] = TRANSCRIPT_LINES;
+      setT({ a: "", b: "", at: 0 });
+      await sleep(500);
+      for (let i = 0; i <= a.length; i++) {
+        if (!alive) return;
+        setT({ a: a.slice(0, i), b: "", at: 1 });
+        await sleep(34);
+      }
+      for (let i = 0; i <= b.length; i++) {
+        if (!alive) return;
+        setT({ a, b: b.slice(0, i), at: 2 });
+        await sleep(34);
+      }
+    })();
+    return () => {
+      alive = false;
+    };
+  }, [play, reduce]);
+  return play && !reduce ? t : FINAL;
 }
 
-/** Types TRANSCRIPT_LINES out one at a time, then pauses and loops. */
-function useTypedTranscript(lines: string[]) {
-  const [revealed, setRevealed] = useState<number[]>(() => lines.map(() => 0));
-  const [activeLine, setActiveLine] = useState(0);
-
-  useEffect(() => {
-    let cancelled = false;
-    const timers: ReturnType<typeof setTimeout>[] = [];
-    const after = (fn: () => void, ms: number) => {
-      timers.push(setTimeout(() => !cancelled && fn(), ms));
-    };
-
-    const run = () => {
-      setRevealed(lines.map(() => 0));
-      setActiveLine(0);
-
-      const typeLine = (lineIndex: number) => {
-        const text = lines[lineIndex];
-        const step = (charIndex: number) => {
-          if (cancelled) return;
-          setRevealed((prev) => {
-            const next = [...prev];
-            next[lineIndex] = charIndex;
-            return next;
-          });
-          if (charIndex < text.length) {
-            after(() => step(charIndex + 1), 32);
-          } else if (lineIndex < lines.length - 1) {
-            after(() => {
-              setActiveLine(lineIndex + 1);
-              typeLine(lineIndex + 1);
-            }, 500);
-          } else {
-            after(run, 2200);
-          }
-        };
-        step(0);
-      };
-      typeLine(0);
-    };
-
-    run();
+/** <=480px: width of the element (0 on wider screens), used to scale the phone down. */
+function useMobileWidth(ref: RefObject<HTMLElement | null>) {
+  const [w, setW] = useState(0);
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (!el || !window.matchMedia) return;
+    const mq = window.matchMedia("(max-width: 480px)");
+    const f = () => setW(mq.matches ? el.clientWidth : 0);
+    const ro = new ResizeObserver(f);
+    ro.observe(el);
+    f();
+    mq.addEventListener?.("change", f);
     return () => {
-      cancelled = true;
-      timers.forEach(clearTimeout);
+      ro.disconnect();
+      mq.removeEventListener?.("change", f);
     };
-  }, [lines]);
-
-  return { revealed, activeLine };
+  }, [ref]);
+  return w;
 }
 
 /**
  * RecordTheTour — recording-in-progress phone mock for the "Record The
- * Tour" bento card. Figma: node 335:1629 (.com_2027).
+ * Tour" bento card. Figma: node 408:10460 (.com_2027).
+ *
+ * Plays when 35% visible and replays on every re-entry: the notes type in, the
+ * waveform loops and the stop button pulses (both paused while off-screen).
  */
 export default function RecordTheTour() {
-  const { revealed, activeLine } = useTypedTranscript(TRANSCRIPT_LINES);
+  const ref = useRef<HTMLDivElement>(null);
+  const play = useInView(ref, { amount: 0.35 });
+  const reduce = !!useReducedMotion();
+  const t = useTypedTranscript(play, reduce);
+  const lines = [t.a, t.b];
+  const playState = play && !reduce ? "running" : "paused";
+  const mw = useMobileWidth(ref);
+  /* phone is 300px + side buttons = 306px; keep 24px side margins on phones */
+  const scale = mw ? Math.min(1, (mw - 48) / 306) : 1;
 
   return (
-    <div className="rtt__wrap">
-      <div className="rtt">
+    <div className="rtt__wrap" ref={ref}>
+      <div className="rtt" style={{ transform: `translateX(-50%) scale(${scale})` }}>
         <div className="rtt__row">
           <div className="rtt__strip rtt__strip--left">
             <div className="rtt__gradient-bar" style={{ height: 20 }} />
@@ -134,11 +143,14 @@ export default function RecordTheTour() {
               </div>
 
               <div className="rtt__transcript">
-                {TRANSCRIPT_LINES.map((line, i) => (
+                {lines.map((line, i) => (
                   <p key={i}>
-                    {line.slice(0, revealed[i])}
-                    {activeLine === i && (
-                      <span className="rtt__cursor-blink">|</span>
+                    {line}
+                    {t.at === i + 1 && (
+                      <>
+                        {i === 1 && " "}
+                        <span className="rtt__cursor-blink">|</span>
+                      </>
                     )}
                   </p>
                 ))}
@@ -154,8 +166,9 @@ export default function RecordTheTour() {
                         style={
                           {
                             height: `${h}px`,
-                            animationDuration: `${0.7 + seeded(i) * 0.6}s`,
-                            animationDelay: `${-seeded(i * 7 + 1) * 1.3}s`,
+                            animationDuration: `${(0.7 + ((i * 37) % 10) / 14).toFixed(2)}s`,
+                            animationDelay: `-${((i * 53) % 17) / 10}s`,
+                            animationPlayState: playState,
                           } as CSSProperties
                         }
                       />
@@ -164,6 +177,7 @@ export default function RecordTheTour() {
                 </div>
                 <img className="rtt__glow" src={glowEllipse} alt="" />
                 <div className="rtt__stop">
+                  <span className="rtt__stop-pulse" style={{ animationPlayState: playState }} />
                   <img src={iconStop} alt="Stop recording" />
                 </div>
               </div>

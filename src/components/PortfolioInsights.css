@@ -1,28 +1,14 @@
 /* PortfolioInsights — agent-performance table preview.
-   Figma: node 330:28635 (.com_2027). Built at the design's native 718x372
-   canvas and scaled to fit its container via container-query units. The
-   table is intentionally wider than the card (864px vs. 718px) and bleeds
-   off the right edge, matching the design. */
-
-.ppi__wrap {
-  --ppi-w: 718;
-  --ppi-h: 372;
-
-  width: 100%;
-  aspect-ratio: var(--ppi-w) / var(--ppi-h);
-  overflow: hidden;
-  position: relative;
-  container-type: inline-size;
-  background: #f6f4f2;
-}
+   Figma: node 408:10797 (.com_2027). Fills the card's media box. The table is
+   anchored 32px from the left and 30px from the bottom and is intentionally wider
+   than the card (card width + 146px, min 864px), bleeding off the right edge as
+   in the design. The KPI card stays pinned 40px from the right, 42px from the top. */
 
 .ppi {
-  position: absolute;
-  inset: 0;
-  width: calc(var(--ppi-w) * 1px);
-  height: calc(var(--ppi-h) * 1px);
-  transform: scale(calc(100cqw / (var(--ppi-w) * 1px)));
-  transform-origin: top left;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
   font-family: inter-variable, Inter, system-ui, sans-serif;
 }
 
@@ -30,7 +16,8 @@
   position: absolute;
   left: 32px;
   bottom: 30px;
-  width: 864px;
+  width: calc(100% + 146px);
+  min-width: 864px;
   height: 387px;
   display: flex;
   flex-direction: column;
@@ -39,16 +26,73 @@
   box-sizing: border-box;
   border-radius: 12px;
   background: #ffffff;
-  box-shadow:
-    0px 2px 2px rgba(0, 0, 0, 0.04),
-    0px 1px 1px rgba(0, 0, 0, 0.04),
-    0px 0px 0px rgba(0, 0, 0, 0.05);
-  -webkit-mask-image: linear-gradient(
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.04)) drop-shadow(0 1px 1px rgba(0, 0, 0, 0.04));
+}
+
+/* Figma "Blur" rectangles (408:10879-10881) */
+.ppi__blurs {
+  pointer-events: none;
+}
+.ppi__blur-a i,
+.ppi__blur-b,
+.ppi__blur-c i {
+  display: block;
+  filter: blur(32px);
+  background: linear-gradient(to bottom, #f6f4f2 60.649%, rgba(246, 244, 242, 0) 121.3%);
+}
+.ppi__blur-a,
+.ppi__blur-c {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.ppi__blur-a {
+  left: -293.23px;
+  top: -289.11px;
+  width: calc(100% + 292px);
+  height: 538.98px;
+}
+.ppi__blur-a i {
+  width: calc(100% - 44px);
+  height: 299.13px;
+  transform: rotate(-15deg);
+}
+.ppi__blur-b {
+  position: absolute;
+  left: calc(50% - 29.33px);
+  top: -169.19px;
+  width: calc(100% + 520px);
+  height: 225.13px;
+  transform: translateX(-50%);
+}
+.ppi__blur-c {
+  bottom: 0;
+  right: -234.58px;
+  width: 346.38px;
+  height: 372px;
+}
+.ppi__blur-c i {
+  width: 372px;
+  height: 346.38px;
+  transform: rotate(90deg);
+}
+
+/* 150px fade over the top of the table at every size */
+.ppi__top-fade {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 150px;
+  pointer-events: none;
+  background: linear-gradient(
     to bottom,
-    transparent 0%,
-    #000 18%
+    #f6f4f2 0%,
+    #f6f4f2 22%,
+    rgba(246, 244, 242, 0.85) 45%,
+    rgba(246, 244, 242, 0) 100%
   );
-  mask-image: linear-gradient(to bottom, transparent 0%, #000 18%);
 }
 
 .ppi__table {
@@ -140,10 +184,6 @@
   object-fit: cover;
 }
 
-.ppi__tier-icon--bronze img {
-  filter: sepia(1) saturate(6) hue-rotate(-25deg) brightness(0.65);
-}
-
 .ppi__cell-inner {
   position: relative;
   display: inline-block;
@@ -157,7 +197,7 @@
 
 .ppi__value {
   opacity: 0;
-  transition: opacity 0.3s ease 0.1s;
+  transition: opacity 0.45s ease;
 }
 
 .ppi__value--visible {
@@ -169,13 +209,19 @@
   left: 0;
   top: 50%;
   transform: translateY(-50%);
-  height: 14px;
-  border-radius: 4px;
-  background: linear-gradient(90deg, #ece9e6 25%, #f6f4f2 37%, #ece9e6 63%);
-  background-size: 400% 100%;
-  animation: ppi-shimmer 1.4s ease-in-out infinite;
+  width: 96px;
+  height: 10px;
+  border-radius: 5px;
+  background: linear-gradient(90deg, #f0eeec 25%, #e6e4e1 40%, #f0eeec 60%);
+  background-size: 300% 100%;
+  animation: ppi-shimmer 1.3s ease-in-out infinite;
   opacity: 1;
-  transition: opacity 0.25s ease;
+  transition: opacity 0.35s ease;
+  pointer-events: none;
+}
+
+.ppi__skeleton--short {
+  width: 38px;
 }
 
 .ppi__skeleton--hidden {
@@ -187,7 +233,7 @@
     background-position: 100% 0;
   }
   100% {
-    background-position: -100% 0;
+    background-position: 0 0;
   }
 }
 
@@ -208,15 +254,6 @@
     0px 2px 4px rgba(0, 0, 0, 0.04),
     0px 1px 2px rgba(0, 0, 0, 0.04),
     inset 0px 0px 0px 0.5px rgba(0, 0, 0, 0.05);
-  opacity: 0;
-  transform: translateY(10px) scale(0.94);
-  transition: opacity 0.45s cubic-bezier(0.2, 0.8, 0.2, 1),
-    transform 0.45s cubic-bezier(0.2, 0.8, 0.2, 1);
-}
-
-.ppi__kpi--visible {
-  opacity: 1;
-  transform: translateY(0) scale(1);
 }
 
 .ppi__kpi-text {
@@ -245,15 +282,57 @@
 }
 
 .ppi__kpi-ring {
+  position: relative;
+  display: block;
   width: 64px;
   height: 64px;
   flex-shrink: 0;
 }
 
+.ppi__kpi-ring img {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* covers the unfilled part of the purple arc (ring band = r 22..32 of 64) */
+.ppi__kpi-ring-cover {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  -webkit-mask-image: radial-gradient(circle closest-side, transparent 68.75%, #000 70%, #000 97%, transparent 98.5%);
+  mask-image: radial-gradient(circle closest-side, transparent 68.75%, #000 70%, #000 97%, transparent 98.5%);
+}
+
+@media (max-width: 480px) {
+  .ppi__table-card {
+    left: 24px;
+  }
+
+  .ppi__cell {
+    font-size: 14px;
+  }
+
+  .ppi__kpi {
+    top: 24px;
+    right: 24px;
+    width: 188px;
+    padding: 16px;
+  }
+
+  .ppi__kpi-value {
+    font-size: 28px;
+  }
+
+  .ppi__kpi-ring {
+    width: 48px;
+    height: 48px;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .ppi__skeleton,
-  .ppi__value,
-  .ppi__kpi {
+  .ppi__value {
     animation: none;
     transition: none;
   }
