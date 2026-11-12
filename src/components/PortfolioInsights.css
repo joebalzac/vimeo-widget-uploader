@@ -160,6 +160,7 @@
   font-weight: 500;
   line-height: 1.1;
   letter-spacing: 0;
+  font-feature-settings: "salt" 1; /* Figma Caption 12 */
   text-transform: uppercase;
   color: #7a7977;
 }
@@ -269,6 +270,7 @@
   font-size: 12px;
   font-weight: 500;
   line-height: 1.1;
+  font-feature-settings: "salt" 1; /* Figma Caption 12 */
   text-transform: uppercase;
   color: #7a7977;
 }
