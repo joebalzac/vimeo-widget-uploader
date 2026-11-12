@@ -30,6 +30,7 @@
   margin: 0;
   font-size: 22px;
   line-height: 1.2;
+  font-weight: 450; /* Figma "Headline 22" */
   letter-spacing: -0.66px;
   color: #0e0d0c;
   font-feature-settings: "ss07" 1, "ss08" 1;

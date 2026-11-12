@@ -1,5 +1,5 @@
 /* CoachEveryTour — rubric score bars preview.
-   Figma: node 330:29043 (.com_2027). */
+   Figma: node 408:10883 inside card 330:30131 (.com_2027). */
 
 .cet {
   --cet-default: #0e0d0c;
@@ -56,12 +56,12 @@
   font-variant-numeric: tabular-nums;
 }
 
+/* Figma 408:10890: a zero-height row; the 1px track line and the 8px bar are both
+   centred on it, so the bar overhangs 4px above and below without adding height. */
 .cet__track {
   position: relative;
   width: 100%;
-  height: 8px;
-  display: flex;
-  align-items: center;
+  height: 0;
 }
 
 .cet__track-line {
@@ -74,11 +74,14 @@
   display: block;
 }
 
+/* square ends (no radius); 1px card-coloured right edge as in Figma */
 .cet__bar {
-  position: relative;
-  flex-shrink: 0;
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
   height: 8px;
-  border-radius: 89px;
+  box-sizing: border-box;
   border-right: 1px solid var(--cet-card);
 }
 
