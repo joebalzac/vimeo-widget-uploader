@@ -18,7 +18,6 @@ const TI_WRAP = {
   margin: "0 auto",
   display: "flex",
   flexDirection: "column" as const,
-  gap: TI_PHONE ? 32 : 48,
 };
 
 const SAMPLE_JOBS = [
@@ -107,7 +106,7 @@ function App() {
         </div>
       </section>
 
-      <HeroVimeo vimeoId="1225976653" />
+      
       <JobListingSectionCMS
         jobs={SAMPLE_JOBS.map((job) => (
           <JobCmsItem

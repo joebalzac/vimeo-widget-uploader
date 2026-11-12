@@ -5,6 +5,7 @@
   flex-direction: column;
   gap: 20px;
   width: 100%;
+  padding-bottom: 48px; /* space to the section content below */
   box-sizing: border-box;
   font-family: inter-variable, Inter, system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -60,6 +61,9 @@
   .sh--center {
     align-items: flex-start;
     text-align: left;
+  }
+  .sh {
+    padding-bottom: 32px;
   }
   .sh__title {
     font-size: 36px;
