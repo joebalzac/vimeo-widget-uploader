@@ -1,5 +1,5 @@
 import "../utils/interVariableFont";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { animate, motion, useInView, useMotionValue, useReducedMotion, useTransform } from "framer-motion";
 import "./CoachEveryTour.css";
 import trackLine from "../assets/bento/track-line.svg";
@@ -72,6 +72,11 @@ export default function CoachEveryTour() {
   const play = useInView(ref, { amount: 0.35 });
   const reduce = useReducedMotion();
   const [seq, setSeq] = useState<{ run: number; grown: boolean }>({ run: 0, grown: false });
+  /* Server/static render shows the final scores (14 / 3 / 7 / 12). On the client the bars
+     empty before the first paint, so the grow-in still plays from zero. */
+  const [mounted, setMounted] = useState(false);
+  // eslint-disable-next-line react-hooks/set-state-in-effect
+  useLayoutEffect(() => setMounted(true), []);
 
   useEffect(() => {
     if (!play || reduce) return;
@@ -83,8 +88,8 @@ export default function CoachEveryTour() {
     };
   }, [play, reduce]);
 
-  /* before the first play: empty; in view: zero -> grow; once played and out of view: rest */
-  const ph: Phase = reduce
+  /* static render: rest; before the first play: empty; in view: zero -> grow; once played and out of view: rest */
+  const ph: Phase = reduce || !mounted
     ? "rest"
     : play
       ? seq.grown

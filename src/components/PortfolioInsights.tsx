@@ -111,12 +111,14 @@ export default function PortfolioInsights() {
   const [seqPhase, setPhase] = useState<Phase>("loading");
   /* out of view (or reduced motion): hold the finished state; in view: the running sequence */
   const phase: Phase = reduce ? "done" : !play ? (seqPhase === "kpi" ? "kpi" : "done") : seqPhase;
-  const kmv = useMotionValue(reduce ? KPI : 0);
+  /* start at the final value so static / server-rendered markup reads 88%; the sequence
+     resets it to 0 itself when it plays */
+  const kmv = useMotionValue(KPI);
   const ktxt = useTransform(kmv, (v) => String(Math.round(v)));
   /* The purple arc of kpi-ring.svg runs clockwise from 3 o'clock to 88%. This overlay
      paints the track colour over the part not yet filled, so the arc grows backwards
      from its end (counter-clockwise), as in the spec. */
-  const p = useMotionValue(reduce ? KPI : 0);
+  const p = useMotionValue(KPI);
   const cover = useTransform(p, (v) => `conic-gradient(from 90deg, #dfdbff 0 ${KPI - v}%, transparent 0)`);
 
   useEffect(() => {

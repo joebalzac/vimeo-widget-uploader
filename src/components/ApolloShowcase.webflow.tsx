@@ -14,6 +14,12 @@ export default declareComponent(ApolloShowcase, {
       defaultValue: "Ask Apollo Anything About Your Tours",
       tooltip: "Shown left of the tabs. Leave empty to right-align the tabs and use a separate Section Heading.",
     }),
+    startTab: props.Variant({
+      name: "Start Tab",
+      options: ["Leasing Agents", "Managers", "Executives"],
+      defaultValue: "Leasing Agents",
+      tooltip: "Which tab shows first. The auto-cycle continues from there.",
+    }),
     cardTitle: props.Text({ name: "Card Title", defaultValue: "Tour Preparation" }),
     cardSubtitle: props.Text({
       name: "Card Subtitle",

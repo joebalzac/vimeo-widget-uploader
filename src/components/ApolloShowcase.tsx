@@ -24,6 +24,8 @@ export interface ApolloShowcaseProps {
   heading?: string;
   cardTitle?: string;
   cardSubtitle?: string;
+  /** Tab shown first; the auto-cycle continues from there. */
+  startTab?: "Leasing Agents" | "Managers" | "Executives";
   className?: string;
 }
 
@@ -80,24 +82,24 @@ export default function ApolloShowcase({
   heading = "Ask Apollo Anything About Your Tours",
   cardTitle = "Tour Preparation",
   cardSubtitle = "Receive daily prospect brief with full context.",
+  startTab = "Leasing Agents",
   className,
 }: ApolloShowcaseProps) {
+  const first = Math.max(0, TABS.indexOf(startTab));
   const reduce = useReducedMotion();
   const stageRef = useRef<HTMLDivElement>(null);
   const tabsRef = useRef<HTMLDivElement>(null);
   const revealed = useInView(stageRef, VIEWPORT);
   const fit = useMobileWidth(stageRef);
-  const [cur, setCur] = useState(0);
+  const [cur, setCur] = useState(first);
   const [instant, setInstant] = useState(false);
-  const [vs, setVs] = useState<ViewState[]>(() => [
-    reduce ? finalState(0) : restState(0),
-    blankState(1),
-    blankState(2),
-  ]);
+  const [vs, setVs] = useState<ViewState[]>(() =>
+    VIEWS.map((_, j) => (j === first ? (reduce ? finalState(j) : restState(j)) : blankState(j)))
+  );
   const gen = useRef(0);
   const picked = useRef(false);
   const started = useRef(false);
-  const curRef = useRef(0);
+  const curRef = useRef(first);
 
   const patch = (
     i: number,
@@ -187,10 +189,10 @@ export default function ApolloShowcase({
     if (!revealed || started.current) return;
     started.current = true;
     if (reduce) {
-      setVs((a) => a.map((s, j) => (j === 0 ? finalState(0) : s)));
+      setVs((a) => a.map((s, j) => (j === first ? finalState(first) : s)));
       return;
     }
-    void cycle(0);
+    void cycle(first);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [revealed]);
 
