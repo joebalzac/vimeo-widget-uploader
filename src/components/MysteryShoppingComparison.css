@@ -19,12 +19,11 @@
   display: flex;
   flex-direction: column;
   width: 100%;
-  overflow-x: auto;
+  overflow: hidden;
 }
 .msc__row {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  min-width: 760px;
 }
 .msc__cell {
   display: flex;
