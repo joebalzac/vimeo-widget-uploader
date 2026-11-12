@@ -5,15 +5,10 @@ import { declareComponent } from "@webflow/react";
 export default declareComponent(TourHero, {
   name: "Tour Intelligence — Hero",
   description:
-    "Full-bleed hero over an animated floor plan. The plan draws in, then room cards open from their timestamps one at a time. Place outside any Container.",
+    "Full-bleed hero over an animated floor plan. The plan draws in, three timestamps pin to their rooms, then one room card at a time plays its update. Place outside any Container.",
   group: "Tour Intelligence",
 
   props: {
-    eyebrow: props.Text({
-      name: "Eyebrow",
-      defaultValue: "",
-      tooltip: "Optional mono label above the heading. The Figma design has none.",
-    }),
     heading: props.Text({ name: "Heading", defaultValue: "Tour Intelligence" }),
     subtitle: props.Text({
       name: "Subtitle",

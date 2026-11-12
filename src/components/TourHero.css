@@ -1,36 +1,49 @@
-/* TourHero — Tour Intelligence hero. Figma: node 421:12169, .com_2027.
-   Full-bleed: place outside any Container in Webflow. */
+/* TourHero — Tour Intelligence hero. Figma ".com_2027", frames "Hero2" 1–4 + "Final Illustration".
+   Full-bleed: place outside any Container in Webflow. Driven by createHeroController
+   (tour-hero/heroController.ts). The handoff's Tailwind classes are written out as plain CSS here
+   because Webflow code components render in a shadow root without Tailwind. */
 
+/* ---------- base (the handoff's global tokens, scoped to the hero) ---------- */
 .tih {
+  --gut: 16px;
   position: relative;
   overflow: hidden;
   width: 100%;
+  height: clamp(640px, 61.11vw, 1174px); /* replaced by the controller on mount */
   background: #fdfcfb;
-  font-family: inter-variable, Inter, system-ui, sans-serif;
-  font-variation-settings: "opsz" 32; /* Figma renders Inter Variable at Display optical size */
+  color: #0e0d0c;
+  font-family: inter-variable, "Inter", "Inter Variable", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
   font-feature-settings: "ss07" 1, "ss08" 1;
+  font-variation-settings: "opsz" 32;
+  line-height: normal;
   -webkit-font-smoothing: antialiased;
+}
+@media (max-width: 480px) {
+  .tih {
+    --gut: 24px;
+  }
 }
 .tih *,
 .tih *::before,
 .tih *::after {
   box-sizing: border-box;
 }
-.tih p,
-.tih h1 {
+.tih h1,
+.tih h4,
+.tih p {
   margin: 0;
 }
+.tih i {
+  font-style: normal;
+}
+.tih a:focus-visible,
+.tih button:focus-visible {
+  outline: 2px solid #6b4fff;
+  outline-offset: 3px;
+}
 
-/* ---------- camera + 1440 x 880 stage ---------- */
+/* ---------- 1440 x 880 stage layers (transform set by the controller) ---------- */
 .tih-layer {
-  position: absolute;
-  left: 0;
-  top: 0;
-}
-.tih-layer--chips {
-  z-index: 25; /* above the copy (20) so room cards — e.g. Living "Steven asked about…" — sit over the headline */
-}
-.tih-stage {
   position: absolute;
   left: 0;
   top: 0;
@@ -38,283 +51,75 @@
   height: 880px;
   transform-origin: top left;
 }
-/* ---------- floor plan ---------- */
-.tih-plan {
+.tih-layer--b {
+  z-index: 15;
+  pointer-events: none;
+}
+.tih-svg {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.tih-shade {
   position: absolute;
   inset: 0;
   pointer-events: none;
-}
-.tih-plan img {
-  display: block;
-  max-width: none;
-}
-/* Figma 512:29156 pieces: each SVG at its natural size, positioned inline (x/y) */
-.tih-plan__piece,
-.tih-plan__walls {
-  position: absolute;
-}
-.tih-plan__labels {
-  position: absolute;
-  inset: 0;
-}
-.tih-plan__label {
-  position: absolute;
-  font-family: "IBM Plex Mono", ui-monospace, monospace;
-  font-weight: 500;
-  font-size: 10px;
-  line-height: normal;
-  letter-spacing: 0.8px;
-  text-transform: uppercase;
-  white-space: nowrap;
-  color: #7a7977;
-}
-.tih-plan__vignette {
-  position: absolute;
-  inset: 0;
   box-shadow: inset 0 4px 100px 115px #fdfcfb;
 }
-.tih-plan__vignette--half {
+.tih-shade--half {
   opacity: 0.5;
 }
 
-/* ---------- timestamp chip (512:29762): pill chip on the LEFT, dot on the right ---------- */
-.tih-clicker {
+/* soft glow behind the headline (mobile only): above the plan, below the timestamps */
+.tih-glow {
+  display: none;
   position: absolute;
+  left: 50%;
+  width: 150vw;
+  height: 560px;
+  transform: translate(-50%, -50%);
+  z-index: 12;
+  pointer-events: none;
+  background: radial-gradient(closest-side, rgba(253, 252, 251, 0.97) 52%, rgba(253, 252, 251, 0.85) 68%, rgba(253, 252, 251, 0) 100%);
+}
+.tih-mcards {
+  position: absolute;
+  left: 24px;
+  right: 24px;
+  z-index: 16;
   pointer-events: none;
 }
-.tih-clicker__inner {
-  position: relative;
-  display: flex;
-  flex-direction: row-reverse;
-  align-items: center;
-  gap: 6px;
-}
-.tih-clicker__dot {
-  position: relative;
-  display: block;
-  width: 32px;
-  height: 32px;
-  flex-shrink: 0;
-}
-.tih-clicker__dot-img {
-  position: relative;
-  display: block;
-  width: 32px;
-  height: 32px;
-}
-.tih-clicker__halo {
-  position: absolute;
-  inset: -5px;
-  border-radius: 999px;
-  background: rgba(107, 79, 255, 0.1);
-}
-.tih-clicker__ring {
+.tih-mobile-vignette {
+  display: none;
   position: absolute;
   inset: 0;
-  border-radius: 999px;
-  border: 1px solid rgba(107, 79, 255, 0.4);
-}
-.tih-clicker__chip {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 5px;
-  padding: 5px 12px;
-  border-radius: 100px;
-  background: #26134a;
-  transition: background-color 0.5s;
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  color: #fff;
-  font-size: 16px;
-  line-height: 1.4;
-  letter-spacing: -0.32px;
-  white-space: nowrap;
-}
-.tih-clicker__chip--played {
-  background: #a093fd; /* Figma 512:29786: a chip whose room has already played */
-}
-.tih-clicker__play {
-  display: block;
-  width: 8.571px;
-  height: 9.897px;
+  z-index: 13;
+  pointer-events: none;
+  box-shadow: inset 0 0 48px 24px #fdfcfb;
 }
 
-/* ---------- room card ---------- */
-.trc {
-  position: absolute;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  padding: 14px;
-  border-radius: 6px;
-  background: #fff;
-  text-align: left;
-  box-shadow: 0 32px 40px -10px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.04),
-    0 1px 2px rgba(0, 0, 0, 0.04), 0 0 0 0.5px rgba(0, 0, 0, 0.1);
-}
-.trc__title {
-  font-size: 16px;
-  line-height: 1.2;
-  font-weight: 450;
-  letter-spacing: -0.48px;
-  color: #0e0d0c;
-}
-.trc__desc {
-  margin-top: 2px !important;
-  font-size: 14px;
-  line-height: 1.4;
-  color: #3f3e3c;
-}
-.trc__rule {
-  height: 1px;
-  background: #f0eeec;
-}
-.trc__mono {
-  font-family: "IBM Plex Mono", ui-monospace, monospace;
-  font-weight: 500;
-  font-size: 10px;
-  line-height: 1.1;
-  text-transform: uppercase;
-  color: #7a7977;
-}
-.trc__muted {
-  color: #7a7977;
-}
-.trc__kitchen {
-  min-height: 28px;
-  display: flex;
-  align-items: center;
-}
-.trc__row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 14px;
-  color: #3f3e3c;
-}
-.trc__price {
-  position: relative;
-  transition: color 0.25s;
-}
-.trc__strike {
-  position: absolute;
-  left: -1px;
-  right: -1px;
-  top: 52%;
-  height: 1px;
-  background: currentColor;
-  transform-origin: left;
-}
-.trc__complete {
-  font-family: "IBM Plex Mono", ui-monospace, monospace;
-  font-weight: 500;
-  font-size: 10px;
-  line-height: 1.1;
-  text-transform: uppercase;
-  color: #00b080;
-  background: #eefdf8;
-  border-radius: 3px;
-  padding: 5px 6px;
-}
-.trc__cols {
-  display: flex;
-  gap: 12px;
-}
-.trc__col-divider {
-  width: 1px;
-  align-self: stretch;
-  background: #f0eeec;
-}
-.trc__col {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-}
-.trc__col-value {
-  height: 20px;
-  display: grid;
-  align-items: center;
-}
-.trc__skeleton,
-.trc__col-text {
-  grid-area: 1 / 1;
-}
-.trc__skeleton {
-  display: block;
-  width: 56px;
-  height: 6px;
-  border-radius: 999px;
-  background: linear-gradient(to right, #e7e5e4, #f5f5f4, #e7e5e4);
-  background-size: 300% 100%;
-}
-.trc__col-text {
-  font-size: 14px;
-  color: #3f3e3c;
-}
-.trc__score {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding-bottom: 4px;
-}
-.trc__score-head {
-  display: flex;
-  justify-content: space-between;
-  font-size: 12px;
-  line-height: 1.4;
-  color: #3f3e3c;
-}
-.trc__segs {
-  display: flex;
-  gap: 2px;
-}
-.trc__seg {
-  position: relative;
-  flex: 1;
-  height: 4px;
-  border-radius: 999px;
-  background: #f0eeec;
-  overflow: hidden;
-}
-.trc__seg-fill {
-  position: absolute;
-  inset: 0;
-  background: #ffbc00;
-  transform-origin: left;
-}
-.trc__coaching {
-  height: 33px;
-  border: 1px solid #dfdbff;
-  border-radius: 4px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  font-size: 12px;
-  color: #3f3e3c;
-}
-
-/* ---------- copy (512:29755) ---------- */
+/* ---------- copy: above everything ---------- */
 .tih-copy-wrap {
   position: absolute;
-  inset: 0;
+  left: 0;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
   z-index: 20;
   display: flex;
   justify-content: center;
-  align-items: center;
-  padding: 0 max(16px, env(safe-area-inset-right, 0px)) 0 max(16px, env(safe-area-inset-left, 0px));
   pointer-events: none;
+  padding-left: max(var(--gut), env(safe-area-inset-left, 0px));
+  padding-right: max(var(--gut), env(safe-area-inset-right, 0px));
 }
 .tih-copy {
-  position: relative;
+  max-width: 547px;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 32px;
-  width: 547px;
-  max-width: 100%;
   text-align: center;
   pointer-events: auto;
 }
@@ -323,52 +128,32 @@
   flex-direction: column;
   align-items: center;
   gap: 20px;
-  width: 100%;
-}
-.tih-eyebrow {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-family: "IBM Plex Mono", ui-monospace, monospace;
-  font-weight: 500;
-  font-size: 16px;
-  line-height: 1.1;
-  font-feature-settings: "salt" 1;
-  text-transform: uppercase;
-  white-space: nowrap;
-  color: #3f3e3c;
-}
-.tih-eyebrow__marker {
-  display: block;
-  width: 8px;
-  height: 8px;
-  background: #6b4fff;
 }
 .tih-copy__title {
-  font-size: 64px;
+  font-size: clamp(42px, 4.44vw, 64px);
   line-height: 1.1;
+  letter-spacing: -0.03em;
   font-weight: 400;
-  letter-spacing: -1.92px;
   color: #0e0d0c;
+}
+.tih-br {
+  display: none;
 }
 .tih-copy__subtitle {
   font-size: 18px;
   line-height: 1.4;
-  letter-spacing: -0.36px;
+  letter-spacing: -0.02em;
   color: #3f3e3c;
 }
 .tih-copy__cta {
-  display: inline-flex;
-  padding: 12px 20px;
+  display: inline-block;
   border-radius: 4px;
   background: #6b4fff;
   color: #fff;
+  padding: 12px 20px;
   font-size: 16px;
   line-height: 1.4;
-  letter-spacing: -0.32px;
-  font-feature-settings: "ss07" 1;
   text-decoration: none;
-  transition: background-color 0.2s;
 }
 .tih-copy__cta:hover {
   background: #5a3ff0;
@@ -378,51 +163,70 @@
   outline-offset: 2px;
 }
 
-/* ---------- mobile (<768px) ---------- */
-.tih--mobile .tih-copy-wrap {
-  align-items: flex-start;
-  padding-top: 96px;
-  padding-left: max(24px, env(safe-area-inset-left, 0px));
-  padding-right: max(24px, env(safe-area-inset-right, 0px));
+@media (max-width: 767px) {
+  .tih-glow,
+  .tih-mobile-vignette {
+    display: block;
+  }
+  .tih-br {
+    display: inline;
+  }
+  .tih-copy-wrap {
+    top: 96px;
+    transform: none;
+  }
 }
-.tih--mobile .tih-copy__header {
-  gap: 16px;
+@media (max-width: 480px) {
+  .tih-copy__header {
+    gap: 16px;
+  }
+  .tih-copy__title {
+    font-size: 48px;
+  }
 }
-.tih--mobile .tih-copy__title {
-  font-size: 48px;
-}
-.tih--mobile .tih-eyebrow {
-  font-size: 14px;
-}
-.tih-mobile-card {
-  position: absolute;
-  left: 0;
-  right: 0;
-  z-index: 16;
-  pointer-events: none;
-}
-.tih-mobile-vignette {
-  position: absolute;
-  inset: 0;
-  z-index: 12;
-  pointer-events: none;
-  box-shadow: inset 0 0 48px 24px #fdfcfb;
-}
-.tih-mobile-backdrop {
-  position: absolute;
-  left: 50%;
-  z-index: 12;
-  width: 150vw;
-  height: 560px;
-  transform: translate(-50%, -50%);
-  pointer-events: none;
-  background: radial-gradient(
-    closest-side,
-    rgba(253, 252, 251, 0.97) 52%,
-    rgba(253, 252, 251, 0.85) 68%,
-    rgba(253, 252, 251, 0) 100%
-  );
-}
+
+/* ---------- hero (driven by createHeroController) ---------- */
+.hchip{position:absolute;display:flex;align-items:center;gap:6px;pointer-events:none}
+.hchip .pill{display:flex;align-items:center;gap:5px;border-radius:999px;padding:5px 12px;color:#fff;font-size:16px;line-height:1.4;letter-spacing:-.02em;-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);opacity:0;white-space:nowrap}
+.hchip .pill svg{display:block}
+.hchip .pill.night{background:#26134a}.hchip .pill.soft{background:#a093fd}
+.hchip .pt{position:relative;display:block;width:32px;height:32px;opacity:0}
+.hchip .pt svg{position:relative;display:block}
+.hchip .halo{position:absolute;inset:-4px;border-radius:50%;background:rgba(193,186,254,.22);opacity:0;transform:scale(.8);transition:opacity .5s cubic-bezier(.22,1,.36,1),transform .5s cubic-bezier(.22,1,.36,1)}
+.hchip.live .halo{opacity:0}  /* no tinted halo: the pulse ring is the only effect */
+.hchip .pulse-ring{position:absolute;inset:0;border-radius:50%;border:1.25px solid #C1BAFE;opacity:0}  /* grows by inset, so the line stays exactly the dot's 1.25px stroke */
+.h-static .hchip .pill,.h-static .hchip .pt{opacity:1}
+.hrc{position:absolute;background:#fff;border-radius:6px;padding:14px;display:flex;flex-direction:column;gap:12px;text-align:left;pointer-events:none;
+  box-shadow:0 32px 40px -10px rgba(0,0,0,.1),0 2px 4px rgba(0,0,0,.04),0 1px 2px rgba(0,0,0,.04),0 0 0 .5px rgba(0,0,0,.1)}
+.hrc h4{margin:0;font-size:16px;line-height:1.2;font-weight:450;letter-spacing:-.03em;color:#0e0d0c}
+.hrc p{margin:2px 0 0;font-size:14px;line-height:1.4;letter-spacing:-.02em;color:#3f3e3c}
+.hrc .hr{height:1px;background:#f0eeec}
+.hrc .bd{position:relative;min-height:28px}
+.hrc .row{display:flex;align-items:center;gap:8px;font-size:14px;line-height:1.4;letter-spacing:-.02em;color:#3f3e3c;min-height:28px}
+.hrc .row svg{display:block}
+.hrc .old{position:relative;transition:color .25s}
+.hrc .old i{position:absolute;left:-1px;right:-1px;top:52%;height:1px;background:currentColor;transform:scaleX(0);transform-origin:left;transition:transform .28s cubic-bezier(.65,0,.35,1)}
+.hrc .spin{display:block;width:16px;height:16px;opacity:0;transform:scale(.4);transition:opacity .35s cubic-bezier(.22,1,.36,1),transform .35s cubic-bezier(.22,1,.36,1)}
+.hrc .spin svg,.hrc .coach svg{animation:hspin .9s linear infinite;display:block}
+@keyframes hspin{to{transform:rotate(360deg)}}
+.hrc .badge{font-family:"IBM Plex Mono",ui-monospace,monospace;font-weight:500;font-size:10px;line-height:1.1;text-transform:uppercase;color:#00b080;background:#eefdf8;border-radius:3px;padding:5px 6px}
+.hrc .cols{display:flex;gap:12px}
+.hrc .cols .sep{width:1px;align-self:stretch;background:#f0eeec;display:block}
+.hrc .col{flex:1;min-width:0;display:flex;flex-direction:column}
+.hrc .k{font-family:"IBM Plex Mono",ui-monospace,monospace;font-weight:500;font-size:10px;line-height:1.1;text-transform:uppercase;color:#7a7977}
+.hrc .v{height:20px;display:grid;align-items:center}
+.hrc .v>*{grid-area:1/1}
+.hrc .sk{display:block;width:56px;height:6px;border-radius:99px;background:linear-gradient(90deg,#e6e5e3 25%,#f0eeec 45%,#e6e5e3 65%);background-size:300% 100%;animation:skel 1.2s ease-in-out infinite;transition:opacity .25s}
+@keyframes skel{0%{background-position:100% 0}100%{background-position:0 0}}
+.hrc .val{font-size:14px;line-height:1.4;letter-spacing:-.02em;color:#3f3e3c;opacity:0;transform:translateY(5px);filter:blur(3px);transition:opacity .4s cubic-bezier(.22,1,.36,1),transform .4s cubic-bezier(.22,1,.36,1),filter .4s cubic-bezier(.22,1,.36,1)}
+.hrc.p1 .sk{opacity:0}.hrc.p1 .val{opacity:1;transform:none;filter:none}
+.hrc .sc{display:flex;flex-direction:column;gap:8px;padding-bottom:4px}
+.hrc .sc .lbl{display:flex;justify-content:space-between;font-size:12px;line-height:1.4;letter-spacing:-.02em;color:#3f3e3c}
+.hrc .sc .lbl span+span{color:#7a7977}
+.hrc .segs{display:flex;gap:2px}
+.hrc .segs span{position:relative;flex:1;height:4px;border-radius:99px;background:#f0eeec;overflow:hidden}
+.hrc .segs b{position:absolute;inset:0;background:#ffbc00;transform-origin:left;transform:scaleX(0)}
+.hrc .coach{height:33px;border:1px solid #dfdbff;border-radius:4px;display:flex;align-items:center;justify-content:center;gap:8px;font-size:12px;line-height:1.4;letter-spacing:-.02em;color:#3f3e3c}
 
 @media (prefers-reduced-motion: reduce) {
   .tih *,
