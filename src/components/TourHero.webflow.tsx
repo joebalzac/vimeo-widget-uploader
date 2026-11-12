@@ -9,8 +9,12 @@ export default declareComponent(TourHero, {
   group: "Tour Intelligence",
 
   props: {
-    eyebrow: props.Text({ name: "Eyebrow", defaultValue: "Tour Intelligence" }),
-    heading: props.Text({ name: "Heading", defaultValue: "Headline" }),
+    eyebrow: props.Text({
+      name: "Eyebrow",
+      defaultValue: "",
+      tooltip: "Optional mono label above the heading. The Figma design has none.",
+    }),
+    heading: props.Text({ name: "Heading", defaultValue: "Tour Intelligence" }),
     subtitle: props.Text({
       name: "Subtitle",
       defaultValue:

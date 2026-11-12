@@ -10,6 +10,7 @@
   height: 100%;
   overflow: hidden;
   font-family: inter-variable, Inter, system-ui, sans-serif;
+  font-variation-settings: "opsz" 32; /* Figma renders Inter Variable at Display optical size */
 }
 
 .ppi__table-card {

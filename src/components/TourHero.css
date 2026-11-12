@@ -7,6 +7,7 @@
   width: 100%;
   background: #fdfcfb;
   font-family: inter-variable, Inter, system-ui, sans-serif;
+  font-variation-settings: "opsz" 32; /* Figma renders Inter Variable at Display optical size */
   font-feature-settings: "ss07" 1, "ss08" 1;
   -webkit-font-smoothing: antialiased;
 }
@@ -37,19 +38,6 @@
   height: 880px;
   transform-origin: top left;
 }
-/* Figma 421:12857 — soft blob behind the copy */
-.tih-stage__text-blur {
-  position: absolute;
-  left: 353.17px;
-  top: 257.14px;
-  width: 733.33px;
-  height: 368.59px;
-  border-radius: 1000px;
-  background: #fdfcfb;
-  filter: blur(60px);
-  pointer-events: none;
-}
-
 /* ---------- floor plan ---------- */
 .tih-plan {
   position: absolute;
@@ -60,26 +48,10 @@
   display: block;
   max-width: none;
 }
-/* 421:12170 — vector at (687.80, 402.69), asset inset -0.37% / -0.24% */
-.tih-plan__rug {
-  position: absolute;
-  left: 686.93px;
-  top: 401.82px;
-}
-.tih-plan__furniture {
-  position: absolute;
-  inset: 0;
-}
-/* 421:12805 "Thick" — frame at (60, 58.70), asset inset -0.35% -0.3% -0.53% */
+/* Figma 512:29156 pieces: each SVG at its natural size, positioned inline (x/y) */
+.tih-plan__piece,
 .tih-plan__walls {
   position: absolute;
-  left: 56.04px;
-  top: 56.04px;
-}
-.tih-plan__windows {
-  position: absolute;
-  left: 0;
-  top: 0;
 }
 .tih-plan__labels {
   position: absolute;
@@ -96,21 +68,6 @@
   white-space: nowrap;
   color: #7a7977;
 }
-.tih-plan__label--chip {
-  padding: 4px 8px;
-  background: #fdfcfb;
-}
-.tih-plan__door {
-  position: absolute;
-}
-.tih-plan__door--top {
-  left: 426.23px;
-  top: 163.95px;
-}
-.tih-plan__door--bottom {
-  left: 422.89px;
-  top: 685.13px;
-}
 .tih-plan__vignette {
   position: absolute;
   inset: 0;
@@ -120,7 +77,7 @@
   opacity: 0.5;
 }
 
-/* ---------- timestamp chip (421:12851) ---------- */
+/* ---------- timestamp chip (512:29762): pill chip on the LEFT, dot on the right ---------- */
 .tih-clicker {
   position: absolute;
   pointer-events: none;
@@ -128,8 +85,9 @@
 .tih-clicker__inner {
   position: relative;
   display: flex;
+  flex-direction: row-reverse;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
 }
 .tih-clicker__dot {
   position: relative;
@@ -161,9 +119,10 @@
   align-items: center;
   justify-content: center;
   gap: 5px;
-  padding: 5px 10px;
-  border-radius: 4px;
+  padding: 5px 12px;
+  border-radius: 100px;
   background: #26134a;
+  transition: background-color 0.5s;
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   color: #fff;
@@ -171,6 +130,9 @@
   line-height: 1.4;
   letter-spacing: -0.32px;
   white-space: nowrap;
+}
+.tih-clicker__chip--played {
+  background: #a093fd; /* Figma 512:29786: a chip whose room has already played */
 }
 .tih-clicker__play {
   display: block;
@@ -334,7 +296,7 @@
   color: #3f3e3c;
 }
 
-/* ---------- copy (421:12858) ---------- */
+/* ---------- copy (512:29755) ---------- */
 .tih-copy-wrap {
   position: absolute;
   inset: 0;
@@ -351,7 +313,7 @@
   flex-direction: column;
   align-items: center;
   gap: 32px;
-  width: 450px;
+  width: 547px;
   max-width: 100%;
   text-align: center;
   pointer-events: auto;

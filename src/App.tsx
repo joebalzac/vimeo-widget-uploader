@@ -1,5 +1,4 @@
 import "./App.css";
-import HeroVimeo from "./components/HeroVimeo";
 import BentoBoxSection from "./components/BentoBoxSection";
 import JobListingSectionCMS from "./components/JobListingSectionCMS";
 import JobCmsItem from "./components/JobCmsItem";
@@ -9,12 +8,13 @@ import SectionHeading from "./components/SectionHeading";
 import ApolloShowcase from "./components/ApolloShowcase";
 import MysteryShoppingComparison from "./components/MysteryShoppingComparison";
 import OperatorTestimonials from "./components/OperatorTestimonials";
+import TourCta from "./components/TourCta";
 
 /* Preview-only stand-ins for the Webflow Section + Container (spec "Wrap"). */
 const TI_PHONE = typeof window !== "undefined" && window.innerWidth <= 480;
 const TI_SECTION = { padding: TI_PHONE ? "48px 24px" : "120px 16px", background: "#fdfcfb" };
 const TI_WRAP = {
-  width: TI_PHONE ? "100%" : "min(80vw, 1160px)",
+  width: TI_PHONE ? "100%" : "min(100%, 1160px)",
   margin: "0 auto",
   display: "flex",
   flexDirection: "column" as const,
@@ -103,6 +103,11 @@ function App() {
         <div style={TI_WRAP}>
           <SectionHeading heading="What Operators Are Saying" maxWidth={548} />
           <OperatorTestimonials />
+        </div>
+      </section>
+      <section style={TI_SECTION}>
+        <div style={TI_WRAP}>
+          <TourCta />
         </div>
       </section>
 

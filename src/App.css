@@ -33,3 +33,7 @@ body {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
+/* preview page only: match the Webflow page (no default body margin) */
+body {
+  margin: 0;
+}

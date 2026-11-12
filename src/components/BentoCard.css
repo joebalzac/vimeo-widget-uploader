@@ -14,6 +14,7 @@
   border-radius: 12px;
   background: #f6f4f2;
   font-family: inter-variable, Inter, system-ui, sans-serif;
+  font-variation-settings: "opsz" 32; /* Figma renders Inter Variable at Display optical size */
 }
 
 .bc__text {

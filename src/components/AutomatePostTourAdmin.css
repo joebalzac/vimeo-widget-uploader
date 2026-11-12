@@ -8,6 +8,7 @@
   height: 100%;
   overflow: visible;
   font-family: inter-variable, Inter, system-ui, sans-serif;
+  font-variation-settings: "opsz" 32; /* Figma renders Inter Variable at Display optical size */
 }
 
 .apa__layer {

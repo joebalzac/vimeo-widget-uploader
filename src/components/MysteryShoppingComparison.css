@@ -5,6 +5,7 @@
   width: 100%;
   box-sizing: border-box;
   font-family: inter-variable, Inter, system-ui, sans-serif;
+  font-variation-settings: "opsz" 32; /* Figma renders Inter Variable at Display optical size */
   -webkit-font-smoothing: antialiased;
   color: #fff;
 }
@@ -135,8 +136,13 @@
   }
   .msc__table-label {
     width: 110px;
+    padding-right: 12px; /* Figma text box is 97.5px, so "TOUR COVERAGE" wraps */
     flex: none;
     font-size: 14px;
+  }
+  /* Figma 214:14785 / 214:14787: the last two Tour Intelligence rows are top-aligned */
+  .msc__table-row:not(.msc__table-row--ms):nth-child(n + 5) {
+    align-items: flex-start;
   }
   .msc__table-value {
     display: flex;
@@ -148,6 +154,10 @@
     line-height: 1.4;
     letter-spacing: -0.32px;
     color: #dddcda;
+  }
+  /* Figma mobile 214:14808 wraps naturally (no forced break before "&") */
+  .msc__br {
+    display: none;
   }
   .msc__table-value .msc__tick {
     margin-top: 2px;

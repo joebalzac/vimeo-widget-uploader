@@ -17,23 +17,24 @@ export interface TourHeroProps {
   className?: string;
 }
 
-type Place = "above" | "right" | "left";
+type Place = "above" | "below";
 
 /**
- * Timestamp chips. `dot` is the dot centre in the 1440 x 880 Figma frame (421:12169):
- * chip frames 421:12851 (2:20), 421:12865 (8:47), 421:12870 (4:17), each dot at +16,+16.
- * `place` is where the room card opens relative to the chip (16px gap).
+ * Timestamp chips, in play order. `dot` is the dot centre in the 1440 x 880 Figma frame
+ * (512:29156): chip frames 512:29785 (8:47), 512:29762 (2:20), 512:29768 (4:17), dot = the
+ * frame's right 32px. The order (Guest -> Kitchen -> Living) reproduces the Figma frame while
+ * the Kitchen card is open: Guest already played (light chip), Living still to come.
+ * `place` is where the room card opens: left-aligned with the chip, 16px above or below.
  */
 const STEPS: { k: RoomKey; time: string; dot: [number, number]; w: number; place: Place }[] = [
-  { k: "kitchen", time: "2:20", dot: [1194.84, 322.93], w: 300, place: "above" },
-  { k: "living", time: "4:17", dot: [820, 629.41], w: 280, place: "right" },
-  { k: "guest", time: "8:47", dot: [352.43, 273.14], w: 280, place: "left" },
+  { k: "guest", time: "8:47", dot: [390.06, 190.2], w: 300, place: "below" },
+  { k: "kitchen", time: "2:20", dot: [1113.66, 357.93], w: 300, place: "above" },
+  { k: "living", time: "4:17", dot: [881.54, 721.65], w: 300, place: "above" },
 ];
 
 const PLACE: Record<Place, { style: Record<string, string | number>; origin: string }> = {
-  above: { style: { right: 0, bottom: "calc(100% + 16px)" }, origin: "100% 100%" },
-  right: { style: { left: "calc(100% + 16px)", bottom: 0 }, origin: "0% 100%" },
-  left: { style: { right: "calc(100% + 16px)", top: 0 }, origin: "100% 0%" },
+  above: { style: { left: 0, bottom: "calc(100% + 16px)" }, origin: "0% 100%" },
+  below: { style: { left: 0, top: "calc(100% + 16px)" }, origin: "0% 0%" },
 };
 
 const ease = [0.22, 1, 0.36, 1] as const;
@@ -53,12 +54,13 @@ function useWidth(ref: RefObject<HTMLElement | null>) {
   return w;
 }
 
-/** Dot + dark timestamp chip (Figma 421:12851). Positioned so the dot centre sits on (x, y). */
+/** Timestamp chip + dot (Figma 512:29762). Positioned so the dot centre sits on (x, y). */
 function Clicker({
   time,
   i,
   shown,
   live,
+  played,
   x,
   y,
   scale,
@@ -68,16 +70,20 @@ function Clicker({
   i: number;
   shown: boolean;
   live: boolean;
+  played: boolean;
   x: number;
   y: number;
   scale: number;
   card?: React.ReactNode;
 }) {
   return (
-    <div className="tih-clicker" style={{ left: x, top: y, transform: `translate(${-16 * scale}px, ${-16 * scale}px)` }}>
+    <div
+      className="tih-clicker"
+      style={{ left: x, top: y, transform: `translate(calc(-100% + ${16 * scale}px), ${-16 * scale}px)` }}
+    >
       <motion.div
         className="tih-clicker__inner"
-        style={{ scale, transformOrigin: "0% 50%" }}
+        style={{ scale, transformOrigin: "100% 50%" }}
         initial={false}
         animate={shown ? "on" : "off"}
       >
@@ -103,8 +109,8 @@ function Clicker({
           <img className="tih-clicker__dot-img" src={stepperDot} alt="" />
         </motion.span>
         <motion.span
-          className="tih-clicker__chip"
-          variants={{ off: { opacity: 0, x: -6 }, on: { opacity: 1, x: 0 } }}
+          className={played ? "tih-clicker__chip tih-clicker__chip--played" : "tih-clicker__chip"}
+          variants={{ off: { opacity: 0, x: 6 }, on: { opacity: 1, x: 0 } }}
           transition={{ duration: 0.6, ease, delay: 0.1 }}
         >
           <img className="tih-clicker__play" src={playTriangle} alt="" />
@@ -117,7 +123,7 @@ function Clicker({
 }
 
 /**
- * TourHero — Tour Intelligence hero. Figma: node 421:12169 (.com_2027).
+ * TourHero — Tour Intelligence hero. Figma: node 512:29156 (.com_2027).
  *
  * The floor plan draws itself in, then one room card at a time opens from its timestamp
  * chip, plays its sequence, and closes. Replays whenever the hero re-enters the viewport.
@@ -125,8 +131,8 @@ function Clicker({
  * readable scale and a camera pans to the active room below the copy.
  */
 export default function TourHero({
-  eyebrow = "Tour Intelligence",
-  heading = "Headline",
+  eyebrow = "",
+  heading = "Tour Intelligence",
   subtitle = "Records and scores tours, automates follow-up tasks, and surfaces coaching and property insights to turn more tours into leases.",
   ctaLabel = "Get A Demo",
   ctaHref = "#",
@@ -141,6 +147,7 @@ export default function TourHero({
   const [run, setRun] = useState(0);
   const [shown, setShown] = useState([false, false, false]);
   const [active, setActive] = useState(-1);
+  const [played, setPlayed] = useState([false, false, false]);
   const [cardOn, setCardOn] = useState(false);
   const [phase, setPhase] = useState(0);
   const [copyBottom, setCopyBottom] = useState(420);
@@ -168,6 +175,7 @@ export default function TourHero({
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setRun((r) => r + 1);
     setShown([false, false, false]);
+    setPlayed([false, false, false]);
     setActive(-1);
     setCardOn(false);
     setPhase(0);
@@ -199,9 +207,12 @@ export default function TourHero({
           if (p !== null) setPhase(p);
         }
         setCardOn(false);
+        const done = i;
+        setPlayed((p) => p.map((v, j) => v || j === done));
         await sleep(500);
         if (!ok()) return;
         i = (i + 1) % STEPS.length;
+        if (i === 0) setPlayed([false, false, false]); // new loop: every chip is fresh again
       }
     })();
     return () => {
@@ -235,7 +246,6 @@ export default function TourHero({
       <motion.div className="tih-layer" initial={false} animate={{ x: OX, y: OY }} transition={cam}>
         <div className="tih-stage" style={{ transform: `scale(${S})` }}>
           <FloorPlan run={run} />
-          {!mobile && <div className="tih-stage__text-blur" />}
         </div>
       </motion.div>
 
@@ -248,6 +258,7 @@ export default function TourHero({
             i={i}
             shown={shown[i]}
             live={active === i}
+            played={played[i]}
             x={S * s.dot[0]}
             y={S * s.dot[1]}
             scale={mobile ? 0.8 : 1}

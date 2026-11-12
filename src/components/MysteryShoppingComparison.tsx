@@ -27,8 +27,8 @@ const ROWS: Row[] = [
     label: "Property Insights",
     tourIntelligence: (
       <>
-        Community Objections, Preferences,
-        <br />& Competitor Mentions
+        Community Objections, Preferences,{" "}
+        <br className="msc__br" />& Competitor Mentions
       </>
     ),
     mysteryShopping: "Limited property coverage",

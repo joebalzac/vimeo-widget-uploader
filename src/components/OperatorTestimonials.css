@@ -6,6 +6,7 @@
   box-sizing: border-box;
   border: 1px solid #dddcda;
   font-family: inter-variable, Inter, system-ui, sans-serif;
+  font-variation-settings: "opsz" 32; /* Figma renders Inter Variable at Display optical size */
   font-feature-settings: "ss07" 1, "ss08" 1;
   -webkit-font-smoothing: antialiased;
   color: #0e0d0c;
