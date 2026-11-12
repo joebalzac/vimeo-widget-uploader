@@ -94,12 +94,7 @@ function App() {
           <ApolloShowcase />
         </div>
       </section>
-      <section style={{ ...TI_SECTION, background: "#131115" }}>
-        <div style={TI_WRAP}>
-          <SectionHeading heading="Mystery Shopping With Visibility Into Every Tour" theme="dark" maxWidth={474} />
-          <MysteryShoppingComparison />
-        </div>
-      </section>
+      <MysteryShoppingComparison background="#131115" heading="Mystery Shopping With Visibility Into Every Tour" />
       <section style={TI_SECTION}>
         <div style={TI_WRAP}>
           <SectionHeading heading="What Operators Are Saying" maxWidth={548} />

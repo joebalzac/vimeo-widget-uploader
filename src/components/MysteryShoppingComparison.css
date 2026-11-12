@@ -154,3 +154,27 @@
     margin-top: 2px;
   }
 }
+
+/* ---------- section mode (paints its own dark background) ---------- */
+.msc-section {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 120px 16px;
+}
+.msc-section__wrap {
+  width: min(80vw, 1160px);
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
+}
+@media (max-width: 480px) {
+  .msc-section {
+    padding: 48px 24px;
+  }
+  .msc-section__wrap {
+    width: 100%;
+    gap: 32px;
+  }
+}
