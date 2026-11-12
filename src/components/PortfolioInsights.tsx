@@ -115,11 +115,12 @@ export default function PortfolioInsights() {
      resets it to 0 itself when it plays */
   const kmv = useMotionValue(KPI);
   const ktxt = useTransform(kmv, (v) => String(Math.round(v)));
-  /* The purple arc of kpi-ring.svg runs clockwise from 3 o'clock to 88%. This overlay
-     paints the track colour over the part not yet filled, so the arc grows backwards
-     from its end (counter-clockwise), as in the spec. */
+  /* The purple arc of kpi-ring.svg runs clockwise from 3 o'clock to 88%; the ring is turned
+     90deg in CSS so the arc starts at 6 o'clock. This overlay paints the track colour over
+     the part not yet filled, so the arc grows clockwise from the bottom: bottom -> left ->
+     top -> right. */
   const p = useMotionValue(KPI);
-  const cover = useTransform(p, (v) => `conic-gradient(from 90deg, #dfdbff 0 ${KPI - v}%, transparent 0)`);
+  const cover = useTransform(p, (v) => `conic-gradient(from 90deg, transparent 0 ${v}%, #dfdbff ${v}% ${KPI}%, transparent 0)`);
 
   useEffect(() => {
     if (!play || reduce) return;

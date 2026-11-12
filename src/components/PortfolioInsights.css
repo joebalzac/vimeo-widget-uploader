@@ -290,6 +290,7 @@
   width: 64px;
   height: 64px;
   flex-shrink: 0;
+  transform: rotate(90deg); /* arc starts at the bottom (6 o'clock) and fills clockwise */
 }
 
 .ppi__kpi-ring img {
