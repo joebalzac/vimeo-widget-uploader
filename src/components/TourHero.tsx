@@ -41,14 +41,25 @@ const ease = [0.22, 1, 0.36, 1] as const;
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 const clamp = (v: number, a: number, b: number) => Math.min(Math.max(v, a), b);
 
+/**
+ * Width of the hero element. Starts at 1440 on BOTH the server and the client so hydration
+ * matches Webflow's server render (React does not patch mismatched attributes when hydrating,
+ * which left the hero sized for 1440 until the window was resized). The real width is then
+ * measured before the first paint and on every resize; a 0px reading (host not laid out yet)
+ * is ignored until the ResizeObserver reports a real size.
+ */
 function useWidth(ref: RefObject<HTMLElement | null>) {
-  const [w, setW] = useState(typeof window !== "undefined" ? window.innerWidth : 1440);
+  const [w, setW] = useState(1440);
   useLayoutEffect(() => {
     const el = ref.current;
     if (!el) return;
-    const ro = new ResizeObserver(() => setW(el.clientWidth));
+    const measure = () => {
+      const cw = el.clientWidth;
+      if (cw > 0) setW(cw);
+    };
+    const ro = new ResizeObserver(measure);
     ro.observe(el);
-    setW(el.clientWidth);
+    measure();
     return () => ro.disconnect();
   }, [ref]);
   return w;
