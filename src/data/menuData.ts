@@ -264,12 +264,14 @@ export const menuData: Record<string, MegaMenuData> = {
             },
             {
               title: "Patient Intake",
-              description: "Collect patient forms, verify coverage, and prepare every chart before the visit",
+              description:
+                "Collect patient forms, verify coverage, and prepare every chart before the visit",
               href: "/health/patient-intake",
             },
             {
               title: "Referrals",
-              description: "Capture every incoming referral and convert it into a booked appointment, automatically",
+              description:
+                "Capture every incoming referral and convert it into a booked appointment, automatically",
               href: "/health/referrals",
             },
           ],
@@ -365,6 +367,12 @@ export const menuData: Record<string, MegaMenuData> = {
               description:
                 "Real talk with leaders building the future of multifamily",
               href: "/podcast",
+            },
+            {
+              title: "Job Board",
+              description:
+                "Discover specialized roles in Centralization, AI-enablement, and Technology",
+              href: "/job-board",
             },
           ],
         ],
