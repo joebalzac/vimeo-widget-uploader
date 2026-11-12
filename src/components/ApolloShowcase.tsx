@@ -8,18 +8,7 @@ import {
 } from "react";
 import { motion, useInView, useReducedMotion } from "framer-motion";
 import "./ApolloShowcase.css";
-import { ShaderEffect } from "../lib/custom-effect-runtime/index";
-import {
-  setup as setupWarp,
-  render as renderWarp,
-  manifest as manifestWarp,
-} from "../lib/custom-effects/CodeComponentId_fdd6f30d1b1fbc1dfd5498281275c43a1fad247c_8369";
-import {
-  setup as setupColorAdjust,
-  render as renderColorAdjust,
-  manifest as manifestColorAdjust,
-} from "../lib/custom-effects/CodeComponentId_dd018d6f50bd3341bd526cc999faf775abd74611_8341";
-import gradientHalo from "../assets/apollo/gradient-halo.svg";
+import cardBg from "../assets/apollo/card-bg.jpg";
 import { PhoneView, WindowView } from "./apollo/ApolloViews";
 import {
   VIEWS,
@@ -47,42 +36,6 @@ const VIEWPORT = {
   margin: "0px 0px -6% 0px",
 } as const;
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
-
-/* Figma shader stack on "Gradient-halo-5" (335:2605): Warp, then Color adjust. */
-const HALO_SHADERS = [
-  {
-    setup: setupWarp,
-    render: renderWarp,
-    params: {
-      warpMode: 5,
-      centerPoint: { x: 26.040639877319336, y: 52.174381256103516 },
-      warpScale: 1.149999976158142,
-      amplitude: 7.599999904632568,
-    },
-    manifest: manifestWarp,
-  },
-  {
-    setup: setupColorAdjust,
-    render: renderColorAdjust,
-    params: {
-      tint: -40,
-      blackPoint: -65,
-      highlights: 0,
-      whitePoint: 0,
-      gamma: 100,
-      shadows: 0,
-      exposure: 8,
-      definition: 0,
-      saturation: 0,
-      brilliance: 0,
-      contrast: 0,
-      vibrance: -40,
-      colorFilter: { r: 1, g: 1, b: 1, a: 1 },
-      temperature: 0,
-    },
-    manifest: manifestColorAdjust,
-  },
-];
 
 const reveal = {
   initial: { opacity: 0, y: 18 },
@@ -305,18 +258,8 @@ export default function ApolloShowcase({
 
       <motion.div className="apl__card" {...reveal}>
         <div ref={stageRef} className="apl__probe" />
-        {/* Figma 335:2605: gradient halo through the Warp + Color adjust shader stack */}
-        <div className="apl__halo" aria-hidden="true">
-          <div className="apl__halo-rot">
-            <ShaderEffect className="apl__halo-canvas" shaders={HALO_SHADERS}>
-              <div className="apl__halo-canvas">
-                <div className="apl__halo-img">
-                  <img src={gradientHalo} alt="" />
-                </div>
-              </div>
-            </ShaderEffect>
-          </div>
-        </div>
+        {/* Figma 426:3466 "image 1": 1212x693 blurred gradient, centred, 60% opacity */}
+        <img className="apl__bg" src={cardBg} alt="" aria-hidden="true" />
         <div className="apl__card-head">
           <p className="apl__card-title">{cardTitle}</p>
           <p className="apl__card-subtitle">{cardSubtitle}</p>
