@@ -9,6 +9,8 @@ export interface TourHeroProps {
   subtitle?: string;
   ctaLabel?: string;
   ctaHref?: string;
+  /** HTML id on the hero <section>, for anchor links (e.g. #tour-hero). */
+  id?: string;
   className?: string;
 }
 
@@ -28,6 +30,7 @@ export default function TourHero({
   subtitle = "Records and scores tours, automates follow-up tasks, and surfaces coaching and property insights to turn more tours into leases.",
   ctaLabel = "Get A Demo",
   ctaHref = "#",
+  id,
   className,
 }: TourHeroProps) {
   const root = useRef<HTMLElement>(null);
@@ -50,7 +53,7 @@ export default function TourHero({
     );
 
   return (
-    <section ref={root} className={["tih", className].filter(Boolean).join(" ")} aria-label={heading}>
+    <section ref={root} id={id || undefined} className={["tih", className].filter(Boolean).join(" ")} aria-label={heading}>
       {/* layer A: the plan (scaled 1440 x 880 stage) */}
       <div data-layer-a className="tih-layer">
         <svg data-det viewBox="0 0 1440 880" className="tih-svg" fill="none" strokeWidth="1.25" dangerouslySetInnerHTML={{ __html: DETAIL_SVG }} />

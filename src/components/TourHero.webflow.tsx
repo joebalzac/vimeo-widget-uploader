@@ -17,5 +17,9 @@ export default declareComponent(TourHero, {
     }),
     ctaLabel: props.Text({ name: "CTA Label", defaultValue: "Get A Demo" }),
     ctaHref: props.Text({ name: "CTA URL", defaultValue: "#" }),
+    id: props.Id({
+      name: "ID",
+      tooltip: "HTML id for the hero section, e.g. tour-hero, so links like #tour-hero jump here.",
+    }),
   },
 });
