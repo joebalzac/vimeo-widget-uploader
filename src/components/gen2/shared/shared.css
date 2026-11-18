@@ -1,0 +1,153 @@
+/* Gen2 shared primitives: chips, phone frame, NEW tag, button. */
+
+/* ── Chips (handoff 02-hero) ─────────────────────────────── */
+.g2-chipwrap {
+  display: inline-flex;
+  position: relative;
+}
+.g2-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 22px;
+  padding: 0 6px;
+  border-radius: 3px;
+  box-sizing: border-box;
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 1;
+  font-feature-settings: "salt" 1;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.g2-chip--sm {
+  height: 18px;
+  font-size: 10px;
+  padding: 0 5px;
+}
+.g2-chip--blue { background: #f4faff; color: #1475e8; }
+.g2-chip--green { background: #eefdf8; color: #00b080; }
+.g2-chip--neutral { background: #f6f4f2; color: #0e0d0c; }
+.g2-chip--pink { background: #fef0fa; color: #d42aaf; }
+.g2-chip--sky { background: #e5f2ff; color: #1475e8; }
+.g2-chip--purple { background: #f2f0ff; color: #6b4fff; }
+.g2-chip--orange { background: #fff3eb; color: #e0561a; }
+
+.g2-spin {
+  flex: none;
+  animation: g2-spin 0.9s linear infinite;
+}
+@keyframes g2-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ── Phone frame ─────────────────────────────────────────── */
+.g2-phone-box {
+  position: relative;
+  flex: none;
+}
+.g2-phone {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 360px;
+  transform-origin: 0 0;
+  box-sizing: border-box;
+  padding: 8px;
+  border-radius: 52px;
+  background: #1c1b1a;
+  box-shadow: 0 30px 60px -20px rgba(14, 13, 12, 0.35), inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+.g2-phone__screen {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border-radius: 44px;
+  background: #fff;
+}
+.g2-phone__notch {
+  position: absolute;
+  z-index: 5;
+  top: 10px;
+  left: 50%;
+  width: 96px;
+  height: 28px;
+  margin-left: -48px;
+  border-radius: 20px;
+  background: #0e0d0c;
+}
+
+/* ── NEW tag with travelling border beam ─────────────────── */
+@property --g2-beam {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+.g2-new {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  height: 25px;
+  padding: 0 8px;
+  border-radius: 3px;
+  box-sizing: border-box;
+  border: 1px solid #dddcda;
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 1;
+  font-feature-settings: "salt" 1;
+  color: #6b4fff;
+  vertical-align: middle;
+}
+.g2-new__beam {
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: conic-gradient(
+    from var(--g2-beam),
+    transparent 0deg,
+    #c1bafe 30deg,
+    #c1bafe 60deg,
+    #99ceff 90deg,
+    transparent 91deg 360deg
+  );
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+  animation: g2-beam 2.8s linear infinite;
+  pointer-events: none;
+}
+@keyframes g2-beam {
+  to { --g2-beam: 360deg; }
+}
+
+/* ── Primary button ──────────────────────────────────────── */
+.g2-btn {
+  display: inline-flex;
+  align-items: center;
+  padding: 12px 20px;
+  border-radius: 4px;
+  background: #6b4fff;
+  color: #fff;
+  font-family: inter-variable, Inter, system-ui, sans-serif;
+  font-size: 16px;
+  line-height: 1.4;
+  letter-spacing: -0.32px;
+  font-feature-settings: "ss07" 1;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background-color 0.2s, transform 0.15s;
+}
+.g2-btn:hover { background: #5a3ff0; }
+.g2-btn:active { transform: scale(0.98); }
+
+@media (prefers-reduced-motion: reduce) {
+  .g2-spin,
+  .g2-new__beam {
+    animation: none;
+  }
+}

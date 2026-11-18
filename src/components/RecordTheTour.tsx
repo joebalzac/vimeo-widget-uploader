@@ -23,7 +23,7 @@ const WAVEFORM: number[] = [
 
 const CHIPS = [
   { icon: iconCalendar, label: "12:00 PM" },
-  { icon: iconUser, label: "Steven" },
+  { icon: iconUser, label: "Lia" },
   { icon: iconBulb, label: "Tips" },
   { icon: iconFileText, label: "Transcript", muted: true },
 ];

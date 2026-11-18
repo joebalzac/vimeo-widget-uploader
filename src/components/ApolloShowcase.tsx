@@ -6,7 +6,7 @@ import {
   useState,
   type RefObject,
 } from "react";
-import { motion, useInView, useReducedMotion } from "framer-motion";
+import { AnimatePresence, motion, useInView, useReducedMotion } from "framer-motion";
 import "./ApolloShowcase.css";
 import cardBg from "../assets/apollo/card-bg.jpg";
 import { PhoneView, WindowView } from "./apollo/ApolloViews";
@@ -22,16 +22,27 @@ import {
 export interface ApolloShowcaseProps {
   /** Heading shown left of the tabs. Leave empty to use a separate SectionHeading. */
   heading?: string;
-  cardTitle?: string;
-  cardSubtitle?: string;
+  /** Card title + subtitle per tab, in TABS order (Leasing Agents, Managers, Executives). */
+  cardCopy?: { title: string; subtitle: string }[];
   /** Tab shown first; the auto-cycle continues from there. */
   startTab?: "Leasing Agents" | "Managers" | "Executives";
   className?: string;
 }
 
 const TABS = ["Leasing Agents", "Managers", "Executives"];
+
+export const DEFAULT_CARD_COPY = [
+  { title: "Tour Preparation", subtitle: "Get a pre-tour brief on every prospect" },
+  { title: "Team Training", subtitle: "Identify areas for improvement and craft a coaching plan" },
+  {
+    title: "Portfolio Insights",
+    subtitle: "Find your portfolio's top objections and see which agents turn them into applications.",
+  },
+];
 const CSS_EASE = [0.25, 0.1, 0.25, 1] as const;
 const EZ = [0.22, 0.8, 0.24, 1] as const;
+/** ease-in-out for the card copy cross-fade */
+const FADE_EASE = [0.45, 0, 0.55, 1] as const;
 const VIEWPORT = {
   once: true,
   amount: 0.18,
@@ -80,8 +91,7 @@ function useMobileWidth(ref: RefObject<HTMLElement | null>) {
  */
 export default function ApolloShowcase({
   heading = "Ask Apollo Anything About Your Tours",
-  cardTitle = "Tour Preparation",
-  cardSubtitle = "Receive daily prospect brief with full context.",
+  cardCopy = DEFAULT_CARD_COPY,
   startTab = "Leasing Agents",
   className,
 }: ApolloShowcaseProps) {
@@ -262,10 +272,19 @@ export default function ApolloShowcase({
         <div ref={stageRef} className="apl__probe" />
         {/* Figma 426:3466 "image 1": 1212x693 blurred gradient, centred, 60% opacity */}
         <img className="apl__bg" src={cardBg} alt="" aria-hidden="true" />
-        <div className="apl__card-head">
-          <p className="apl__card-title">{cardTitle}</p>
-          <p className="apl__card-subtitle">{cardSubtitle}</p>
-        </div>
+        {/* Copy follows the tab: the old text eases out, then the new text eases in. */}
+        <AnimatePresence mode="wait" initial={false}>
+          <motion.div
+            key={cur}
+            className="apl__card-head"
+            initial={reduce ? false : { opacity: 0 }}
+            animate={{ opacity: 1, transition: { duration: 0.5, ease: FADE_EASE } }}
+            exit={reduce ? undefined : { opacity: 0, transition: { duration: 0.3, ease: FADE_EASE } }}
+          >
+            <p className="apl__card-title">{(cardCopy[cur] ?? DEFAULT_CARD_COPY[cur]).title}</p>
+            <p className="apl__card-subtitle">{(cardCopy[cur] ?? DEFAULT_CARD_COPY[cur]).subtitle}</p>
+          </motion.div>
+        </AnimatePresence>
         <div className="apl__views">
           {VIEWS.map((v, i) => {
             const on = i === cur;

@@ -1,0 +1,425 @@
+/* AI-Guided Touring visual — 660×460 card space, phone drawn 1:1 from Figma 636:54096 /
+   636:55403. Screen children are positioned in the screen's padding box (290.36 wide,
+   card x 184.8, y 45.1). Prefix: g2v-aigt- */
+.g2v-aigt {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  font-family: inter-variable, Inter, system-ui, sans-serif;
+  font-variation-settings: "opsz" 32;
+  font-feature-settings: "ss07" 1, "ss08" 1;
+  -webkit-font-smoothing: antialiased;
+  color: #0e0d0c;
+}
+.g2v-aigt p {
+  margin: 0;
+}
+.g2v-aigt img {
+  display: block;
+  max-width: none;
+}
+
+/* ── Phone frame ───────────────────────────────────────── */
+.g2v-aigt-btn {
+  position: absolute;
+  width: 4.04px;
+  background: #1f1e1c;
+}
+.g2v-aigt-btn--l1,
+.g2v-aigt-btn--l2,
+.g2v-aigt-btn--l3 {
+  left: 175.71px;
+  border-radius: 2.02px 0 0 2.02px;
+}
+.g2v-aigt-btn--l1 { top: 166.13px; height: 20.19px; }
+.g2v-aigt-btn--l2 { top: 196.41px; height: 36.34px; }
+.g2v-aigt-btn--l3 { top: 242.85px; height: 36.34px; }
+.g2v-aigt-btn--r {
+  left: 480.25px;
+  top: 235.25px;
+  height: 60.5px;
+  border-radius: 0 2.02px 2.02px 0;
+}
+.g2v-aigt-body {
+  position: absolute;
+  left: 179.75px;
+  top: 40px;
+  width: 300.5px;
+  height: 643.84px;
+  box-sizing: border-box;
+  padding: 4.04px;
+  border-radius: 44.42px;
+  background: #3f3e3c;
+}
+.g2v-aigt-screen {
+  position: relative;
+  width: 292.42px;
+  height: 635.76px;
+  box-sizing: border-box;
+  overflow: hidden;
+  border: 1.031px solid #dddcda;
+  border-radius: 41.23px;
+  background: #fff;
+}
+.g2v-aigt-island {
+  position: absolute;
+  z-index: 6;
+  top: 8.25px;
+  left: 50%;
+  width: 98.96px;
+  height: 28.86px;
+  margin-left: -49.48px;
+  border-radius: 999px;
+  background: #0e0d0c;
+}
+
+/* ── App (content box at y 49.48) ──────────────────────── */
+.g2v-aigt-app {
+  position: absolute;
+  left: 0;
+  top: 49.48px;
+  width: 290.36px;
+  height: 631.27px;
+  overflow: hidden;
+  background: #ff5a5a;
+}
+.g2v-aigt-map {
+  position: absolute;
+  left: 0;
+  top: -60.48px;
+  width: 444.4px;
+  height: 296.26px;
+}
+.g2v-aigt-head {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 45.43px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  padding: 0 17.14px 12px;
+  border-bottom: 0.764px solid #e6e5e3;
+  background: #fff;
+}
+.g2v-aigt-head__text {
+  flex: 1 0 0;
+  line-height: 1.4;
+}
+.g2v-aigt-head__name {
+  font-size: 13.714px;
+  letter-spacing: -0.2743px;
+}
+.g2v-aigt-head__sub {
+  font-size: 10.286px;
+  letter-spacing: -0.2057px;
+  color: #3f3e3c;
+}
+.g2v-aigt-head__apply {
+  padding: 5.14px 10.29px;
+  border: 0.857px solid #dfdbff;
+  border-radius: 2.57px;
+  font-size: 12px;
+  line-height: 1.4;
+  letter-spacing: -0.24px;
+  color: #6b4fff;
+}
+
+.g2v-aigt-maparea {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 45.43px;
+  height: 135.7px;
+}
+.g2v-aigt-floor {
+  position: absolute;
+  left: 17.14px;
+  top: 17.14px;
+  display: flex;
+  align-items: center;
+  gap: 3.43px;
+  padding: 3.43px 3.43px 3.43px 10.29px;
+  border-radius: 2.57px;
+  background: rgba(0, 0, 0, 0.45);
+  -webkit-backdrop-filter: blur(8.57px);
+  backdrop-filter: blur(8.57px);
+  box-shadow: 0 10.29px 10.29px -10.29px rgba(0, 0, 0, 0.5);
+  color: #fff;
+  font-size: 12px;
+  line-height: 1.4;
+  letter-spacing: -0.24px;
+}
+.g2v-aigt-floor__items {
+  display: flex;
+  align-items: center;
+  gap: 1.53px;
+}
+.g2v-aigt-floor__item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.71px;
+  height: 20.18px;
+  box-sizing: border-box;
+  padding: 6px;
+  font-size: 10.7px;
+  letter-spacing: -0.214px;
+  font-feature-settings: "ss07" 1;
+}
+
+/* Map pin: 27.43 frame, shape inset 8.33%/16.67%, Plex Mono number. */
+.g2v-aigt-pin {
+  position: relative;
+  flex: none;
+  display: block;
+  width: 27.43px;
+  height: 27.43px;
+}
+.g2v-aigt-pin__shape {
+  position: absolute;
+  left: 4.57px;
+  top: 2.29px;
+}
+.g2v-aigt-pin__n {
+  position: absolute;
+  left: 50%;
+  top: calc(50% - 1.64px);
+  transform: translate(-50%, -50%);
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 10.29px;
+  font-weight: 500;
+  line-height: 1;
+  font-feature-settings: "salt" 1;
+  color: #fff;
+}
+.g2v-aigt-maparea__pin1 {
+  position: absolute;
+  left: 151.17px;
+  top: 62.02px;
+  opacity: 0.45;
+}
+.g2v-aigt-maparea__pin2 {
+  position: absolute;
+  left: 245.78px;
+  top: 28.52px;
+}
+
+.g2v-aigt-blank {
+  position: absolute;
+  left: 0;
+  right: 0;
+  box-sizing: border-box;
+  background: #fff;
+  display: flex;
+  justify-content: center;
+}
+.g2v-aigt-blank--cta {
+  top: 541.97px;
+  padding: 0 18.34px 18.34px;
+}
+.g2v-aigt-cta {
+  flex: 1;
+  padding: 8.57px 0;
+  border-radius: 3.43px;
+  background: #6b4fff;
+  color: #fff;
+  text-align: center;
+  font-size: 12.23px;
+  line-height: 1.4;
+  letter-spacing: -0.2445px;
+}
+.g2v-aigt-blank--home {
+  top: 594.59px;
+  padding: 18.34px 0;
+}
+
+/* ── Sheets ────────────────────────────────────────────── */
+.g2v-aigt-handle {
+  display: block;
+  flex: none;
+  width: 40.36px;
+  height: 2.57px;
+  border-radius: 85.7px;
+  background: #dddcda;
+}
+.g2v-aigt-handle--abs {
+  position: absolute;
+  z-index: 2;
+  left: 124.68px;
+  top: 10.28px;
+}
+.g2v-aigt-h {
+  font-size: 13.714px;
+  line-height: 1.4;
+  letter-spacing: -0.2743px;
+}
+
+.g2v-aigt-welcome {
+  position: absolute;
+  z-index: 1;
+  left: 0;
+  width: 290.57px;
+  height: 360.86px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 10.29px 17.14px 17.14px;
+  border-radius: 10.29px 10.29px 0 0;
+  background: #fff;
+}
+.g2v-aigt-welcome__group {
+  display: flex;
+  flex-direction: column;
+  gap: 6.86px;
+  width: 100%;
+}
+.g2v-aigt-code {
+  padding: 10.29px;
+  border: 0.857px solid #dfdbff;
+  border-radius: 3.43px;
+  background: #f2f0ff;
+  font-size: 12px;
+  line-height: 1.4;
+  letter-spacing: -0.24px;
+}
+.g2v-aigt-code__num { color: #000; }
+.g2v-aigt-code__hint { color: #3a3a3b; }
+
+.g2v-aigt-itin {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: 100%;
+}
+.g2v-aigt-itin__list {
+  display: flex;
+  flex-direction: column;
+  gap: 9.17px;
+}
+.g2v-aigt-itin__row {
+  display: flex;
+  align-items: center;
+  gap: 12.23px;
+}
+.g2v-aigt-itin__row > div {
+  flex: 1 0 0;
+  height: 32.09px;
+  line-height: 1.4;
+}
+.g2v-aigt-itin__title {
+  font-size: 12px;
+  letter-spacing: -0.24px;
+}
+.g2v-aigt-itin__sub {
+  font-size: 10.286px;
+  letter-spacing: -0.2057px;
+  color: #3f3e3c;
+}
+/* The (invisible) divider between itinerary rows still takes a 9.17 gap. */
+.g2v-aigt-itin__row + .g2v-aigt-itin__row {
+  margin-top: 9.17px;
+}
+
+.g2v-aigt-scrim {
+  position: absolute;
+  z-index: 2;
+  inset: -1px;
+  background: rgba(0, 0, 0, 0.25);
+  pointer-events: none;
+}
+
+/* Apt. 6A sheet (Figma 636:55440) */
+.g2v-aigt-apt {
+  position: absolute;
+  z-index: 3;
+  left: calc(50% - 145px);
+  width: 290px;
+  height: 471px;
+  overflow: hidden;
+  border-radius: 10.29px 10.29px 0 0;
+  background: #fff;
+  box-shadow: 0 -24px 29.14px -17.14px rgba(0, 0, 0, 0.1);
+}
+.g2v-aigt-apt__content {
+  position: absolute;
+  left: 17.14px;
+  right: 17.43px;
+  top: 26.57px;
+  display: flex;
+  flex-direction: column;
+  gap: 10.29px;
+}
+.g2v-aigt-apt__top {
+  display: flex;
+  flex-direction: column;
+  gap: 6.86px;
+}
+.g2v-aigt-apt__media {
+  display: flex;
+  flex-direction: column;
+  gap: 10.29px;
+}
+.g2v-aigt-apt__photo {
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+.g2v-aigt-apt__facts {
+  display: flex;
+  align-items: center;
+  gap: 5.14px;
+}
+.g2v-aigt-fact {
+  display: flex;
+  align-items: center;
+  gap: 3.43px;
+  font-size: 12px;
+  line-height: 1.4;
+  letter-spacing: -0.24px;
+  color: #3f3e3c;
+  white-space: nowrap;
+}
+.g2v-aigt-apt__amen {
+  margin: 0;
+  padding: 0;
+  list-style: disc;
+  font-size: 12px;
+  line-height: 1.4;
+  letter-spacing: -0.24px;
+  white-space: nowrap;
+}
+.g2v-aigt-apt__amen li {
+  margin-inline-start: 18px;
+}
+/* White fade (Figma 636:55743: clear at 11%, solid from 41% of 91.67), nudged ~6px up to match the rendered frame. */
+.g2v-aigt-apt__fade {
+  position: absolute;
+  z-index: 1;
+  top: 304px;
+  left: 0;
+  width: 289.71px;
+  height: 167px;
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0) 4px, #fff 34px);
+  pointer-events: none;
+}
+
+/* Touch cursor */
+.g2v-aigt-touch {
+  position: absolute;
+  z-index: 5;
+  left: 145.18px;
+  width: 40px;
+  height: 40px;
+  margin: -20px 0 0 -20px;
+  border-radius: 50%;
+  background: rgba(14, 13, 12, 0.18);
+  border: 2px solid rgba(255, 255, 255, 0.9);
+  box-sizing: border-box;
+  box-shadow: 0 4px 12px rgba(14, 13, 12, 0.2);
+  pointer-events: none;
+}

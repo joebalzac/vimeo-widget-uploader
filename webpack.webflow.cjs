@@ -22,7 +22,7 @@ module.exports = {
           ? { test: /\.(woff|woff2|eot|ttf|otf)$/i, type: "asset/resource", generator: rule.generator }
           : rule
       ),
-      { test: /\.(png|svg|jpg|jpeg|gif)$/i, type: "asset/inline" },
+      { test: /\.(png|svg|jpg|jpeg|gif|webp|avif)$/i, type: "asset/inline" },
     ],
   },
 };

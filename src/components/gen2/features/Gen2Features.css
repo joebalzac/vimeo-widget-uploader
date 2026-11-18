@@ -1,0 +1,290 @@
+/* Gen2 Features (handoff 04-features). Prefix: g2f- */
+
+.g2f {
+  position: relative;
+  width: 100%;
+  box-sizing: border-box;
+  font-family: inter-variable, Inter, system-ui, sans-serif;
+  font-variation-settings: "opsz" 32; /* Figma renders Inter Variable at Display optical size */
+  -webkit-font-smoothing: antialiased;
+  color: #0e0d0c;
+  /* No overflow here: it would break position: sticky on the pinned stage. */
+}
+
+/* ── Card (660×460 stage; desktop adds two deck layers above → 476 frame) ── */
+.g2f-card {
+  position: relative;
+  width: 100%;
+}
+.g2f-card__frame {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform-origin: 0 0;
+}
+.g2f-card__stage {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  z-index: 2;
+  overflow: hidden;
+  border-radius: 12px;
+  isolation: isolate;
+  background: #f6f4f2;
+}
+/* Figma "image 1" (shader-baked export): 660×460 crop of the gradient image. */
+.g2f-card__bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+  user-select: none;
+}
+/* Hairline over the content (Figma: inset 0.5px #FDFCFB). */
+.g2f-card__stage::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 50;
+  border-radius: inherit;
+  box-shadow: inset 0 0 0 0.5px #fdfcfb;
+  pointer-events: none;
+}
+.g2f-card__deck {
+  position: absolute;
+  left: 50%;
+  height: 460px;
+  border-radius: 12px;
+  transform: translateX(-50%);
+  pointer-events: none;
+  user-select: none;
+}
+.g2f-card__deck--1 {
+  z-index: 1;
+  top: 8px;
+  width: 628px;
+  opacity: 0.5;
+}
+.g2f-card__deck--2 {
+  z-index: 0;
+  top: 0;
+  width: 596px;
+  opacity: 0.4;
+}
+.g2f-vis {
+  position: absolute;
+  inset: 0;
+}
+
+/* ── Text (Figma 618:6983) ───────────────────────────────── */
+.g2f-text {
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+.g2f-text__top {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.g2f-text__title {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 0;
+  font-weight: 400;
+  font-feature-settings: "ss07" 1, "ss08" 1;
+  color: #0e0d0c;
+}
+.g2f-text__desc {
+  margin: 0;
+  line-height: 1.4;
+  font-feature-settings: "ss07" 1;
+  color: #3f3e3c;
+}
+.g2f-text__bottom {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 24px; /* What's New → Learn More */
+}
+.g2f-new-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  line-height: 1.4;
+  font-feature-settings: "ss07" 1, "ss08" 1;
+}
+.g2f-new-list__label {
+  margin: 0;
+  color: #7a7977;
+}
+.g2f-new-list__items {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  color: #3f3e3c;
+}
+.g2f-text__more {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 16px;
+  line-height: 1.4;
+  letter-spacing: -0.32px;
+  font-feature-settings: "ss07" 1;
+  color: #7a7977;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+/* The Figma arrow, used as a mask so it follows the link colour on hover. */
+.g2f-text__more-icon {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  background: currentColor;
+  -webkit-mask: var(--g2f-arrow) center / 16px 16px no-repeat;
+  mask: var(--g2f-arrow) center / 16px 16px no-repeat;
+}
+.g2f-text__more:hover {
+  color: #0e0d0c;
+}
+
+/* ── Desktop: pinned (Figma 618:6955) ────────────────────── */
+.g2f-pinned {
+  position: relative;
+}
+.g2f-pinned__sticky {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  height: 100svh;
+  display: flex;
+  align-items: center;
+}
+.g2f-pinned__grid {
+  display: grid;
+  grid-template-columns: 24px minmax(260px, 380px) minmax(0, 1fr);
+  column-gap: 48px;
+  align-items: center;
+  width: 100%;
+}
+.g2f-pinned .g2f-text {
+  gap: 56px;
+}
+.g2f-pinned .g2f-text__title {
+  font-size: 36px;
+  line-height: 1.1;
+  letter-spacing: -1.08px;
+}
+.g2f-pinned .g2f-text__desc {
+  font-size: 18px;
+  letter-spacing: -0.36px;
+}
+.g2f-pinned .g2f-new-list {
+  font-size: 16px;
+  letter-spacing: -0.32px;
+}
+
+/* Ruler: 24×264, a tick every 12px fading out top and bottom; the active product's
+   tick sits at y 131 and the track shifts 48px per product. */
+.g2f-ruler {
+  position: relative;
+  height: 264px;
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(to bottom, transparent 26px, #000 110px, #000 144px, transparent 228px);
+  mask-image: linear-gradient(to bottom, transparent 26px, #000 110px, #000 144px, transparent 228px);
+}
+.g2f-ruler__track {
+  position: absolute;
+  top: 125.25px; /* 131.25 tick centre − 6 (half the 12px hit row) */
+  left: 0;
+  right: 0;
+}
+.g2f-ruler__hit {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 12px;
+  display: flex;
+  align-items: center;
+  padding: 0;
+  border: 0;
+  background: none;
+}
+button.g2f-ruler__hit {
+  cursor: pointer;
+}
+.g2f-ruler__tick {
+  display: block;
+  height: 1.5px;
+}
+
+/* Panes share one grid cell, so the column keeps the tallest pane's height and the
+   title never moves between products. */
+.g2f-panes {
+  display: grid;
+}
+.g2f-pane {
+  grid-area: 1 / 1;
+  min-width: 0;
+}
+
+.g2f-pinned__visual {
+  /* Cap the card so its 476 frame fits the viewport with some air. */
+  width: min(100%, 825px, calc((100vh - 140px) * 660 / 476));
+  width: min(100%, 825px, calc((100svh - 140px) * 660 / 476));
+  justify-self: end;
+}
+
+/* ── Mobile / tablet: stack (Figma 642:139575) ──────────── */
+.g2f-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+.g2f-stack__item {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+.g2f-stack .g2f-card__stage::after {
+  /* Figma shadow-light-xs (inset 0.5px rgba(0,0,0,.1)) at the 345 card's scale. */
+  box-shadow: inset 0 0 0 calc(0.5px / var(--g2f-s, 1)) rgba(0, 0, 0, 0.1);
+}
+.g2f-stack .g2f-text {
+  gap: 16px;
+}
+.g2f-stack .g2f-text__bottom {
+  display: contents; /* list and Learn More sit 16 apart like the rest */
+}
+.g2f-stack .g2f-text__title {
+  font-size: 20px;
+  font-weight: 450;
+  line-height: 1.2;
+  letter-spacing: -0.6px;
+  font-feature-settings: "ss07" 1;
+  gap: 8px;
+}
+.g2f-stack .g2f-text__desc {
+  font-size: 16px;
+  letter-spacing: -0.32px;
+}
+.g2f-stack .g2f-new-list {
+  font-size: 14px;
+  letter-spacing: -0.28px;
+}
+@media (min-width: 640px) and (max-width: 1000px) {
+  .g2f-stack__item {
+    display: grid;
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+    gap: 32px;
+    align-items: center;
+  }
+}

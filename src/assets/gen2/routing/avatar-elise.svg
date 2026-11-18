@@ -1,0 +1,12 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Frame 1984078125">
+<rect width="40" height="40" rx="20" fill="#A7B4FF" fill-opacity="0.09"/>
+<path id="Vector" d="M28.7498 19.9998C23.9169 19.9998 19.9998 23.9169 19.9998 28.7498C19.9998 23.9169 16.0827 19.9998 11.2498 19.9998C16.0827 19.9998 19.9998 16.0827 19.9998 11.2498C19.9998 16.0827 23.9169 19.9998 28.7498 19.9998Z" fill-rule="evenodd" clip-rule="evenodd" fill="url(#paint0_linear_0_14)"/>
+</g>
+<defs>
+<linearGradient id="paint0_linear_0_14" x1="15.8889" y1="16.6213" x2="28.7498" y2="28.7498" gradientUnits="userSpaceOnUse">
+<stop stop-color="#C1BAFE"/>
+<stop offset="1" stop-color="#2E95FF"/>
+</linearGradient>
+</defs>
+</svg>

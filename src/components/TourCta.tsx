@@ -24,7 +24,7 @@ const reveal = (delay: number) => ({
  * container: drop it into the Webflow Section/Container.
  */
 export default function TourCta({
-  heading = "Take Control of Your Leasing Journey with Tour Intelligence",
+  heading = "Take control to the Leasing Journey with Tour Intelligence",
   ctaLabel = "Get A Demo",
   ctaHref = "#",
   className,

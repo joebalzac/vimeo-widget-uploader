@@ -1,0 +1,240 @@
+/* Gen2Journey — handoff 03 (Figma 642:88637 desktop, 642:139566 mobile). */
+
+.g2j {
+  position: relative;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0; /* vertical spacing comes from the Webflow section */
+  font-family: inter-variable, Inter, system-ui, sans-serif;
+  font-variation-settings: "opsz" 32;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Heading (Figma 642:88751): 520 wide, 12 gap, body-primary subtitle, 4.5 to the graphic */
+.g2j .sh {
+  position: relative;
+  z-index: 1;
+  padding-bottom: 4.5px;
+}
+.g2j .sh__sub {
+  max-width: 520px;
+  color: #3f3e3c;
+}
+
+/* Background layer: clipped to the section */
+.g2j-bg {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 100%;
+  transform: translateX(-50%);
+  overflow: hidden;
+  pointer-events: none;
+}
+/* Figma 697:176887: the azure field (#F2F5FF→#F5F8FF, 100px blur) that carries the hero's
+   tint over the top of this frame — starts at #F3F6FF and fades out by ~360px (the blurred edge
+   of the rect, which ends 164px down). Full-bleed via border-image outset, which is ink overflow
+   only, so it never adds horizontal scroll. Painted above the background (Figma layer order). */
+.g2j-haze {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 364px;
+  pointer-events: none;
+  border-image: linear-gradient(
+      180deg,
+      #f3f6ff 0,
+      rgba(243, 246, 255, 0.74) 100px,
+      rgba(243, 246, 255, 0.5) 164px,
+      rgba(243, 246, 255, 0.16) 264px,
+      rgba(243, 246, 255, 0) 364px
+    )
+    0 fill / 0 / 0 100vw;
+}
+.g2j-bg__scene {
+  position: absolute;
+  left: 50%;
+  width: 0;
+  height: 0;
+  transform-origin: 0 0;
+}
+.g2j-bg__pattern,
+.g2j-bg__fade {
+  position: absolute;
+  display: block;
+  max-width: none;
+}
+.g2j-bg__pattern {
+  left: -832.2px;
+  top: -653px;
+}
+.g2j-bg__fade {
+  left: -997.17px;
+  top: -1086.67px;
+}
+
+.g2j-fit {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+}
+.g2j-frame {
+  position: relative;
+  width: 100%;
+}
+.g2j-stage {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 640px;
+  height: 600px;
+  transform-origin: 50% 0;
+}
+.g2j-svg {
+  position: absolute;
+  inset: 0;
+  display: block;
+  overflow: visible;
+}
+.g2j-circle {
+  position: absolute;
+  left: 120px;
+  top: 100px;
+  display: block;
+}
+
+/* Spoke dots (Figma 697:176929): 4px purple/400 */
+.g2j-dot {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  margin: -2px 0 0 -2px;
+  border-radius: 50%;
+  background: #8571fc;
+}
+.g2j-dot--sq {
+  border-radius: 0;
+  transform: rotate(120deg);
+}
+
+/* Apollo (Figma 697:176922): 117.84 cream ring, 8px padding, 99.84 dark disc */
+.g2j-apollo {
+  position: absolute;
+  left: 261.08px;
+  top: 241.08px;
+  width: 117.84px;
+  height: 117.84px;
+  box-sizing: border-box;
+  padding: 9px;
+  border-radius: 50%;
+  background: #fdfcfb;
+  box-shadow:
+    0 32px 40px -20px rgba(0, 0, 0, 0.1),
+    0 2px 4px 0 rgba(0, 0, 0, 0.04),
+    0 1px 2px 0 rgba(0, 0, 0, 0.04),
+    0 0 0 0.5px rgba(0, 0, 0, 0.05);
+}
+.g2j-apollo__ring {
+  position: absolute;
+  left: -0.08px;
+  top: -0.08px;
+  overflow: visible;
+}
+.g2j-apollo__disc {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 99.84px;
+  height: 99.84px;
+  border-radius: 50%;
+  background: #131115;
+  overflow: hidden;
+}
+.g2j-apollo__mark {
+  display: block;
+}
+
+/* Product nodes (Figma 697:176942 …): 10px; lit = purple with a 3px page-colour halo */
+.g2j-node {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  margin: -5px 0 0 -5px;
+  box-sizing: border-box;
+  border: 1.5px solid #dddcda;
+  border-radius: 50%;
+  background: #fdfcfb;
+  transition:
+    background-color 0.3s,
+    border-color 0.3s,
+    box-shadow 0.3s;
+}
+.g2j-node.is-on {
+  border-color: #6b4fff;
+  background: #6b4fff;
+  box-shadow: 0 0 0 3px #fdfcfb;
+}
+
+.g2j-label {
+  position: absolute;
+  pointer-events: none;
+}
+.g2j-label__txt {
+  display: inline-block;
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 1.1;
+  font-feature-settings: "salt" 1;
+  text-transform: uppercase;
+  color: #3f3e3c;
+  white-space: nowrap;
+}
+/* Side labels wrap per word (Figma: "Tour / Intelligence", "AI-Guided / Touring") */
+.g2j-label--r .g2j-label__txt,
+.g2j-label--l .g2j-label__txt {
+  white-space: pre;
+}
+.g2j-label--l .g2j-label__txt {
+  text-align: right;
+}
+
+@media (max-width: 761px) {
+  .g2j {
+    padding-top: 0;
+  }
+  /* Bleed the background past the page gutters */
+  .g2j-bg {
+    width: 100vw;
+  }
+  .g2j-haze {
+    display: none; /* not in the mobile frame (642:139566); the mobile hero ends untinted */
+  }
+  .g2j .sh,
+  .g2j .sh--center {
+    align-items: center;
+    text-align: center;
+    padding-bottom: 16.75px;
+  }
+  .g2j .sh__title + .sh__sub {
+    margin-top: -4px; /* 16 gap */
+  }
+  .g2j .sh__sub {
+    font-size: 16px;
+    letter-spacing: -0.32px;
+  }
+}
+@media (max-width: 480px) {
+  .g2j .sh__title {
+    max-width: 236px !important; /* Figma 642:139569 wraps the title onto two lines */
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .g2j-node {
+    transition: none;
+  }
+}

@@ -666,16 +666,30 @@ export const Navbar = ({
   // If no hero is found, stay transparent — falling back to solid would hide
   // the dark theme (white text only applies while `.navbar--transparent`).
   useEffect(() => {
-    const hero = document.getElementById(heroSectionId);
-    if (!hero) {
-      setScrolledPastHero(false);
-      return;
-    }
+    // The hero may be a native Webflow element or live inside another code
+    // component's shadow root (e.g. TourHero), and may mount after the navbar,
+    // so keep looking until it is found.
+    let hero: HTMLElement | null = null;
+    const findHero = (): HTMLElement | null => {
+      const direct = document.getElementById(heroSectionId);
+      if (direct) return direct;
+      for (const el of Array.from(document.querySelectorAll<HTMLElement>("*"))) {
+        const found = el.shadowRoot?.getElementById(heroSectionId);
+        if (found) return found as HTMLElement;
+      }
+      return null;
+    };
 
+    let lastSearch = 0;
     const update = () => {
+      // Throttle the search so pages without a hero don't scan the DOM on every scroll.
+      if ((!hero || !hero.isConnected) && Date.now() - lastSearch > 500) {
+        lastSearch = Date.now();
+        hero = findHero();
+      }
       // Switch when the hero's bottom edge reaches (or clears) the top of the
       // viewport — i.e. the hero has fully scrolled past.
-      setScrolledPastHero(hero.getBoundingClientRect().bottom <= 0);
+      setScrolledPastHero(hero ? hero.getBoundingClientRect().bottom <= 0 : false);
     };
 
     update();

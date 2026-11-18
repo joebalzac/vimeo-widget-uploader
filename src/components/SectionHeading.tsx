@@ -4,6 +4,8 @@ import "./SectionHeading.css";
 
 export interface SectionHeadingProps {
   heading?: string;
+  /** Optional subtitle under the heading (18px muted; Gen2 sections). */
+  subtitle?: string;
   /** Optional eyebrow above the heading (purple marker + mono caption). */
   eyebrow?: string;
   align?: "center" | "left";
@@ -25,6 +27,7 @@ const EZ = [0.22, 0.8, 0.24, 1] as const;
  */
 export default function SectionHeading({
   heading = "See & Improve Every Tour at Scale",
+  subtitle,
   eyebrow,
   align = "center",
   theme = "light",
@@ -48,6 +51,7 @@ export default function SectionHeading({
       <h2 className="sh__title" style={{ maxWidth }}>
         {heading}
       </h2>
+      {subtitle?.trim() && <p className="sh__sub">{subtitle}</p>}
     </motion.div>
   );
 }

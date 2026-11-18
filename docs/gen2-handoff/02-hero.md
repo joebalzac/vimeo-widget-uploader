@@ -1,0 +1,73 @@
+# 02 · Hero
+
+**Code:** `Hero3` (copy), `Hero3Board` + `useHeroBoard` (board), `HBCol` / `HBCard` / `HBPerson` / `HBChip` / `HBFly`.
+**Figma:** copy 590:45184; board **761:1949**; mobile 642:139552.
+
+## Copy
+
+- Eyebrow (Plex Mono 14, purple square): **GEN 2**
+- H1: **The #1 AI Platform to Transform Multifamily Operations** (64 → 36 mobile)
+- Subtitle: **The next generation of asset performance.** (18)
+- CTA: **Get A Demo** (primary button)
+
+Hero top padding 144 (96 on mobile). The board sits 64px below the CTA (40 on mobile).
+
+## Board layout (Figma 761:1949, with requested changes)
+
+- **Columns:** 3 columns, each 379 wide at x 0 / 391 / 782 (12px gap).
+  - Background `rgba(0,0,0,.04)`, radius 14, padding 4.
+  - **Prospects sits 51px higher** than Calendar and Residents (staggered, per Gabby).
+- **Column header:** 44 tall, 18px icon, title 16 `#0E0D0C`, 6-dot drag handle `#A9A8A6` on the right.
+- **Cards:** 75 tall, white, 0.5px `#DDDCDA` border, radius 8, padding 0 16, shadow `0 1px 2px rgba(14,13,12,.05)`, 4px gap.
+  - Text: name 14 `#3F3E3C`, subtitle 14 `#7A7977`.
+- **Calendar cards:**
+  - 2×43 left bar: blue `#2E95FF` = Self Guided, purple `#8571FC` = In Person, mint `#1FD19A` = Virtual.
+  - Time on the right, 14 ink.
+- **Card count:** each column holds **6 cards**, so the bottom is never empty.
+- **Fade:** the board fades out from 68% to 96% of its 560px height (mask).
+- **Mobile:** 300-wide columns (Prospects centred, the others peek in from the sides), 66-tall cards, 12px text, 10px chips.
+
+### Chips (Plex Mono 12 uppercase, 22 tall, radius 3)
+
+| Chip | Background / text | Meaning |
+|---|---|---|
+| INQUIRY | `#F4FAFF` / `#1475E8` | |
+| SCHEDULING TOUR · SIGNING LEASE | `#F4FAFF` / `#1475E8`, **spinner icon** | in progress = blue |
+| SCHEDULED TOUR · TOURED · LEASE SIGNED | `#EEFDF8` / `#00B080` | success = green |
+| CURRENT · FUTURE | `#F6F4F2` / `#0E0D0C` | |
+| WORK ORDER | `#FEF0FA` / `#D42AAF` | |
+| RENEWAL OFFER | `#E5F2FF` / `#1475E8` | |
+
+"Lease Signed", "Scheduling Tour" and "Signing Lease" aren't in the Figma key; the colours follow Gabby's rule (blue = progress, green = success).
+
+## Animation
+
+### Load-in
+1. Columns rise in (opacity, y 36 → 0, scale .97 → 1, 1s `E`). Prospects goes first; the side columns follow 0.1s later.
+2. Cards then come in as a diagonal wave. Per-card delay = `row × 75ms + column offset` (Prospects 0.22s, Calendar 0.30s, Residents 0.38s).
+3. Each card moves from opacity 0, y 22, rotate −2°, scale .96 to rest, over 0.75s `E`.
+
+### Story loop (never resets or fades out; ~13s per cycle)
+1. **Lease → Residents** (first thing):
+   1. A toured prospect in the top 3 (Maya Patel, row 2) changes to SIGNING LEASE (spinner, 1.5s), then LEASE SIGNED (1.2s).
+   2. **Move:** the real card hides, a dashed lilac slot appears, and an identical "flyer" card lifts (scale 1.035, y −6, 0.28s).
+   3. The flyer glides to the top of Residents on a spring (0.95s, bounce .12). It **tilts with its horizontal speed** (±6° max, spring 260/26), so it only leans while moving.
+   4. Residents has already made room with an invisible twin. The flyer sets down exactly on it and the twin shows, so there's no blink.
+   5. Prospects closes up 0.38s after the lift.
+   6. Chip changes to FUTURE.
+2. **New inquiry** pops in at the top of Prospects (scale .94 → 1, y −10 → 0, spring). The bottom card exits.
+3. **Book a tour:** an INQUIRY prospect changes to SCHEDULING TOUR (1.5s), then SCHEDULED TOUR. Their tour pops in at the top of Calendar.
+4. **Tour completes:** another INQUIRY changes to TOURED.
+5. **Residents:** a WORK ORDER chip clears, and the new resident changes from FUTURE to CURRENT.
+
+**Chip change:** the old chip slides up and out (y −12, 0.28s) and the new one rises in (y 12 → 0, scale .9 → 1, spring 520/20–24). **Cards never change colour.**
+
+**Rules:** columns always hold 6 (a pop-in pushes the last card out). Exiting cards use `AnimatePresence mode="popLayout"`, so components must `forwardRef`.
+
+## Background gradient (soft haze)
+
+- **Shape:** a wide, blurred field (`.h3-glow`, blur 40px).
+  - Lilac at 11%/38% and sky at 89%/34% on the sides, softer lilac/blue at 34%/66% and 66%/68%.
+  - Opacities .22–.34, drifting on a 22s alternate background-position loop.
+- **Extent:** starts behind the top of the board, not the headline. It continues **340px past the hero into The Ideal Renter Journey** and fades out (mask), with no hard edge.
+- The hero needs `overflow-x: clip; overflow-y: visible; z-index: 2` so the bleed shows.

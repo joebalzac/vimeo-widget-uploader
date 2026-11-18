@@ -105,3 +105,34 @@
     letter-spacing: -0.32px;
   }
 }
+
+/* Single featured quote: one bordered card, larger quote with a readable measure. */
+.opt--single .opt__card {
+  gap: 48px;
+  padding: 48px;
+}
+.opt--single .opt__quote {
+  max-width: 900px;
+  font-size: 32px;
+  line-height: 1.3;
+  letter-spacing: -0.64px;
+}
+@media (max-width: 1000px) {
+  .opt--single .opt__card {
+    padding: 32px;
+  }
+  .opt--single .opt__quote {
+    font-size: 26px;
+    letter-spacing: -0.52px;
+  }
+}
+@media (max-width: 480px) {
+  .opt--single .opt__card {
+    gap: 24px;
+    padding: 24px;
+  }
+  .opt--single .opt__quote {
+    font-size: 20px;
+    letter-spacing: -0.4px;
+  }
+}

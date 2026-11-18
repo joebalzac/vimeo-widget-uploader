@@ -8,6 +8,14 @@ import CoachEveryTour from "./CoachEveryTour";
 
 export interface BentoBoxSectionProps {
   className?: string;
+  recordTitle?: string;
+  recordSubtitle?: string;
+  automateTitle?: string;
+  automateSubtitle?: string;
+  insightsTitle?: string;
+  insightsSubtitle?: string;
+  coachTitle?: string;
+  coachSubtitle?: string;
 }
 
 /**
@@ -21,34 +29,44 @@ export interface BentoBoxSectionProps {
  * proportionally inside any container and stack to one column at <=1000px.
  * The section heading is a separate component (SectionHeading).
  */
-export default function BentoBoxSection({ className }: BentoBoxSectionProps) {
+export default function BentoBoxSection({
+  className,
+  recordTitle = "Record The Tour",
+  recordSubtitle = "Elise records so agents can focus on the prospect, with points for recording tours and following up promptly.",
+  automateTitle = "Automate Post-Tour Admin",
+  automateSubtitle = "Elise updates tour status and guest cards in EliseCRM, and drafts personalized follow-ups agents can send in one tap.",
+  insightsTitle = "See Portfolio-Level Insights",
+  insightsSubtitle = "Elise surfaces agent performance, property insights, and top objections so leaders know where to invest.",
+  coachTitle = "Coach Every Tour",
+  coachSubtitle = "Elise scores each tour against a customizable rubric and flags areas for improvement.",
+}: BentoBoxSectionProps) {
   return (
     <section className={["bbs", className].filter(Boolean).join(" ")}>
       <div className="bbs__grid">
         <BentoCard
           className="bbs__record"
-          title="Record The Tour"
-          subtitle="Elise records so agents can focus on the prospect, with points for recording tours and following up promptly."
+          title={recordTitle}
+          subtitle={recordSubtitle}
           media={<RecordTheTour />}
         />
         <BentoCard
           className="bbs__automate"
           wide
-          title="Automate Post-Tour Admin"
-          subtitle="Elise updates tour status and guest cards in EliseCRM, and drafts personalized follow-ups agents can send in one tap."
+          title={automateTitle}
+          subtitle={automateSubtitle}
           media={<AutomatePostTourAdmin />}
         />
         <BentoCard
           className="bbs__insights"
           wide
-          title="See Portfolio-Level Insights"
-          subtitle="Elise surfaces agent performance, property insights, and top objections so leaders know where to invest."
+          title={insightsTitle}
+          subtitle={insightsSubtitle}
           media={<PortfolioInsights />}
         />
         <BentoCard
           className="bbs__coach"
-          title="Coach Every Tour"
-          subtitle="Elise scores each tour against a customizable rubric and flags areas for improvement."
+          title={coachTitle}
+          subtitle={coachSubtitle}
           media={<CoachEveryTour />}
         />
       </div>

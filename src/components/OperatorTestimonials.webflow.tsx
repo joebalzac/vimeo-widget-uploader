@@ -1,4 +1,4 @@
-import OperatorTestimonials from "./OperatorTestimonials";
+import OperatorTestimonials, { type OperatorTestimonialsLayout } from "./OperatorTestimonials";
 import { DEFAULT_TESTIMONIALS, type Testimonial } from "./operatorTestimonialsData";
 import { props } from "@webflow/data-types";
 import { declareComponent } from "@webflow/react";
@@ -8,6 +8,7 @@ const SLOTS = 3;
 type ImageValue = { src: string; alt?: string };
 
 interface AdapterProps {
+  layout?: string;
   [key: string]: ImageValue | string | undefined;
 }
 
@@ -21,7 +22,8 @@ function OperatorTestimonialsAdapter(p: AdapterProps) {
       avatarSrc: (p[`q${n}Avatar`] as ImageValue | undefined)?.src,
     });
   }
-  return <OperatorTestimonials items={items} />;
+  const layout: OperatorTestimonialsLayout = p.layout === "Three quotes" ? "row" : "single";
+  return <OperatorTestimonials items={items} layout={layout} />;
 }
 
 function quoteProps(n: number) {
@@ -44,10 +46,16 @@ function quoteProps(n: number) {
 export default declareComponent(OperatorTestimonialsAdapter, {
   name: "Tour Intelligence — Operator Testimonials",
   description:
-    "Three bordered quote cards (“What Operators Are Saying”). Pair with a Section Heading above. Stacks at tablet/mobile.",
+    "One featured quote card, or three bordered quote cards (“What Operators Are Saying”). Pair with a Section Heading above. Stacks at tablet/mobile.",
   group: "Tour Intelligence",
 
   props: {
+    layout: props.Variant({
+      name: "Layout",
+      options: ["Single quote", "Three quotes"],
+      defaultValue: "Single quote",
+      tooltip: "Single quote shows only Quote 1 as a featured card.",
+    }),
     ...quoteProps(1),
     ...quoteProps(2),
     ...quoteProps(3),

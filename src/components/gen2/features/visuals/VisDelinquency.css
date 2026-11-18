@@ -1,0 +1,210 @@
+/* Delinquency visual (VDq). Designed at 660×460 (Figma 692:175339); the Features card scales it. */
+.g2v-dq {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  font-family: inter-variable, Inter, system-ui, sans-serif;
+  font-variation-settings: "opsz" 32;
+  font-feature-settings: "ss07" 1, "ss08" 1;
+  color: #0e0d0c;
+  -webkit-font-smoothing: antialiased;
+}
+.g2v-dq img {
+  display: block;
+  flex: none;
+}
+.g2v-dq-stage {
+  position: absolute;
+  inset: 0;
+}
+.g2v-dq-num {
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Payment Plan card: 328 wide, centred on the stage ── */
+.g2v-dq-card {
+  position: absolute;
+  top: 50%;
+  left: 166px;
+  width: 328px;
+  transform: translateY(-50%);
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 20px;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.04), 0 0 0 0.5px rgba(0, 0, 0, 0.05);
+}
+
+.g2v-dq-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 40px;
+}
+.g2v-dq-tile {
+  flex: none;
+  width: 40px;
+  height: 40px;
+  box-sizing: border-box;
+  padding: 10.13px 0 0 10px;
+  border-radius: 4px;
+  background: rgba(208, 249, 232, 0.35);
+}
+.g2v-dq-head__text {
+  display: flex;
+  flex-direction: column;
+  height: 40px;
+}
+.g2v-dq-title {
+  font-size: 16px;
+  line-height: 1.2;
+  letter-spacing: -0.48px;
+  color: #0e0d0c;
+  white-space: nowrap;
+}
+.g2v-dq-who {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 14px;
+  line-height: 20px;
+  letter-spacing: -0.28px;
+  color: #7a7977;
+  white-space: nowrap;
+}
+
+/* Installment list: rules + rows, 8 apart; the 2nd installment group adds 6-apart rows. */
+.g2v-dq-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.g2v-dq-rule {
+  height: 0;
+  border-top: 0.5px solid #e6e5e3;
+}
+.g2v-dq-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 20px;
+  font-size: 14px;
+  line-height: 20px;
+  letter-spacing: -0.28px;
+  color: #7a7977;
+  white-space: nowrap;
+}
+.g2v-dq-val {
+  color: #3f3e3c;
+}
+
+/* Expanding detail: exactly 52px (6 + 20 + 6 + 20). */
+.g2v-dq-detail {
+  overflow: hidden;
+  height: 0;
+}
+.g2v-dq-detail > .g2v-dq-row {
+  margin-top: 6px;
+}
+
+/* Status column: fixed 128 wide, right aligned; layers stack for crossfades. */
+.g2v-dq-status {
+  position: relative;
+  flex: none;
+  width: 128px;
+  height: 20px;
+}
+.g2v-dq-status__layer {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+.g2v-dq-st {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 14px;
+  line-height: 20px;
+  letter-spacing: -0.28px;
+  white-space: nowrap;
+}
+.g2v-dq-st--paid { color: #00b080; }
+.g2v-dq-st--due { color: #f25530; }
+.g2v-dq-st__grad {
+  background-image: linear-gradient(101.98deg, #a093fd 1.89%, #1475e8 117.55%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+/* 12px spinner slot; the exported arc (13.17 incl. stroke bleed) overhangs by ~0.6px. */
+.g2v-dq-spin {
+  position: relative;
+  flex: none;
+  width: 12px;
+  height: 12px;
+}
+.g2v-dq-spin img {
+  position: absolute;
+  left: -0.585px;
+  top: -0.585px;
+  animation: g2v-dq-spin 0.9s linear infinite;
+}
+@keyframes g2v-dq-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ── AI Collected KPI callout ──────────────────────────── */
+.g2v-dq-ai {
+  position: absolute;
+  z-index: 2;
+  left: 362.5px;
+  top: 83px;
+  width: 180px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px;
+  border-radius: 6px;
+  background: #fff;
+  box-shadow: 0 32px 40px -20px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.04),
+    0 0 0 0.5px rgba(0, 0, 0, 0.05);
+}
+.g2v-dq-ai__text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 87px;
+}
+.g2v-dq-ai__label {
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 10px;
+  font-weight: 500;
+  line-height: 1.1;
+  text-transform: uppercase;
+  font-feature-settings: "salt" 1;
+  color: #7a7977;
+  white-space: nowrap;
+}
+.g2v-dq-ai__amount {
+  font-size: 28px;
+  line-height: 1.1;
+  letter-spacing: -0.84px;
+  color: #0e0d0c;
+  white-space: nowrap;
+}
+.g2v-dq-ring {
+  display: block;
+  flex: none;
+  width: 48px;
+  height: 48px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .g2v-dq-spin img { animation: none; }
+}

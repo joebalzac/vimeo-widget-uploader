@@ -10,6 +10,7 @@ export default declareComponent(SectionHeading, {
 
   props: {
     heading: props.Text({ name: "Heading", defaultValue: "See & Improve Every Tour at Scale" }),
+    subtitle: props.Text({ name: "Subtitle", defaultValue: "" }),
     eyebrow: props.Text({ name: "Eyebrow", defaultValue: "" }),
     align: props.Variant({ name: "Align", options: ["center", "left"], defaultValue: "center" }),
     theme: props.Variant({ name: "Theme", options: ["light", "dark"], defaultValue: "light" }),

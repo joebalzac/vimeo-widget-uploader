@@ -1,0 +1,311 @@
+/* Gen2Stories — handoff 09 (Figma 642:58325 desktop, 667:141205 mobile). */
+
+.g2st {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0; /* vertical spacing comes from the Webflow section */
+  font-family: inter-variable, Inter, system-ui, sans-serif;
+  font-variation-settings: "opsz" 32;
+  -webkit-font-smoothing: antialiased;
+  color: #0e0d0c;
+}
+
+/* Header row (Figma 642:58326): 420-wide title left, arrows bottom-right */
+.g2st-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 32px;
+  padding-bottom: 48px;
+}
+.g2st-head .sh {
+  padding-bottom: 0;
+  width: auto;
+}
+/* Figma desktop has no subtitle; mobile does (667:141208) */
+.g2st--sub-mob .sh__sub {
+  display: none;
+}
+
+.g2st-arrows {
+  display: flex;
+  gap: 6px;
+}
+.g2st-arrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  padding: 0;
+  box-sizing: border-box;
+  border: 1px solid #dddcda;
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+  transition: background-color 0.2s, border-color 0.2s;
+}
+.g2st-arrow:hover {
+  background: #f6f4f2;
+  border-color: #c9c8c6;
+}
+.g2st-arrow:focus-visible,
+.g2st-seg:focus-visible,
+.g2st-play:focus-visible {
+  outline: 2px solid #6b4fff;
+  outline-offset: 2px;
+}
+.g2st-arrow__icon {
+  display: block;
+  width: 24px;
+  height: 24px;
+}
+.g2st-arrow__icon--prev {
+  transform: rotate(180deg);
+}
+
+/* Row (Figma 642:58339): copy column (quote top, name bottom) + 711×400 video */
+.g2st-row {
+  display: grid;
+  grid-template-columns: minmax(0, 401fr) minmax(0, 711fr);
+  gap: 48px;
+  align-items: stretch;
+}
+.g2st-copy,
+.g2st-quote-wrap {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+.g2st-quote-wrap {
+  flex: 1;
+}
+.g2st-quote {
+  flex: 1;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 32px;
+}
+.g2st-quote__text {
+  max-width: 330px;
+  margin: 0;
+  font-size: 22px;
+  line-height: 1.4;
+  letter-spacing: -0.66px;
+  font-feature-settings: "ss07" 1, "ss08" 1;
+  color: #0e0d0c;
+}
+.g2st-quote__who {
+  display: flex;
+  flex-direction: column;
+  font-size: 18px;
+  line-height: 1.4;
+  letter-spacing: -0.36px;
+  font-feature-settings: "ss07" 1;
+}
+.g2st-quote__name {
+  color: #0e0d0c;
+}
+.g2st-quote__role {
+  white-space: pre-line;
+  color: #3f3e3c;
+}
+
+.g2st-video {
+  position: relative;
+  aspect-ratio: 711 / 400;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #1c1b1a;
+}
+.g2st-poster {
+  position: absolute;
+  inset: 0;
+}
+.g2st-poster__img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+/* Play (Figma 642:58348 "nav-dark"): 48px ring, 24px from the bottom-left */
+.g2st-play {
+  position: absolute;
+  left: 24px;
+  bottom: 24px;
+  display: block;
+  width: 48px;
+  height: 48px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.2s;
+}
+.g2st-play img {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.g2st-play--static {
+  cursor: default;
+}
+.g2st-video:hover .g2st-play:not(.g2st-play--static) {
+  transform: scale(1.06);
+  background: rgba(255, 255, 255, 0.12);
+}
+
+/* Progress (Figma 642:58350): one 1px line per story, 12 apart */
+.g2st-progress {
+  display: flex;
+  gap: 12px;
+  margin-top: 48px;
+}
+.g2st-seg {
+  position: relative;
+  flex: 1;
+  height: 17px; /* hit area; the line itself is 1px */
+  margin: -8px 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+.g2st-seg::before,
+.g2st-seg__fill {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 8px;
+  height: 1px;
+}
+.g2st-seg::before {
+  background: #dddcda;
+}
+.g2st-seg__fill {
+  display: block;
+  background: #6b4fff;
+  transform-origin: 0 50%;
+}
+
+/* Lightbox */
+.g2st-lb {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 64px 24px;
+  box-sizing: border-box;
+  background: #000;
+}
+.g2st-lb__frame {
+  width: min(100%, calc((100vh - 128px) * 16 / 9), 1280px);
+  aspect-ratio: 16 / 9;
+}
+.g2st-lb__frame iframe,
+.g2st-lb__frame video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: #000;
+}
+.g2st-lb__close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  cursor: pointer;
+}
+.g2st-lb__close:hover {
+  background: rgba(255, 255, 255, 0.16);
+}
+
+@media (max-width: 761px) {
+  /* Figma 667:141205: everything stacked 32 apart, centred header */
+  .g2st {
+    padding: 0;
+  }
+  .g2st-head {
+    justify-content: center;
+    padding-bottom: 32px;
+  }
+  .g2st-head .sh,
+  .g2st-head .sh--left {
+    align-items: center;
+    text-align: center;
+    gap: 6px;
+  }
+  .g2st-head .sh__title {
+    max-width: 315px !important;
+  }
+  .g2st-head .sh__title + .sh__sub {
+    margin-top: 0;
+  }
+  .g2st--sub-mob .sh__sub {
+    display: block;
+  }
+  .g2st-head .sh__sub {
+    font-size: 18px;
+    color: #3f3e3c;
+  }
+  .g2st-head__arrows {
+    display: none;
+  }
+  .g2st-row {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+  .g2st-video {
+    order: -1;
+    aspect-ratio: 16 / 9;
+    border-radius: 6px;
+  }
+  .g2st-quote-wrap {
+    min-height: 194px; /* tallest default story (Figma 671:141267), so the page doesn't jump */
+  }
+  .g2st-quote {
+    justify-content: flex-start;
+    gap: 16px;
+  }
+  .g2st-quote__text {
+    max-width: none;
+    font-size: 20px;
+    letter-spacing: -0.4px;
+  }
+  .g2st-quote__who {
+    font-size: 16px;
+    letter-spacing: -0.32px;
+  }
+  .g2st-play {
+    left: 16px;
+    bottom: 16px;
+    width: 40px;
+    height: 40px;
+  }
+  .g2st-progress {
+    gap: 6px;
+    margin-top: 32px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .g2st-play {
+    transition: none;
+  }
+}

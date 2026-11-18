@@ -1,0 +1,491 @@
+/* Gen2 · 08 Enabling New Operating Models (Figma 642:129543 "Enabling_02"; mobile 667:141199). */
+
+.g2r {
+  width: 100%;
+  max-width: 1160px;
+  margin: 0 auto;
+  box-sizing: border-box;
+  font-family: inter-variable, Inter, system-ui, sans-serif;
+  font-variation-settings: "opsz" 32;
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+  color: #0e0d0c;
+}
+.g2r *,
+.g2r *::before,
+.g2r *::after {
+  box-sizing: border-box;
+}
+.g2r img {
+  display: block;
+  flex: none;
+  max-width: none;
+}
+
+/* Heading (642:129544 / mobile 667:141200): subtitle is type/body-primary; mobile stays centred */
+.g2r .sh__sub {
+  color: #3f3e3c;
+  font-feature-settings: "ss07" 1, "ss08" 1;
+}
+@media (max-width: 480px) {
+  .g2r .sh {
+    align-items: center;
+    text-align: center;
+    gap: 6px;
+  }
+  .g2r .sh__title + .sh__sub {
+    margin-top: 0;
+  }
+  .g2r .sh__sub {
+    font-size: 18px;
+  }
+}
+
+/* ── Stage: card/primary + 2px stone/400 dot grid every 22px (Figma "Dot" 642:129548) ── */
+.g2r__stage {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  background-color: #f6f4f2;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22'%3E%3Crect width='2' height='2' fill='%23dddcda'/%3E%3C/svg%3E");
+  background-size: 22px 22px;
+  background-position: 9px 14px;
+}
+.g2r__stage::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  box-shadow: inset 0 0 0 0.5px rgba(0, 0, 0, 0.1);
+  pointer-events: none;
+}
+
+/* Desktop: fixed 1160×600 space scaled to the stage width */
+.g2r__box {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+}
+.g2r__canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform-origin: 0 0;
+}
+.g2r__group {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 1160px;
+  height: 600px;
+}
+.g2r__svg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  overflow: visible;
+  pointer-events: none;
+}
+.g2r__line {
+  fill: none;
+  stroke: #c7c6c4;
+  stroke-width: 1;
+}
+.g2r__dot {
+  fill: #c7c6c4;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.g2r__dot.is-on {
+  opacity: 1;
+}
+.g2r__cardwrap {
+  position: absolute;
+  z-index: 1;
+}
+.g2r__pillwrap {
+  position: absolute;
+  z-index: 2;
+  transform: translate(-50%, -50%);
+}
+.g2r__tasks {
+  position: absolute;
+  height: 388px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+/* Pulses: dash segments slide along pathLength=1 (2.6s travel + 2.2s rest) */
+.g2r__pulse path {
+  fill: none;
+  stroke-width: 1;
+  stroke-dashoffset: 0.18;
+  animation: g2r-pulse 4.8s linear infinite;
+}
+@keyframes g2r-pulse {
+  0% {
+    stroke-dashoffset: 0.18;
+  }
+  54.1667%,
+  100% {
+    stroke-dashoffset: -1;
+  }
+}
+
+/* ── Email card (642:139429) ──────────────────────────────── */
+.g2r__card {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding: 0 20px;
+  border-radius: 10px;
+  background: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.04), 0 0 0 0.5px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+}
+.g2r__msg {
+  position: relative;
+  padding: 16px 0;
+}
+.g2r__msg:first-child {
+  padding-top: 20px;
+}
+.g2r__msg:last-child {
+  padding-bottom: 20px;
+}
+.g2r__msg + .g2r__msg {
+  border-top: 1px solid #f0eeec;
+}
+.g2r__msg-in {
+  opacity: 0;
+  transition: opacity 0.4s cubic-bezier(0.25, 0.1, 0.25, 1) 0.1s;
+}
+.g2r__msg-in.is-on {
+  opacity: 1;
+}
+/* Once routing starts the first (unrouted) message recedes to 20% */
+.g2r__card.is-routing .g2r__msg--first .g2r__msg-in {
+  opacity: 0.2;
+  transition: opacity 0.6s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+.g2r__from {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.g2r__av {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+.g2r__who {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+.g2r__from-name {
+  font-size: 14px;
+  line-height: 1.4;
+  letter-spacing: -0.28px;
+  font-feature-settings: "ss07" 1, "ss08" 1;
+  white-space: nowrap;
+}
+.g2r__from-to {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  height: 17px;
+  font-size: 12px;
+  line-height: 1.4;
+  letter-spacing: -0.24px;
+  font-feature-settings: "ss07" 1, "ss08" 1;
+  color: #7a7977;
+  white-space: nowrap;
+}
+.g2r__msg-actions {
+  flex: none;
+  align-self: flex-start;
+  display: flex;
+  gap: 12px;
+}
+.g2r__body {
+  margin: 8px 0 0;
+  font-size: 14px;
+  line-height: 1.4;
+  letter-spacing: -0.28px;
+  font-feature-settings: "ss07" 1;
+}
+.g2r__link {
+  color: #1475e8;
+  text-decoration: underline;
+  text-decoration-skip-ink: none;
+  text-underline-position: from-font;
+}
+/* purple/50 highlight behind routed message text: sweeps in when routing starts */
+.g2r__hl {
+  padding: 0 2px;
+  margin-left: -2px;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+  background-image: linear-gradient(#f2f0ff, #f2f0ff);
+  background-repeat: no-repeat;
+  background-size: 0% 100%;
+  transition: background-size 0.9s cubic-bezier(0.65, 0, 0.35, 1) 0.3s;
+}
+.g2r__card.is-routing .g2r__hl {
+  background-size: 100% 100%;
+}
+
+/* Skeleton overlays the (already laid-out) text, so resolving never changes height */
+.g2r__skel {
+  position: absolute;
+  inset: 16px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transition: opacity 0.3s;
+}
+.g2r__msg:first-child .g2r__skel {
+  top: 20px;
+}
+.g2r__skel.is-off {
+  opacity: 0;
+}
+.g2r__skel i {
+  display: block;
+  height: 10px;
+  border-radius: 3px;
+  background: linear-gradient(90deg, #f6f4f2 0%, #ecebe9 40%, #f6f4f2 80%);
+  background-size: 300% 100%;
+  animation: g2r-shimmer 1.4s linear infinite;
+}
+@keyframes g2r-shimmer {
+  from {
+    background-position: 100% 0;
+  }
+  to {
+    background-position: -50% 0;
+  }
+}
+
+/* ── ROUTING / ROUTED pill (642:139502) ───────────────────── */
+.g2r__pill {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 25px;
+  padding: 0 8px;
+  border-radius: 1000px;
+  background-color: #8571fc;
+  background-image: linear-gradient(101.61deg, #8571fc 67.559%, #99ceff 155.3%);
+  color: #fff;
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 1.1;
+  font-feature-settings: "salt" 1;
+  text-transform: uppercase;
+  white-space: nowrap;
+  transition: background-color 0.3s;
+}
+.g2r__pill.is-routed {
+  background-color: #00b080;
+  background-image: none;
+}
+.g2r__pill-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.g2r__pill-icon {
+  position: relative;
+  display: block;
+  width: 10px;
+  height: 10px;
+  animation: g2r-spin 0.9s linear infinite;
+}
+.g2r__pill-icon img {
+  position: absolute;
+  inset: -0.625px;
+}
+@keyframes g2r-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ── Task card (642:139508) ───────────────────────────────── */
+.g2r__task {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.04)) drop-shadow(0 1px 1px rgba(0, 0, 0, 0.04));
+}
+.g2r__created {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: -6px;
+  padding: 8px 12px 13px;
+  border-radius: 10px 10px 0 0;
+  background: #eefdf8;
+  font-size: 14px;
+  line-height: 1.4;
+  letter-spacing: -0.28px;
+  font-feature-settings: "ss07" 1, "ss08" 1;
+  color: #00b080;
+  white-space: nowrap;
+}
+.g2r__task-body {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  padding: 16px;
+  border-radius: 10px;
+  background: #fff;
+  box-shadow: 0 0 0 0.5px rgba(0, 0, 0, 0.05);
+}
+.g2r__task-head {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.g2r__task-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.g2r__task-title {
+  font-size: 14px;
+  line-height: 1.4;
+  letter-spacing: -0.28px;
+  font-feature-settings: "ss07" 1, "ss08" 1;
+  color: #7a7977;
+  white-space: nowrap;
+}
+.g2r__task-bar {
+  display: block;
+  width: 48px;
+  height: 8px;
+  border-radius: 1000px;
+  background: #f6f4f2;
+}
+.g2r__task-person {
+  font-size: 16px;
+  line-height: 1.2;
+  letter-spacing: -0.48px;
+  font-feature-settings: "ss07" 1, "ss08" 1;
+  white-space: nowrap;
+}
+.g2r__team {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+.g2r__branch {
+  position: relative;
+  display: block;
+  flex: none;
+  width: 16px;
+  height: 16px;
+}
+.g2r__branch img {
+  position: absolute;
+  left: -2.667px;
+  top: -2.667px;
+}
+.g2r__team-chip {
+  margin-top: 4px;
+  padding: 6px 8px;
+  border-radius: 1000px;
+  background: #f6f4f2;
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 1.1;
+  font-feature-settings: "salt" 1;
+  text-transform: uppercase;
+  color: #7a7977;
+  white-space: nowrap;
+}
+
+/* ── Mobile column (.en-mcol; Figma stage 667:141217, radius 10) ── */
+.g2r__mcol {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24px 16px;
+}
+.g2r__mcol > .g2r__card,
+.g2r__mcol > .g2r__task {
+  max-width: 360px;
+}
+.g2r__conn {
+  position: relative;
+  width: 1px;
+  height: 24px;
+  overflow: hidden;
+}
+.g2r__conn i {
+  position: absolute;
+  inset: 0;
+  display: block;
+  background: #c7c6c4;
+  transform-origin: 50% 0;
+}
+.g2r__conn.is-loop::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 1px;
+  height: 14px;
+  background: linear-gradient(180deg, rgba(133, 113, 252, 0) 0%, #8571fc 40%, #60afff 100%);
+  transform: translateY(-14px);
+  animation: g2r-drop 4.8s linear infinite;
+}
+@keyframes g2r-drop {
+  0% {
+    transform: translateY(-14px);
+  }
+  25%,
+  100% {
+    transform: translateY(24px);
+  }
+}
+
+@media (max-width: 767px) {
+  .g2r__stage {
+    border-radius: 10px;
+  }
+  .g2r__card {
+    padding: 0 16px;
+  }
+  .g2r__body {
+    font-size: 13px;
+    letter-spacing: -0.2px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .g2r__pulse,
+  .g2r__conn.is-loop::after {
+    display: none;
+  }
+  .g2r__skel i,
+  .g2r__pill-icon {
+    animation: none;
+  }
+  .g2r__msg-in,
+  .g2r__skel,
+  .g2r__hl {
+    transition: none;
+  }
+}

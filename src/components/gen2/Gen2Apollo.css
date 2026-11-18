@@ -1,0 +1,698 @@
+/* Gen2Apollo — "More Power, More Simplicity with Apollo" (handoff 05-apollo).
+   Figma: desktop 642:140593 (1440 × 1004), mobile 642:139714.
+   Full-bleed; no background of its own (the Webflow section sets it). */
+
+.g2a {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  padding: 0; /* vertical spacing comes from the Webflow section */
+  box-sizing: border-box;
+  color: #0e0d0c;
+  font-family: inter-variable, Inter, system-ui, sans-serif;
+  font-variation-settings: "opsz" 32;
+  font-feature-settings: "ss07" 1;
+  -webkit-font-smoothing: antialiased;
+}
+.g2a *,
+.g2a *::before,
+.g2a *::after {
+  box-sizing: border-box;
+}
+.g2a p,
+.g2a ul {
+  margin: 0;
+}
+
+.g2a__inner {
+  position: relative;
+  z-index: 2;
+  max-width: 1208px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* heading (642:140594): subtitle is body-primary in this section */
+.g2a .g2a__heading .sh__sub {
+  color: #3f3e3c;
+}
+
+/* ---------- ring backdrop (Figma ellipse 769:178739) ---------- */
+.g2a-ringwrap {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+.g2a-ring {
+  /* 1160 across on the 1440 frame, centred 511px down the content (Figma 631 incl. 120 padding) */
+  --g2a-ring-d: min(1160px, 80.56vw);
+  position: absolute;
+  top: 57.8%; /* 511 / 884: Figma's 631 / 1004 minus the 120px top padding */
+  left: 50%;
+  width: var(--g2a-ring-d);
+  height: var(--g2a-ring-d);
+  margin: calc(var(--g2a-ring-d) / -2) 0 0 calc(var(--g2a-ring-d) / -2);
+  will-change: transform, opacity;
+}
+.g2a-ring__img {
+  /* the exported SVG carries 100px of blur bleed on every side (inset −8.62%) */
+  position: absolute;
+  top: -8.62%;
+  left: -8.62%;
+  display: block;
+  width: 117.24%;
+  height: 117.24%;
+  max-width: none;
+}
+
+/* ---------- tabs (642:140909) ---------- */
+.g2a__tabs-wrap {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 48px;
+}
+.g2a__tabs {
+  display: flex;
+  max-width: 100%;
+}
+.g2a__tab {
+  position: relative;
+  z-index: 1;
+  flex: none;
+  padding: 10px 20px;
+  border: 0;
+  border-radius: 1000px;
+  background: none;
+  font: inherit;
+  font-size: 18px;
+  line-height: 1.4;
+  letter-spacing: -0.36px;
+  color: #7a7977;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: color 0.3s;
+}
+.g2a__tab:hover,
+.g2a__tab--on {
+  color: #0e0d0c;
+}
+.g2a__tab:focus-visible {
+  outline: 2px solid #6b4fff;
+  outline-offset: -2px;
+}
+.g2a__pill {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: 1000px;
+  background: #f0eeec;
+}
+.g2a__tab-label {
+  position: relative;
+}
+
+/* ---------- clip + stage (642:140841: 1160 × 600) ---------- */
+.g2a__clip {
+  position: relative;
+  max-width: 1160px;
+  height: 600px;
+  margin: 0 auto;
+  overflow: hidden;
+  perspective: 1800px;
+  -webkit-mask: linear-gradient(#000 calc(100% - 80px), transparent);
+  mask: linear-gradient(#000 calc(100% - 80px), transparent);
+}
+.g2a__stage {
+  position: absolute;
+  inset: 0;
+  transform-origin: 50% 30%;
+}
+
+/* ---------- phone (677:174757: 5.6 buttons + 408.8 body + 5.6 = 420 × 940) ---------- */
+.g2a-phone {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 408.79px;
+  height: 940.4px;
+  transform: translateX(-50%);
+  transform-origin: 50% 0;
+}
+.g2a-phone__btns {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  gap: 14.015px;
+  width: 5.606px;
+}
+.g2a-phone__btns i {
+  display: block;
+  width: 100%;
+}
+.g2a-phone__btns--l {
+  right: 100%;
+  top: 103.711px;
+}
+.g2a-phone__btns--l i {
+  height: 50.454px;
+  border-radius: 2.803px 0 0 2.803px;
+  background: linear-gradient(to left, #0e0d0c, #1f1e1c);
+}
+.g2a-phone__btns--l i:first-child {
+  height: 28.03px;
+}
+.g2a-phone__btns--r {
+  left: 100%;
+  top: 168.179px;
+}
+.g2a-phone__btns--r i {
+  height: 58.863px;
+  border-radius: 0 2.803px 2.803px 0;
+  background: linear-gradient(to right, #0e0d0c, #1f1e1c);
+}
+.g2a-phone__body {
+  width: 100%;
+  height: 100%;
+  padding: 5.606px;
+  border-radius: 61.666px;
+  background: #3f3e3c;
+}
+.g2a-phone__screen {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1.401px solid #dddcda;
+  border-radius: 56.06px;
+  background: #fdfcfb;
+}
+.g2a-phone__island {
+  flex: none;
+  height: 67.272px;
+  display: flex;
+  justify-content: center;
+  padding-top: 11.212px;
+}
+.g2a-phone__island i {
+  display: block;
+  width: 134.544px;
+  height: 39.242px;
+  border-radius: 1000px;
+  background: #0e0d0c;
+}
+
+/* header (734:178389): 52 tall, 24 side padding */
+.g2a-phone__bar {
+  flex: none;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 0 24px;
+}
+.g2a-phone__title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  font-size: 14px;
+  line-height: 1.4;
+  font-weight: 400;
+  letter-spacing: -0.28px;
+  font-feature-settings: "ss07" 1, "ss08" 1;
+}
+.g2a-phone__title-text {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.g2a-phone__actions {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+.g2a-icon {
+  display: block;
+  flex: none;
+  width: 17.5px;
+  height: 17.5px;
+  max-width: none;
+}
+.g2a-phone__chev {
+  width: 14px;
+  height: 14px;
+}
+
+/* content = scrollable chat + composer */
+.g2a-phone__content {
+  flex: none;
+  height: 390px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 0 24px 20px;
+}
+.g2a-chat {
+  flex: 1 1 0;
+  min-height: 0;
+  margin: 0 -24px;
+  padding: 0 24px;
+  overflow-y: auto;
+  overscroll-behavior: auto;
+  scrollbar-width: none;
+  -webkit-mask: linear-gradient(transparent, #000 16px, #000 calc(100% - 12px), transparent);
+  mask: linear-gradient(transparent, #000 16px, #000 calc(100% - 12px), transparent);
+}
+.g2a-chat::-webkit-scrollbar {
+  display: none;
+}
+.g2a-chat:focus-visible {
+  outline: 2px solid #6b4fff;
+  outline-offset: -2px;
+}
+.g2a-chat__body {
+  display: flex;
+  flex-direction: column;
+  padding: 24px 0 12px;
+  font-size: 14px;
+  line-height: 1.4;
+  letter-spacing: -0.28px;
+}
+
+/* ---------- blocks ----------
+   Figma rhythm: 20 between a user bubble and Apollo's reply, 8 under "Worked…",
+   12 between the pieces of a reply. */
+.g2a-blk {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+.g2a-blk + .g2a-blk {
+  margin-top: 12px;
+}
+.g2a-blk--u + .g2a-blk,
+.g2a-blk + .g2a-blk--u {
+  margin-top: 20px;
+}
+.g2a-blk--w + .g2a-blk {
+  margin-top: 8px;
+}
+.g2a-blk--u {
+  align-items: flex-end;
+}
+.g2a-blk--p,
+.g2a-blk--b,
+.g2a-blk--l,
+.g2a-blk--f,
+.g2a-blk--t {
+  align-items: stretch;
+}
+.g2a-bubble {
+  max-width: calc(100% - 70px);
+  padding: 12px 14px;
+  border-radius: 6px;
+  background: #f6f4f2;
+}
+@keyframes g2a-shimmer {
+  from {
+    background-position: 100% 0;
+  }
+  to {
+    background-position: -50% 0;
+  }
+}
+.g2a-thinking {
+  align-self: flex-start;
+  min-height: 21px;
+  display: flex;
+  align-items: center;
+  color: transparent;
+  background-image: linear-gradient(90deg, #a9a8a6 0%, #a9a8a6 35%, #0e0d0c 50%, #a9a8a6 65%, #a9a8a6 100%);
+  background-size: 250% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  animation: g2a-shimmer 1.8s linear infinite;
+}
+.g2a-worked {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: #7a7977;
+}
+.g2a-worked__icon {
+  width: 21px;
+  height: 21px;
+}
+.g2a-para,
+.g2a-list {
+  font-feature-settings: "ss07" 1, "ss08" 1;
+}
+.g2a-listwrap {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.g2a-list {
+  padding: 0;
+  list-style: disc;
+}
+.g2a-list li {
+  margin-left: 21px;
+}
+
+/* outlined action button (734:178452) */
+.g2a-action {
+  display: inline-flex;
+  padding: 10.5px 17.5px;
+  border: 0.875px solid #dfdbff;
+  border-radius: 3.5px;
+  color: #6b4fff;
+  white-space: nowrap;
+}
+
+/* file card (734:178191) */
+.g2a-file {
+  display: flex;
+  align-items: center;
+  gap: 10.5px;
+  padding: 14px;
+  border-radius: 6px;
+  background: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+.g2a-file__name {
+  flex: 1 0 0;
+  min-width: 0;
+  overflow: hidden;
+  font-weight: 500;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.g2a-pdf {
+  position: relative;
+  display: block;
+  flex: none;
+  width: 15.313px;
+  height: 17.5px;
+  overflow: hidden;
+}
+.g2a-pdf img {
+  position: absolute;
+  display: block;
+  max-width: none;
+}
+.g2a-pdf__top {
+  position: absolute;
+  inset: 5.63% 5.71% 53.12% 5.71%;
+}
+.g2a-pdf__top img {
+  inset: -10.11% -5.38% -10.12% -5.38%;
+  width: calc(100% + 10.76%);
+  height: calc(100% + 20.23%);
+}
+.g2a-pdf__label {
+  inset: 65.63% 0.71% 1.56% 1.79%;
+  width: 97.5%;
+  height: 32.81%;
+}
+.g2a-sheet {
+  display: block;
+  flex: none;
+  width: 15.5px;
+  height: 17.5px;
+}
+
+/* table (734:178415): rows are grids with Figma's column widths (set inline) */
+.g2a-table {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: 6px;
+  background: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.04), 0 0 0 0.5px rgba(0, 0, 0, 0.05);
+  font-size: 12px;
+  line-height: 1.4;
+  letter-spacing: -0.24px;
+  font-feature-settings: "ss07" 1, "ss08" 1;
+  color: #3f3e3c;
+}
+.g2a-table__row {
+  display: grid;
+  border-bottom: 0.5px solid #e6e5e3;
+}
+.g2a-table__row:last-child {
+  border-bottom: 0;
+}
+.g2a-table__row--head {
+  background: #f6f4f2;
+  color: #0e0d0c;
+}
+.g2a-table__row--head .g2a-table__cell {
+  white-space: nowrap;
+}
+.g2a-table__cell {
+  min-width: 0;
+  padding: 8px 10px;
+}
+
+/* composer (734:178454) */
+.g2a-input {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  border-radius: 1000px;
+  background: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.04), 0 0 0 0.5px rgba(0, 0, 0, 0.05);
+  font-size: 14px;
+  line-height: 1.4;
+  letter-spacing: -0.28px;
+  color: #7a7977;
+}
+.g2a-input__l {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.g2a-input__r {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ---------- mobile (642:139714 / phone 667:141085: native 280-wide phone) ---------- */
+@media (max-width: 480px) {
+  .g2a {
+    padding-top: 0;
+  }
+  .g2a__inner {
+    padding: 0 24px;
+  }
+  /* centred heading, 16 between title and subtitle */
+  .g2a .g2a__heading.sh {
+    align-items: center;
+    text-align: center;
+  }
+  .g2a .g2a__heading .sh__title + .sh__sub {
+    margin-top: -4px;
+  }
+  .g2a-ring {
+    --g2a-ring-d: 120vw;
+    top: 60%;
+  }
+
+  .g2a__tabs-wrap {
+    justify-content: flex-start;
+    margin: 0 -24px 32px;
+  }
+  .g2a__tabs {
+    overflow-x: auto;
+    padding: 0 24px;
+    scrollbar-width: none;
+  }
+  .g2a__tabs::-webkit-scrollbar {
+    display: none;
+  }
+  .g2a__tab {
+    font-size: 16px;
+    letter-spacing: -0.32px;
+    padding: 8px 18px;
+  }
+  .g2a__pill {
+    background: #f6f4f2;
+  }
+
+  /* clip tall enough for the whole 584-tall phone (composer stays visible);
+     only the bottom bezel fades */
+  .g2a__clip {
+    height: 600px;
+    -webkit-mask: linear-gradient(#000 calc(100% - 40px), transparent);
+    mask: linear-gradient(#000 calc(100% - 40px), transparent);
+  }
+  .g2a-phone {
+    width: 272.48px;
+    height: 583.8px;
+  }
+  .g2a-phone__btns {
+    gap: 9.153px;
+    width: 3.661px;
+  }
+  .g2a-phone__btns--l {
+    top: 114.366px;
+  }
+  .g2a-phone__btns--l i {
+    height: 32.952px;
+    border-radius: 1.831px 0 0 1.831px;
+    background: #1f1e1c;
+  }
+  .g2a-phone__btns--l i:first-child {
+    height: 18.307px;
+  }
+  .g2a-phone__btns--r {
+    top: 177.045px;
+  }
+  .g2a-phone__btns--r i {
+    height: 54.861px;
+    border-radius: 0 1.831px 1.831px 0;
+    background: #1f1e1c;
+  }
+  .g2a-phone__body {
+    padding: 3.661px;
+    border-radius: 40.275px;
+  }
+  .g2a-phone__screen {
+    border-width: 0.935px;
+    border-radius: 37.388px;
+  }
+  .g2a-phone__island {
+    height: 44.865px;
+    padding-top: 7.478px;
+  }
+  .g2a-phone__island i {
+    width: 89.731px;
+    height: 26.172px;
+  }
+  .g2a-phone__bar {
+    height: 44.557px;
+    padding: 0 19.986px;
+  }
+  .g2a-phone__title {
+    gap: 5.141px;
+    font-size: 13.714px;
+    letter-spacing: -0.274px;
+  }
+  .g2a-phone__actions {
+    gap: 17.137px;
+  }
+  /* Figma hides link + edit on the phone (opacity 0), keeping only close; removed
+     outright here so long chat titles don't truncate behind invisible icons */
+  .g2a-phone__act-opt {
+    display: none;
+  }
+  .g2a-icon {
+    width: 14.995px;
+    height: 14.995px;
+  }
+  .g2a-phone__chev {
+    width: 11.996px;
+    height: 11.996px;
+  }
+  .g2a-phone__content {
+    flex: 1 1 0;
+    height: auto;
+    min-height: 0;
+    gap: 10px;
+    padding: 0 19.986px 19.986px;
+  }
+  .g2a-chat {
+    margin: 0 -19.986px;
+    padding: 0 19.986px;
+  }
+  .g2a-chat__body {
+    padding: 19.986px 0 10px;
+    font-size: 11.996px;
+    letter-spacing: -0.24px;
+  }
+  .g2a-blk + .g2a-blk {
+    margin-top: 10px;
+  }
+  .g2a-blk--u + .g2a-blk,
+  .g2a-blk + .g2a-blk--u {
+    margin-top: 11.991px;
+  }
+  .g2a-blk--w + .g2a-blk {
+    margin-top: 7px;
+  }
+  .g2a-bubble {
+    max-width: calc(100% - 39.971px);
+    padding: 9.993px;
+    border-radius: 5.996px;
+  }
+  .g2a-thinking {
+    min-height: 18px;
+  }
+  .g2a-worked {
+    gap: 6px;
+  }
+  .g2a-worked__icon {
+    width: 18px;
+    height: 18px;
+  }
+  .g2a-list li {
+    margin-left: 18px;
+  }
+  .g2a-action {
+    padding: 9px 15px;
+    border-width: 0.75px;
+    border-radius: 3px;
+  }
+  .g2a-file {
+    gap: 9px;
+    padding: 12px;
+    border-radius: 5px;
+  }
+  .g2a-pdf {
+    width: 13.125px;
+    height: 15px;
+  }
+  .g2a-sheet {
+    width: 13.3px;
+    height: 15px;
+  }
+  .g2a-table {
+    font-size: 10.3px;
+    letter-spacing: -0.2px;
+    border-radius: 5px;
+  }
+  .g2a-table__cell {
+    padding: 7px 8.5px;
+  }
+  .g2a-input {
+    padding: 11.996px 13.71px;
+    font-size: 11.996px;
+    letter-spacing: -0.24px;
+    box-shadow: 0 1.714px 3.427px rgba(0, 0, 0, 0.04), 0 0.857px 1.714px rgba(0, 0, 0, 0.04),
+      0 0 0 0.428px rgba(0, 0, 0, 0.05);
+  }
+  .g2a-input__l {
+    gap: 5.141px;
+  }
+  .g2a-input__r {
+    gap: 6.855px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .g2a-thinking {
+    animation: none;
+  }
+  .g2a__tab {
+    transition: none;
+  }
+}

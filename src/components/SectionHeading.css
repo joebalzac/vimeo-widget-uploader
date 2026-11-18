@@ -33,6 +33,21 @@
   color: #fff;
 }
 
+.sh__title + .sh__sub {
+  margin-top: -8px; /* 12px from the headline (flex gap is 20) */
+}
+.sh__sub {
+  margin: 0;
+  font-size: 18px;
+  line-height: 1.4;
+  letter-spacing: -0.36px;
+  font-feature-settings: "ss07" 1;
+  color: #7a7977;
+}
+.sh--dark .sh__sub {
+  color: #dddcda;
+}
+
 .sh__eyebrow {
   display: flex;
   align-items: center;
@@ -69,5 +84,8 @@
     font-size: 36px;
     letter-spacing: -1.08px;
     max-width: none !important;
+  }
+  .sh__sub {
+    font-size: 16px;
   }
 }

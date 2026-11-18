@@ -3,8 +3,12 @@ import { motion, type Variants } from "framer-motion";
 import "./OperatorTestimonials.css";
 import { DEFAULT_TESTIMONIALS, type Testimonial } from "./operatorTestimonialsData";
 
+export type OperatorTestimonialsLayout = "single" | "row";
+
 export interface OperatorTestimonialsProps {
   items?: Testimonial[];
+  /** "single" shows only the first non-empty quote as one featured card; "row" shows up to three. */
+  layout?: OperatorTestimonialsLayout;
   className?: string;
 }
 
@@ -24,13 +28,19 @@ const cardV = (i: number): Variants => ({
  * OperatorTestimonials — three quote cards in a bordered row ("What Operators Are Saying").
  * Figma: node 204:8333 (desktop), 214:15428 (mobile), .com_2027. The heading is a separate
  * SectionHeading. Cards fade up in sequence on scroll and tint on hover; they stack at <=1000px.
+ * layout="single" renders just the first quote as one larger featured card.
  */
-export default function OperatorTestimonials({ items = DEFAULT_TESTIMONIALS, className }: OperatorTestimonialsProps) {
-  const visible = items.filter((t) => t.quote.trim());
+export default function OperatorTestimonials({
+  items = DEFAULT_TESTIMONIALS,
+  layout = "single",
+  className,
+}: OperatorTestimonialsProps) {
+  const filled = items.filter((t) => t.quote.trim());
+  const visible = layout === "single" ? filled.slice(0, 1) : filled;
   if (!visible.length) return null;
   return (
     <motion.div
-      className={["opt", className].filter(Boolean).join(" ")}
+      className={["opt", layout === "single" && "opt--single", className].filter(Boolean).join(" ")}
       initial="pre"
       whileInView="in"
       viewport={{ once: true, amount: 0.18, margin: "0px 0px -6% 0px" }}

@@ -1,0 +1,140 @@
+/* Gen2Stats — handoff 07 (Figma 590:46214, mobile 667:141163). Full-bleed dark section. */
+
+.g2s {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0 40px; /* vertical spacing comes from the Webflow section */
+  color: #fff;
+  font-family: inter-variable, Inter, system-ui, sans-serif;
+  font-variation-settings: "opsz" 32;
+  -webkit-font-smoothing: antialiased;
+}
+.g2s-inner {
+  max-width: 1160px;
+  margin: 0 auto;
+}
+
+/* Boxed 3-column row: each Figma box has a 1px border/primary (#3F3E3C) outline, overlapped by 1px */
+.g2s-row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  border: 1px solid #3f3e3c;
+}
+.g2s-box {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 24px;
+  padding: 31px; /* 32 in Figma, minus the shared 1px border */
+  box-sizing: border-box;
+}
+.g2s-box + .g2s-box {
+  border-left: 1px solid #3f3e3c;
+}
+
+.g2s-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.g2s-num {
+  display: inline-grid;
+  justify-self: start;
+  font-size: 72px;
+  line-height: 1.1;
+  font-weight: 400;
+  letter-spacing: -0.03em;
+  font-feature-settings: "ss07" 1;
+  color: #fff;
+}
+.g2s-num__ghost,
+.g2s-num__live {
+  grid-area: 1 / 1;
+}
+.g2s-num__ghost {
+  visibility: hidden;
+}
+.g2s-label {
+  font-size: 18px;
+  line-height: 1.4;
+  letter-spacing: -0.36px;
+  font-feature-settings: "ss07" 1;
+  color: #dddcda;
+}
+
+/* Logo slot (Figma: 48 tall, logo centred vertically, left-aligned).
+   Opacity on the <img> only, never on a parent (would break the optional blend). */
+.g2s-logo {
+  display: flex;
+  align-items: center;
+  height: 48px;
+  max-width: 100%;
+  overflow: hidden;
+}
+.g2s-logo__img,
+.g2s-logo__word {
+  transition: opacity 0.8s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+.g2s-logo__img {
+  display: block;
+  flex: none;
+  max-width: 100%;
+}
+/* Raster logos with a baked-in grey box: screen the white mark onto the dark bg. */
+.g2s-logo__img--blend {
+  mix-blend-mode: screen;
+  filter: grayscale(1) contrast(2.3);
+}
+.g2s-logo__word {
+  font-family: inter-variable, Inter, system-ui, sans-serif;
+  font-weight: 600;
+  font-size: 18px;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+@media (max-width: 761px) {
+  .g2s {
+    padding: 0 24px;
+  }
+  .g2s .sh,
+  .g2s .sh--center {
+    align-items: center;
+    text-align: center;
+    gap: 6px;
+    padding-bottom: 32px;
+  }
+  .g2s .sh__title + .sh__sub {
+    margin-top: 0;
+  }
+  .g2s .sh__sub {
+    max-width: 288px;
+    font-size: 18px;
+  }
+  .g2s-row {
+    grid-template-columns: 1fr;
+  }
+  .g2s-box {
+    padding: 23px;
+  }
+  .g2s-box + .g2s-box {
+    border-left: 0;
+    border-top: 1px solid #3f3e3c;
+  }
+  .g2s-num {
+    font-size: 48px;
+  }
+  .g2s-label {
+    font-size: 16px;
+    letter-spacing: -0.32px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .g2s-logo__img,
+  .g2s-logo__word {
+    transition: none;
+  }
+}
