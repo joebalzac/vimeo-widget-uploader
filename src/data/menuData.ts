@@ -74,6 +74,11 @@ export const menuData: Record<string, MegaMenuData> = {
               href: "/apollo",
             },
             {
+              title: "Tour Intelligence",
+              description: "Turn more tours into leases",
+              href: "/tour-intelligence",
+            },
+            {
               title: "EliseCRM",
               description: "Centralize contacts, conversations, & insights",
               href: "/elisecrm",
