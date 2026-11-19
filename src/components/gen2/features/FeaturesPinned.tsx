@@ -60,26 +60,61 @@ export function FeaturesPinnedView({
   const reduced = !!useReducedMotion();
   const gridRef = useRef<HTMLDivElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
-  const shift = useRef(0);
+  const pinRef = useRef({ mode: "sticky" as "sticky" | "fixed" | "transform", phase: "", box: "", shift: 0 });
   const [gridH, setGridH] = useState(0);
 
   /* Pin fallback. The stage is `position: sticky`, but sticky silently stops working when an
-     ancestor sets overflow hidden/clip (common in Webflow: body overflow-x, sections, wrappers).
-     Each frame, compare where sticky would hold the stage with where it actually is, and make
-     up the difference with a transform. When sticky works the difference is 0. */
+     ancestor sets overflow hidden/auto (common in Webflow: sections, wrappers, body). If, while
+     the track spans the viewport, the stage isn't held at the top, switch to a "fixed" pin:
+     the stage sits at the top of the track before the pin, `position: fixed` (lined up with
+     the track) while pinned, and at the bottom of the track after. The browser positions fixed
+     elements itself, so there's no per-frame lag; styles only change at the two edges. If an
+     ancestor transform stops `fixed` from working too, fall back to a transform offset. */
   usePageScroll(() => {
     const track = trackRef.current;
     const stage = stageRef.current;
     if (!track || !stage) return;
     const r = track.getBoundingClientRect();
     const h = stage.offsetHeight;
-    const want = r.top > 0 ? r.top : Math.min(0, r.bottom - h);
-    const natural = stage.getBoundingClientRect().top - shift.current;
-    let next = want - natural;
-    if (Math.abs(next) < 0.5) next = 0;
-    if (next !== shift.current) {
-      shift.current = next;
-      stage.style.transform = next ? `translate3d(0, ${next}px, 0)` : "";
+    const pinned = r.top <= 0 && r.bottom > h;
+    const pin = pinRef.current;
+
+    if (pin.mode === "sticky") {
+      // Sticky works if the stage sits at the viewport top while the track spans it.
+      if (!pinned || r.top > -2 || r.bottom < h + 2) return;
+      if (Math.abs(stage.getBoundingClientRect().top) <= 2) return;
+      pin.mode = "fixed";
+    }
+
+    if (pin.mode === "transform") {
+      const want = r.top > 0 ? r.top : Math.min(0, r.bottom - h);
+      const natural = stage.getBoundingClientRect().top - pin.shift;
+      let next = want - natural;
+      if (Math.abs(next) < 0.5) next = 0;
+      if (next !== pin.shift) {
+        pin.shift = next;
+        stage.style.transform = next ? `translate3d(0, ${next}px, 0)` : "";
+      }
+      return;
+    }
+
+    // fixed mode
+    const phase = r.top > 0 ? "top" : pinned ? "fixed" : "bottom";
+    const box = `${Math.round(r.left)}:${Math.round(r.width)}`;
+    if (phase === pin.phase && (phase !== "fixed" || box === pin.box)) return;
+    pin.phase = phase;
+    pin.box = box;
+    const st = stage.style;
+    st.left = phase === "fixed" ? `${r.left}px` : "0px";
+    st.width = `${r.width}px`;
+    st.position = phase === "fixed" ? "fixed" : "absolute";
+    st.top = phase === "bottom" ? "auto" : "0px";
+    st.bottom = phase === "bottom" ? "0px" : "auto";
+    // An ancestor transform makes `fixed` behave like `absolute`; detect and degrade.
+    if (phase === "fixed" && Math.abs(stage.getBoundingClientRect().top) > 2) {
+      st.position = st.left = st.width = st.top = st.bottom = "";
+      pin.mode = "transform";
+      pin.phase = "";
     }
   });
 
