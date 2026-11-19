@@ -66,8 +66,8 @@ export default declareComponent(Gen2StatsAdapter, {
   group: "Gen2",
 
   props: {
-    heading: props.Text({ name: "Heading", defaultValue: "The AI That Drives Asset Performance" }),
-    subtitle: props.Text({ name: "Subtitle", defaultValue: "Third-party syndicated to drive financial results." }),
+    heading: props.Text({ name: "Heading", defaultValue: "AI That Drives Asset Performance" }),
+    subtitle: props.Text({ name: "Subtitle", defaultValue: "The right AI product directly produces financial results, unlike previous technologies." }),
     logoBlend: props.Boolean({
       name: "Logo Blend",
       defaultValue: false,

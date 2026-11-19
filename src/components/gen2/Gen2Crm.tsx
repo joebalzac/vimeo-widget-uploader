@@ -37,7 +37,7 @@ const WORD_COUNT = REPLY.reduce((n, p) => n + p.length, 0);
  */
 export default function Gen2Crm({
   heading = "EliseCRM Takes the Work Off Your Team",
-  subtitle = "The AI workspace for your team.",
+  subtitle = "Improve team retention as much as 50% with a CRM built around AI.",
 }: Gen2CrmProps) {
   const stageRef = useRef<HTMLDivElement>(null);
   const [step, setStep] = useState(0);

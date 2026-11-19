@@ -55,15 +55,15 @@ function Counter({ value, run, delay, reduced }: { value: string; run: boolean; 
 }
 
 /**
- * Gen2Stats — "The AI That Drives Asset Performance" (handoff 07, Figma 590:46214 / mobile
+ * Gen2Stats — "AI That Drives Asset Performance" (handoff 07, Figma 590:46214 / mobile
  * 667:141163). White-on-dark,
  * full-bleed; the dark background and vertical padding come from the Webflow section.
  * Three boxed stats count up when half in view; logos fade in on their
  * own, with no fading/transformed parent, so the screen blend never flashes the grey box.
  */
 export default function Gen2Stats({
-  heading = "The AI That Drives Asset Performance",
-  subtitle = "Third-party syndicated to drive financial results.",
+  heading = "AI That Drives Asset Performance",
+  subtitle = "The right AI product directly produces financial results, unlike previous technologies.",
   stats = DEFAULT_STATS,
   logoBlend = false,
   className,
