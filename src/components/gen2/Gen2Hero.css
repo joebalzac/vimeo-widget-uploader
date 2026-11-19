@@ -82,41 +82,15 @@
   margin-top: 48px;
 }
 
-/* Figma 697:176882: the haze image with its Color-adjust shader, 50px blur and 40% opacity
-   baked into the export (spans hero y 277 → 990, i.e. 244px above Prospects to the bottom). */
-.g2h-haze {
-  position: absolute;
-  z-index: -1;
-  top: -228px;
-  left: 0;
-  display: block;
-  width: 100%;
-  height: 713px;
-  max-width: none;
-  object-fit: fill;
-  pointer-events: none;
-  user-select: none;
-}
-
-/* Figma 697:176884: azure field, 100px blur, top at Prospects + 270.5, over the board. */
-.g2h-fade {
-  position: absolute;
-  z-index: 6;
-  top: 286.5px;
-  left: 7px;
-  width: 100%;
-  height: 869px;
-  background: linear-gradient(to right, #f5f8ff, #f2f5ff 50%, #f2f5ff);
-  filter: blur(100px);
-  pointer-events: none;
-}
-
 /* ── Board ───────────────────────────────────────────────── */
 .g2h-board {
   position: relative;
   height: 100%;
   padding-top: 16px;
   box-sizing: border-box;
+  /* Handoff 02: the board fades out from 68% to 96% of its height. */
+  -webkit-mask-image: linear-gradient(to bottom, #000 68%, transparent 96%);
+  mask-image: linear-gradient(to bottom, #000 68%, transparent 96%);
 }
 .g2h-board__cols {
   display: grid;
@@ -361,10 +335,6 @@
      64px gap and ends the hero at Figma's 852px height. */
   .g2h-stage {
     height: 438px;
-  }
-  .g2h-haze,
-  .g2h-fade {
-    display: none;
   }
   .g2h-board {
     -webkit-mask-image: linear-gradient(to bottom, #000 62%, transparent 96%);

@@ -3,7 +3,6 @@ import "./shared/shared.css";
 import "./Gen2Hero.css";
 import { Reveal } from "./shared";
 import Gen2Board from "./hero/Gen2Board";
-import heroBg from "../../assets/gen2/hero/hero-bg.webp";
 
 export interface Gen2HeroProps {
   heading?: string;
@@ -61,9 +60,8 @@ export default function Gen2Hero({
         )}
       </div>
       <div className="g2h-stage">
-        <img className="g2h-haze" src={heroBg} alt="" aria-hidden />
+        {/* No background of its own: the Webflow section supplies it. */}
         <Gen2Board />
-        <div className="g2h-fade" aria-hidden />
       </div>
     </section>
   );
