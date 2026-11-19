@@ -1,6 +1,7 @@
 import type { CSSProperties } from "react";
 import NewTag from "../shared/NewTag";
 import arrow from "../../../assets/gen2/features/arrow-up-right.svg";
+import check from "../../../assets/gen2/features/check.svg";
 import type { Feature } from "./featuresData";
 
 export interface FTextProps {
@@ -12,26 +13,29 @@ export interface FTextProps {
 const ARROW = { "--g2f-arrow": `url("${arrow}")` } as CSSProperties;
 
 /**
- * Text for one product (Figma 618:6983 / 642:140236): title (+ NEW tag) and description,
- * then the What's New list with Learn More ↗ under it. Sizes come from the parent
- * (`.g2f-pinned` 36/18/16, `.g2f-stack` 20/16/14).
+ * Text for one product (handoff 04 v109/v120): a Plex Mono caps name tag (+ NEW) above
+ * the H3 headline, then the What's New list (14px checks) with Learn More ↗ under it.
+ * Sizes come from the parent (`.g2f-pinned` 36/16, `.g2f-stack` 20/14).
  */
 export default function FText({ feature, href, learnMoreLabel = "Learn More" }: FTextProps) {
   return (
     <div className="g2f-text">
       <div className="g2f-text__top">
-        <h3 className="g2f-text__title">
-          {feature.title}
+        <p className="g2f-text__name">
+          {feature.name}
           {feature.isNew && <NewTag />}
-        </h3>
-        <p className="g2f-text__desc">{feature.description}</p>
+        </p>
+        <h3 className="g2f-text__title">{feature.title}</h3>
       </div>
       <div className="g2f-text__bottom">
         <div className="g2f-new-list">
           <p className="g2f-new-list__label">What’s New</p>
           <ul className="g2f-new-list__items">
             {feature.whatsNew.map((item) => (
-              <li key={item}>{item}</li>
+              <li key={item}>
+                <img src={check} alt="" width={14} height={14} />
+                {item}
+              </li>
             ))}
           </ul>
         </div>

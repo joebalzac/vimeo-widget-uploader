@@ -116,14 +116,14 @@ function Arrows({ onPrev, onNext, className }: { onPrev: () => void; onNext: () 
 }
 
 /**
- * Gen2Stories — "Trusted by Operators of All Sizes" (handoff 09, Figma 642:58325 / mobile
+ * Gen2Stories — "Trusted by Operators of All Size" (handoff 09, Figma 642:58325 / mobile
  * 667:141205). Header with
  * prev/next arrows, then the quote + name/role beside a video poster (play opens a black
  * lightbox), then a segmented progress bar. Autoplays 8s per story while in view; pauses on
  * video hover, while the lightbox is open, and entirely under reduced motion.
  */
 export default function Gen2Stories({
-  heading = "Trusted by Operators of All Sizes",
+  heading = "Trusted by Operators of All Size",
   subtitle = "Automatically route tasks to the right teams.",
   subtitleMobileOnly = true,
   stories = DEFAULT_STORIES,
@@ -202,6 +202,10 @@ export default function Gen2Stories({
               </motion.figure>
             </AnimatePresence>
           </div>
+          {/* handoff 09 mobile: arrows sit under the quote, left-aligned (hidden on desktop) */}
+          {count > 1 && (
+            <Arrows className="g2st-arrows--mob" onPrev={() => go(cur - 1)} onNext={() => go(cur + 1)} />
+          )}
         </div>
 
         <div

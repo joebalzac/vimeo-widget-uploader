@@ -1,10 +1,10 @@
-# 09 · Trusted by Operators of All Sizes
+# 09 · Trusted by Operators of All Size
 
 **Code:** `Stories3`, data `ST3`. **Figma:** 642:58325; mobile 667:141205.
 
 ## Copy
 
-- H2: **Trusted by Operators of All Sizes**
+- H2: **Trusted by Operators of All Size**
 - Subtitle: **Automatically route tasks to the right teams.** (placeholder copy in Figma; confirm with marketing)
 
 | # | Quote | Name | Role |
@@ -27,3 +27,6 @@
 - **Autoplay:** each story lasts 8s, with a linear progress fill. It pauses on video hover and only runs in view.
 - **Quote change:** opacity and y crossfade (0.4s / 0.5s).
 - **Reveals:** header, arrows, row and progress bar all use `Reveal`.
+
+## Video thumbnails (v120) — Figma 886:180453
+Sarah (first) · Ariel · Carynes. Posters are 1422×800 (2×) renders of the Figma frames, `object-fit:cover`, cross-fade .5s with the quote; play button sits on top.

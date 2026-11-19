@@ -1,7 +1,8 @@
 import "../../utils/interVariableFont";
 import { useId, useLayoutEffect, useRef, useState } from "react";
-import { animate, motion, useMotionValue, useMotionValueEvent } from "framer-motion";
+import { animate, motion, useMotionValue, useMotionValueEvent, type MotionValue } from "framer-motion";
 import SectionHeading from "../SectionHeading";
+import { FEATURES } from "./features/featuresData";
 import { DRAW, E, Reveal, useLoop } from "./shared";
 import bgPatternUrl from "../../assets/gen2/journey/bg-pattern.svg";
 import fadeUrl from "../../assets/gen2/journey/ellipse.svg";
@@ -14,19 +15,36 @@ export interface Gen2JourneyProps {
   subtitle?: string;
   /** Six product labels, clockwise from the top. Missing entries fall back to the defaults. */
   products?: string[];
-  /** The small static purple dots on the spokes (Figma). */
+  /** The small static purple dots on the spokes (Figma). Off: the handoff says "no dots". */
   dots?: boolean;
+  /**
+   * Scroll-linked mode (the "Flatten" choreography, handoff 03). When set, the time loop is
+   * off: `sweep` (0→1) draws the purple arc once and lights the products as it passes;
+   * `heading` and `ring` are opacities for the heading block and for the ring graphic
+   * (ring, names, dots, Apollo and background) so they can fade out on scroll.
+   */
+  scroll?: {
+    sweep: MotionValue<number>;
+    heading: MotionValue<number>;
+    ring: MotionValue<number>;
+  };
   className?: string;
 }
 
-const DEFAULT_PRODUCTS = [
-  "LeasingAI",
-  "Tour Intelligence",
-  "AI-Guided Touring",
-  "Maintenance",
-  "Delinquency",
-  "Renewals",
-];
+export const DEFAULT_SUBTITLE =
+  "From first inquiry to lease renewal, Elise handles it all, across text, voice, email, and web chat.";
+/** Ring labels (v117 names), clockwise from the top: the same products as Features. */
+const DEFAULT_PRODUCTS = FEATURES.map((f) => f.name);
+
+/** Side labels break onto two lines at the space nearest the middle ("Tour / Intelligence"). */
+function twoLines(label: string) {
+  const mid = label.length / 2;
+  let best = -1;
+  for (let i = 0; i < label.length; i++) {
+    if (label[i] === " " && (best < 0 || Math.abs(i - mid) < Math.abs(best - mid))) best = i;
+  }
+  return best < 0 ? label : `${label.slice(0, best)}\n${label.slice(best + 1)}`;
+}
 
 /*
  * Stage geometry. Figma's graphic container (697:176919) is 1200×600 with the circle centred at
@@ -151,9 +169,10 @@ function useFit(frameRef: React.RefObject<HTMLDivElement | null>) {
  */
 export default function Gen2Journey({
   heading = "The Ideal Renter Journey",
-  subtitle = "From first inquiry to lease renewal, Elise handles it all across text, voice, email, and web chat.",
+  subtitle = DEFAULT_SUBTITLE,
   products = DEFAULT_PRODUCTS,
-  dots = true,
+  dots = false,
+  scroll,
   className,
 }: Gen2JourneyProps) {
   const uid = useId().replace(/[^a-zA-Z0-9_-]/g, "");
@@ -161,7 +180,8 @@ export default function Gen2Journey({
   const { scale, mobile, top } = useFit(frameRef);
   const stageH = mobile ? STAGE_H_MOB : STAGE_H_DESK;
 
-  const progress = useMotionValue(0);
+  const ownProgress = useMotionValue(0);
+  const progress = scroll?.sweep ?? ownProgress;
   const leadRef = useRef<SVGPathElement>(null);
   const gradRef = useRef<SVGLinearGradientElement>(null);
   const [lit, setLit] = useState(0);
@@ -192,12 +212,23 @@ export default function Gen2Journey({
     grad.setAttribute("y2", String(p1.y));
   };
 
+  /* Lit products follow the sweep head. The loop resets its own count at 0; scroll mode
+     unlights everything when the sweep is scrolled back to 0. */
+  const litFor = (v: number) =>
+    v <= 0 ? (scroll ? 0 : litRef.current) : Math.min(6, Math.floor(v * 6 + 1e-4) + 1);
   useMotionValueEvent(progress, "change", (v) => {
     drawLead(v);
-    setLitN(v <= 0 ? litRef.current : Math.min(6, Math.floor(v * 6 + 1e-4) + 1));
+    setLitN(litFor(v));
   });
+  useLayoutEffect(() => {
+    if (!scroll) return;
+    drawLead(scroll.sweep.get());
+    setLitN(litFor(scroll.sweep.get()));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [scroll?.sweep]);
 
   const { reduced } = useLoop(frameRef, async ({ wait, alive }) => {
+    if (scroll) return; // scroll-linked: no time loop
     while (alive()) {
       progress.stop();
       progress.set(0);
@@ -211,27 +242,34 @@ export default function Gen2Journey({
     }
   });
 
-  const shown = reduced ? 6 : lit;
+  /* Reduced motion shows the fully lit ring (scroll mode is never used under reduced motion). */
+  const still = reduced && !scroll; // jump, don't tween
+  const shown = still ? 6 : lit;
   const labels = DEFAULT_PRODUCTS.map((d, i) => products[i]?.trim() || d);
 
   return (
     <div className={["g2j", className].filter(Boolean).join(" ")}>
       {/* Background (Figma 697:176897): grid + grey spokes under a radial fade, centred on the
           circle. Clipped to the section; bleeds past the container gutters on phones. */}
-      <div className="g2j-bg" aria-hidden="true">
+      <motion.div className="g2j-bg" aria-hidden="true" style={{ opacity: scroll?.ring }}>
         <div className="g2j-bg__scene" style={{ top: top + CY * scale, transform: `scale(${scale})` }}>
-          <img className="g2j-bg__pattern" src={bgPatternUrl} alt="" width={1665.4} height={1162.87} />
-          <img className="g2j-bg__fade" src={fadeUrl} alt="" width={1994.33} height={1994.33} />
+          {/* v124: the grid's fades are centred on the ring (a 1440×940 box with the ring at 720,583). */}
+          <div className="g2j-bg__mask">
+            <img className="g2j-bg__pattern" src={bgPatternUrl} alt="" width={1665.4} height={1162.87} />
+            <img className="g2j-bg__fade" src={fadeUrl} alt="" width={1994.33} height={1994.33} />
+          </div>
         </div>
-      </div>
+      </motion.div>
 
       {/* Figma 697:176887: the hero's azure field continuing over the top of this frame. */}
-      <div className="g2j-haze" aria-hidden="true" />
+      <motion.div className="g2j-haze" aria-hidden="true" style={{ opacity: scroll?.heading }} />
 
-      <SectionHeading heading={heading} subtitle={subtitle} align="center" maxWidth={520} />
+      <motion.div className="g2j-head" style={{ opacity: scroll?.heading }}>
+        <SectionHeading heading={heading} subtitle={subtitle} align="center" maxWidth={520} />
+      </motion.div>
 
       <Reveal delay={0.2} className="g2j-fit">
-        <div ref={frameRef} className="g2j-frame" style={{ height: stageH * scale }}>
+        <motion.div ref={frameRef} className="g2j-frame" style={{ height: stageH * scale, opacity: scroll?.ring }}>
           <div
             className="g2j-stage"
             style={{ transform: `translateX(-50%) scale(${scale})` }}
@@ -290,12 +328,12 @@ export default function Gen2Journey({
                       initial={false}
                       animate={{ pathLength: on ? 1 : 0, opacity: on ? 1 : 0 }}
                       transition={
-                        reduced
+                        still
                           ? { duration: 0 }
                           : { pathLength: { duration: 0.9, ease: DRAW }, opacity: { duration: 0.3 } }
                       }
                     />
-                    {on && !reduced && (
+                    {on && !still && (
                       <motion.line
                         x1={n.ix}
                         y1={n.iy}
@@ -330,9 +368,9 @@ export default function Gen2Journey({
                 stroke="#6B4FFF"
                 strokeWidth="1.5"
                 transform={`rotate(-90 ${CX} ${CY})`}
-                style={{ pathLength: reduced ? 1 : progress }}
+                style={{ pathLength: still ? 1 : progress }}
               />
-              {!reduced && <path ref={leadRef} fill="none" stroke={`url(#${uid}-lead)`} strokeWidth="1.5" />}
+              {!still && <path ref={leadRef} fill="none" stroke={`url(#${uid}-lead)`} strokeWidth="1.5" />}
             </svg>
 
             {dots &&
@@ -355,7 +393,7 @@ export default function Gen2Journey({
                   stroke="#6B4FFF"
                   strokeWidth="1"
                   transform="rotate(-90 59 59)"
-                  style={{ pathLength: reduced ? 1 : progress }}
+                  style={{ pathLength: still ? 1 : progress }}
                 />
               </svg>
               <div className="g2j-apollo__disc">
@@ -367,7 +405,7 @@ export default function Gen2Journey({
               <i
                 key={`n${i}`}
                 className={i < shown ? "g2j-node is-on" : "g2j-node"}
-                style={{ left: n.x, top: n.y, transitionDuration: reduced ? "0s" : undefined }}
+                style={{ left: n.x, top: n.y, transitionDuration: still ? "0s" : undefined }}
               />
             ))}
 
@@ -380,16 +418,16 @@ export default function Gen2Journey({
                     className="g2j-label__txt"
                     initial={false}
                     animate={on ? { opacity: 1, x: 0, y: 0 } : { opacity: 0, x: off.x, y: off.y }}
-                    transition={{ duration: reduced ? 0 : 0.4, ease: E }}
+                    transition={{ duration: still ? 0 : 0.4, ease: E }}
                   >
-                    {/* Side labels stack one word per line (Figma: "Tour / Intelligence") */}
-                    {n.side === "r" || n.side === "l" ? labels[i].split(/\s+/).join("\n") : labels[i]}
+                    {/* Side labels break onto two lines (Figma: "Tour / Intelligence") */}
+                    {n.side === "r" || n.side === "l" ? twoLines(labels[i]) : labels[i]}
                   </motion.span>
                 </div>
               );
             })}
           </div>
-        </div>
+        </motion.div>
       </Reveal>
     </div>
   );

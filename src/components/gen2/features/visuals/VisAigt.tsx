@@ -16,7 +16,7 @@ import dotSvg from "../../../../assets/gen2/features/aigt/dot.svg";
 import "./VisAigt.css";
 
 /**
- * AI-Guided Touring visual (Figma 636:54096 → 636:55403). Oakview self-guided tour app in
+ * AI Guided Tours visual (Figma 636:54096 → 636:55403). Oakview self-guided tour app in
  * an iPhone frame (drawn 1:1 in card space, x176 y40): header, aerial map with the Floor
  * pill and pins 1 and 2, the Welcome sheet (door code + Tour Itinerary). A touch cursor
  * presses the sheet handle and drags up; the Apt. 6A sheet rises from exactly where the

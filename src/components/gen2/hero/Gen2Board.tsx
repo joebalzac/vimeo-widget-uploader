@@ -23,7 +23,7 @@ function useIsMobile() {
 }
 
 /**
- * Gen2 hero board (Figma 761:1949): Prospects / Calendar / Residents with the story loop.
+ * Gen2 hero board (Figma 761:1949): Prospects / Calendar / Residents with the one-pass "Elise acting" sequence.
  * Layout and styling live in Gen2Hero.css (`g2h-board`, `g2h-col`, `g2h-card`).
  */
 export default function Gen2Board() {

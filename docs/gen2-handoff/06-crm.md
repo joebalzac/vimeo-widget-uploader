@@ -1,10 +1,10 @@
-# 06 · EliseCRM Takes the Work off Your Team
+# 06 · EliseCRM Takes the Work Off Your Team
 
 **Code:** `CrmV2`, data `CRM_TASKS`, `CRM_R`. **Figma:** 618:4862 → 618:9972; mobile 642:139552.
 
 ## Copy
 
-- H2: **EliseCRM Takes the Work off Your Team**
+- H2: **EliseCRM Takes the Work Off Your Team**
 - Subtitle: **The AI workspace for your team.**
 
 ## Layout
@@ -35,3 +35,5 @@
 4. At +1.4s, the AI Assistant reply appears. All words are laid out from the start (so the bubble never resizes) and fade in at 34ms per word.
    - The reply follows the Figma 3-line breaks when the bubble fits (container query).
 5. Hold 6s, loop.
+
+## v120: mobile frame height 470px (was 620) now that the reply bar is gone.

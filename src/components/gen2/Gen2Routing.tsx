@@ -59,7 +59,7 @@ interface EnTask {
 }
 const EN_TASKS: EnTask[] = [
   { title: "Promise To Pay", person: "Maya Bennett", team: "Delinquency Team" },
-  { title: "Generate Lease Renewal", person: "Maya Bennett", team: "Onsite Team" },
+  { title: "Prepare Renewal Offer", person: "Maya Bennett", team: "Onsite Team" },
 ];
 
 /* ── Desktop geometry (Figma 642:129547): a fixed 1160×600 space scaled to the stage ── */
@@ -255,14 +255,14 @@ function DesktopCanvas({ s, reduced }: { s: number; reduced: boolean }) {
   );
 }
 
-/** Gradient pulse (Figma 642:139549: #8571FC → #60AFFF): dash segments, tail → head. */
+/** Lilac gradient pulse (handoff 08: #C1BAFE → #A093FD, crisp 1px): dash segments, tail → head. */
 const SEG = 0.035;
 const PULSE_COLORS: [string, number][] = [
-  ["#8571FC", 0.35],
-  ["#8571FC", 1],
-  ["#7290FD", 1],
-  ["#60AFFF", 1],
-  ["#60AFFF", 0.35],
+  ["#C1BAFE", 0.35],
+  ["#C1BAFE", 1],
+  ["#B0A6FE", 1],
+  ["#A093FD", 1],
+  ["#A093FD", 0.35],
 ];
 function Pulse({ d, on }: { d: string; on: boolean }) {
   if (!on) return null;
@@ -313,8 +313,10 @@ function EmailCard({ s, reduced }: { s: number; reduced: boolean }) {
     <motion.div
       className={routing ? "g2r__card is-routing" : "g2r__card"}
       initial={false}
+      /* unrolls with an outset clip (−24px) so the shadow isn't cut; its box is laid out at
+         final size from the start, so the (mobile) column never grows (handoff v123) */
       animate={{
-        clipPath: open ? "inset(0% 0% 0% 0% round 10px)" : "inset(0% 0% 100% 0% round 10px)",
+        clipPath: open ? "inset(-24px -24px -24px -24px)" : "inset(-24px -24px 100% -24px)",
         opacity: open ? 1 : 0,
       }}
       transition={reduced ? { duration: 0 } : { clipPath: { duration: 0.8, ease: E }, opacity: { duration: 0.3 } }}

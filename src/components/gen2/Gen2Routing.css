@@ -41,12 +41,12 @@
   }
 }
 
-/* ── Stage: card/primary + 2px stone/400 dot grid every 22px (Figma "Dot" 642:129548) ── */
+/* ── Stage: dotted canvas #F4F3F1 (handoff 08) + 2px stone/400 dot grid every 22px (Figma "Dot" 642:129548) ── */
 .g2r__stage {
   position: relative;
   border-radius: 12px;
   overflow: hidden;
-  background-color: #f6f4f2;
+  background-color: #f4f3f1;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22'%3E%3Crect width='2' height='2' fill='%23dddcda'/%3E%3C/svg%3E");
   background-size: 22px 22px;
   background-position: 9px 14px;
@@ -447,7 +447,7 @@
   top: 0;
   width: 1px;
   height: 14px;
-  background: linear-gradient(180deg, rgba(133, 113, 252, 0) 0%, #8571fc 40%, #60afff 100%);
+  background: linear-gradient(180deg, rgba(193, 186, 254, 0) 0%, #c1bafe 40%, #a093fd 100%);
   transform: translateY(-14px);
   animation: g2r-drop 4.8s linear infinite;
 }

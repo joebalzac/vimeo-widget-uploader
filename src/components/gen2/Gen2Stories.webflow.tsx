@@ -23,7 +23,7 @@ function Gen2StoriesAdapter(p: AdapterProps) {
       quote: (p[`t${n}Quote`] as string | undefined) ?? "",
       name: (p[`t${n}Name`] as string | undefined) ?? "",
       role: (p[`t${n}Role`] as string | undefined) ?? "",
-      posterSrc: img?.src || (p[`t${n}PosterUrl`] as string | undefined) || "",
+      posterSrc: img?.src || (p[`t${n}PosterUrl`] as string | undefined) || DEFAULT_STORIES[n - 1]?.posterSrc || "",
       videoUrl: (p[`t${n}Video`] as string | undefined) ?? "",
     });
   }
@@ -44,7 +44,7 @@ function storyProps(n: number) {
     }),
     [`t${n}Name`]: props.Text({ name: `Story ${n} — Name`, defaultValue: d.name }),
     [`t${n}Role`]: props.Text({ name: `Story ${n} — Role`, defaultValue: d.role }),
-    [`t${n}Poster`]: props.Image({ name: `Story ${n} — Poster`, tooltip: "Video poster image. Empty uses the default Figma poster." }),
+    [`t${n}Poster`]: props.Image({ name: `Story ${n} — Poster`, tooltip: "Video poster image. Empty uses this story's default Figma thumbnail." }),
     [`t${n}PosterUrl`]: props.Text({ name: `Story ${n} — Poster URL`, defaultValue: "", tooltip: "Used when no Poster image is set." }),
     [`t${n}Video`]: props.Text({
       name: `Story ${n} — Vimeo ID`,
@@ -58,11 +58,11 @@ function storyProps(n: number) {
 export default declareComponent(Gen2StoriesAdapter, {
   name: "Gen2 — Operator Stories",
   description:
-    "“Trusted by Operators of All Sizes”: heading with prev/next arrows, a quote beside a video poster (opens a lightbox), and a progress bar. Autoplays while in view; pauses on video hover.",
+    "“Trusted by Operators of All Size”: heading with prev/next arrows, a quote beside a video poster (opens a lightbox), and a progress bar. Autoplays while in view; pauses on video hover.",
   group: "Gen2",
 
   props: {
-    heading: props.Text({ name: "Heading", defaultValue: "Trusted by Operators of All Sizes" }),
+    heading: props.Text({ name: "Heading", defaultValue: "Trusted by Operators of All Size" }),
     subtitle: props.Text({ name: "Subtitle", defaultValue: "Automatically route tasks to the right teams." }),
     subtitleMobileOnly: props.Boolean({
       name: "Subtitle on Mobile Only",

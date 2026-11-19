@@ -37,34 +37,66 @@
   color: #3f3e3c;
 }
 
-/* ---------- ring backdrop (Figma ellipse 769:178739) ---------- */
+/* ---------- ring backdrop (handoff 05-apollo · Ring backdrop) ----------
+   A conic-gradient band masked to a soft ~140px ring that slowly rotates. The element is
+   laid out at 1/1.75 of the viewport width so scale 1.75 puts its edges at the screen
+   sides; RingBackdrop drives scale/opacity and the wrapper's blur (48 → 70px). The CSS
+   values below are the resting state used under reduced motion. */
 .g2a-ringwrap {
   position: absolute;
   inset: 0;
   z-index: 0;
   overflow: hidden;
   pointer-events: none;
+  filter: blur(70px);
 }
 .g2a-ring {
-  /* 1160 across on the 1440 frame, centred 511px down the content (Figma 631 incl. 120 padding) */
-  --g2a-ring-d: min(1160px, 80.56vw);
+  --g2a-ring-d: calc(100vw / 1.75);
+  --g2a-ring-band: 80px; /* 140px once scaled ×1.75 */
   position: absolute;
-  top: 57.8%; /* 511 / 884: Figma's 631 / 1004 minus the 120px top padding */
+  top: 57.8%;
   left: 50%;
   width: var(--g2a-ring-d);
   height: var(--g2a-ring-d);
   margin: calc(var(--g2a-ring-d) / -2) 0 0 calc(var(--g2a-ring-d) / -2);
+  transform: scale(1.75);
   will-change: transform, opacity;
 }
-.g2a-ring__img {
-  /* the exported SVG carries 100px of blur bleed on every side (inset −8.62%) */
+.g2a-ring__band {
   position: absolute;
-  top: -8.62%;
-  left: -8.62%;
-  display: block;
-  width: 117.24%;
-  height: 117.24%;
-  max-width: none;
+  inset: 0;
+  border-radius: 50%;
+  background: conic-gradient(
+    from 0deg,
+    #b9b0fb 0deg,
+    #fcfcfb 45deg,
+    #a7cbff 95deg,
+    #ffffff 150deg,
+    #c7befc 205deg,
+    #fcfcfb 255deg,
+    #9fc2ff 305deg,
+    #b9b0fb 360deg
+  );
+  -webkit-mask: radial-gradient(
+    closest-side,
+    transparent calc(100% - var(--g2a-ring-band)),
+    #000 calc(100% - var(--g2a-ring-band) * 0.7),
+    #000 calc(100% - var(--g2a-ring-band) * 0.3),
+    transparent 100%
+  );
+  mask: radial-gradient(
+    closest-side,
+    transparent calc(100% - var(--g2a-ring-band)),
+    #000 calc(100% - var(--g2a-ring-band) * 0.7),
+    #000 calc(100% - var(--g2a-ring-band) * 0.3),
+    transparent 100%
+  );
+  animation: g2a-ring-spin 40s linear infinite;
+}
+@keyframes g2a-ring-spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* ---------- tabs (642:140909) ---------- */
@@ -313,6 +345,7 @@
   align-items: stretch;
 }
 .g2a-bubble {
+  /* width is set inline to the widest rendered line + padding (v120, UserBubble) */
   max-width: calc(100% - 70px);
   padding: 12px 14px;
   border-radius: 6px;
@@ -503,7 +536,6 @@
     margin-top: -4px;
   }
   .g2a-ring {
-    --g2a-ring-d: 120vw;
     top: 60%;
   }
 
@@ -524,16 +556,11 @@
     letter-spacing: -0.32px;
     padding: 8px 18px;
   }
-  .g2a__pill {
-    background: #f6f4f2;
-  }
-
-  /* clip tall enough for the whole 584-tall phone (composer stays visible);
-     only the bottom bezel fades */
+  /* v123: cropped like desktop: 420 tall with a 64px fade at the bottom */
   .g2a__clip {
-    height: 600px;
-    -webkit-mask: linear-gradient(#000 calc(100% - 40px), transparent);
-    mask: linear-gradient(#000 calc(100% - 40px), transparent);
+    height: 420px;
+    -webkit-mask: linear-gradient(#000 calc(100% - 64px), transparent);
+    mask: linear-gradient(#000 calc(100% - 64px), transparent);
   }
   .g2a-phone {
     width: 272.48px;
@@ -584,8 +611,8 @@
   }
   .g2a-phone__title {
     gap: 5.141px;
-    font-size: 13.714px;
-    letter-spacing: -0.274px;
+    font-size: 12px;
+    letter-spacing: -0.24px;
   }
   .g2a-phone__actions {
     gap: 17.137px;
@@ -689,7 +716,8 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .g2a-thinking {
+  .g2a-thinking,
+  .g2a-ring__band {
     animation: none;
   }
   .g2a__tab {

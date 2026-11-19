@@ -40,11 +40,12 @@
 .g2s-num {
   display: inline-grid;
   justify-self: start;
-  font-size: 72px;
+  font-size: 64px; /* handoff 07 (source of truth): 64px white, tabular */
   line-height: 1.1;
   font-weight: 400;
   letter-spacing: -0.03em;
-  font-feature-settings: "ss07" 1;
+  font-feature-settings: "ss07" 1, "tnum" 1;
+  font-variant-numeric: tabular-nums;
   color: #fff;
 }
 .g2s-num__ghost,

@@ -5,9 +5,9 @@
 
 ## Copy
 
-- Eyebrow (Plex Mono 14, purple square): **GEN 2**
-- H1: **The #1 AI Platform to Transform Multifamily Operations** (64 → 36 mobile)
-- Subtitle: **The next generation of asset performance.** (18)
+- Eyebrow (Plex Mono 14, purple square): **ELISEAI GEN 2** (copy "EliseAI Gen 2", uppercased by style)
+- H1: **The #1 AI Platform Transforming Multifamily Operations** (64 → 36 mobile)
+- Subtitle: **The next generation of team experience, resident experience, and asset performance.** (18)
 - CTA: **Get A Demo** (primary button)
 
 Hero top padding 144 (96 on mobile). The board sits 64px below the CTA (40 on mobile).
@@ -32,13 +32,13 @@ Hero top padding 144 (96 on mobile). The board sits 64px below the CTA (40 on mo
 | Chip | Background / text | Meaning |
 |---|---|---|
 | INQUIRY | `#F4FAFF` / `#1475E8` | |
-| SCHEDULING TOUR · SIGNING LEASE | `#F4FAFF` / `#1475E8`, **spinner icon** | in progress = blue |
+| Scheduling Tour · Processing Application (+ the "Elise acting" set below) | **no tag**: Inter 14 (12 mobile), purple→blue gradient text `#A093FD → #1475E8` + spinner (same as Figma 692:175277 "Sending Reminder") | in progress: it only becomes a tag once confirmed |
 | SCHEDULED TOUR · TOURED · LEASE SIGNED | `#EEFDF8` / `#00B080` | success = green |
 | CURRENT · FUTURE | `#F6F4F2` / `#0E0D0C` | |
 | WORK ORDER | `#FEF0FA` / `#D42AAF` | |
 | RENEWAL OFFER | `#E5F2FF` / `#1475E8` | |
 
-"Lease Signed", "Scheduling Tour" and "Signing Lease" aren't in the Figma key; the colours follow Gabby's rule (blue = progress, green = success).
+"Lease Signed", "Scheduling Tour" and "Processing Application" aren't in the Figma key; the colours follow Gabby's rule (blue = progress, green = success).
 
 ## Animation
 
@@ -71,3 +71,31 @@ Hero top padding 144 (96 on mobile). The board sits 64px below the CTA (40 on mo
   - Opacities .22–.34, drifting on a 22s alternate background-position loop.
 - **Extent:** starts behind the top of the board, not the headline. It continues **340px past the hero into The Ideal Renter Journey** and fades out (mask), with no hard edge.
 - The hero needs `overflow-x: clip; overflow-y: visible; z-index: 2` so the bleed shows.
+
+## Option under review: "Elise acting"
+
+Product marketing (ZF) wants Elise's actions to show before every outcome. It's built as a toggle (bottom-right "Hero: Current / Elise acting") for sign-off; delete the toggle (`.hb-opt`) once one is chosen.
+
+| Where | In-progress action (gradient text + spinner) | Then |
+|---|---|---|
+| Prospects | Processing Application | LEASE SIGNED → moves to Residents |
+| Prospects | Responding (new inquiry) | INQUIRY |
+| Prospects | Following Up → Scheduling Tour | SCHEDULED TOUR |
+| Calendar | Confirming (in place of the time) | time fades in |
+| Residents | Assigning Work Order | work order clears |
+| Residents | Collecting Rent | RENT PAID |
+| Residents | Sending Offer | RENEWED |
+| Residents | Predicting Renewal | RENEWAL OFFER |
+
+Two actions run at once in different columns. One cycle takes about 26s; it loops and never resets.
+
+### Elise acting — progress rules (v108)
+- A progress state (spinner + gradient text) **replaces all of a card's tags**; tags return once it completes.
+- One progress per prospect step, never two in a row: Maya `Toured` → `Processing Application` (progress) → `Lease Signed` → moves to Residents. New lead: `Responding` → `Inquiry`. Booking: `Inquiry` → `Scheduling Tour` → `Scheduled Tour` → calendar (calendar keeps the "Rescheduling" beat).
+- Never more than two progress states on screen at once; starts and ends are staggered (≥700ms apart) and two progress cards are never adjacent in a column.
+- Residents sequence: `Assigning Work Order` (resolves to `Current` before the lease is signed) · `Collecting Rent` → `Current · Rent Paid` · `Sending Offer` → `Current · Renewed` (700ms after rent) · `Predicting Renewal` → `Current · Renewal Offer`.
+
+- Loop opener (both options): ~0.9s in, Camille Bennett's calendar card is rescheduled 2:15 PM → 4:30 PM. Elise acting: the time is replaced by a "Rescheduling Tour" progress state for 1.5s; Current: a quick time swap. The card then gets the change pop.
+
+### v120 — Zane's lease wording
+No "Generate / Sending / Signing Lease" anywhere on the page. Prospects go `Toured` → `Processing Application` (progress) → `Lease Signed` (fine: read from the PMS) → Residents. The hero board plays **once**, only when it's in view, then holds its final state.

@@ -6,8 +6,8 @@
 ## Copy
 
 - H2: **More Power, More Simplicity with Apollo**
-- Subtitle: **One agent to control the whole platform.** (16 on mobile)
-- Tabs: **Site Team · Onboarding · Executives · Portfolio Leaders**
+- Subtitle: **One agent to control the whole platform, making Elise radically easy to implement, learn, and use.** (16 on mobile)
+- Tabs: **Site Team · Onboarding · Regionals · Portfolio Leaders**
   - 18px desktop / 16px mobile.
   - Selected background `#F0EEEC`; it slides between tabs.
   - On mobile the tabs scroll horizontally and centre the active tab.
@@ -28,7 +28,7 @@
 |---|---|
 | Site Team | Pipe Burst at Aura Estates |
 | Onboarding | Mixed-Income LIHTC Setup |
-| Executives | Boise Regional Report Schedule |
+| Regionals | Boise Regional Report Schedule |
 | Portfolio Leaders | Boise Rent Concession |
 
 **Block types:**
@@ -61,3 +61,11 @@
   - Scroll progress is smoothed with a spring (stiffness 38, damping 24).
   - Content sits above it (`z-index: 2`).
 - **Tabs and chat blocks:** blocks fade and rise in one by one. The title crossfades on tab change.
+
+## v120: user message bubbles hug their text
+`.ap5-u p` width = widest rendered line + horizontal padding (measured with a Range on mount/resize; CSS can't shrink-wrap wrapped text).
+## v123 (Final): mobile phone is cropped like desktop — clip height 420px with a 64px fade at the bottom.
+## v124 (Final)
+- Products → Apollo gap is 120px on desktop: pinned products drop the empty half-viewport below the last product (`margin-bottom: min(0, (476px − 100vh)/2)`), Apollo padding-top 60px.
+- Mobile only: the ring keeps expanding (scale .18 → 3.4) and fades out completely by 44% of the section scroll.
+- v125 (Final): mobile Apollo padding-bottom 40px.

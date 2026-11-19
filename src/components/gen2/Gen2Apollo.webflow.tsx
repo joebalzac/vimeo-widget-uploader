@@ -10,11 +10,11 @@ export default declareComponent(Gen2Apollo, {
 
   props: {
     heading: props.Text({ name: "Heading", defaultValue: "More Power, More Simplicity with Apollo" }),
-    subtitle: props.Text({ name: "Subtitle", defaultValue: "One agent to control the whole platform." }),
+    subtitle: props.Text({ name: "Subtitle", defaultValue: "One agent to control the whole platform, making Elise radically easy to implement, learn, and use." }),
     headingMaxWidth: props.Number({ name: "Heading Max Width (px)", defaultValue: 418, min: 200, max: 1200 }),
     startTab: props.Variant({
       name: "Start Tab",
-      options: ["Site Team", "Onboarding", "Executives", "Portfolio Leaders"],
+      options: ["Site Team", "Onboarding", "Regionals", "Portfolio Leaders"],
       defaultValue: "Site Team",
     }),
     autoAdvance: props.Boolean({

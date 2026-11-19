@@ -45,15 +45,16 @@ Each product is a card + text pair, revealed with `Reveal`. Title 20, body 16.
 
 All visuals loop while in view, restart on re-entry, and show their final frame under reduced motion.
 
-### LeasingAI (`VLease`) — 632:53306 → 632:53308 → 636:53665 (+ 692:175157)
-
-1. Two lead cards (Ava Mitchell / Caladan Lofts / 1bd/1ba $2,000; Mateo Alvarez / Oakview / 2bd/1ba $2,500) rise in with slight counter-rotation.
-2. Chips change TOUR SCHEDULED → TOURED.
-3. The cards converge (0.6s ease-in-out, no blur) as the **Generate Lease** button grows in (scale .82 → 1).
-4. A cursor glides in, hovers and clicks (button press .96).
-5. The lease document enters as the button leaves (overlapping, no gap).
-6. A scan band sweeps down 2.7s, turning skeleton into text.
-7. Hold 1.9s, fade out, loop.
+### Leasing (`VLease`) — Figma 876:180249 (v112; replaces the lease-document flow)
+One white container morphs the whole way (width / height / radius / fill tween 0.75s EZ); contents cross-fade inside it (`overflow:hidden`). Centered in the 660×460 stage.
+1. **Card** 320×132.5 — Ava Mitchell · Caladan Lofts, 1bd/1ba · $2,000. Enters (opacity, y), chip `TOUR SCHEDULED` (azure) → `TOURED` (mint) after 1.7s.
+2. **Resize to composer** 400×140, radius 8 (annotation: "once toured tag – resize card to next frame"). Lead content fades out .2s, composer fades in .35s (delay .3).
+3. **Type-out** — "Hi Ava! Thanks for touring Caladan Lofts. Here’s the application link for the one-bedroom you saw." 16/1.4, 14ms per letter (20ms on spaces). Each letter animates `lfch` .55s through the Figma gradient-text colours (692:175315: purple 300 #a093fd → azure 500 #1475e8): typing edge azure → trail purple → settles on type-default #0e0d0c. Untyped letters are rendered at opacity 0 so the text never reflows.
+   Toolbar: Text / Link / Attach icons 20px #7a7977, gap 9.14; Send button #6b4fff, h32.7, px13.7, r3.43, 13.7px white (hover #5a3ff0).
+4. **Cursor** glides in to Send (.85s), hover, click (scale .88 / button .95).
+5. **Converge to success** (annotation: "card converges to success state") — container tweens to 220×55.4, radius 28, fill #00b080, shadow 0 26.4 22 −22 rgba(0,0,0,.2); pill content: check (24, path draws .45s) + "Follow-up Sent" 22px white, gap 7.33.
+6. Hold 2.6s → fade/rise out → loop. Reduced motion: static composer with full message.
+Note: Figma's background uses a WebGPU ShaderEffect (Color adjust + Warp) on the bg image; the prototype keeps the existing static bg image. Eng should use `@figma/expressive-components` with the shader modules from Figma if the warp is wanted in prod.
 
 ### Tour Intelligence (`VTour`) — 636:53954
 
@@ -92,3 +93,21 @@ All visuals loop while in view, restart on re-entry, and show their final frame 
 
 1. Kanban: Renewing / On Notice. Unit 4C lifts and tilts, flies across columns, and leaves a dashed ghost slot.
 2. Once it lands, its status crossfades Awaiting Signatures → Notice Given + NTV SAVE.
+
+
+## Copy update (v109) — the sub-line is now the header; the product name header is removed
+| Product | Header (H3) |
+|---|---|
+| Leasing | Nurtures Every Lead From Inquiry to Signed Lease |
+| Tour Intelligence | Records, Scores, & Coaches Every Tour (+ NEW tag) |
+| AI Guided Tours | Interactive Self‑Guided Touring |
+| Maintenance | Resident Communications & End‑to‑End Operations Management |
+| Delinquency | Improve Collections Without Reducing Sentiment |
+| Renewals | Increase Retention & Speed Up Renewal Decisions |
+Text column 480px wide on desktop (was 380) so no header runs past 3 lines; H3 max-width none, `text-wrap: balance`, non-breaking hyphens. Then What's New list + Learn More as before. "LeasingAI" → "Leasing" and "AI-Guided Touring" → "AI Guided Tours" everywhere.
+
+#### Leasing timing (v113, snappier)
+Card in → Toured 1.2s · Toured → composer 1.05s · container morphs on a spring (stiffness 420, damping 34, mass .8) · type-out ~1.5s · cursor glide .5s, hover .14s, click .11s · converges to the mint pill on the same spring (fill .22s), check draws .32s · hold 2.2s · out .5s.
+
+## Product copy (v120)
+Each product's copy: Plex Mono 14 caps name tag (+ NEW) above the H3; What's New items have a 14px check.

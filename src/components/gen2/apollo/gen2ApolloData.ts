@@ -1,7 +1,7 @@
 /**
  * Gen2 Apollo scenarios (handoff 05-apollo, data `AP2`). Marketing-editable copy.
  * Copy is taken verbatim from the Figma scenario frames
- * (734:178008 Site Team · 734:178086 Onboarding · 734:178164 Executives · 734:178242 Portfolio Leaders).
+ * (734:178008 Site Team · 734:178086 Onboarding · 734:178164 Regionals · 734:178242 Portfolio Leaders).
  *
  * Each scenario is one tab: a chat title plus the blocks that play in order.
  * Block kinds:
@@ -125,7 +125,7 @@ export const AP2: ApScenario[] = [
     ],
   },
   {
-    tab: "Executives",
+    tab: "Regionals",
     title: "Boise Regional Report Schedule",
     blocks: [
       { k: "u", text: "Send the Boise Regional Report to ownership on the 5th of every month." },
@@ -164,7 +164,7 @@ export const AP2: ApScenario[] = [
         head: ["Setting", "Details"],
         cols: [83.39, 263.39],
         rows: [
-          /* "Offer" value is verbatim from Figma (looks copied from the Executives table) */
+          /* "Offer" value is verbatim from Figma (looks copied from the Regionals table) */
           ["Offer", "5th of each month at 8:00 AM Mountain"],
           ["Eligibility", "New 12-month leases"],
           ["Application", "Automatically applied to qualifying leases"],

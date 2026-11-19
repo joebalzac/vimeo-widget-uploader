@@ -9,7 +9,7 @@ export default declareComponent(Gen2Crm, {
   group: "Gen2",
 
   props: {
-    heading: props.Text({ name: "Heading", defaultValue: "EliseCRM Takes the Work off Your Team" }),
+    heading: props.Text({ name: "Heading", defaultValue: "EliseCRM Takes the Work Off Your Team" }),
     subtitle: props.Text({ name: "Subtitle", defaultValue: "The AI workspace for your team." }),
   },
 });

@@ -20,7 +20,7 @@ import "./VisRenewals.css";
 
 /**
  * Renewals (VRenew) — Figma 697:175419 → 697:175462 → 697:176180.
- * A two-column board (Renewing / On Notice / Not Renewing) that bleeds off the right and
+ * A two-column board (Renewing / On Notice) that bleeds off the right and
  * bottom edges. Unit 4C lifts and tilts, flies across to the top of On Notice (whose cards
  * shift down to make room) and leaves a dashed ghost slot that the Renewing cards then
  * close up; once it lands its status crossfades Awaiting Signatures → Notice Given + NTV SAVE.
@@ -183,7 +183,7 @@ export default function VisRenewals() {
         transition={{ duration: 0.35, ease: "easeInOut" }}
       >
         <Column x={BOARD} dot={dotRenewing} title="Renewing" />
-        <Column x={BOARD + COL_STEP} dot={dotNotice} title="On Notice / Not Renewing" />
+        <Column x={BOARD + COL_STEP} dot={dotNotice} title="On Notice" />
 
         {/* Card layers clip to each column body (white panel), like Figma's overflow-clip. */}
         <div className="g2v-renew-clip" style={{ left: BOARD + 4, top: BOARD + BODY_TOP }}>

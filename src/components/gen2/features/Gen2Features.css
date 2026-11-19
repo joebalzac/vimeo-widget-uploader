@@ -87,29 +87,38 @@
 .g2f-text__top {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  align-items: flex-start;
+  gap: 12px;
 }
-.g2f-text__title {
+/* Product name tag (v120): Plex Mono 14 caps, + NEW on Tour Intelligence. */
+.g2f-text__name {
   display: flex;
   align-items: center;
-  flex-wrap: wrap;
-  gap: 12px;
+  gap: 8px;
+  min-height: 25px; /* NEW tag height, so every pane's headline starts at the same y */
+  margin: 0;
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.1;
+  text-transform: uppercase;
+  font-feature-settings: "salt" 1;
+  color: #7a7977;
+}
+/* H3 (v109): the old sub-line is now the headline. No max-width; balanced wrapping. */
+.g2f-text__title {
+  max-width: none;
   margin: 0;
   font-weight: 400;
   font-feature-settings: "ss07" 1, "ss08" 1;
   color: #0e0d0c;
-}
-.g2f-text__desc {
-  margin: 0;
-  line-height: 1.4;
-  font-feature-settings: "ss07" 1;
-  color: #3f3e3c;
+  text-wrap: balance;
 }
 .g2f-text__bottom {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 24px; /* What's New → Learn More */
+  gap: 32px; /* What's New → Learn More */
 }
 .g2f-new-list {
   display: flex;
@@ -130,6 +139,15 @@
   padding: 0;
   list-style: none;
   color: #3f3e3c;
+}
+.g2f-new-list__items li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.g2f-new-list__items img {
+  display: block;
+  flex: none;
 }
 .g2f-text__more {
   display: inline-flex;
@@ -159,6 +177,10 @@
 /* ── Desktop: pinned (Figma 618:6955) ────────────────────── */
 .g2f-pinned {
   position: relative;
+  /* Handoff 05 v124: drop the empty half-viewport under the last product so the
+     Products → Apollo gap is 120px (card frame 476 centred in a 100vh stage). */
+  margin-bottom: min(0px, (476px - 100vh) / 2);
+  margin-bottom: min(0px, (476px - 100svh) / 2);
 }
 .g2f-pinned__sticky {
   position: sticky;
@@ -170,7 +192,7 @@
 }
 .g2f-pinned__grid {
   display: grid;
-  grid-template-columns: 24px minmax(260px, 380px) minmax(0, 1fr);
+  grid-template-columns: 24px minmax(300px, 480px) minmax(0, 1fr);
   column-gap: 48px;
   align-items: center;
   width: 100%;
@@ -182,10 +204,6 @@
   font-size: 36px;
   line-height: 1.1;
   letter-spacing: -1.08px;
-}
-.g2f-pinned .g2f-text__desc {
-  font-size: 18px;
-  letter-spacing: -0.36px;
 }
 .g2f-pinned .g2f-new-list {
   font-size: 16px;
@@ -233,7 +251,14 @@ button.g2f-ruler__hit {
 }
 .g2f-pane {
   grid-area: 1 / 1;
+  display: flex;
   min-width: 0;
+}
+/* Every pane fills the shared cell, so What's New + Learn More sit low at the same y
+   whatever the headline's line count. */
+.g2f-pinned .g2f-text {
+  flex: 1;
+  justify-content: space-between;
 }
 
 .g2f-pinned__visual {
@@ -270,11 +295,9 @@ button.g2f-ruler__hit {
   line-height: 1.2;
   letter-spacing: -0.6px;
   font-feature-settings: "ss07" 1;
-  gap: 8px;
 }
-.g2f-stack .g2f-text__desc {
-  font-size: 16px;
-  letter-spacing: -0.32px;
+.g2f-stack .g2f-text__top {
+  gap: 8px;
 }
 .g2f-stack .g2f-new-list {
   font-size: 14px;
@@ -286,5 +309,110 @@ button.g2f-ruler__hit {
     grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
     gap: 32px;
     align-items: center;
+  }
+}
+
+/* ── Flat ruler (handoff 03 "Flatten", desktop ≥1001) ────── */
+.g2f-pinned--flat .g2f-pinned__sticky {
+  box-sizing: border-box;
+  padding-top: 200px; /* the copy/visual stay below the ruler (top 120) */
+  align-items: flex-start;
+}
+.g2f-pinned--flat .g2f-pinned__grid {
+  grid-template-columns: minmax(300px, 480px) minmax(0, 1fr);
+}
+.g2f-pinned--flat .g2f-pinned__visual {
+  /* Fit the 476 frame under the ruler with some air below. */
+  width: min(100%, 825px, calc((100vh - 260px) * 660 / 476));
+  width: min(100%, 825px, calc((100svh - 260px) * 660 / 476));
+}
+/* Under reduced motion the ruler rides in the sticky stage itself. */
+.g2f-pinned__sticky > .g2f-flat {
+  position: absolute;
+  top: 120px;
+  left: 0;
+  right: 0;
+}
+
+.g2f-flat {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+}
+.g2f-flat__names {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 25px; /* NEW tag height */
+}
+.g2f-flat__name {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.1;
+  text-transform: uppercase;
+  font-feature-settings: "salt" 1;
+  white-space: nowrap;
+  color: #a9a8a6;
+  transition: color 0.3s;
+}
+.g2f-flat__name:hover,
+.g2f-flat__name.is-on {
+  color: #0e0d0c;
+}
+.g2f-flat__name:focus-visible {
+  outline: 2px solid #6b4fff;
+  outline-offset: 4px;
+  border-radius: 2px;
+}
+.g2f-flat__ticks {
+  position: relative;
+  height: 12px;
+}
+/* Grey ticks (Attio): 1×8 #DDDCDA with a 12px gap, bottom-aligned; ends masked 4%. */
+.g2f-flat__band {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 4%, #000 96%, transparent);
+  mask-image: linear-gradient(to right, transparent, #000 4%, #000 96%, transparent);
+}
+.g2f-flat__track {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 0;
+  height: 8px;
+}
+.g2f-flat__track::before {
+  content: "";
+  position: absolute;
+  left: -2990px; /* −230 × 13, so a tick lands on the track origin */
+  bottom: 0;
+  width: 5980px;
+  height: 8px;
+  background: repeating-linear-gradient(to right, #dddcda 0 1px, transparent 1px 13px);
+}
+/* Active tick: 1×12 purple/500 at the track origin (outside the end mask). */
+.g2f-flat__active {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 1px;
+  height: 12px;
+  background: #6b4fff;
+}
+@media (prefers-reduced-motion: reduce) {
+  .g2f-flat__name {
+    transition: none;
   }
 }

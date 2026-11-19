@@ -63,6 +63,9 @@
 .g2st-arrow__icon--prev {
   transform: rotate(180deg);
 }
+.g2st-arrows--mob {
+  display: none;
+}
 
 /* Row (Figma 642:58339): copy column (quote top, name bottom) + 711×400 video */
 .g2st-row {
@@ -266,6 +269,19 @@
   }
   .g2st-head__arrows {
     display: none;
+  }
+  /* handoff 09: arrows under the quote, left-aligned, 40px circles with 20px icons */
+  .g2st-arrows--mob {
+    display: flex;
+    margin-top: 24px;
+  }
+  .g2st-arrow {
+    width: 40px;
+    height: 40px;
+  }
+  .g2st-arrow__icon {
+    width: 20px;
+    height: 20px;
   }
   .g2st-row {
     grid-template-columns: 1fr;

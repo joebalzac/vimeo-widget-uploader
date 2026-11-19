@@ -5,16 +5,19 @@ import { declareComponent } from "@webflow/react";
 export default declareComponent(Gen2Hero, {
   name: "Gen2 — Hero",
   description:
-    "Gen 2 hero: centred copy above an animated Calendar / Prospects / Residents board with a ~13s story loop, on a soft lilac haze that fades the board into the bottom of the hero. Place outside any Container.",
+    "Gen 2 hero: centred copy above an animated Calendar / Prospects / Residents board that plays Elise's actions once when scrolled into view, on a soft lilac haze that fades the board into the bottom of the hero. Place outside any Container.",
   group: "Gen2",
 
   props: {
-    eyebrow: props.Text({ name: "Eyebrow", defaultValue: "GEN 2" }),
+    eyebrow: props.Text({ name: "Eyebrow", defaultValue: "EliseAI Gen 2" }),
     heading: props.Text({
       name: "Heading",
-      defaultValue: "The #1 AI Platform to Transform Multifamily Operations",
+      defaultValue: "The #1 AI Platform Transforming Multifamily Operations",
     }),
-    subtitle: props.Text({ name: "Subtitle", defaultValue: "The next generation of asset performance." }),
+    subtitle: props.Text({
+      name: "Subtitle",
+      defaultValue: "The next generation of team experience, resident experience, and asset performance.",
+    }),
     ctaLabel: props.Text({ name: "CTA Label", defaultValue: "Get A Demo" }),
     ctaHref: props.Text({ name: "CTA URL", defaultValue: "#" }),
     id: props.Id({

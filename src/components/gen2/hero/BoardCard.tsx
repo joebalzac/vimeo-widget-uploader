@@ -1,27 +1,39 @@
 import { forwardRef } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { E, SPRING_CHIP, SPRING_POP, StatusChip } from "../shared";
-import type { BoardCardData, ColumnKey } from "./boardData";
+import { E, SPRING_CHIP, SPRING_POP, StatusChip, chipTone } from "../shared";
+import { HERO_CHIP_TONES, type BoardCardData, type ColumnKey } from "./boardData";
+import HeroProgress from "./HeroProgress";
 
 const REST = { opacity: 1, y: 0, rotate: 0, scale: 1 };
 /** Load-in wave start (handoff: opacity 0, y 22, rotate −2°, scale .96). */
 const WAVE_FROM = { opacity: 0, y: 22, rotate: -2, scale: 0.96 };
-/** Loop pop-in start (scale .94 → 1, y −10 → 0, spring). */
+/** Sequence pop-in start (scale .94 → 1, y −10 → 0, spring). */
 const POP_FROM = { opacity: 0, y: -10, rotate: 0, scale: 0.94 };
+/** "Change pop" after a card is updated in place (rescheduled tour). */
+const FLASH = { ...REST, scale: [1, 1.04, 1], transition: { duration: 0.5, ease: E } };
 const LAYOUT = { type: "spring", stiffness: 380, damping: 36 } as const;
-/** Second chip leaving (WORK ORDER clears): same slide-up exit as a chip swap. */
-const TAG_EXIT = { opacity: 0, y: -12, transition: { duration: 0.28, ease: E } };
+
+/** Chip-style swap: the old content slides up and out, the new one rises in. */
+const SWAP_IN = { opacity: 0, y: 12, scale: 0.9 };
+const SWAP_REST = { opacity: 1, y: 0, scale: 1, transition: SPRING_CHIP };
+const SWAP_OUT = { opacity: 0, y: -12, transition: { duration: 0.28, ease: E } };
+/** Calendar time returning after "Confirming": a soft fade up. */
+const TIME_IN = { opacity: 0, y: 6 };
+const TIME_REST = { opacity: 1, y: 0, transition: { duration: 0.5, ease: E } };
+
+const tone = (label: string) => HERO_CHIP_TONES[label] ?? chipTone(label);
 
 export interface CardFaceProps {
   card: BoardCardData;
   col: ColumnKey;
   chipSize: "md" | "sm";
-  /** Animate chip label swaps (off for the static flyer copy). */
+  /** Animate chip / progress swaps (off for the static flyer copy). */
   animateChip?: boolean;
 }
 
 /** The visible content of a card. Shared by the in-column card and the flyer. */
 export function CardFace({ card, col, chipSize, animateChip = true }: CardFaceProps) {
+  const swapIn = animateChip ? SWAP_IN : false;
   if (col === "calendar") {
     const kind = card.kind ?? "person";
     return (
@@ -32,7 +44,26 @@ export function CardFace({ card, col, chipSize, animateChip = true }: CardFacePr
           <span className="g2h-card__name">{card.name}</span>
           <span className="g2h-card__sub">{card.sub}</span>
         </span>
-        <span className="g2h-card__time">{card.time}</span>
+        {/* Progress ("Confirming", "Rescheduling Tour") stands in for the time, then the time fades in. */}
+        <AnimatePresence mode="popLayout" initial={false}>
+          {card.progress ? (
+            <motion.span key={`p:${card.progress}`} className="g2h-card__time" initial={swapIn} animate={SWAP_REST} exit={SWAP_OUT}>
+              <HeroProgress label={card.progress} />
+            </motion.span>
+          ) : (
+            card.time && (
+              <motion.span
+                key={`t:${card.time}`}
+                className="g2h-card__time"
+                initial={animateChip ? TIME_IN : false}
+                animate={TIME_REST}
+                exit={SWAP_OUT}
+              >
+                {card.time}
+              </motion.span>
+            )
+          )}
+        </AnimatePresence>
       </>
     );
   }
@@ -42,28 +73,31 @@ export function CardFace({ card, col, chipSize, animateChip = true }: CardFacePr
         <span className="g2h-card__name">{card.name}</span>
         <span className="g2h-card__sub">{card.sub}</span>
       </span>
-      {(card.chip || card.tag) && (
-        <span className="g2h-card__chips">
-          {card.chip && (
-            <motion.span layout={animateChip ? "position" : false} className="g2h-card__chipslot">
-              <StatusChip label={card.chip} size={chipSize} animate={animateChip} />
+      {/* A progress state replaces ALL of the card's tags; they return once it completes. */}
+      <AnimatePresence mode="popLayout" initial={false}>
+        {card.progress ? (
+          <motion.span key={`p:${card.progress}`} className="g2h-card__chips" initial={swapIn} animate={SWAP_REST} exit={SWAP_OUT}>
+            <HeroProgress label={card.progress} />
+          </motion.span>
+        ) : (
+          (card.chip || card.tag) && (
+            <motion.span key="chips" className="g2h-card__chips" initial={swapIn} animate={SWAP_REST} exit={SWAP_OUT}>
+              {card.chip && (
+                <motion.span layout={animateChip ? "position" : false} className="g2h-card__chipslot">
+                  <StatusChip label={card.chip} tone={tone(card.chip)} spinner={false} size={chipSize} animate={animateChip} />
+                </motion.span>
+              )}
+              <AnimatePresence mode="popLayout" initial={false}>
+                {card.tag && (
+                  <motion.span key={card.tag} className="g2h-card__chipslot" initial={swapIn} animate={SWAP_REST} exit={SWAP_OUT}>
+                    <StatusChip label={card.tag} tone={tone(card.tag)} spinner={false} size={chipSize} animate={false} />
+                  </motion.span>
+                )}
+              </AnimatePresence>
             </motion.span>
-          )}
-          <AnimatePresence mode="popLayout" initial={false}>
-            {card.tag && (
-              <motion.span
-                key={card.tag}
-                className="g2h-card__chipslot"
-                initial={animateChip ? { opacity: 0, y: 12, scale: 0.9 } : false}
-                animate={{ opacity: 1, y: 0, scale: 1, transition: SPRING_CHIP }}
-                exit={TAG_EXIT}
-              >
-                <StatusChip label={card.tag} size={chipSize} animate={false} />
-              </motion.span>
-            )}
-          </AnimatePresence>
-        </span>
-      )}
+          )
+        )}
+      </AnimatePresence>
     </>
   );
 }
@@ -83,7 +117,7 @@ export interface BoardCardProps {
 
 /**
  * One board card. forwardRef so AnimatePresence `mode="popLayout"` can measure exiting cards.
- * Cards from the initial data join the load-in wave; cards added by the loop pop in.
+ * Cards from the initial data join the load-in wave; cards added by the sequence pop in.
  */
 const BoardCard = forwardRef<HTMLDivElement, BoardCardProps>(function BoardCard(
   { card, col, delay, started, reduced, slot, chipSize },
@@ -106,7 +140,7 @@ const BoardCard = forwardRef<HTMLDivElement, BoardCardProps>(function BoardCard(
       className={cls}
       data-card-id={card.id}
       initial={reduced || card.twin ? false : from}
-      animate={started || card.pop ? REST : WAVE_FROM}
+      animate={started || card.pop ? (card.flash ? FLASH : REST) : WAVE_FROM}
       exit={{ opacity: 0, scale: 0.96, transition: { duration: slot ? 0.2 : 0.3, ease: E } }}
       transition={{
         ...(card.pop ? SPRING_POP : { duration: 0.75, ease: E, delay }),

@@ -1,15 +1,14 @@
 import "./App.css";
 import { Navbar } from "./components/Navbar";
 import Gen2Hero from "./components/gen2/Gen2Hero";
-import Gen2Journey from "./components/gen2/Gen2Journey";
-import Gen2Features from "./components/gen2/features/Gen2Features";
+import Gen2Customers from "./components/gen2/Gen2Customers";
+import Gen2JourneyProducts from "./components/gen2/Gen2JourneyProducts";
 import Gen2Apollo from "./components/gen2/Gen2Apollo";
 import Gen2Crm from "./components/gen2/Gen2Crm";
 import Gen2Stats from "./components/gen2/Gen2Stats";
 import Gen2Routing from "./components/gen2/Gen2Routing";
 import Gen2Stories from "./components/gen2/Gen2Stories";
 import Gen2Cta from "./components/gen2/Gen2Cta";
-import Gen2Footer from "./components/gen2/Gen2Footer";
 
 /*
  * Gen2 page preview (open with ?page=gen2), composed the way it will be in Webflow.
@@ -22,6 +21,10 @@ const WRAP = { width: PHONE ? "100%" : "min(100%, 1192px)", margin: "0 auto", pa
 const PAD = { padding: PHONE ? "48px 0" : "120px 0" };
 /* Figma spacing: Journey and Apollo have no bottom padding, Stories has 60. */
 const PAD_TOP = { padding: PHONE ? "48px 0 0" : "120px 0 0" };
+/* Apollo (handoff v124/v125): 60 top on desktop; 48 top / 40 bottom on mobile. */
+const PAD_APOLLO = { padding: PHONE ? "48px 0 40px" : "60px 0 0" };
+/* Customers (handoff 02b): 120 / 40 desktop, 96 top ≤1000, 72 / 24 ≤767. */
+const PAD_CUSTOMERS = { padding: PHONE ? "72px 0 24px" : "120px 0 40px" };
 const PAD_STORIES = { padding: PHONE ? "48px 0" : "120px 0 60px" };
 
 export default function Gen2Page() {
@@ -29,15 +32,18 @@ export default function Gen2Page() {
     <div style={{ background: "#fdfcfb" }}>
       <Navbar />
       <Gen2Hero />
-      <section style={PAD_TOP}>
+      <section style={PAD_CUSTOMERS}>
         <div style={WRAP}>
-          <Gen2Journey />
+          <Gen2Customers />
         </div>
       </section>
-      <div style={WRAP}>
-        <Gen2Features />
-      </div>
+      {/* Journey + Products (Flatten): nothing above it may set overflow hidden/auto/clip. */}
       <section style={PAD_TOP}>
+        <div style={WRAP}>
+          <Gen2JourneyProducts />
+        </div>
+      </section>
+      <section style={PAD_APOLLO}>
         <Gen2Apollo />
       </section>
       <section style={PAD}>
@@ -63,7 +69,6 @@ export default function Gen2Page() {
           <Gen2Cta />
         </div>
       </section>
-      <Gen2Footer />
     </div>
   );
 }

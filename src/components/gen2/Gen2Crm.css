@@ -83,7 +83,7 @@
   top: 64px;
   left: 64px;
   right: 64px;
-  bottom: 0;
+  bottom: -24px; /* runs off the stage so its bottom edge never shows */
   display: flex;
   flex-direction: column;
   padding: 0 4px;
@@ -551,10 +551,10 @@
   }
 }
 
-/* Figma mobile 642:139740: 345×480 stage, radius 10 */
+/* Figma mobile 642:139740, radius 10; v120: 470 tall now that the composer is gone */
 @media (max-width: 767px) {
   .g2c__stage {
-    height: 480px;
+    height: 470px;
     border-radius: 10px;
   }
   .g2c__bg {

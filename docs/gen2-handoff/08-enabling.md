@@ -16,7 +16,7 @@
   3. **Elise → Maya:** "The 15th works! While I have you, your lease ends January 31. We'd love for you to renew for 12 months at $2,995/month."
 - **Routing:** lines run from messages 2 and 3 to a centred **ROUTED** pill (mint `#00B080`, check icon), then out to two task cards:
   - **Task Created · Promise To Pay · Maya Bennett** → DELINQUENCY TEAM
-  - **Task Created · Generate Lease Renewal · Maya Bennett** → ONSITE TEAM
+  - **Task Created · Prepare Renewal Offer · Maya Bennett** → ONSITE TEAM
 - **Lines:** 1px `#C7C6C4`. Equal arms either side of the pill.
 - **Mobile:** a vertical column (`.en-mcol`) with downward connectors; padding 48, header margin 32.
 
@@ -29,3 +29,5 @@ Nothing is visible until the section is ≥50% in view.
 3. The right-hand lines draw. Each message's pulse travels its route, and its task card appears: Promise To Pay first, then Lease Renewal.
 4. The pill shows **ROUTED**.
 5. **After the build:** the lilac gradient pulses (`#C1BAFE` → `#A093FD`, crisp 1px) **keep travelling both routes on a loop** (2.6s each, 2.2s rest).
+## v123 (Final): mobile column is laid out at its final size from the start; the inbox card unrolls with a clip-path (no height animation), so the container never grows.
+- Clip uses an outset inset (−24px) so the card's shadow isn't cut.

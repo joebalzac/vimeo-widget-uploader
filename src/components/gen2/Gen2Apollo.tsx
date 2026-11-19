@@ -41,7 +41,7 @@ const IDLE: Progress = { key: "", n: 0, thinking: false, done: false };
  */
 export default function Gen2Apollo({
   heading = "More Power, More Simplicity with Apollo",
-  subtitle = "One agent to control the whole platform.",
+  subtitle = "One agent to control the whole platform, making Elise radically easy to implement, learn, and use.",
   headingMaxWidth = 418,
   startTab,
   autoAdvance = true,

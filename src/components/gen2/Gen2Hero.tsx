@@ -20,15 +20,16 @@ export interface Gen2HeroProps {
  * Gen2Hero — Gen 2 page hero (handoff 02-hero; Figma 590:45184, mobile 642:139554).
  *
  * Centred copy (eyebrow, H1, subtitle, CTA) above the Calendar / Prospects / Residents board,
- * which loads in as a diagonal wave and then plays a ~13s story loop. Behind it sits Figma's
+ * which loads in as a diagonal wave and then plays the one-pass "Elise acting" sequence (~17s,
+ * once, while in view) before holding its final state. Behind it sits Figma's
  * blurred, colour-adjusted haze image (697:176882, exported with its effects baked in); a
  * blurred azure field (697:176884) rises over the lower board so the columns fade out into
  * the bottom of the hero.
  */
 export default function Gen2Hero({
-  heading = "The #1 AI Platform to Transform Multifamily Operations",
-  subtitle = "The next generation of asset performance.",
-  eyebrow = "GEN 2",
+  heading = "The #1 AI Platform Transforming Multifamily Operations",
+  subtitle = "The next generation of team experience, resident experience, and asset performance.",
+  eyebrow = "EliseAI Gen 2",
   ctaLabel = "Get A Demo",
   ctaHref = "#",
   id,

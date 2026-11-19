@@ -36,7 +36,7 @@ const WORD_COUNT = REPLY.reduce((n, p) => n + p.length, 0);
  * The reply's words are laid out from the start so the bubble never resizes.
  */
 export default function Gen2Crm({
-  heading = "EliseCRM Takes the Work off Your Team",
+  heading = "EliseCRM Takes the Work Off Your Team",
   subtitle = "The AI workspace for your team.",
 }: Gen2CrmProps) {
   const stageRef = useRef<HTMLDivElement>(null);

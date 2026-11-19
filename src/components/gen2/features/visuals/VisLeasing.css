@@ -1,4 +1,4 @@
-/* LeasingAI visual — 660×460 card space (Figma 632:53306 / 632:53308 / 636:53665). Prefix: g2v-lease */
+/* Leasing visual — 660×460 card space (Figma 876:180249, handoff 04 v112/v113). Prefix: g2v-lease */
 .g2v-lease {
   position: absolute;
   inset: 0;
@@ -9,28 +9,31 @@
   color: #0e0d0c;
 }
 
-/* ── Lead cards (636:53489): 320 wide at x170, 6 apart, centred vertically ── */
-.g2v-lease-stack {
+/* The morphing container stays centred in the stage while its size tweens. */
+.g2v-lease-stage {
   position: absolute;
-  left: 170px;
-  top: 50%;
-  width: 320px;
+  inset: 0;
   display: flex;
-  flex-direction: column;
-  gap: 6px;
-  transform: translateY(-50%);
+  align-items: center;
+  justify-content: center;
 }
-.g2v-lease-card {
+.g2v-lease-box {
   position: relative;
+  flex: none;
+  overflow: hidden;
+}
+
+/* ── 1 · Lead card (872:179879): 320×132.5 ── */
+.g2v-lease-card {
   display: flex;
   flex-direction: column;
   gap: 10px;
   box-sizing: border-box;
-  width: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 320px;
   padding: 16px;
-  border-radius: 8px;
-  background: #fff;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.04), 0 0 0 0.5px rgba(0, 0, 0, 0.05);
   font-feature-settings: "ss07" 1, "ss08" 1;
 }
 .g2v-lease-card__head {
@@ -130,29 +133,102 @@
   color: #00b080;
 }
 
-/* ── Generate Lease pill (636:53490): 194.9×55.4 at x232.6 y202.3 ── */
-.g2v-lease-btn {
+/* ── 2 · Composer (872:180193): 400×140, pad 16, message on top, toolbar at the bottom ── */
+.g2v-lease-composer {
   position: absolute;
-  top: 202.28px;
-  left: 232.56px;
-  z-index: 3;
+  top: 0;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-sizing: border-box;
+  width: 400px;
+  height: 140px;
+  padding: 16px;
+}
+.g2v-lease-msg {
+  width: 361.4px;
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.4;
+  letter-spacing: -0.32px;
+  font-feature-settings: "ss07" 1;
+  color: #0e0d0c;
+}
+/* Untyped letters keep their space (opacity 0) so the text never reflows. */
+.g2v-lease-msg span {
+  opacity: 0;
+}
+.g2v-lease-msg--on span {
+  animation: g2v-lease-lfch 0.55s linear var(--d) both;
+}
+.g2v-lease-msg--still span {
+  opacity: 1;
+}
+/* Typing edge azure 500 → trail purple 300 → settles on type-default (Figma 692:175315). */
+@keyframes g2v-lease-lfch {
+  0% { opacity: 0; color: #1475e8; }
+  1% { opacity: 1; color: #1475e8; }
+  35% { opacity: 1; color: #a093fd; }
+  100% { opacity: 1; color: #0e0d0c; }
+}
+.g2v-lease-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 32.71px;
+}
+.g2v-lease-tools {
+  display: flex;
+  align-items: center;
+  gap: 9.14px;
+}
+.g2v-lease-tools img {
+  display: block;
+  flex: none;
+}
+.g2v-lease-send {
   display: flex;
   align-items: center;
   box-sizing: border-box;
-  height: 55.44px;
-  padding: 12.22px 24.44px;
-  border-radius: 999px;
-  background-image: linear-gradient(128.64deg, #a093fd 7.26%, #2e95ff 156.48%);
-  box-shadow: 0 26.4px 22px -22px rgba(0, 0, 0, 0.2);
+  height: 32.71px;
+  padding: 0 13.71px;
+  border-radius: 3.43px;
+  background: #6b4fff;
+  font-size: 13.71px;
+  line-height: 1.4;
+  letter-spacing: -0.2743px;
+  font-feature-settings: "ss07" 1;
   color: #fff;
+  white-space: nowrap;
+  transition: background-color 0.14s;
+}
+.g2v-lease-send.is-hover {
+  background: #5a3ff0;
+}
+
+/* ── 3 · Success pill (872:180219): check 24 + "Follow-up Sent" 22, gap 7.33 ── */
+.g2v-lease-pill {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: flex;
+  align-items: center;
+  gap: 7.33px;
+  transform: translate(-50%, -50%);
   font-size: 22px;
   line-height: 1.4;
   letter-spacing: -0.44px;
-  white-space: nowrap;
   font-feature-settings: "ss07" 1;
+  color: #fff;
+  white-space: nowrap;
+}
+.g2v-lease-pill svg {
+  display: block;
+  flex: none;
 }
 
-/* Cursor (636:53659): 48×48 box, arrow drawn inside it. */
+/* Cursor (48×48), positioned by x/y; scales from its tip on click. */
 .g2v-lease-cursor {
   position: absolute;
   top: 0;
@@ -161,221 +237,4 @@
   display: block;
   transform-origin: 34% 30%;
   pointer-events: none;
-}
-
-/* ── Lease document (636:53720): 278×360 at x191 y50; second sheet 3px behind ── */
-.g2v-lease-doc {
-  position: absolute;
-  top: 50.09px;
-  left: 190.98px;
-  z-index: 4;
-  width: 278.05px;
-  height: 359.83px;
-}
-.g2v-lease-doc__sheet {
-  position: absolute;
-  inset: 0;
-  overflow: hidden;
-  background: #fff;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.04), 0 0 0 0.5px rgba(0, 0, 0, 0.05);
-}
-.g2v-lease-doc__sheet--back {
-  transform: translate(3px, 3px);
-}
-/* Page laid out at 2× Figma, scaled ×0.5 (keeps 3px Plex Mono labels rendering). */
-.g2v-lease-doc__page {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 556.1px;
-  height: 719.65px;
-  transform: scale(0.5);
-  transform-origin: 0 0;
-}
-.g2v-lease-doc__text {
-  position: absolute;
-  inset: 0;
-  background: #fff; /* hides the skeleton above the scan line */
-}
-.g2v-lease-doc__body {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  box-sizing: border-box;
-  padding: 43.62px;
-  color: #0e0d0c;
-  font-feature-settings: "ss07" 1;
-}
-.g2v-lease-doc__body p {
-  margin: 0;
-}
-.g2v-lease-doc__ln {
-  display: block;
-}
-
-.g2v-lease-doc__head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-.g2v-lease-doc__name {
-  font-size: 19.99px;
-  line-height: 1.2;
-  letter-spacing: -0.6px;
-  color: #000;
-  white-space: nowrap;
-}
-.g2v-lease-doc__contact {
-  display: flex;
-  align-items: stretch;
-  gap: 10.9px;
-  font-size: 10px;
-  line-height: 1.4;
-  letter-spacing: -0.2px;
-  color: #000;
-  white-space: nowrap;
-}
-.g2v-lease-doc__vr {
-  display: block;
-  width: 0;
-  border-left: 0.45px solid #dddcda;
-}
-
-/* Mono labels: Plex Mono Medium 3 (×2) uppercase. */
-.g2v-lease-doc__k {
-  font-family: "IBM Plex Mono", ui-monospace, monospace;
-  font-weight: 500;
-  font-size: 6px;
-  line-height: 1.1;
-  text-transform: uppercase;
-  color: #3f3e3c;
-  font-feature-settings: "salt" 1;
-  white-space: nowrap;
-}
-.g2v-lease-doc__v,
-.g2v-lease-doc__sigval {
-  font-size: 8.5px;
-  line-height: 1.4;
-  letter-spacing: -0.17px;
-  white-space: nowrap;
-}
-
-.g2v-lease-doc__row {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  align-items: center;
-  border-bottom: 0.45px solid #dddcda;
-}
-.g2v-lease-doc__row:last-child {
-  border-bottom: 0;
-}
-.g2v-lease-doc__row > span {
-  padding: 6px 0;
-}
-
-.g2v-lease-doc__clauses {
-  display: flex;
-  flex-direction: column;
-  gap: 9.09px;
-  font-size: 8.5px;
-  line-height: 1.4;
-  letter-spacing: -0.17px;
-  color: #3f3e3c;
-}
-.g2v-lease-doc__crow {
-  display: flex;
-  align-items: flex-start;
-  gap: 10.9px;
-}
-.g2v-lease-doc__crow ol {
-  flex: 1 0 0;
-  min-width: 0;
-  margin: 0;
-  padding: 0 0 0 11px;
-}
-.g2v-lease-doc__crow b {
-  font-weight: 400;
-  color: #0e0d0c;
-}
-
-.g2v-lease-doc__signs {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-.g2v-lease-doc__sign {
-  border: 0.45px solid #dddcda;
-}
-.g2v-lease-doc__sighead {
-  display: flex;
-  border-bottom: 0.45px solid #dddcda;
-  background: #f6f4f2;
-}
-.g2v-lease-doc__sighead > span {
-  flex: 1 0 0;
-  padding: 6px;
-}
-.g2v-lease-doc__sigbody {
-  display: flex;
-}
-.g2v-lease-doc__sigcell {
-  display: flex;
-  flex-direction: column;
-  gap: 3.63px;
-  flex: 1 0 0;
-  padding: 32.76px 6px 10px; /* 10 + hidden 14.83/1.4 signature line + 2 gap */
-  color: #3f3e3c;
-}
-.g2v-lease-doc__sigline {
-  display: block;
-  border-top: 0.45px solid #dddcda;
-}
-
-/* Skeleton: same layout, text hidden behind grey bars. */
-.g2v-lease-doc__body--skel span:not(:has(> span)),
-.g2v-lease-doc__body--skel b {
-  color: transparent;
-  background: #efedea;
-  border-radius: 3px;
-  -webkit-box-decoration-break: clone;
-  box-decoration-break: clone;
-}
-.g2v-lease-doc__body--skel b {
-  background: none;
-}
-.g2v-lease-doc__body--skel p,
-.g2v-lease-doc__body--skel li {
-  color: transparent;
-}
-.g2v-lease-doc__body--skel li::marker {
-  color: #efedea;
-}
-.g2v-lease-doc__body--skel .g2v-lease-doc__sighead {
-  background: #faf9f8;
-}
-
-/* ── Scan band (636:53827): 330 wide at x165, clipped to the page; its bottom edge
-      (1px #6B4FFF) is the scan line, with a soft radial tint rising above it. ── */
-.g2v-lease-scan {
-  position: absolute;
-  top: 50px;
-  left: 165px;
-  z-index: 6;
-  width: 330px;
-  height: 361px;
-  overflow: hidden;
-  pointer-events: none;
-}
-.g2v-lease-band {
-  position: absolute;
-  top: 0;
-  left: 0;
-  display: block;
-  width: 330px;
-  height: 180px;
-  box-sizing: border-box;
-  border-bottom: 1px solid #6b4fff;
-  background: radial-gradient(circle 182.8px at 165px 173.86px, rgba(107, 79, 255, 0.1), rgba(107, 79, 255, 0));
 }

@@ -3,48 +3,50 @@ export type FeatureId = "leasing" | "tour" | "aigt" | "maint" | "delinquency" | 
 
 export interface Feature {
   id: FeatureId;
-  title: string;
+  /** Product name: the Plex Mono caps tag above the headline (and the ruler's label). */
+  name: string;
   isNew?: boolean;
-  description: string;
+  /** H3 headline (v109: the old sub-line). Non-breaking hyphens (U+2011) keep compounds whole. */
+  title: string;
   whatsNew: string[];
 }
 
 export const FEATURES: Feature[] = [
   {
     id: "leasing",
-    title: "LeasingAI",
-    description: "Nurtures every lead from inquiry to signed lease.",
+    name: "Leasing",
+    title: "Nurtures Every Lead From Inquiry to Signed Lease",
     whatsNew: ["Brand Suite", "Personalization Suite", "Team Optimization", "Central AI"],
   },
   {
     id: "tour",
-    title: "Tour Intelligence",
+    name: "Tour Intelligence",
     isNew: true,
-    description: "Records, scores, and coaches every tour.",
+    title: "Records, Scores, & Coaches Every Tour",
     whatsNew: ["Real-Time Coaching", "Property Insights", "Custom Rubrics", "Agent Scoring"],
   },
   {
     id: "aigt",
-    title: "AI-Guided Tours",
-    description: "Interactive self-guided touring.",
+    name: "AI Guided Tours",
+    title: "Interactive Self\u2011Guided Touring",
     whatsNew: ["Video Configuration", "Smart Wayfinding"],
   },
   {
     id: "maint",
-    title: "Maintenance",
-    description: "Resident communications and end-to-end operations management.",
+    name: "Maintenance",
+    title: "Resident Communications & End\u2011to\u2011End Operations Management",
     whatsNew: ["Preventative Maintenance", "Asset Tracking", "Turn Scheduling", "Vendor Coordination"],
   },
   {
     id: "delinquency",
-    title: "Delinquency",
-    description: "Improve collections without reducing sentiment.",
+    name: "Delinquency",
+    title: "Improve Collections Without Reducing Sentiment",
     whatsNew: ["Payment Plans", "Demand Notice Generation", "Former Resident Recovery"],
   },
   {
     id: "renewals",
-    title: "Renewals",
-    description: "Increase retention and speed up renewal decisions.",
+    name: "Renewals",
+    title: "Increase Retention & Speed Up Renewal Decisions",
     whatsNew: ["Renewals Prediction", "NTV Saves", "One-Click Renewals Portal"],
   },
 ];

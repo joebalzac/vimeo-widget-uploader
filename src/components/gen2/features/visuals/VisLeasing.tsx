@@ -1,227 +1,85 @@
-import { useRef, useState } from "react";
+import { useMemo, useRef, useState, type CSSProperties } from "react";
 import { motion } from "framer-motion";
 import StatusChip from "../../shared/StatusChip";
 import { E } from "../../shared/motion";
 import { useLoop } from "../../shared/useLoop";
 import avatarAva from "../../../../assets/gen2/features/leasing/avatar-ava.jpg";
-import avatarMateo from "../../../../assets/gen2/features/leasing/avatar-mateo.jpg";
 import iconBed from "../../../../assets/gen2/features/leasing/icon-bed.svg";
 import iconDollar from "../../../../assets/gen2/features/leasing/icon-dollar.svg";
+import iconText from "../../../../assets/gen2/features/leasing/icon-text.svg";
+import iconLink from "../../../../assets/gen2/features/leasing/icon-link.svg";
+import iconAttach from "../../../../assets/gen2/features/leasing/icon-attach.svg";
 import cursorSvg from "../../../../assets/gen2/features/leasing/cursor.svg";
 import "./VisLeasing.css";
 
 /**
- * LeasingAI visual (Figma 632:53306 → 632:53308 → 636:53665, + 692:175157). Two stacked
- * lead cards rise in, their chips flip TOUR SCHEDULED → TOURED, they converge while the
- * Generate Lease pill grows in, a cursor clicks it, the lease document replaces the pill
- * and a scan band turns its skeleton into text. Hold, fade, loop.
+ * Leasing visual (Figma 876:180249, handoff 04 v112 + v113 timing). One white container
+ * morphs the whole way: lead card (320×132.5, TOUR SCHEDULED → TOURED) → composer
+ * (400×140, r8) that types out a follow-up → cursor clicks Send → the container
+ * converges into the mint "Follow-up Sent" pill (220×55.4, r28). Hold, out, loop.
  */
 
-/** 0 empty · 1 cards in · 2 toured · 3 converge + button · 4 cursor hover · 5 click ·
- *  6 lease in · 7 scanning · 8 scanned (final frame) · 9 fade out */
+/** 0 reset · 1 card in · 2 toured · 3 composer · 4 typing · 5 cursor glide · 6 hover ·
+ *  7 click · 8 converged (pill) · 9 out */
 type Step = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
-const FINAL: Step = 8;
 
-const LEADS = [
-  {
-    name: "Ava Mitchell",
-    property: "Caladan Lofts",
-    unit: "1bd/1ba",
-    rent: "$2,000",
-    photo: avatarAva,
-  },
-  {
-    name: "Mateo Alvarez",
-    property: "Oakview",
-    unit: "2bd/1ba",
-    rent: "$2,500",
-    photo: avatarMateo,
-  },
-];
-/** Cards are stacked (320 wide at x170, 6 apart, centred vertically); each is 131.2 tall. */
-const CONVERGE_Y = [68.6, -68.6];
-const ENTER = [
-  { y: 60, rotate: 6 },
-  { y: 60, rotate: -6 },
-]; // counter-rotation on the way in
+const MESSAGE =
+  "Hi Ava! Thanks for touring Caladan Lofts. Here’s the application link for the one-bedroom you saw.";
+/** Type-out: 14ms per letter, 20ms on spaces; each letter runs `lfch` for .55s. */
+const LETTER_MS = 14;
+const SPACE_MS = 20;
+const LFCH_MS = 550;
 
-/** Scan band: 330 wide at x165, its bottom edge (the line) sweeps the 360-tall lease. */
-const DOC_TOP = 50;
-const DOC_H = 360;
-const BAND_H = 180;
-/** Where the line sits in Figma's final frame (636:53665). */
-const FIGMA_LINE_Y = 230;
+/** Container sizes per state (Figma 872:179876 / 872:180193 / 872:180219). */
+const BOX = {
+  card: { width: 320, height: 132.5, borderRadius: 8, backgroundColor: "#ffffff" },
+  composer: { width: 400, height: 140, borderRadius: 8, backgroundColor: "#ffffff" },
+  pill: { width: 220.22, height: 55.44, borderRadius: 28, backgroundColor: "#00b080" },
+} as const;
+const SHADOW_CARD =
+  "0px 2px 4px 0px rgba(0,0,0,0.04), 0px 1px 2px 0px rgba(0,0,0,0.04), 0px 0px 0px 0.5px rgba(0,0,0,0.05)";
+const SHADOW_PILL =
+  "0px 26.4px 22px -22px rgba(0,0,0,0.2), 0px 0px 0px 0px rgba(0,0,0,0), 0px 0px 0px 0px rgba(0,0,0,0)";
+/** v113: the container morphs on one spring; the fill change is a quick tween. */
+const MORPH = { type: "spring", stiffness: 420, damping: 34, mass: 0.8 } as const;
 
-const FIELDS = [
-  ["Tenant", "Ava Mitchell", "Unit", "2A"],
-  [
-    "Property",
-    "1847 Alder Row,\nBrooklyn, NY 11201",
-    "Bedrooms",
-    "1bd/1ba, 925 sq ft",
-  ],
-  ["Monthly rent", "$2,000.00", "Lease term", "12 mo"],
-  ["Due date", "1st of Each Month", "Sec. deposit", "$2,000.00"],
-];
+/** Cursor (48×48): Figma parks it at x490 y264.75 so its tip sits on Send. */
+const CURSOR_ON = { x: 490, y: 264.75 };
+const CURSOR_OFF = { x: 590, y: 420 };
 
-const CLAUSES: [string, string][] = [
-  [
-    "Premises",
-    "Landlord leases Unit 2A to Tenant for residential use. Tenant will keep the apartment clean, care for its fixtures, and promptly report needed repairs.",
-  ],
-  [
-    "Rent",
-    "Monthly rent is $2,000, due on the first of each month. Tenant may pay through the resident portal or by check. A $50 late fee may apply if rent is more than five days overdue.",
-  ],
-  [
-    "Security Deposit",
-    "Landlord will return the balance of the $2,000 deposit within 14 days after move-out and provide an itemized statement of any lawful deductions.",
-  ],
-  [
-    "Utilities",
-    "Water, sewer, trash, and internet are included. Tenant pays for electricity and gas and carries $100,000 in renters liability coverage, with Landlord listed as an interested party.",
-  ],
-  [
-    "Occupants",
-    "Tenant may share the apartment as permitted by New York law. Subletting and short-term rentals are subject to applicable law and required approvals.",
-  ],
-  [
-    "Pets",
-    "Up to two pets require written approval and an addendum covering fees and restrictions. Assistance animal requests follow applicable fair housing law.",
-  ],
-  [
-    "Maintenance",
-    "Tenant keeps drains clear, replaces bulbs, and requests repairs through the portal. Landlord makes legally required repairs. Alterations require written approval.",
-  ],
-  [
-    "Community Rules",
-    "Quiet hours are 10 p.m. to 8 a.m. Residents follow the posted guidelines. Landlord gives 30 days’ written notice of changes, subject to law.",
-  ],
-  [
-    "Entry",
-    "Landlord may enter at reasonable times for inspections or repairs with notice under NYC rules. Qualifying emergency repairs may proceed without advance notice.",
-  ],
-  [
-    "Early Termination",
-    "Tenant may request early release with 60 days’ written notice. Any agreement must be in writing. Statutory termination rights apply.",
-  ],
-  [
-    "Move-Out",
-    "Tenant will remove belongings, return keys and access cards, and leave the apartment in its move-in condition, allowing for ordinary wear and tear.",
-  ],
-  [
-    "Governing Law",
-    "New York State law and applicable New York City laws and regulations govern this lease and the rights and obligations of both parties.",
-  ],
-];
-
-const SIGN = [
-  ["Tenant", "Ava Mitchell"],
-  ["Landlord / authorized agent", "Mike Lopez, Leasing Manager"],
-];
-
-/** Multi-line text as one span per line (so the skeleton draws one bar per line). */
-function Lines({ text }: { text: string }) {
+/** The type-out, one span per letter (spaces stay plain so lines wrap normally). */
+function TypeOut({ on, still }: { on: boolean; still: boolean }) {
+  const letters = useMemo(() => {
+    let t = 0;
+    return Array.from(MESSAGE).map((ch) => {
+      const d = t;
+      t += ch === " " ? SPACE_MS : LETTER_MS;
+      return { ch, d };
+    });
+  }, []);
   return (
-    <>
-      {text.split("\n").map((l) => (
-        <span key={l} className="g2v-lease-doc__ln">
-          <span>{l}</span>
-        </span>
-      ))}
-    </>
-  );
-}
-
-/** The lease page, laid out at 2× Figma (556×720) and scaled ×0.5 so 3–5px type stays crisp. */
-function LeaseBody({ skeleton }: { skeleton?: boolean }) {
-  return (
-    <div
+    <p
       className={
-        "g2v-lease-doc__body" + (skeleton ? " g2v-lease-doc__body--skel" : "")
+        "g2v-lease-msg" + (still ? " g2v-lease-msg--still" : on ? " g2v-lease-msg--on" : "")
       }
-      aria-hidden={skeleton}
+      aria-label={MESSAGE}
     >
-      <div className="g2v-lease-doc__head">
-        <p className="g2v-lease-doc__name">
-          <span>Caladan Lofts</span>
-        </p>
-        <div className="g2v-lease-doc__contact">
-          <p>
-            <Lines text={"1847 Alder Row,\nBrooklyn, NY 11201"} />
-          </p>
-          <i className="g2v-lease-doc__vr" />
-          <p>
-            <Lines text={"(718) 555-0142\nleasing@caladanlofts.com"} />
-          </p>
-        </div>
-      </div>
-
-      <div className="g2v-lease-doc__table">
-        {FIELDS.map(([k1, v1, k2, v2]) => (
-          <div key={k1} className="g2v-lease-doc__row">
-            <span className="g2v-lease-doc__k">
-              <span>{k1}</span>
-            </span>
-            <span className="g2v-lease-doc__v">
-              <Lines text={v1} />
-            </span>
-            <span className="g2v-lease-doc__k">
-              <span>{k2}</span>
-            </span>
-            <span className="g2v-lease-doc__v">
-              <Lines text={v2} />
-            </span>
-          </div>
-        ))}
-      </div>
-
-      <div className="g2v-lease-doc__clauses">
-        {CLAUSES.slice(0, 6).map((left, i) => {
-          const right = CLAUSES[i + 6];
-          return (
-            <div key={left[0]} className="g2v-lease-doc__crow">
-              {[left, right].map(([title, body], j) => (
-                <ol key={title} start={i + 1 + j * 6}>
-                  <li>
-                    <span>
-                      <b>{title}</b>. {body}
-                    </span>
-                  </li>
-                </ol>
-              ))}
-            </div>
-          );
-        })}
-      </div>
-
-      <div className="g2v-lease-doc__signs">
-        {SIGN.map(([who, name]) => (
-          <div key={who} className="g2v-lease-doc__sign">
-            <div className="g2v-lease-doc__sighead">
-              <span className="g2v-lease-doc__k">
-                <span>{who}</span>
-              </span>
-              <span className="g2v-lease-doc__k">
-                <span>Date</span>
-              </span>
-            </div>
-            <div className="g2v-lease-doc__sigbody">
-              {[name, "mm/dd/yyyy"].map((v) => (
-                <div key={v} className="g2v-lease-doc__sigcell">
-                  <i className="g2v-lease-doc__sigline" />
-                  <span className="g2v-lease-doc__sigval">
-                    <span>{v}</span>
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
+      {letters.map(({ ch, d }, i) =>
+        ch === " " ? (
+          " "
+        ) : (
+          <span key={i} aria-hidden style={{ "--d": `${d}ms` } as CSSProperties}>
+            {ch}
+          </span>
+        ),
+      )}
+    </p>
   );
 }
+
+/** Total type-out time, including the last letter settling. */
+const TYPE_MS =
+  Array.from(MESSAGE).reduce((t, ch) => t + (ch === " " ? SPACE_MS : LETTER_MS), 0) + LFCH_MS;
 
 export default function VisLeasing() {
   const ref = useRef<HTMLDivElement>(null);
@@ -229,15 +87,15 @@ export default function VisLeasing() {
 
   const { reduced } = useLoop(ref, async ({ wait }) => {
     const seq: [Step, number][] = [
-      [1, 1400],
-      [2, 1200],
-      [3, 900],
-      [4, 1000],
-      [5, 220],
-      [6, 700],
-      [7, 2700],
-      [8, 1900],
-      [9, 500],
+      [1, 1200], // card in → Toured 1.2s
+      [2, 1050], // Toured → composer 1.05s
+      [3, 420], // morph; composer fades in (.35s after .3s)
+      [4, TYPE_MS], // type-out ~1.5s
+      [5, 500], // cursor glide .5s
+      [6, 140], // hover .14s
+      [7, 110], // click .11s
+      [8, 2200 + 450], // converge (+ check draw) then hold 2.2s
+      [9, 500], // out .5s
     ];
     for (;;) {
       setS(0);
@@ -249,64 +107,59 @@ export default function VisLeasing() {
     }
   });
 
-  const step: Step = reduced ? FINAL : s;
-  const cardsOn = step >= 1 && step <= 2;
-  const btnOn = step >= 3 && step <= 5;
-  const docOn = step >= 6 && step <= 9;
-  const scanned = step >= 7;
+  // Reduced motion: the static composer with the full message.
+  const step: Step = reduced ? 4 : s;
   const instant = reduced || step === 0;
-
-  // Band bottom edge = the scan line. It sweeps the page top → bottom while scanning;
-  // the reduced-motion final frame shows Figma's frame (line part-way down).
-  const lineY = reduced ? FIGMA_LINE_Y : step >= 7 ? DOC_TOP + DOC_H : DOC_TOP;
-  const bandOn = reduced || step === 7;
+  const box = step >= 8 ? BOX.pill : step >= 3 ? BOX.composer : BOX.card;
+  const cardOn = step >= 1 && step <= 2;
+  const composerOn = step >= 3 && step <= 7;
+  const pillOn = step >= 8;
+  const cursorOn = step >= 5 && step <= 7;
 
   return (
-    <motion.div
-      ref={ref}
-      className="g2v-lease"
-      animate={{ opacity: step === 9 ? 0 : 1 }}
-      transition={{ duration: step === 9 ? 0.5 : 0 }}
-    >
-      <div className="g2v-lease-stack">
-        {LEADS.map((lead, i) => (
+    <div ref={ref} className="g2v-lease">
+      <motion.div
+        className="g2v-lease-stage"
+        initial={false}
+        animate={
+          step === 0
+            ? { opacity: 0, y: 24 }
+            : step === 9
+            ? { opacity: 0, y: -16 }
+            : { opacity: 1, y: 0 }
+        }
+        transition={
+          instant ? { duration: 0 } : { duration: step === 9 ? 0.5 : 0.6, ease: E }
+        }
+      >
+        <motion.div
+          className="g2v-lease-box"
+          initial={false}
+          animate={{ ...box, boxShadow: pillOn ? SHADOW_PILL : SHADOW_CARD }}
+          transition={
+            instant
+              ? { duration: 0 }
+              : {
+                  default: MORPH,
+                  backgroundColor: { duration: 0.22, ease: "easeOut" },
+                  boxShadow: { duration: 0.3, ease: "easeOut" },
+                }
+          }
+        >
+          {/* 1 · Lead card (Figma 872:179879) */}
           <motion.div
-            key={lead.name}
             className="g2v-lease-card"
-            style={{ zIndex: i === 0 ? 2 : 1 }}
             initial={false}
-            animate={
-              cardsOn
-                ? { opacity: 1, y: 0, rotate: 0, scale: 1 }
-                : step === 0
-                ? {
-                    opacity: 0,
-                    y: ENTER[i].y,
-                    rotate: ENTER[i].rotate,
-                    scale: 1,
-                  }
-                : { opacity: 0, y: CONVERGE_Y[i], rotate: 0, scale: 0.9 }
-            }
-            transition={
-              instant
-                ? { duration: 0 }
-                : step >= 3
-                ? { duration: 0.6, ease: "easeInOut" }
-                : { duration: 0.8, ease: E, delay: i * 0.12 }
-            }
+            animate={{ opacity: cardOn || step === 0 ? 1 : 0 }}
+            transition={instant ? { duration: 0 } : { duration: 0.2 }}
+            aria-hidden={!cardOn}
           >
             <div className="g2v-lease-card__head">
-              <img
-                className="g2v-lease-card__avatar"
-                src={lead.photo}
-                alt=""
-                width={40}
-                height={40}
-              />
+              <img className="g2v-lease-card__avatar" src={avatarAva} alt="" width={40} height={40} />
               <div className="g2v-lease-card__top">
                 <div className="g2v-lease-card__who">
-                  <span className="g2v-lease-card__name">{lead.name}</span>
-                  <span className="g2v-lease-card__prop">{lead.property}</span>
+                  <span className="g2v-lease-card__name">Ava Mitchell</span>
+                  <span className="g2v-lease-card__prop">Caladan Lofts</span>
                 </div>
                 <StatusChip
                   className="g2v-lease-chip"
@@ -321,42 +174,76 @@ export default function VisLeasing() {
               <span className="g2v-lease-card__pref-row">
                 <span className="g2v-lease-card__pref">
                   <img src={iconBed} alt="" width={14} height={14} />
-                  {lead.unit}
+                  1bd/1ba
                 </span>
                 <i className="g2v-lease-card__dot" />
                 <span className="g2v-lease-card__pref">
                   <img src={iconDollar} alt="" width={14} height={14} />
-                  {lead.rent}
+                  $2,000
                 </span>
               </span>
             </div>
           </motion.div>
-        ))}
-      </div>
 
-      <motion.div
-        className="g2v-lease-btn"
-        initial={false}
-        animate={
-          btnOn
-            ? { opacity: 1, scale: step === 5 ? 0.96 : 1, y: 0 }
-            : {
-                opacity: 0,
-                scale: step >= 6 ? 0.92 : 0.82,
-                y: step >= 6 ? -12 : 0,
-              }
-        }
-        transition={
-          instant
-            ? { duration: 0 }
-            : step === 5
-            ? { duration: 0.12 }
-            : step >= 6
-            ? { duration: 0.35, ease: E }
-            : { duration: 0.6, ease: E }
-        }
-      >
-        Generate Lease
+          {/* 2 · Composer (Figma 872:180193) */}
+          <motion.div
+            className="g2v-lease-composer"
+            initial={false}
+            animate={{ opacity: composerOn ? 1 : 0 }}
+            transition={
+              instant
+                ? { duration: 0 }
+                : composerOn
+                ? { duration: 0.35, delay: 0.3 }
+                : { duration: 0.15 }
+            }
+            aria-hidden={!composerOn}
+          >
+            <TypeOut on={step >= 4} still={reduced} />
+            <div className="g2v-lease-toolbar">
+              <div className="g2v-lease-tools">
+                <img src={iconText} alt="" width={20} height={20} />
+                <img src={iconLink} alt="" width={20} height={20} />
+                <img src={iconAttach} alt="" width={20} height={20} />
+              </div>
+              <motion.span
+                className={"g2v-lease-send" + (step === 6 || step === 7 ? " is-hover" : "")}
+                initial={false}
+                animate={{ scale: step === 7 ? 0.95 : 1 }}
+                transition={instant ? { duration: 0 } : { duration: 0.11 }}
+              >
+                Send
+              </motion.span>
+            </div>
+          </motion.div>
+
+          {/* 3 · Success pill (Figma 872:180219) */}
+          <motion.div
+            className="g2v-lease-pill"
+            initial={false}
+            animate={{ opacity: pillOn ? 1 : 0 }}
+            transition={instant ? { duration: 0 } : { duration: 0.2, delay: pillOn ? 0.12 : 0 }}
+            aria-hidden={!pillOn}
+          >
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden>
+              <motion.path
+                d="M20 6L8.99998 17L3.99998 12"
+                stroke="#fff"
+                strokeWidth={2}
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                initial={false}
+                animate={{ pathLength: pillOn ? 1 : 0 }}
+                transition={
+                  instant || !pillOn
+                    ? { duration: 0 }
+                    : { duration: 0.32, delay: 0.22, ease: "easeOut" }
+                }
+              />
+            </svg>
+            <span>Follow-up Sent</span>
+          </motion.div>
+        </motion.div>
       </motion.div>
 
       <motion.img
@@ -367,71 +254,22 @@ export default function VisLeasing() {
         height={48}
         initial={false}
         animate={
-          step >= 4 && step <= 5
-            ? { opacity: 1, x: 383, y: 237, scale: step === 5 ? 0.88 : 1 }
-            : step >= 6
-            ? { opacity: 0, x: 391, y: 253, scale: 1 }
-            : { opacity: 0, x: 560, y: 470, scale: 1 }
+          cursorOn
+            ? { opacity: 1, ...CURSOR_ON, scale: step === 7 ? 0.88 : 1 }
+            : step >= 8
+            ? { opacity: 0, ...CURSOR_ON, scale: 1 }
+            : { opacity: 0, ...CURSOR_OFF, scale: 1 }
         }
         transition={
           instant
             ? { duration: 0 }
-            : step === 4
-            ? { duration: 0.8, ease: E }
-            : { duration: step === 5 ? 0.12 : 0.3 }
+            : step === 5
+            ? { duration: 0.5, ease: E }
+            : step === 7
+            ? { duration: 0.11 }
+            : { duration: 0.2 }
         }
       />
-
-      <motion.div
-        className="g2v-lease-doc"
-        initial={false}
-        animate={
-          docOn
-            ? { opacity: 1, y: 0, scale: 1 }
-            : { opacity: 0, y: 40, scale: 0.96 }
-        }
-        transition={instant ? { duration: 0 } : { duration: 0.6, ease: E }}
-      >
-        <div className="g2v-lease-doc__sheet g2v-lease-doc__sheet--back" />
-        <div className="g2v-lease-doc__sheet">
-          <div className="g2v-lease-doc__page">
-            <LeaseBody skeleton />
-            <motion.div
-              className="g2v-lease-doc__text"
-              initial={false}
-              animate={{
-                clipPath: scanned ? "inset(0 0 0% 0)" : "inset(0 0 100% 0)",
-              }}
-              transition={
-                instant || !scanned
-                  ? { duration: 0 }
-                  : { duration: 2.7, ease: "linear" }
-              }
-            >
-              <LeaseBody />
-            </motion.div>
-          </div>
-        </div>
-      </motion.div>
-
-      <div className="g2v-lease-scan" aria-hidden>
-        <motion.span
-          className="g2v-lease-band"
-          initial={false}
-          animate={{
-            y: lineY - DOC_TOP - BAND_H,
-            opacity: bandOn ? (step === 7 ? [0, 1, 1, 0] : 1) : 0,
-          }}
-          transition={
-            step === 7 && !reduced
-              ? {
-                  y: { duration: 2.7, ease: "linear" },
-                  opacity: { duration: 2.7, times: [0, 0.08, 0.9, 1] },
-                }
-              : { duration: 0 }
-          }
-        />
-      </div>
-    </motion.div>
+    </div>
   );
 }

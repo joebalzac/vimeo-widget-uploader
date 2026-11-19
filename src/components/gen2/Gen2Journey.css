@@ -10,6 +10,10 @@
   -webkit-font-smoothing: antialiased;
 }
 
+.g2j-head {
+  position: relative;
+  z-index: 1;
+}
 /* Heading (Figma 642:88751): 520 wide, 12 gap, body-primary subtitle, 4.5 to the graphic */
 .g2j .sh {
   position: relative;
@@ -60,6 +64,24 @@
   height: 0;
   transform-origin: 0 0;
 }
+/* v124: a 1440×940 box with the ring centre at (720,583); the grid fades in and out
+   vertically around the ring (fully clear before the section clips) and at the sides. */
+.g2j-bg__mask {
+  position: absolute;
+  left: -720px;
+  top: -583px;
+  width: 1440px;
+  height: 940px;
+  overflow: hidden;
+  -webkit-mask-image:
+    linear-gradient(to bottom, transparent 31%, #000 50%, #000 74%, transparent 89%),
+    linear-gradient(to right, transparent, #000 20%, #000 80%, transparent);
+  -webkit-mask-composite: source-in;
+  mask-image:
+    linear-gradient(to bottom, transparent 31%, #000 50%, #000 74%, transparent 89%),
+    linear-gradient(to right, transparent, #000 20%, #000 80%, transparent);
+  mask-composite: intersect;
+}
 .g2j-bg__pattern,
 .g2j-bg__fade {
   position: absolute;
@@ -67,12 +89,13 @@
   max-width: none;
 }
 .g2j-bg__pattern {
-  left: -832.2px;
-  top: -653px;
+  left: -112.2px; /* scene (−832.2, −653) */
+  top: -70px;
 }
+/* Radial fade centred on the ring (v124; was 89.5px above it). */
 .g2j-bg__fade {
-  left: -997.17px;
-  top: -1086.67px;
+  left: -277.17px; /* scene (−997.17, −997.17) */
+  top: -414.17px;
 }
 
 .g2j-fit {

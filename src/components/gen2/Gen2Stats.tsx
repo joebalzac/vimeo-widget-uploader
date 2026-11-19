@@ -56,9 +56,9 @@ function Counter({ value, run, delay, reduced }: { value: string; run: boolean; 
 
 /**
  * Gen2Stats — "The AI That Drives Asset Performance" (handoff 07, Figma 590:46214 / mobile
- * 667:141163). Dark,
- * full-bleed section (paints its own #131115 background and padding; `data-dark="1"` tells
- * the nav to go dark). Three boxed stats count up when half in view; logos fade in on their
+ * 667:141163). White-on-dark,
+ * full-bleed; the dark background and vertical padding come from the Webflow section.
+ * Three boxed stats count up when half in view; logos fade in on their
  * own, with no fading/transformed parent, so the screen blend never flashes the grey box.
  */
 export default function Gen2Stats({
@@ -74,7 +74,7 @@ export default function Gen2Stats({
   const items = stats.filter((s) => s.value.trim() || s.label.trim());
 
   return (
-    <section className={["g2s", className].filter(Boolean).join(" ")} data-dark="1">
+    <section className={["g2s", className].filter(Boolean).join(" ")}>
       <div className="g2s-inner">
         <SectionHeading heading={heading} subtitle={subtitle} theme="dark" align="center" maxWidth={440} />
 

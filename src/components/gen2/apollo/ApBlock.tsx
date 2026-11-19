@@ -1,3 +1,4 @@
+import { useLayoutEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { E } from "../shared/motion";
 import type { ApBlock as Block } from "./gen2ApolloData";
@@ -29,6 +30,53 @@ function SheetIcon() {
 }
 
 /**
+ * User bubble that hugs its text (handoff v120): CSS can't shrink-wrap wrapped text, so
+ * after layout the width is set to the widest rendered line (measured with a Range) plus
+ * the horizontal padding. Re-measured on resize and once web fonts have loaded.
+ */
+function UserBubble({ text }: { text: string }) {
+  const ref = useRef<HTMLDivElement>(null);
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    let frame = 0;
+    const fit = () => {
+      el.style.width = "";
+      const box = el.getBoundingClientRect();
+      if (!box.width || !el.offsetWidth) return;
+      /* rects are post-transform (the stage scales in) → back to layout px */
+      const k = el.offsetWidth / box.width;
+      const range = document.createRange();
+      range.selectNodeContents(el);
+      let widest = 0;
+      for (const r of Array.from(range.getClientRects())) widest = Math.max(widest, r.width);
+      range.detach();
+      if (!widest) return;
+      const cs = getComputedStyle(el);
+      const pad = parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight);
+      const border = parseFloat(cs.borderLeftWidth) + parseFloat(cs.borderRightWidth);
+      el.style.width = `${Math.ceil(widest * k + pad + border)}px`;
+    };
+    fit();
+    const again = () => {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(fit);
+    };
+    window.addEventListener("resize", again);
+    document.fonts?.ready.then(again).catch(() => {});
+    return () => {
+      cancelAnimationFrame(frame);
+      window.removeEventListener("resize", again);
+    };
+  }, [text]);
+  return (
+    <div ref={ref} className="g2a-bubble">
+      {text}
+    </div>
+  );
+}
+
+/**
  * One chat block. `thinking` only applies to `w`: true shows the shimmering
  * "Thinking" line, false shows "Worked for a few seconds".
  */
@@ -48,7 +96,7 @@ export default function ApBlock({ b, thinking, reduced }: { b: Block; thinking?:
 function render(b: Block, thinking?: boolean) {
   switch (b.k) {
     case "u":
-      return <div className="g2a-bubble">{b.text}</div>;
+      return <UserBubble text={b.text} />;
     case "w":
       return thinking ? (
         <div className="g2a-thinking">Thinking</div>

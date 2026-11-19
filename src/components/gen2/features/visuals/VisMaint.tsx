@@ -16,8 +16,9 @@ import "./VisMaint.css";
  * Maintenance (Figma 636:54214 → 642:88989 → 636:56292): three turn cards, the centre one
  * "Unit 3A Turn" (the side cards are faded to 10%). Its 7-segment progress bar sweeps in
  * mint and stops on segment 6, which fills part-way in azure with a blue CLEANING pill
- * hanging under it; then the bar completes in mint and the pill becomes a mint COMPLETE
- * pill hanging off the card's bottom-right edge (check draws in).
+ * hanging under it; then the bar completes in mint, the pill becomes a mint COMPLETE pill
+ * (check draws in) and the chip changes VACANT → READY. Handoff 04: pill and chip are
+ * fixed size (pill 96 wide) and their contents crossfade in place; nothing moves.
  */
 
 const SEGS = 7;
@@ -28,11 +29,9 @@ const ACTIVE_FRAC = 18.215 / 39.43;
 
 type Phase = "none" | "cleaning" | "complete";
 
-/** Pill geometry in card space (Figma: CLEANING at x376.6, COMPLETE at x430, caret top y301). */
-const PILL = {
-  cleaning: { left: 376.63, width: 88 },
-  complete: { left: 430, width: 89.6 },
-} as const;
+/** Pill geometry in card space: 96 wide, centred under segment 6 (Figma CLEANING
+ *  centre x420.6), caret top y301. Fixed for both states. */
+const PILL = { left: 420.63 - 48, width: 96 } as const;
 
 function TurnCard({
   className,
@@ -42,6 +41,7 @@ function TurnCard({
   moveOut,
   children,
   icon = "sm",
+  ready,
 }: {
   className: string;
   unit: string;
@@ -50,6 +50,8 @@ function TurnCard({
   moveOut: string;
   children: ReactNode;
   icon?: "sm" | "lg";
+  /** Animated chip (main card): crossfades VACANT → READY in a fixed-size chip. */
+  ready?: boolean;
 }) {
   return (
     <div className={`g2v-maint-card ${className}`}>
@@ -70,7 +72,14 @@ function TurnCard({
               Aura Estates
             </p>
           </div>
-          <span className="g2v-maint-chip">Vacant</span>
+          {ready === undefined ? (
+            <span className="g2v-maint-chip">Vacant</span>
+          ) : (
+            <span className={`g2v-maint-chip g2v-maint-chip--swap${ready ? " is-ready" : ""}`}>
+              <span className="g2v-maint-chip__l g2v-maint-chip__l--vacant">Vacant</span>
+              <span className="g2v-maint-chip__l g2v-maint-chip__l--ready">Ready</span>
+            </span>
+          )}
         </div>
       </div>
       <div className="g2v-maint-rows">
@@ -128,7 +137,6 @@ export default function VisMaint() {
 
   const f = reduced ? SEGS : filled;
   const ph: Phase = reduced ? "complete" : phase;
-  const pill = ph === "none" ? null : PILL[ph];
 
   return (
     <div ref={ref} className="g2v-maint" aria-hidden>
@@ -151,6 +159,7 @@ export default function VisMaint() {
           due="November 28"
           moveOut="November 20"
           icon={ph === "complete" ? "sm" : "lg"}
+          ready={ph === "complete"}
         >
           {Array.from({ length: SEGS }, (_, i) => {
             const active = ph === "cleaning" && i === STOP;
@@ -168,13 +177,14 @@ export default function VisMaint() {
           })}
         </TurnCard>
 
-        {/* Status pill: hangs under the active segment, then off the bottom-right edge. */}
+        {/* Status pill: hangs under segment 6; CLEANING → COMPLETE crossfades in place. */}
         <AnimatePresence>
-          {pill && (
+          {ph !== "none" && (
             <motion.div
               className={`g2v-maint-pill is-${ph}`}
-              initial={reduced ? false : { opacity: 0, y: -4, left: pill.left, width: pill.width }}
-              animate={{ opacity: 1, y: 0, left: pill.left, width: pill.width }}
+              style={{ left: PILL.left, width: PILL.width }}
+              initial={reduced ? false : { opacity: 0, y: -4 }}
+              animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, transition: { duration: 0.2 } }}
               transition={reduced ? { duration: 0 } : { duration: 0.45, ease: E }}
             >

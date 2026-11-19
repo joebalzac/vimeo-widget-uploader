@@ -1,4 +1,4 @@
-/* AI-Guided Touring visual — 660×460 card space, phone drawn 1:1 from Figma 636:54096 /
+/* AI Guided Tours visual — 660×460 card space, phone drawn 1:1 from Figma 636:54096 /
    636:55403. Screen children are positioned in the screen's padding box (290.36 wide,
    card x 184.8, y 45.1). Prefix: g2v-aigt- */
 .g2v-aigt {
@@ -396,15 +396,16 @@
 .g2v-aigt-apt__amen li {
   margin-inline-start: 18px;
 }
-/* White fade (Figma 636:55743: clear at 11%, solid from 41% of 91.67), nudged ~6px up to match the rendered frame. */
+/* White fade. Handoff 04 (×1.1668 phone scale): clear at 343, solid from 399 → 294 / 342
+   in this 1:1 sheet. */
 .g2v-aigt-apt__fade {
   position: absolute;
   z-index: 1;
-  top: 304px;
+  top: 290px;
   left: 0;
   width: 289.71px;
-  height: 167px;
-  background: linear-gradient(to bottom, rgba(255, 255, 255, 0) 4px, #fff 34px);
+  height: 181px;
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0) 4px, #fff 52px);
   pointer-events: none;
 }
 

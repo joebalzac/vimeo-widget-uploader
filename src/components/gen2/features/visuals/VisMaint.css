@@ -93,6 +93,21 @@
   font-feature-settings: "salt" 1;
   color: #7a7977;
 }
+/* Main card: VACANT → READY crossfade; both labels share one grid cell so the chip
+   keeps the wider label's size. READY is mint. */
+.g2v-maint-chip--swap {
+  display: grid;
+  justify-items: center;
+  transition: background-color 0.3s ease;
+}
+.g2v-maint-chip__l {
+  grid-area: 1 / 1;
+  transition: opacity 0.3s ease;
+}
+.g2v-maint-chip__l--ready { opacity: 0; color: #00b080; }
+.g2v-maint-chip--swap.is-ready { background: #eefdf8; }
+.g2v-maint-chip--swap.is-ready .g2v-maint-chip__l--vacant { opacity: 0; }
+.g2v-maint-chip--swap.is-ready .g2v-maint-chip__l--ready { opacity: 1; }
 
 /* ── Detail rows ───────────────────────────────────────── */
 .g2v-maint-rows {
@@ -209,6 +224,8 @@
   .g2v-maint-pill__body,
   .g2v-maint-pill__label,
   .g2v-maint-pill__c,
+  .g2v-maint-chip--swap,
+  .g2v-maint-chip__l,
   .g2v-maint-pill__label--complete img { transition: none; }
   .g2v-maint-spin { animation: none; }
 }
