@@ -1,245 +1,203 @@
-import { useEffect, useRef, useState, type RefObject } from "react";
-import {
-  animate,
-  useInView,
-  useMotionValue,
-  useReducedMotion,
-  useSpring,
-  useTransform,
-  useVelocity,
-} from "framer-motion";
-import { E, SPRING_FLY, SPRING_TILT } from "../shared";
-import {
-  BOOKED_TOUR,
-  COLUMN_SIZE,
-  FINAL_BOARD,
-  INITIAL_BOARD,
-  MAYA_RESIDENT_ID,
-  NEW_LEAD,
-  RESCHEDULED_TIME,
-  type BoardCardData,
-  type BoardState,
-  type ColumnKey,
-} from "./boardData";
-
-/** Flyer tilt: degrees per px/s of horizontal speed, clamped to ±6°. */
-const TILT_PER_SPEED = 1 / 160;
-const MAX_TILT = 6;
-
-/** Sequence starts this long after the board comes into view (the load-in wave ends ~1.5s). */
-const INTRO_MS = 2200;
-/** Visibility poll for the pausable clock. */
-const TICK_MS = 50;
-
-type Patch = Partial<BoardCardData>;
-type Step = { at: number; run: () => void | Promise<void> };
-
-function patchCard(list: BoardCardData[], id: string, patch: Patch) {
-  return list.map((c) => (c.id === id ? { ...c, ...patch } : c));
-}
+import { useRef, useState, type RefObject } from "react";
+import { HB_NEW, HB_TIME, initialBoard, type BoardState, type CalRow, type ChipKey, type PersonRow } from "./heroBoardData";
+import { sleep, useSeq } from "./protoHooks";
 
 /**
- * Hero board state + the one-pass "Elise acting" sequence (handoff 02-hero, v108 progress
- * rules + v120 wording). The board plays ONCE, only while in view (the clock pauses when it
- * scrolls away), then holds FINAL_BOARD. Reduced motion shows FINAL_BOARD straight away.
+ * Port of the Final prototype's `useHeroBoard(ref, act)` with `act = true` ("Elise acting",
+ * the only variant shipped). Plays the story once while the board is ≥30% in view, then holds
+ * the final state. If the board leaves view mid-way it stops and replays from the start on return.
  *
- * Rules the timeline keeps: at most two progress states on screen; every progress start/end
- * is ≥700ms from any other; two progress cards are never adjacent in a column; one progress
- * per prospect step; every progress state plays in a column's top three rows (above the
- * bottom fade). Times (ms, from the sequence start, 2.2s after the board is in view):
- *
- *     0  + Calendar  Camille (row 1)   "Rescheduling Tour"
- *   700  + Residents Clara (row 1)     "Assigning Work Order"
- *  1500  - Camille → 4:30 PM, change pop
- *  2200  + Prospects Jordan (row 1)    "Scheduling Tour"
- *  2900  - Clara → CURRENT (work order cleared, before the lease is signed)
- *  3600  - Jordan → SCHEDULED TOUR
- *  4300  + Calendar  Jordan's tour pops in at the top, "Confirming" (Ethan exits)
- *  5000  + Residents Malcolm (row 0)   "Collecting Rent"
- *  5700  - Jordan's tour: 1:30 PM fades in
- *  6400  + Residents Clara 2 (row 2)   "Sending Offer"
- *  7400  - Malcolm → CURRENT · RENT PAID
- *  8100  - Clara 2 → CURRENT · RENEWED   (700ms after rent)
- *  8800  + Prospects Maya (row 2)      "Processing Application"
- * 10300  - Maya → LEASE SIGNED; Residents makes room (invisible twin, Grace exits)
- * 11300    flyer lifts; 11580 glides to Residents; 11680 Prospects closes up and
- *        + Prospects Aisha (new lead pops in at the top) "Responding"
- * 12400  + Residents Clara (now row 2) "Predicting Renewal"   (≈12.6 flyer lands)
- * 13000    Maya (Residents) LEASE SIGNED → FUTURE
- * 13400  - Aisha → INQUIRY
- * 14400  - Clara → CURRENT · RENEWAL OFFER  → holds FINAL_BOARD
+ * `ref` is the scaled board stage (`.g2h-bst`); the flyer's from/to are measured inside it and
+ * divided by its CSS scale.
  */
-export function useHeroBoard(boardRef: RefObject<HTMLDivElement | null>) {
-  const reduced = !!useReducedMotion();
-  const seen = useInView(boardRef, { once: true, amount: 0.15 });
-  const inView = useInView(boardRef, { amount: 0.3 });
-  const started = seen || reduced;
+export function useHeroBoard(ref: RefObject<HTMLDivElement | null>): [BoardState, boolean] {
+  const [st, setSt] = useState<BoardState>(initialBoard);
+  /** Mirror of the latest state so the sequence can read it synchronously (prototype `get()`). */
+  const cur = useRef<BoardState>(st);
+  const played = useRef(false);
 
-  const [board, setBoard] = useState<BoardState>(INITIAL_BOARD);
-  const stateRef = useRef<BoardState>(INITIAL_BOARD);
-  const visibleRef = useRef(false);
-  visibleRef.current = inView;
-  const [go, setGo] = useState(false);
-  useEffect(() => {
-    if (inView) setGo(true);
-  }, [inView]);
+  const [, reduce] = useSeq(
+    ref,
+    async (ok) => {
+      if (played.current) return;
+      const S = (f: (x: BoardState) => Partial<BoardState>) => {
+        const next = { ...cur.current, ...f(cur.current) };
+        cur.current = next;
+        setSt(next);
+      };
+      const reset = initialBoard();
+      cur.current = reset;
+      setSt(reset);
+      const W = async (ms: number) => {
+        await sleep(ms);
+        return ok();
+      };
+      const get = () => cur.current;
+      const chip = (col: "p" | "r", id: string, ks: ChipKey[]) =>
+        S((x) => ({ [col]: x[col].map((r) => (r.id === id ? { ...r, chips: ks } : r)), chg: id }));
+      const calSet = (id: string, f: (r: CalRow) => CalRow) => S((x) => ({ c: x.c.map((r) => (r.id === id ? f(r) : r)) }));
+      const live = (r: PersonRow) => !r.hid && !r.ghost;
 
-  /* Flyer motion: position + lift scale, and a tilt that follows horizontal speed. */
-  const fx = useMotionValue(0);
-  const fy = useMotionValue(0);
-  const fscale = useMotionValue(1);
-  const vx = useVelocity(fx);
-  const tiltTarget = useTransform(vx, (v) => Math.max(-MAX_TILT, Math.min(MAX_TILT, v * TILT_PER_SPEED)));
-  const tilt = useSpring(tiltTarget, SPRING_TILT);
+      let n = 0;
+      let cn = 0;
+      let uid = 0;
 
-  useEffect(() => {
-    if (!go || reduced) return;
-    let alive = true;
+      if (!(await W(900))) return;
+      /* Opener: Camille's tour is rescheduled 2:15 → 4:30 PM ("Rescheduling Tour" for 1.5s). */
+      calSet("c2", (r) => ({ ...r, st: "resch" }));
+      if (!(await W(1500))) return;
+      calSet("c2", (r) => ({ ...r, time: "4:30 PM", st: 0 }));
+      S(() => ({ chg: "c2" }));
+      if (!(await W(1100))) return;
+      S(() => ({ chg: null }));
 
-    const update = (fn: (s: BoardState) => BoardState) => {
-      if (!alive) return;
-      stateRef.current = fn(stateRef.current);
-      setBoard(stateRef.current);
-    };
-    const patch = (col: ColumnKey, id: string, p: Patch) =>
-      update((s) => ({ ...s, [col]: patchCard(s[col], id, p) }));
-    const pushTop = (col: ColumnKey, card: BoardCardData) =>
-      update((s) => ({ ...s, [col]: [card, ...s[col]].slice(0, COLUMN_SIZE) }));
+      /* 1 · Toured prospect → Processing Application → Lease Signed → flies to Residents. */
+      let x = get();
+      const t = x.p.slice(0, 3).find((r) => live(r) && ["tour", "sched"].includes(r.chips[0])) || x.p[1];
+      if (t.chips[0] !== "tour") {
+        chip("p", t.id, ["tour"]);
+        if (!(await W(1300))) return;
+      }
+      x = get();
+      const w0 = x.r.find((r) => live(r) && r.chips.includes("wo"));
+      if (w0) {
+        chip("r", w0.id, ["disp"]);
+        if (!(await W(900))) return;
+      }
+      chip("p", t.id, ["sig"]);
+      if (!(await W(w0 ? 800 : 1500))) return;
+      if (w0) {
+        chip("r", w0.id, ["cur"]);
+        if (!(await W(700))) return;
+      }
+      chip("p", t.id, ["ls"]);
+      if (!(await W(1200))) return;
 
-    /* Pausable clock: only counts time while the board is in view. */
-    let clock = 0;
-    let last = performance.now();
-    const until = (t: number) =>
-      new Promise<boolean>((resolve) => {
-        const tick = () => {
-          const now = performance.now();
-          if (visibleRef.current) clock += now - last;
-          last = now;
-          if (!alive) return resolve(false);
-          if (clock >= t) return resolve(true);
-          setTimeout(tick, Math.min(TICK_MS, Math.max(1, t - clock)));
+      const stg = ref.current;
+      const src = stg?.querySelector(`[data-hb="${t.id}"]`);
+      const dst = stg?.querySelector(".g2h-c3 .g2h-list");
+      if (stg && src && dst) {
+        const B = stg.getBoundingClientRect();
+        const k = B.width / stg.offsetWidth || 1;
+        const R = (e: Element) => {
+          const r = e.getBoundingClientRect();
+          return { x: (r.left - B.left) / k, y: (r.top - B.top) / k, w: r.width / k };
         };
-        tick();
-      });
-    /* Plain delays inside a beat (the flyer's motion is already committed). */
-    const delay = (ms: number) => new Promise<boolean>((r) => setTimeout(() => r(alive), ms));
-
-    /** Maya: LEASE SIGNED card lifts off Prospects and glides to the top of Residents. */
-    const flyMaya = async () => {
-      const p = stateRef.current.prospects.find((c) => c.id === "p-maya");
-      const root = boardRef.current;
-      const src = root?.querySelector<HTMLElement>('[data-card-id="p-maya"]');
-      const dst = root?.querySelector<HTMLElement>(`[data-card-id="${MAYA_RESIDENT_ID}"]`);
-      const closeUp = () =>
-        update((s) => ({
-          ...s,
-          slotId: null,
-          // Prospects closes up and the new lead pops in at the top, "Responding".
-          prospects: [{ ...NEW_LEAD, chip: undefined, progress: "Responding" }, ...s.prospects.filter((c) => c.id !== "p-maya")],
-        }));
-      if (!p || !root || !src || !dst) {
-        closeUp();
-        patch("residents", MAYA_RESIDENT_ID, { twin: false });
-        return;
+        const from = R(src);
+        const to = R(dst);
+        S((x) => {
+          const row = x.p.find((r) => r.id === t.id)!;
+          return {
+            fly: { row, from, to },
+            chg: null,
+            p: x.p.map((r) => (r.id === t.id ? { id: "gh" + t.id, name: "", prop: "", chips: [], ghost: true } : r)),
+            r: [{ ...row, hid: true }, ...x.r.slice(0, 5)],
+          };
+        });
+        if (!(await W(380))) return;
+        S((x) => ({ p: x.p.filter((r) => !r.ghost) }));
+        if (!(await W(1120))) return;
+        S((x) => ({ fly: null, r: x.r.map((r) => (r.id === t.id ? { ...r, hid: false } : r)) }));
+        if (!(await W(250))) return;
+      } else {
+        S((x) => {
+          const m = x.p.find((r) => r.id === t.id)!;
+          return { p: x.p.filter((r) => r.id !== t.id), r: [m, ...x.r.slice(0, 5)] };
+        });
+        if (!(await W(600))) return;
       }
-      const rb = root.getBoundingClientRect();
-      const a = src.getBoundingClientRect();
-      const ax = a.left - rb.left;
-      const ay = a.top - rb.top;
-      fx.jump(ax);
-      fy.jump(ay);
-      fscale.jump(1);
-      tilt.jump(0);
-      // The real card becomes a dashed slot; an identical flyer lifts off it.
-      update((s) => ({ ...s, slotId: p.id, flight: { card: { ...p }, w: a.width, h: a.height } }));
-      animate(fscale, 1.035, { duration: 0.28, ease: E });
-      animate(fy, ay - 6, { duration: 0.28, ease: E });
-      if (!(await delay(280))) return;
+      S((x) => ({ p: x.p.filter((r) => !r.ghost) }));
+      if (!(await W(300))) return;
+      chip("r", t.id, ["fut"]);
+      if (!(await W(1500))) return;
 
-      const b = dst.getBoundingClientRect();
-      const glide = Promise.all([
-        animate(fx, b.left - rb.left, SPRING_FLY),
-        animate(fy, b.top - rb.top, SPRING_FLY),
-        animate(fscale, 1, SPRING_FLY),
-      ]);
-      // Prospects closes up 0.38s after the lift.
-      if (!(await delay(100))) return;
-      closeUp();
-      await glide;
-      // Set down exactly on the twin, then swap: no blink.
-      update((s) => ({
-        ...s,
-        flight: null,
-        residents: patchCard(s.residents, MAYA_RESIDENT_ID, { twin: false }),
+      /* 2 · New lead pops in: Responding → Inquiry; a resident starts Collecting Rent. */
+      const nw = HB_NEW[n++ % HB_NEW.length];
+      const pid = "n" + uid++;
+      S((x) => ({ p: [{ id: pid, name: nw[0], prop: nw[1], chips: ["resp"] }, ...x.p.slice(0, 5)], fresh: pid, chg: null }));
+      if (!(await W(1400))) return;
+      x = get();
+      {
+        const vis = x.r.filter((r) => !r.hid);
+        const ri = vis.findIndex((r) => r.chips.includes("ren"));
+        const cr = vis.find(
+          (r, i) => r.id !== t.id && r.chips.length === 1 && r.chips[0] === "cur" && (ri < 0 || Math.abs(i - ri) > 1),
+        );
+        if (cr) S((y) => ({ r: y.r.map((r) => (r.id === cr.id ? { ...r, chips: ["crent"] } : r)) }));
+      }
+      chip("p", pid, ["inq"]);
+      if (!(await W(900))) return;
+
+      /* 3 · Book a tour (Scheduling → Scheduled → pops into Calendar as "Confirming"); renewal offer sent. */
+      x = get();
+      const b = x.p.slice(1).find((r) => live(r) && r.chips[0] === "inq") || x.p[0];
+      x = get();
+      const rn = x.r.find((r) => live(r) && r.chips.includes("ren"));
+      if (rn) {
+        chip("r", rn.id, ["soff"]);
+        if (!(await W(1300))) return;
+      }
+      chip("p", b.id, ["sing"]);
+      if (!(await W(1500))) return;
+      chip("p", b.id, ["sched"]);
+      if (!(await W(700))) return;
+      const ty = (["s", "v", "p"] as const)[cn % 3];
+      const cid = "c" + uid++;
+      /* The prototype reads `cn` inside a lazy setState updater that runs after `cn++`, so the
+         booked tour shows HB_TIME[cn + 1] ("11:30 AM"); matched here. */
+      const time = HB_TIME[(cn + 1) % HB_TIME.length];
+      S((x) => ({
+        c: [{ id: cid, name: b.name, ty, prop: b.prop, time, st: 1 }, ...x.c.slice(0, 5)],
+        fresh: cid,
       }));
-    };
-
-    const steps: Step[] = [
-      // Opener: Camille's tour is rescheduled 2:15 PM → 4:30 PM.
-      { at: 0, run: () => patch("calendar", "c-camille", { progress: "Rescheduling Tour" }) },
-      { at: 700, run: () => patch("residents", "r-clara", { progress: "Assigning Work Order" }) },
-      {
-        at: 1500,
-        run: () => patch("calendar", "c-camille", { progress: undefined, time: RESCHEDULED_TIME, flash: 1 }),
-      },
-      // Booking: INQUIRY → "Scheduling Tour" → SCHEDULED TOUR → the tour lands in Calendar.
-      { at: 2200, run: () => patch("prospects", "p-jordan", { progress: "Scheduling Tour" }) },
-      { at: 2900, run: () => patch("residents", "r-clara", { progress: undefined, tag: undefined }) },
-      { at: 3600, run: () => patch("prospects", "p-jordan", { progress: undefined, chip: "SCHEDULED TOUR" }) },
-      { at: 4300, run: () => pushTop("calendar", { ...BOOKED_TOUR, progress: "Confirming" }) },
-      { at: 5000, run: () => patch("residents", "r-malcolm", { progress: "Collecting Rent" }) },
-      { at: 5700, run: () => patch("calendar", BOOKED_TOUR.id, { progress: undefined }) },
-      { at: 6400, run: () => patch("residents", "r-clara-2", { progress: "Sending Offer" }) },
-      { at: 7400, run: () => patch("residents", "r-malcolm", { progress: undefined, tag: "RENT PAID" }) },
-      { at: 8100, run: () => patch("residents", "r-clara-2", { progress: undefined, tag: "RENEWED" }) },
-      // Lease: TOURED → "Processing Application" → LEASE SIGNED → moves to Residents.
-      { at: 8800, run: () => patch("prospects", "p-maya", { progress: "Processing Application" }) },
-      {
-        at: 10300,
-        run: () => {
-          patch("prospects", "p-maya", { progress: undefined, chip: "LEASE SIGNED" });
-          // Residents makes room first: an invisible twin at the top (the bottom card exits).
-          pushTop("residents", {
-            id: MAYA_RESIDENT_ID,
-            name: "Maya Patel",
-            sub: "Aura Estates",
-            chip: "LEASE SIGNED",
-            pop: true,
-            twin: true,
-          });
-        },
-      },
-      // Lift at 11300, glide 11580, close-up + Aisha "Responding" at 11680, lands ≈12.6s.
-      { at: 11300, run: () => void flyMaya() },
-      { at: 12400, run: () => patch("residents", "r-clara", { progress: "Predicting Renewal" }) },
-      { at: 13000, run: () => patch("residents", MAYA_RESIDENT_ID, { chip: "FUTURE" }) },
-      { at: 13400, run: () => patch("prospects", NEW_LEAD.id, { progress: undefined, chip: "INQUIRY" }) },
-      { at: 14400, run: () => patch("residents", "r-clara", { progress: undefined, tag: "RENEWAL OFFER" }) },
-    ];
-
-    (async () => {
-      // Fresh start (also covers StrictMode's mount → unmount → mount in dev).
-      stateRef.current = INITIAL_BOARD;
-      setBoard(INITIAL_BOARD);
-      if (!(await until(INTRO_MS))) return;
-      clock = 0;
-      for (const step of steps) {
-        if (!(await until(step.at))) return;
-        await step.run();
+      cn++;
+      if (!(await W(1300))) return;
+      S((x) => ({ c: x.c.map((r) => (r.id === cid ? { ...r, st: undefined } : r)) }));
+      x = get();
+      const cp = x.r.find((r) => r.chips.includes("crent"));
+      if (cp) {
+        S((y) => ({ r: y.r.map((r) => (r.id === cp.id ? { ...r, chips: ["cur", "paid"] } : r)) }));
+        if (!(await W(700))) return;
       }
-    })();
+      const so = x.r.find((r) => r.chips.includes("soff"));
+      if (so) chip("r", so.id, ["cur", "renewed"]);
+      if (!(await W(1200))) return;
 
-    return () => {
-      alive = false;
-    };
-    // The flyer motion values are stable; the sequence runs once per mount.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [go, reduced]);
+      /* 4 · Another inquiry tours. */
+      x = get();
+      const c = x.p.slice(2).find((r) => live(r) && r.chips[0] === "inq");
+      if (c) {
+        chip("p", c.id, ["tour"]);
+        if (!(await W(1600))) return;
+      }
+      /* 5 · Residents: work order clears, new resident becomes Current, a renewal is predicted. */
+      x = get();
+      const w = x.r.find((r) => live(r) && (r.chips.includes("wo") || r.chips.includes("disp")));
+      if (w) {
+        const nk = w.chips.filter((k) => k !== "wo" && k !== "disp");
+        chip("r", w.id, nk.length ? nk : ["cur"]);
+        if (!(await W(1400))) return;
+      }
+      chip("r", t.id, ["cur"]);
+      if (!(await W(1600))) return;
+      x = get();
+      const pr = x.r.find((r) => live(r) && r.id !== t.id && r.chips.length === 1 && r.chips[0] === "cur");
+      if (pr) {
+        chip("r", pr.id, ["pren"]);
+        if (!(await W(1400))) return;
+        chip("r", pr.id, ["cur", "ren"]);
+        if (!(await W(1200))) return;
+      }
+      S((y) => ({
+        r: y.r.map((r) => (r.chips.includes("paid") || r.chips.includes("renewed") ? { ...r, chips: ["cur"] } : r)),
+      }));
+      if (!(await W(600))) return;
+      S(() => ({ chg: null, fresh: null }));
+      played.current = true;
+    },
+    [],
+    0.3,
+  );
 
-  return {
-    board: reduced ? FINAL_BOARD : board,
-    started,
-    reduced,
-    flyer: { x: fx, y: fy, scale: fscale, rotate: tilt },
-  };
+  return [st, reduce];
 }

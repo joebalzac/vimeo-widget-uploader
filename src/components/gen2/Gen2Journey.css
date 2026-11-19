@@ -1,183 +1,197 @@
-/* Gen2Journey — handoff 03 (Figma 642:88637 desktop, 642:139566 mobile). */
+/* Gen2Journey — The Ideal Renter Journey (port of the Final prototype's Journey3, looping ring).
+   No background and no vertical padding: it sits inside Gen2Hero, over the hero haze. */
 
+.g2j,
+.g2j * {
+  box-sizing: border-box;
+}
 .g2j {
   position: relative;
-  width: 100%;
-  box-sizing: border-box;
-  padding: 0; /* vertical spacing comes from the Webflow section */
-  font-family: inter-variable, Inter, system-ui, sans-serif;
+  font-family: inter-variable, "Inter Variable", Inter, ui-sans-serif, system-ui, sans-serif;
+  font-size: 16px;
+  line-height: 1.4;
+  letter-spacing: -0.02em;
+  font-feature-settings: "ss07" 1, "ss08" 1;
   font-variation-settings: "opsz" 32;
   -webkit-font-smoothing: antialiased;
+  color: #0e0d0c;
 }
 
-.g2j-head {
+.g2j-hd {
   position: relative;
-  z-index: 1;
-}
-/* Heading (Figma 642:88751): 520 wide, 12 gap, body-primary subtitle, 4.5 to the graphic */
-.g2j .sh {
-  position: relative;
-  z-index: 1;
-  padding-bottom: 4.5px;
-}
-.g2j .sh__sub {
+  z-index: 2;
   max-width: 520px;
-  color: #3f3e3c;
+  margin: 0 auto 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  text-align: center;
+}
+.g2j-h2 {
+  margin: 0;
+  max-width: 520px;
+  font-size: 48px;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  font-weight: 400;
+  text-wrap: balance;
+}
+.g2j-sub {
+  margin: 0;
+  font-size: 18px;
+  line-height: 1.4;
+  letter-spacing: -0.02em;
+  color: #0e0d0c;
 }
 
-.g2j-fit {
+.g2j-wrap {
   position: relative;
   z-index: 1;
-  width: 100%;
 }
-.g2j-frame {
-  position: relative;
-  width: 100%;
-}
-.g2j-stage {
+.g2j-rv {
   position: absolute;
-  top: 0;
+  inset: 0;
+}
+.g2j-st {
+  position: absolute;
   left: 50%;
+  top: 0;
   width: 640px;
   height: 600px;
   transform-origin: 50% 0;
 }
-.g2j-svg {
+.g2j-g {
   position: absolute;
   inset: 0;
-  display: block;
   overflow: visible;
 }
-.g2j-circle {
-  position: absolute;
-  left: 120px;
-  top: 100px;
-  display: block;
-}
 
-/* Spoke dots (Figma 697:176929): 4px purple/400 */
-.g2j-dot {
+/* Product nodes + labels (Plex Mono 14 caps) */
+.g2j-n {
   position: absolute;
-  width: 4px;
-  height: 4px;
-  margin: -2px 0 0 -2px;
-  border-radius: 50%;
-  background: #8571fc;
+  width: 0;
+  height: 0;
 }
-.g2j-dot--sq {
-  border-radius: 0;
-  transform: rotate(120deg);
-}
-
-/* Apollo (Figma 697:176922): 117.84 cream ring, 8px padding, 99.84 dark disc */
-.g2j-apollo {
+.g2j-n i {
   position: absolute;
-  left: 261.08px;
-  top: 241.08px;
-  width: 117.84px;
-  height: 117.84px;
-  box-sizing: border-box;
-  padding: 9px;
-  border-radius: 50%;
-  background: #fdfcfb;
-  box-shadow:
-    0 32px 40px -20px rgba(0, 0, 0, 0.1),
-    0 2px 4px 0 rgba(0, 0, 0, 0.04),
-    0 1px 2px 0 rgba(0, 0, 0, 0.04),
-    0 0 0 0.5px rgba(0, 0, 0, 0.05);
-}
-.g2j-apollo__ring {
-  position: absolute;
-  left: -0.08px;
-  top: -0.08px;
-  overflow: visible;
-}
-.g2j-apollo__disc {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 99.84px;
-  height: 99.84px;
-  border-radius: 50%;
-  background: #131115;
-  overflow: hidden;
-}
-.g2j-apollo__mark {
-  display: block;
-}
-
-/* Product nodes (Figma 697:176942 …): 10px; lit = purple with a 3px page-colour halo */
-.g2j-node {
-  position: absolute;
+  left: -5px;
+  top: -5px;
   width: 10px;
   height: 10px;
-  margin: -5px 0 0 -5px;
-  box-sizing: border-box;
-  border: 1.5px solid #dddcda;
   border-radius: 50%;
   background: #fdfcfb;
+  box-shadow: inset 0 0 0 1.5px #dddcda;
   transition:
-    background-color 0.3s,
-    border-color 0.3s,
-    box-shadow 0.3s;
+    background 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
 }
-.g2j-node.is-on {
-  border-color: #6b4fff;
+.g2j-n.on i {
   background: #6b4fff;
   box-shadow: 0 0 0 3px #fdfcfb;
 }
-
-.g2j-label {
+.g2j-n span {
   position: absolute;
-  pointer-events: none;
-}
-.g2j-label__txt {
-  display: inline-block;
-  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-family: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
   font-weight: 500;
-  font-size: 14px;
-  line-height: 1.1;
-  font-feature-settings: "salt" 1;
   text-transform: uppercase;
+  font-feature-settings: "salt" 1;
+  font-size: var(--lf);
+  line-height: 1.1;
+  letter-spacing: 0;
   color: #3f3e3c;
   white-space: nowrap;
 }
-/* Side labels wrap per word (Figma: "Tour / Intelligence", "AI-Guided / Touring") */
-.g2j-label--r .g2j-label__txt,
-.g2j-label--l .g2j-label__txt {
-  white-space: pre;
+.g2j-n.t span {
+  left: -100px;
+  width: 200px;
+  bottom: 26px;
+  text-align: center;
 }
-.g2j-label--l .g2j-label__txt {
+.g2j-n.b span {
+  left: -100px;
+  width: 200px;
+  top: 31px;
+  text-align: center;
+}
+.g2j-n.r span {
+  left: 35px;
+  top: -7px;
+  white-space: normal;
+  width: 7.5em;
+}
+.g2j-n.l span {
+  right: 35px;
+  top: -7px;
   text-align: right;
 }
 
-@media (max-width: 761px) {
-  .g2j {
-    padding-top: 0;
+/* Apollo disc + 1px conic ring that turns with the sweep */
+.g2j-ap {
+  position: absolute;
+  left: 261.1px;
+  top: 241.1px;
+  width: 117.8px;
+  height: 117.8px;
+  box-sizing: border-box;
+  border-radius: 1000px;
+  padding: 8px;
+  background: #fdfcfb;
+  box-shadow:
+    0 0 0 0.5px rgba(0, 0, 0, 0.05),
+    0 1px 2px rgba(0, 0, 0, 0.04),
+    0 2px 4px rgba(0, 0, 0, 0.04),
+    0 32px 40px -20px rgba(0, 0, 0, 0.1);
+}
+.g2j-apring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  padding: 1px;
+  background: conic-gradient(
+    from -70deg,
+    rgba(107, 79, 255, 0) 0deg,
+    #6b4fff 70deg,
+    rgba(107, 79, 255, 0) 140deg,
+    rgba(107, 79, 255, 0) 360deg
+  );
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+.g2j-ap div {
+  width: 100%;
+  height: 100%;
+  border-radius: 1000px;
+  background: #131115;
+  display: grid;
+  place-items: center;
+}
+.g2j-ap svg {
+  display: block;
+}
+
+@media (max-width: 767px) {
+  /* prototype .gut: 16px gutter, 24px at ≤480 */
+  .g2j-gut {
+    padding: 0 16px;
   }
-  .g2j .sh,
-  .g2j .sh--center {
-    align-items: center;
-    text-align: center;
-    padding-bottom: 16.75px;
+  .g2j-hd {
+    gap: 16px;
   }
-  .g2j .sh__title + .sh__sub {
-    margin-top: -4px; /* 16 gap */
+  .g2j-h2 {
+    font-size: 36px;
+    max-width: 236px;
   }
-  .g2j .sh__sub {
+  .g2j-sub {
     font-size: 16px;
-    letter-spacing: -0.32px;
+    color: #3f3e3c;
   }
 }
 @media (max-width: 480px) {
-  .g2j .sh__title {
-    max-width: 236px !important; /* Figma 642:139569 wraps the title onto two lines */
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .g2j-node {
-    transition: none;
+  .g2j-gut {
+    padding: 0 24px;
   }
 }
