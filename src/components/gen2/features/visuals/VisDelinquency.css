@@ -1,210 +1,205 @@
-/* Delinquency visual (VDq). Designed at 660×460 (Figma 692:175339); the Features card scales it. */
+/* Delinquency visual — port of the Final prototype's VDq (.dq-*). 660×460 design space;
+   the Features card scales it. The card is flex-centred, so it re-centres as the row opens. */
 .g2v-dq {
   position: absolute;
   inset: 0;
   overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font-family: inter-variable, Inter, system-ui, sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.4;
+  letter-spacing: -0.02em;
   font-variation-settings: "opsz" 32;
   font-feature-settings: "ss07" 1, "ss08" 1;
   color: #0e0d0c;
   -webkit-font-smoothing: antialiased;
 }
-.g2v-dq img {
+.g2v-dq *,
+.g2v-dq *::before,
+.g2v-dq *::after {
+  box-sizing: border-box;
+}
+.g2v-dq svg {
   display: block;
-  flex: none;
-}
-.g2v-dq-stage {
-  position: absolute;
-  inset: 0;
-}
-.g2v-dq-num {
-  font-variant-numeric: tabular-nums;
 }
 
-/* ── Payment Plan card: 328 wide, centred on the stage ── */
 .g2v-dq-card {
-  position: absolute;
-  top: 50%;
-  left: 166px;
   width: 328px;
-  transform: translateY(-50%);
-  box-sizing: border-box;
+  background: #fff;
+  border-radius: 8px;
+  padding: 20px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  padding: 20px;
-  border-radius: 8px;
-  background: #fff;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.04), 0 0 0 0.5px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 0 0 0.5px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.04), 0 2px 4px rgba(0, 0, 0, 0.04);
 }
-
-.g2v-dq-head {
+.g2v-dq-hd {
   display: flex;
   align-items: center;
   gap: 12px;
-  height: 40px;
+  padding-bottom: 12px;
+  border-bottom: 0.5px solid #e6e5e3;
 }
-.g2v-dq-tile {
-  flex: none;
+.g2v-dq-hd .g2v-dq-hd__ic {
   width: 40px;
   height: 40px;
-  box-sizing: border-box;
-  padding: 10.13px 0 0 10px;
   border-radius: 4px;
-  background: rgba(208, 249, 232, 0.35);
+  background: #eefdf8;
+  color: #00b080;
+  display: grid;
+  place-items: center;
+  font-size: 20px;
+  letter-spacing: -0.02em;
 }
-.g2v-dq-head__text {
-  display: flex;
-  flex-direction: column;
-  height: 40px;
-}
-.g2v-dq-title {
+.g2v-dq-hd b {
+  display: block;
+  font-weight: 400;
   font-size: 16px;
   line-height: 1.2;
-  letter-spacing: -0.48px;
+  letter-spacing: -0.03em;
   color: #0e0d0c;
-  white-space: nowrap;
 }
-.g2v-dq-who {
+.g2v-dq-hd div > span {
   display: flex;
   align-items: center;
   gap: 4px;
   font-size: 14px;
-  line-height: 20px;
-  letter-spacing: -0.28px;
+  line-height: 1.4;
+  letter-spacing: -0.02em;
   color: #7a7977;
-  white-space: nowrap;
 }
 
-/* Installment list: rules + rows, 8 apart; the 2nd installment group adds 6-apart rows. */
-.g2v-dq-list {
+.g2v-dq-r {
   display: flex;
-  flex-direction: column;
-  gap: 8px;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 0.5px solid #e6e5e3;
+  font-size: 14px;
+  line-height: 1.4;
+  letter-spacing: -0.02em;
+  color: #7a7977;
 }
-.g2v-dq-rule {
-  height: 0;
-  border-top: 0.5px solid #e6e5e3;
+.g2v-dq-r.is-i {
+  border-bottom: 0;
+  padding: 4px 0;
 }
-.g2v-dq-row {
+.g2v-dq-r.is-last {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+.g2v-dq-r b {
+  font-weight: 400;
+  color: #0e0d0c;
+}
+.g2v-dq-ok {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  height: 20px;
-  font-size: 14px;
-  line-height: 20px;
-  letter-spacing: -0.28px;
-  color: #7a7977;
-  white-space: nowrap;
+  gap: 4px;
+  color: #00b080;
 }
-.g2v-dq-val {
+.g2v-dq-mut {
   color: #3f3e3c;
 }
-
-/* Expanding detail: exactly 52px (6 + 20 + 6 + 20). */
-.g2v-dq-detail {
+.g2v-dq-g {
+  padding: 4px 0;
+  border-bottom: 0.5px solid #e6e5e3;
   overflow: hidden;
-  height: 0;
-}
-.g2v-dq-detail > .g2v-dq-row {
-  margin-top: 6px;
 }
 
-/* Status column: fixed 128 wide, right aligned; layers stack for crossfades. */
-.g2v-dq-status {
-  position: relative;
-  flex: none;
-  width: 128px;
-  height: 20px;
-}
-.g2v-dq-status__layer {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-}
+/* 2nd installment status: options stacked right-aligned, crossfade only. */
 .g2v-dq-st {
+  display: inline-grid;
+  justify-items: end;
+  min-width: 128px;
+}
+.g2v-dq-st > * {
+  grid-area: 1 / 1;
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  font-size: 14px;
-  line-height: 20px;
-  letter-spacing: -0.28px;
   white-space: nowrap;
 }
-.g2v-dq-st--paid { color: #00b080; }
-.g2v-dq-st--due { color: #f25530; }
-.g2v-dq-st__grad {
-  background-image: linear-gradient(101.98deg, #a093fd 1.89%, #1475e8 117.55%);
+.g2v-dq-st .is-due {
+  color: #f25530;
+}
+.g2v-dq-st .is-paid {
+  color: #00b080;
+}
+/* "Sending Reminder" in the purple → azure gradient. */
+.g2v-dq-st .is-send {
+  background: linear-gradient(100deg, #a093fd 0%, #1475e8 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
 }
-/* 12px spinner slot; the exported arc (13.17 incl. stroke bleed) overhangs by ~0.6px. */
 .g2v-dq-spin {
-  position: relative;
-  flex: none;
+  display: block;
   width: 12px;
   height: 12px;
-}
-.g2v-dq-spin img {
-  position: absolute;
-  left: -0.585px;
-  top: -0.585px;
+  border-radius: 50%;
+  border: 1.25px solid rgba(160, 147, 253, 0.3);
+  border-top-color: #a093fd;
+  border-right-color: #5f86f0;
   animation: g2v-dq-spin 0.9s linear infinite;
 }
 @keyframes g2v-dq-spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
-/* ── AI Collected KPI callout ──────────────────────────── */
+/* Amount Due / Date: opens to a fixed 52px (two 26px rows). */
+.g2v-dq-x {
+  overflow: hidden;
+  will-change: height;
+}
+.g2v-dq-x .g2v-dq-r.is-i {
+  height: 26px;
+  padding: 2px 0 4px;
+}
+
+/* ── AI Collected card ── */
 .g2v-dq-ai {
   position: absolute;
-  z-index: 2;
-  left: 362.5px;
+  left: 362px;
   top: 83px;
   width: 180px;
-  box-sizing: border-box;
+  height: 80px;
+  background: #fff;
+  border-radius: 6px;
+  padding: 16px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 16px;
-  border-radius: 6px;
-  background: #fff;
-  box-shadow: 0 32px 40px -20px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.04),
-    0 0 0 0.5px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 24px 32px -16px rgba(0, 0, 0, 0.12), 0 0 0 0.5px rgba(0, 0, 0, 0.06);
 }
-.g2v-dq-ai__text {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  width: 87px;
-}
-.g2v-dq-ai__label {
-  font-family: "IBM Plex Mono", ui-monospace, monospace;
+.g2v-dq-ai__lb {
+  display: block;
+  font-family: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
   font-size: 10px;
   font-weight: 500;
   line-height: 1.1;
+  letter-spacing: 0.02em;
+  color: #7a7977;
   text-transform: uppercase;
   font-feature-settings: "salt" 1;
-  color: #7a7977;
-  white-space: nowrap;
 }
-.g2v-dq-ai__amount {
+.g2v-dq-ai b {
+  display: block;
+  font-weight: 400;
   font-size: 28px;
   line-height: 1.1;
-  letter-spacing: -0.84px;
+  letter-spacing: -0.03em;
   color: #0e0d0c;
-  white-space: nowrap;
-}
-.g2v-dq-ring {
-  display: block;
-  flex: none;
-  width: 48px;
-  height: 48px;
+  margin-top: 6px;
+  font-variant-numeric: tabular-nums;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .g2v-dq-spin img { animation: none; }
+  .g2v-dq-spin {
+    animation: none;
+  }
 }

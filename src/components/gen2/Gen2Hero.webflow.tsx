@@ -5,7 +5,7 @@ import { declareComponent } from "@webflow/react";
 export default declareComponent(Gen2Hero, {
   name: "Gen2 — Hero",
   description:
-    "Hero in its own container (90% / max 90rem, 100rem ≥1440, 120rem ≥1920; full width on mobile) with the soft lilac/blue haze behind it. Centred copy above the Calendar / Prospects / Residents board, which plays Elise's actions once when scrolled into view. No background colour or vertical padding: set those on the Webflow section. Place it directly in the section, not inside a Container.",
+    "Hero in its own container (90% / max 90rem, 100rem ≥1440, 120rem ≥1920; full width on mobile). Centred copy above the Calendar / Prospects / Residents board, which plays Elise's actions once when scrolled into view. Paints no background: on the Webflow hero section set Background colour #FDFCFB + image hero-bg-desktop.jpg (position bottom center, size 100% × 920px, no repeat; ≤767: hero-bg-mobile.jpg, 100% × 680px), plus the vertical padding. Place it directly in the section, not inside a Container.",
   group: "Gen2",
 
   props: {

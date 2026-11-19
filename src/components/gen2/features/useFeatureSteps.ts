@@ -1,5 +1,5 @@
 import { useEffect, useState, type RefObject } from "react";
-import { useReducedMotion } from "framer-motion";
+import { useMotionValue, useReducedMotion, type MotionValue } from "framer-motion";
 import { FEATURES } from "./featuresData";
 
 const N = FEATURES.length;
@@ -56,43 +56,48 @@ function scrollerOf(el: Element): HTMLElement | null {
   return null;
 }
 
+/** Scroll distance through the track while the stage (its first child) is pinned. */
+function travelOf(track: HTMLElement, r: DOMRect) {
+  const stage = track.firstElementChild as HTMLElement | null;
+  return r.height - (stage?.offsetHeight || window.innerHeight);
+}
+
 /**
- * Scroll progress through the pinned track → active product, plus a `goTo(i)` that smooth
- * scrolls to product i. Progress is measured from the track's on-screen position, so it
- * works whichever element scrolls the page. `rounding`:
- *  - "floor": each product owns an equal 1/N slice of the track (vertical-ruler layout).
- *  - "round": active = round(progress × (N−1)).
+ * Prototype `usePinned`: scroll progress through the pinned track as a continuous product
+ * position `pos` = progress × (N−1) (drives the ruler), the active product = round(pos),
+ * and `goTo(i)` to smooth-scroll to product i. Progress is measured from the track's
+ * on-screen position, so it works whichever element scrolls the page.
  */
-export function useFeatureSteps(track: RefObject<HTMLDivElement | null>, rounding: "floor" | "round" = "floor") {
+export function useFeatureSteps(track: RefObject<HTMLDivElement | null>): {
+  pos: MotionValue<number>;
+  active: number;
+  goTo: (i: number) => void;
+} {
+  const pos = useMotionValue(0);
   const [active, setActive] = useState(0);
   const reduced = !!useReducedMotion();
-
-  const pick = (p: number) =>
-    Math.max(0, Math.min(N - 1, rounding === "round" ? Math.round(p * (N - 1)) : Math.floor(p * N)));
 
   usePageScroll(() => {
     const el = track.current;
     if (!el) return;
     const r = el.getBoundingClientRect();
-    const travel = r.height - window.innerHeight;
-    const p = travel > 0 ? clamp01(-r.top / travel) : 0;
-    const i = pick(p);
+    const travel = travelOf(el, r);
+    const v = (travel > 0 ? clamp01(-r.top / travel) : 0) * (N - 1);
+    pos.set(v);
+    const i = Math.max(0, Math.min(N - 1, Math.round(v)));
     setActive((prev) => (prev === i ? prev : i));
   });
 
-  /** Scroll to product `i` (the middle of its slice, or its exact stop when rounding). */
   const goTo = (i: number) => {
     const el = track.current;
     if (!el) return;
     const r = el.getBoundingClientRect();
-    const travel = r.height - window.innerHeight;
-    const f = rounding === "round" ? i / (N - 1) : (i + 0.5) / N;
-    const delta = r.top + f * travel;
+    const delta = r.top + (i / (N - 1)) * travelOf(el, r);
     const behavior: ScrollBehavior = reduced ? "auto" : "smooth";
     const scroller = scrollerOf(el);
     if (scroller) scroller.scrollBy({ top: delta, behavior });
     else window.scrollBy({ top: delta, behavior });
   };
 
-  return { active, goTo };
+  return { pos, active, goTo };
 }

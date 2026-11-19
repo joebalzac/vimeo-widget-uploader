@@ -1,11 +1,11 @@
-# 07 · The AI That Drives Asset Performance (stats)
+# 07 · AI That Drives Asset Performance (stats)
 
 **Code:** `StatsDark`, `Stat2`, `LogoIn`. **Figma:** 590:46214; mobile 642:139552.
 
 ## Copy
 
-- H2: **The AI That Drives Asset Performance** (white)
-- Subtitle: **Third-party syndicated to drive financial results.** (`#DDDCDA`, 18; max 288 wide on mobile)
+- H2: **AI That Drives Asset Performance** (white)
+- Subtitle: **The right AI product directly produces financial results, unlike previous technologies.** (`#DDDCDA`, 18; max 288 wide on mobile)
 
 | Stat | Label | Logo |
 |---|---|---|
@@ -18,7 +18,7 @@
 - **Section:** background `#131115` (`data-dark="1"` turns the nav dark), padding 120.
 - **Desktop:** a 3-column boxed row with 1px dividers.
 - **Mobile:** stacked boxes. The header has a 6px gap and a 32px bottom margin.
-- **Numbers:** 64px white, tabular.
+- **Numbers:** 72px white (64 on mobile), proportional figures (Final CSS: `font-variant-numeric: normal`).
 
 ## Animation
 

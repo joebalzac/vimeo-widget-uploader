@@ -161,7 +161,9 @@
   background: rgba(255, 255, 255, 0.12);
 }
 
-/* Progress (Figma 642:58350): one 1px line per story, 12 apart */
+/* Progress (Figma 642:58350, prototype .st3-pg): one 12px-tall button per story, 12 apart, each a
+   1px #DDDCDA track with a 1px #6B4FFF fill at its middle. The row has real height (no negative
+   margins), so it is never a 1px box that a reveal/clip can lose. */
 .g2st-progress {
   display: flex;
   gap: 12px;
@@ -170,12 +172,20 @@
 .g2st-seg {
   position: relative;
   flex: 1;
-  height: 17px; /* hit area; the line itself is 1px */
-  margin: -8px 0;
+  min-width: 0;
+  height: 12px;
+  margin: 0;
   padding: 0;
   border: 0;
+  border-radius: 0;
   background: transparent;
+  appearance: none;
+  -webkit-appearance: none;
   cursor: pointer;
+}
+.g2st-seg:focus-visible {
+  outline: 2px solid #6b4fff;
+  outline-offset: 2px;
 }
 .g2st-seg::before,
 .g2st-seg__fill {
@@ -183,7 +193,7 @@
   position: absolute;
   left: 0;
   right: 0;
-  top: 8px;
+  top: 50%;
   height: 1px;
 }
 .g2st-seg::before {
@@ -273,6 +283,7 @@
   /* handoff 09: arrows under the quote, left-aligned, 40px circles with 20px icons */
   .g2st-arrows--mob {
     display: flex;
+    gap: 8px;
     margin-top: 24px;
   }
   .g2st-arrow {
@@ -315,7 +326,6 @@
     height: 40px;
   }
   .g2st-progress {
-    gap: 6px;
     margin-top: 32px;
   }
 }

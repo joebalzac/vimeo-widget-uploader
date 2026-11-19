@@ -64,15 +64,15 @@ Hero top padding 144 (96 on mobile). The board sits 64px below the CTA (40 on mo
 
 **Rules:** columns always hold 6 (a pop-in pushes the last card out). Exiting cards use `AnimatePresence mode="popLayout"`, so components must `forwardRef`.
 
-## Background gradient (soft haze)
+## Background gradient
 
-- **Shape:** a wide, blurred field (`.h3-glow`, blur 40px).
-  - Lilac at 11%/38% and sky at 89%/34% on the sides, softer lilac/blue at 34%/66% and 66%/68%.
-  - Opacities .22–.34, drifting on a 22s alternate background-position loop.
-- **Extent:** starts behind the top of the board, not the headline. It continues **340px past the hero into The Ideal Renter Journey** and fades out (mask), with no hard edge.
-- The hero needs `overflow-x: clip; overflow-y: visible; z-index: 2` so the bleed shows.
+- The soft lilac (left) and blue (right) light is the **hero section's own background image**, anchored to its bottom edge:
+  - Desktop: `hero-bg-desktop.jpg` at 100% × 920px.
+  - Mobile (≤767): `hero-bg-mobile.jpg` at 100% × 680px.
+- The image fades to exactly #FDFCFB at its top and bottom edges, so The Ideal Renter Journey meets it with no seam.
+- **No layer crosses into another section.** Set it on the Webflow hero section (see gradients.css §1).
 
-## Option under review: "Elise acting"
+## Elise acting (the shipped hero story)
 
 Product marketing (ZF) wants Elise's actions to show before every outcome. It's built as a toggle (bottom-right "Hero: Current / Elise acting") for sign-off; delete the toggle (`.hb-opt`) once one is chosen.
 

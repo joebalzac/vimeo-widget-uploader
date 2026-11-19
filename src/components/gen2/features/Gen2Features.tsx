@@ -28,7 +28,8 @@ const getServerDesktop = () => true;
 
 /**
  * Gen2 Features: six products. ≥1001px pins the section and steps through the products
- * on scroll (ruler | text | visual); ≤1000px stacks card + text pairs. Handoff 04.
+ * on scroll (ruler | text | visual); ≤1000px stacks card + text pairs. Handoff 04 /
+ * Final prototype `Features3`.
  */
 export default function Gen2Features({
   id,

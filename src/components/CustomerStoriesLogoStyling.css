@@ -233,21 +233,19 @@
     flex: none;
   }
 
-  /* Case-study cells show photo + white logo at rest (no hover on touch) */
-  .csl__cell--preview .csl__cell-bg {
+  /* No hover photos on iPad / mobile: cells keep the plain logo, and tapping
+     (which can trigger :hover on touch) never reveals the image. */
+  .csl__cell-bg {
+    display: none;
+  }
+
+  .csl__cell--linked:hover .csl__logo-img--default,
+  .csl__cell--linked:focus-visible .csl__logo-img--default {
     opacity: 1;
   }
 
-  .csl__cell--preview .csl__logo-img--default {
+  .csl__cell--linked:hover .csl__logo-img--hover,
+  .csl__cell--linked:focus-visible .csl__logo-img--hover {
     opacity: 0;
-  }
-
-  .csl__cell--preview .csl__logo-img--hover {
-    opacity: 1;
-  }
-
-  .csl__cell--preview .csl__arrow {
-    background-color: rgba(239, 238, 236, 0.2);
-    color: #ffffff;
   }
 }

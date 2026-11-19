@@ -5,16 +5,17 @@ import FVis from "./FVis";
 import { FEATURES } from "./featuresData";
 import type { FeaturesSectionProps } from "./FeaturesPinned";
 
-/** Mobile / tablet (≤1000): each product is a card + text pair revealed on scroll. */
+/**
+ * Mobile / tablet (≤1000, prototype `FeaturesStack`): card + text pairs revealed on scroll,
+ * 32 apart (64 and two columns at 768–1000).
+ */
 export default function FeaturesStack({ hrefs = {}, learnMoreLabel }: FeaturesSectionProps) {
   return (
     <div className="g2f-stack">
       {FEATURES.map((f) => (
         <Reveal key={f.id} className="g2f-stack__item">
-          <FCard>
-            <div className="g2f-vis">
-              <FVis id={f.id} />
-            </div>
+          <FCard swapKey={f.id}>
+            <FVis id={f.id} />
           </FCard>
           <FText feature={f} href={hrefs[f.id]} learnMoreLabel={learnMoreLabel} />
         </Reveal>

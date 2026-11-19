@@ -27,9 +27,10 @@ const HIN = (d: number, blur?: boolean) => ({
  * (90% / max 90rem → 100rem ≥1440 → 120rem ≥1920; full width ≤767).
  *
  * Port of the designer's Final prototype: `Hero3` (copy) and `Hero3Board` + `useHeroBoard`
- * ("Elise acting" story, plays once in view), with the hero haze from the gradients package
- * behind it. No background colour or vertical section padding of its own: the Webflow section
- * supplies those. The Renter Journey is a separate component (Gen2Journey).
+ * ("Elise acting" story, plays once in view). Paints no background: the hero's lilac/blue light is
+ * a background image on the Webflow hero section (hero-bg-desktop.jpg, bottom center, 100% × 920px;
+ * ≤767 hero-bg-mobile.jpg, 100% × 680px), which also supplies the vertical padding.
+ * The Renter Journey is a separate component (Gen2Journey).
  */
 export default function Gen2Hero({
   heading = "The #1 AI Platform Transforming Multifamily Operations",
@@ -45,11 +46,6 @@ export default function Gen2Hero({
       <div id={id || undefined} className={["g2h", className].filter(Boolean).join(" ")}>
         <div className="g2h-container">
           <section className="g2h-hero" aria-label={heading}>
-            <div className="g2h-haze" aria-hidden="true">
-              <div className="g2h-haze__glow">
-                <i />
-              </div>
-            </div>
             <div className="g2h-gut">
               <div className="g2h-copy">
                 {eyebrow && (

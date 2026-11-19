@@ -16,7 +16,7 @@ export interface Gen2CtaProps {
  * (120px desktop / 48px mobile vertical padding).
  */
 export default function Gen2Cta({
-  heading = "Directly Drive Asset Performance with EliseAI",
+  heading = "Transform Outcomes for Residents, Teams, and the Business with EliseAI",
   ctaLabel = "Get A Demo",
   ctaHref = "#",
   className,

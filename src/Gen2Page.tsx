@@ -1,4 +1,6 @@
 import "./App.css";
+import heroBgDesktop from "../docs/gen2-handoff/webflow-assets/hero-bg-desktop.jpg";
+import heroBgMobile from "../docs/gen2-handoff/webflow-assets/hero-bg-mobile.jpg";
 import { Navbar } from "./components/Navbar";
 import Gen2Hero from "./components/gen2/Gen2Hero";
 import Gen2Journey from "./components/gen2/Gen2Journey";
@@ -24,8 +26,15 @@ const PAD = { padding: PHONE ? "48px 0" : "120px 0" };
 /* Apollo (handoff v124/v125): 60 top on desktop; 48 top / 40 bottom on mobile. */
 const PAD_APOLLO = { padding: PHONE ? "48px 0 40px" : "60px 0 0" };
 /* Hero (handoff 02): 144 top desktop, 96 mobile. Features: 60 top (Figma 618:6951). */
-const PAD_HERO = { padding: PHONE ? "96px 0 0" : "144px 0 0" };
-const PAD_FEATURES = { padding: PHONE ? "48px 0 0" : "60px 0 0" };
+/* Hero section background = the gradients package image, as set on the Webflow section
+   (gradients.css §1): bottom center, 100% × 920px (mobile 100% × 680px), over #FDFCFB. */
+const PAD_HERO = {
+  padding: PHONE ? "96px 0 0" : "144px 0 0",
+  background: `#fdfcfb url(${PHONE ? heroBgMobile : heroBgDesktop}) center bottom / 100% ${PHONE ? 680 : 920}px no-repeat`,
+};
+/* Features: no section padding on desktop — the pinned track sets its own spacing (195px
+   below the Journey, 60px above Apollo). Mobile stack: 48px top. */
+const PAD_FEATURES = { padding: PHONE ? "48px 0 0" : "0" };
 /* Renter Journey (handoff 03): 120 top, no bottom (the stage keeps 60 below the ring). */
 const PAD_JOURNEY = { padding: PHONE ? "48px 0 0" : "120px 0 0" };
 /* Customers (handoff 02b): 120 / 40 desktop, 96 top ≤1000, 72 / 24 ≤767. */
@@ -36,7 +45,7 @@ export default function Gen2Page() {
   return (
     <div style={{ background: "#fdfcfb" }}>
       <Navbar />
-      {/* Hero (Webflow container inside; haze behind it). */}
+      {/* Hero (Webflow container inside); its lilac/blue light is the section background image. */}
       <section style={PAD_HERO}>
         <Gen2Hero />
       </section>

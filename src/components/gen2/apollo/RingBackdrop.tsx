@@ -1,8 +1,10 @@
-import { useEffect, useState, type RefObject } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { motion, useScroll, useSpring, useTransform } from "framer-motion";
 
-const SPRING = { stiffness: 38, damping: 24 };
-const MOBILE_MQ = "(max-width: 480px)";
+/* handoff gradients.css §2 · Apollo ring */
+const SPRING = { stiffness: 38, damping: 24, mass: 1 };
+const MOBILE_MQ = "(max-width: 767px)";
+const useIsoLayoutEffect = typeof window === "undefined" ? useEffect : useLayoutEffect;
 
 function useIsMobile() {
   const [m, setM] = useState(() => typeof window !== "undefined" && window.matchMedia(MOBILE_MQ).matches);
@@ -17,47 +19,65 @@ function useIsMobile() {
 }
 
 /**
- * Scroll-linked ring behind the Apollo section (handoff 05-apollo · Ring backdrop):
- * a soft ring whose band is a slowly rotating conic gradient (lilac · page-colour gaps ·
- * sky · white · lilac · sky), masked to a ~140px soft band.
- * Desktop: grows from the centre (scale .18 → 1.75, edges at the screen sides) while the
- * section scrolls in, blur 48 → 70px; holds; fades once the section has scrolled away.
- * Mobile (v124): keeps expanding (.18 → 3.4) and is fully faded by 44% of the section scroll.
- * Progress is spring-smoothed (stiffness 38, damping 24).
+ * Scroll-linked ring behind the Apollo section (designer gradients package §2):
+ * a 1160px (mobile 640px) soft ring whose conic band rotates every 24s, inside a wrapper whose
+ * scale / opacity / blur follow the section's scroll progress (top enters → bottom leaves,
+ * spring 38/24/1).
+ *
+ * Webflow: the section padding lives OUTSIDE this component, so the ring layer bleeds out of the
+ * component box by `--g2a-ring-bleed-top/bottom` (default = the prototype's section padding:
+ * 60/0 desktop, 48/40 mobile) and is stretched horizontally to the viewport (measured, so it
+ * never causes horizontal scroll). The prototype's soft top/bottom mask then sits on that layer,
+ * so the ring fades out instead of being cut at the component's edge. Not rendered under
+ * reduced motion (same as the prototype).
  */
-export default function RingBackdrop({ target, reduced }: { target: RefObject<HTMLElement | null>; reduced: boolean }) {
+export default function RingBackdrop({ reduced }: { reduced: boolean }) {
   const mobile = useIsMobile();
-  /* 0 when the section's top enters at the bottom → 1 when it reaches the top */
-  const { scrollYProgress: inRaw } = useScroll({ target, offset: ["start end", "start start"] });
-  /* 0 when the section's bottom is mid-screen → 1 when it has left the top */
-  const { scrollYProgress: outRaw } = useScroll({ target, offset: ["end 0.5", "end start"] });
-  /* whole pass: top enters at the bottom → bottom leaves at the top (mobile) */
-  const { scrollYProgress: allRaw } = useScroll({ target, offset: ["start end", "end start"] });
-  const grow = useSpring(inRaw, SPRING);
-  const leave = useSpring(outRaw, SPRING);
-  const all = useSpring(allRaw, SPRING);
+  const layerRef = useRef<HTMLDivElement>(null);
 
-  const dScale = useTransform(grow, [0, 1], [0.18, 1.75]);
-  const dBlur = useTransform(grow, [0, 1], [48, 70], { clamp: true });
-  const dOpacity = useTransform(leave, [0, 1], [1, 0]);
-  const mScale = useTransform(all, [0, 0.44], [0.18, 3.4]);
-  const mBlur = useTransform(all, [0, 0.44], [48, 70]);
-  const mOpacity = useTransform(all, [0.2, 0.44], [1, 0]);
+  /* span the viewport horizontally whatever the component's own width/offset */
+  useIsoLayoutEffect(() => {
+    const el = layerRef.current;
+    const host = el?.parentElement;
+    if (!el || !host) return;
+    const fit = () => {
+      const r = host.getBoundingClientRect();
+      const vw = document.documentElement.clientWidth || window.innerWidth;
+      el.style.left = `${-r.left}px`;
+      el.style.width = `${vw}px`;
+      el.style.right = "auto";
+    };
+    fit();
+    const ro = new ResizeObserver(fit);
+    ro.observe(host);
+    ro.observe(document.documentElement);
+    window.addEventListener("resize", fit);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener("resize", fit);
+    };
+  }, [reduced]);
 
-  const filter = useTransform(mobile ? mBlur : dBlur, (b) => `blur(${b}px)`);
+  /* the ring layer has the prototype section's box, so it is the progress target */
+  const { scrollYProgress } = useScroll({ target: layerRef, offset: ["start end", "end start"] });
+  const p = useSpring(scrollYProgress, SPRING);
 
+  const scale = useTransform(p, [0.04, 0.42], mobile ? [0.18, 3.4] : [0.18, 1.75]);
+  const opacity = useTransform(
+    p,
+    mobile ? [0.04, 0.16, 0.3, 0.44] : [0.04, 0.18, 0.86, 0.98],
+    mobile ? [0, 0.85, 0.45, 0] : [0, 0.85, 0.85, 0],
+  );
+  const filter = useTransform(p, [0.04, 0.42], ["blur(48px)", "blur(70px)"]);
+
+  if (reduced) return null;
   return (
-    <motion.div className="g2a-ringwrap" aria-hidden style={reduced ? undefined : { filter }}>
-      <motion.div
-        className="g2a-ring"
-        style={
-          reduced
-            ? undefined
-            : { scale: mobile ? mScale : dScale, opacity: mobile ? mOpacity : dOpacity }
-        }
-      >
-        <div className="g2a-ring__band" />
+    <div ref={layerRef} className="g2a-ring" aria-hidden>
+      <motion.div className="g2a-ring__wrap" style={{ scale, opacity, filter }}>
+        <div className="g2a-ring__ring">
+          <i className="g2a-ring__band" />
+        </div>
       </motion.div>
-    </motion.div>
+    </div>
   );
 }

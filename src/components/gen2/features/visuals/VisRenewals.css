@@ -1,188 +1,199 @@
-/* Renewals visual (VRenew). Designed at 660×460 (Figma 697:176180); the Features card scales it.
-   The board bleeds off the right and bottom edges of the stage. */
+/* Renewals visual — port of the Final prototype's VRenew (.kv / .kb-*). 660×460 design space;
+   the Features card scales it. The two columns bleed off the right and bottom edges. */
 .g2v-renew {
   position: absolute;
   inset: 0;
   overflow: hidden;
   font-family: inter-variable, Inter, system-ui, sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.4;
+  letter-spacing: -0.02em;
   font-variation-settings: "opsz" 32;
   font-feature-settings: "ss07" 1, "ss08" 1;
   color: #0e0d0c;
   -webkit-font-smoothing: antialiased;
 }
-.g2v-renew img {
-  display: block;
-  flex: none;
+.g2v-renew *,
+.g2v-renew *::before,
+.g2v-renew *::after {
+  box-sizing: border-box;
 }
-.g2v-renew-stage {
-  position: absolute;
-  inset: 0;
+.g2v-renew svg {
+  display: block;
 }
 
-/* ── Columns: 344.5 × 545, translucent shell + white body panel ── */
-.g2v-renew-col {
+.g2v-renew-st {
   position: absolute;
+  left: 40px;
   top: 40px;
-  width: 344.5px;
-  height: 545px;
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
-  padding: 0 4px;
-  border-radius: 12px 12px 0 0;
-  background: rgba(255, 255, 255, 0.6);
+  width: 690px;
+  transform-origin: 0 0;
 }
-.g2v-renew-col__head {
+.g2v-renew-c1,
+.g2v-renew-c2 {
+  position: absolute;
+  top: 0;
+  width: 344px;
+}
+.g2v-renew-c1 {
+  left: 0;
+}
+.g2v-renew-c2 {
+  left: 348px;
+}
+
+/* ── Column: translucent shell + white list ── */
+.g2v-renew-col {
+  padding: 0 4px 4px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.45);
+  box-shadow: inset 0 0 0 0.5px rgba(0, 0, 0, 0.04);
+}
+.g2v-renew-col__h {
   display: flex;
   align-items: center;
   gap: 8px;
-  height: 47px;
-  box-sizing: border-box;
   padding: 14px 12px;
   font-size: 16px;
   line-height: 1.2;
-  letter-spacing: -0.48px;
+  letter-spacing: -0.03em;
   color: #0e0d0c;
   white-space: nowrap;
 }
-.g2v-renew-col__body {
-  flex: 1 0 0;
-  border-radius: 8px;
-  background: #fff;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.04), 0 0 0 0.5px rgba(0, 0, 0, 0.05);
+.g2v-renew-col__h i {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex: none;
 }
-/* Card layer over each column body (same box), clipping like the Figma panel. */
-.g2v-renew-clip {
-  position: absolute;
-  width: 336.5px;
-  height: 498px;
-  overflow: hidden;
-  border-radius: 8px;
+.g2v-renew-col__list {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 8px;
+  min-height: 381px;
+  padding: 16px;
+  border-radius: 10px;
+  background: #fff;
+  box-shadow: 0 0 0 0.5px rgba(0, 0, 0, 0.05);
 }
 
-/* ── Unit cards: 304.5 × 111, 6 apart ──────────────────── */
+/* ── Unit card ── */
 .g2v-renew-card {
-  position: absolute;
-  left: 16px;
-  width: 304.5px;
-  height: 111px;
-  box-sizing: border-box;
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: 8px;
   padding: 16px;
   border: 0.5px solid #dddcda;
   border-radius: 8px;
-}
-.g2v-renew-card--fly {
-  z-index: 3;
-  border-color: transparent;
   background: #fff;
-  transform-origin: 50% 50%;
-  will-change: transform;
+  transition: box-shadow 0.35s cubic-bezier(0.25, 0.1, 0.25, 1);
 }
-.g2v-renew-card__top {
+.g2v-renew-card.is-lift {
+  box-shadow: 0 24px 32px -12px rgba(38, 19, 74, 0.18), 0 4px 8px rgba(0, 0, 0, 0.06);
+}
+.g2v-renew-card__t {
   display: flex;
-  align-items: flex-start;
   justify-content: space-between;
+  align-items: flex-start;
 }
-.g2v-renew-card__id {
+.g2v-renew-card__t > div {
   display: flex;
   flex-direction: column;
   gap: 2px;
 }
-.g2v-renew-card__line {
+.g2v-renew-card__u {
   display: flex;
   align-items: center;
   gap: 6px;
   font-size: 14px;
-  line-height: 20px;
-  letter-spacing: -0.28px;
+  line-height: 1.4;
+  letter-spacing: -0.02em;
   color: #3f3e3c;
   white-space: nowrap;
 }
-.g2v-renew-card__who {
-  display: inline-flex;
+.g2v-renew-dot {
+  display: block;
+  flex: none;
+  width: 2px;
+  height: 2px;
+  border-radius: 50%;
+  background: #3f3e3c;
+}
+.g2v-renew-card__p {
+  display: flex;
   align-items: center;
   gap: 4px;
 }
-.g2v-renew-card__place {
+.g2v-renew-card__pr {
   font-size: 14px;
-  line-height: 20px;
-  letter-spacing: -0.28px;
+  line-height: 1.4;
+  letter-spacing: -0.02em;
   color: #7a7977;
-  white-space: nowrap;
 }
-.g2v-renew-rule {
-  flex: none;
-  height: 0;
-  border-top: 0.5px solid #dddcda;
-}
-.g2v-renew-card__foot {
-  display: flex;
-  align-items: center;
-  height: 20px;
-}
-
-/* Mono tags: "12D" day counts and the NTV SAVE badge. */
-.g2v-renew-tag {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  flex: none;
-  height: 25px;
-  box-sizing: border-box;
-  padding: 6px 8px;
-  border-radius: 3px;
-  background: #f6f4f2;
-  font-family: "IBM Plex Mono", ui-monospace, monospace;
+.g2v-renew-card__d,
+.g2v-renew-ntv {
+  font-family: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
   font-size: 12px;
   font-weight: 500;
   line-height: 1.1;
+  letter-spacing: 0.02em;
   text-transform: uppercase;
   font-feature-settings: "salt" 1;
+  border-radius: 3px;
+}
+.g2v-renew-card__d {
+  padding: 6px 8px;
+  background: #f6f4f2;
   color: #7a7977;
+}
+/* Right column is cropped by the card: its day tags never peek at the edge. */
+.g2v-renew-c2 .g2v-renew-card__d {
+  visibility: hidden;
+}
+.g2v-renew-hr {
+  display: block;
+  height: 0.5px;
+  background: #e6e5e3;
+}
+
+/* Status: Awaiting Signatures / Notice Given stacked, crossfade only. */
+.g2v-renew-ks-w {
+  display: grid;
+}
+.g2v-renew-ks-w > * {
+  grid-area: 1 / 1;
+}
+.g2v-renew-ks {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  line-height: 1.4;
+  letter-spacing: -0.02em;
   white-space: nowrap;
 }
-.g2v-renew-tag--ntv {
-  background: #f8f7ff;
+.g2v-renew-ks.is-r {
+  color: #f25530;
+}
+.g2v-renew-ks.is-n {
+  color: #7a7977;
+}
+.g2v-renew-ntv {
+  margin-left: 2px;
+  padding: 4px 6px;
+  background: #f2f0ff;
   color: #6b4fff;
 }
 
-.g2v-renew-st {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  height: 20px;
-  font-size: 14px;
-  line-height: 20px;
-  letter-spacing: -0.28px;
-  white-space: nowrap;
-}
-.g2v-renew-st--await { color: #f25530; }
-.g2v-renew-st--notice { color: #7a7977; }
-
-/* Status crossfade: layers stack in place. */
-.g2v-renew-swap {
-  position: relative;
-  flex: 1 1 auto;
-  height: 20px;
-}
-.g2v-renew-swap__layer {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-}
-
-/* Dashed ghost slot left behind by the flying card. */
+/* Dashed slot Unit 4C leaves behind while it's in flight. */
 .g2v-renew-ghost {
-  position: absolute;
-  left: 16px;
-  width: 304.5px;
+  flex: none;
   height: 111px;
-  box-sizing: border-box;
   border-radius: 8px;
-  border: 0.5px dashed #c1bafe;
-  background: rgba(248, 247, 255, 0.5);
+  border: 1px dashed #c7c6c4;
+  background: rgba(255, 255, 255, 0.4);
 }

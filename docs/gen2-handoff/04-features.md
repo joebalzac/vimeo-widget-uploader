@@ -24,8 +24,10 @@
 - **Text column:** title 36/1.1 and description 18 at the top. **What's New** (label muted, items 16) sits low, **32px above Learn More ↗** (16 muted).
   - Panes are stacked in one grid cell so the column never changes height.
   - Switching products is an **opacity-only crossfade** (0.25s). Nothing slides.
+- **Spacing to Apollo (desktop):** exactly 60px below the product card, then Apollo's 120px top padding. The pin's top/bottom overlap is computed in CSS from the row height (`--row-h` on `.f3-pin`: 476px, 563px at ≥1600, 591px at ≥1800).
+- **Column widths:** the visual keeps its full size first (660px; 780 at ≥1600, 820 at ≥1800). The text column flexes between 300 and 480px. Below 1440px the row runs full width minus 40px each side.
 - **Visual card:** 660×460 base (frame 476 with two stacked "deck" layers behind), radius 12.
-  - Gradient background image (`bg.jpg`).
+  - Gradient background image (`product-card-bg.png`, Gradients package).
   - Scales with width up to 1.25× on large screens.
   - **Deck swap on product change (`FCard`, `DECK`):**
     - A soft swap. The next card eases forward a hair (scale .985 → 1, y −3 → 0, fade in) over 0.9s ease (opacity 0.6s).

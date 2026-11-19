@@ -1,6 +1,6 @@
-import { useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode, type RefObject } from "react";
-import { motion, useReducedMotion } from "framer-motion";
-import { E } from "../shared/motion";
+import { useLayoutEffect, useRef } from "react";
+import { motion, useReducedMotion, useTransform, type MotionValue } from "framer-motion";
+import { CSS_EASE } from "../shared/motion";
 import FCard from "./FCard";
 import FText from "./FText";
 import FVis from "./FVis";
@@ -13,55 +13,61 @@ export interface FeaturesSectionProps {
 }
 
 const N = FEATURES.length;
-/** Ruler (Figma 618:6956): a 1.5px tick every 12px; every 4th tick is a product. */
-const MINOR_STEP = 12;
-const MINOR_PER_STEP = 4;
-const TICK_STEP = MINOR_STEP * MINOR_PER_STEP; // 48px per product
-/** Minor-tick indices, padded past both ends so the fades never show a gap. */
-const TICKS = Array.from({ length: (N - 1) * MINOR_PER_STEP + 25 }, (_, j) => j - 12);
-const FADE = { duration: 0.25, ease: "linear" } as const;
+/** Ruler: a 1.5px tick every 12px; every 4th tick is a product mark (48px per product). */
+const TICK_STEP = 48;
+/** 44 ticks; tick 11 is product 0 (y 132, the ruler's middle). Marks run from j −2 to 7. */
+const TICKS = Array.from({ length: 44 }, (_, i) => i);
+const FADE = { duration: 0.25, ease: CSS_EASE } as const;
 
-/** Flatten layout: the stage keeps 200px clear at the top for the flat ruler (handoff 03). */
-const FLAT_STAGE_TOP = 200;
-
-export interface FeaturesPinnedViewProps extends FeaturesSectionProps {
-  trackRef: RefObject<HTMLDivElement | null>;
-  active: number;
-  goTo: (i: number) => void;
-  /**
-   * Flatten (handoff 03): no vertical ruler (the flat ruler above replaces it); the stage
-   * keeps 200px clear at the top and the copy/visual sit right under it. The track's bottom
-   * margin is trimmed so the section ends at the card's bottom edge.
-   */
-  flat?: boolean;
-  /** Extra content inside the sticky stage (e.g. the flat ruler under reduced motion). */
-  children?: ReactNode;
-  className?: string;
-  style?: CSSProperties;
+/**
+ * A product mark (prototype `RulerMk`): width 12 → 24 and colour #A093FD → #6B4FFF follow
+ * the scroll position continuously, k = max(0, 1 − |pos − j| × 1.6).
+ */
+function RulerMk({ pos, j, onClick }: { pos: MotionValue<number>; j: number; onClick?: () => void }) {
+  const k = useTransform(pos, (v) => Math.max(0, 1 - Math.abs(v - j) * 1.6));
+  const width = useTransform(k, (v) => 12 + 12 * v);
+  const backgroundColor = useTransform(k, [0, 1], ["#a093fd", "#6b4fff"]);
+  if (!onClick) return <motion.i className="g2f-ruler__mk" style={{ width, backgroundColor }} />;
+  return (
+    <motion.button
+      type="button"
+      className="g2f-ruler__mk"
+      style={{ width, backgroundColor }}
+      aria-label={FEATURES[j].name}
+      onClick={onClick}
+    />
+  );
 }
 
 /**
- * Desktop (≥1001): a 6×100vh track with a sticky 100vh stage. Scroll progress through the
- * track picks the active product; text panes crossfade (opacity only, 0.25s) and the card
- * does a soft deck swap (see FCard). Classic layout follows Figma 618:6955:
- * ruler | 48 | text 480 (v109) | 48 | card 660×476; the flat layout drops the ruler column.
+ * Desktop (≥1001, prototype `FeaturesPinned`): a 560vh track with a sticky 100vh stage
+ * (min 656). Scroll position through the track drives the ruler continuously; the active
+ * product is round(pos). Text panes crossfade (opacity 0.25s) and the card does the deck
+ * swap (FCard). Row: ruler 24 | 48 | text (300–480) | space-between | card (≤660/780/820).
  */
-export function FeaturesPinnedView({
-  trackRef,
-  active,
-  goTo,
-  hrefs = {},
-  learnMoreLabel,
-  flat = false,
-  children,
-  className,
-  style,
-}: FeaturesPinnedViewProps) {
+export default function FeaturesPinned({ hrefs = {}, learnMoreLabel }: FeaturesSectionProps) {
   const reduced = !!useReducedMotion();
-  const gridRef = useRef<HTMLDivElement>(null);
+  const trackRef = useRef<HTMLDivElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
   const pinRef = useRef({ mode: "sticky" as "sticky" | "fixed" | "transform", phase: "", box: "", shift: 0 });
-  const [gridH, setGridH] = useState(0);
+  const { pos, active, goTo } = useFeatureSteps(trackRef);
+  const rulerY = useTransform(pos, (v) => -v * TICK_STEP);
+  const rowRef = useRef<HTMLDivElement>(null);
+
+  /* The CSS margins assume the row is the card's full-size frame (--row-h 476/563/591).
+     Where the card is narrower (1001–1300ish) feed in the real row height so the card
+     still starts 195px in and ends 60px above the next section. */
+  useLayoutEffect(() => {
+    const row = rowRef.current;
+    const track = trackRef.current;
+    if (!row || !track) return;
+    const ro = new ResizeObserver(() => {
+      const h = row.offsetHeight;
+      if (h > 0) track.style.setProperty("--row-h", `${h}px`);
+    });
+    ro.observe(row);
+    return () => ro.disconnect();
+  }, []);
 
   /* Pin fallback. The stage is `position: sticky`, but sticky silently stops working when an
      ancestor sets overflow hidden/auto (common in Webflow: sections, wrappers, body). If, while
@@ -69,7 +75,8 @@ export function FeaturesPinnedView({
      the stage sits at the top of the track before the pin, `position: fixed` (lined up with
      the track) while pinned, and at the bottom of the track after. The browser positions fixed
      elements itself, so there's no per-frame lag; styles only change at the two edges. If an
-     ancestor transform stops `fixed` from working too, fall back to a transform offset. */
+     ancestor transform stops `fixed` from working too, fall back to a transform offset.
+     The track's negative margins (see CSS) only move the track box, so this is unaffected. */
   usePageScroll(() => {
     const track = trackRef.current;
     const stage = stageRef.current;
@@ -80,9 +87,17 @@ export function FeaturesPinnedView({
     const pin = pinRef.current;
 
     if (pin.mode === "sticky") {
-      // Sticky works if the stage sits at the viewport top while the track spans it.
-      if (!pinned || r.top > -2 || r.bottom < h + 2) return;
-      if (Math.abs(stage.getBoundingClientRect().top) <= 2) return;
+      const st = stage.getBoundingClientRect().top;
+      if (r.top > 0) {
+        // Before the pin the stage must sit at the track's top. A padded overflow-hidden
+        // ancestor clamps sticky to its content box, which (with the track's negative
+        // top margin) pushes the stage down: switch to the fixed pin straight away.
+        if (r.top >= window.innerHeight || Math.abs(st - r.top) <= 2) return;
+      } else {
+        // Sticky works if the stage sits at the viewport top while the track spans it.
+        if (!pinned || r.bottom < h + 2) return;
+        if (Math.abs(st) <= 2) return;
+      }
       pin.mode = "fixed";
     }
 
@@ -118,107 +133,49 @@ export function FeaturesPinnedView({
     }
   });
 
-  /* Flat: end the section at the card's bottom edge (handoff 05 v124: Products → Apollo
-     spacing), i.e. drop the stage's empty space under the grid. */
-  useLayoutEffect(() => {
-    const el = gridRef.current;
-    if (!flat || !el) return;
-    const ro = new ResizeObserver(() => setGridH(el.offsetHeight));
-    ro.observe(el);
-    return () => ro.disconnect();
-  }, [flat]);
-
-  const trackStyle: CSSProperties = { height: `${N * 100}vh`, ...style };
-  if (flat && gridH > 0) trackStyle.marginBottom = `min(0px, calc(${FLAT_STAGE_TOP + gridH}px - 100vh))`;
-
   return (
-    <div
-      ref={trackRef}
-      className={["g2f-pinned", flat && "g2f-pinned--flat", className].filter(Boolean).join(" ")}
-      style={trackStyle}
-    >
-      <div ref={stageRef} className="g2f-pinned__sticky">
-        {children}
-        <div ref={gridRef} className="g2f-pinned__grid">
-          {!flat && (
-            <div className="g2f-ruler">
-              <motion.div
-                className="g2f-ruler__track"
-                initial={false}
-                animate={{ y: -active * TICK_STEP }}
-                transition={reduced ? { duration: 0 } : { duration: 0.5, ease: E }}
-              >
-                {TICKS.map((k) => {
-                  const i = k / MINOR_PER_STEP;
-                  const product = Number.isInteger(i) && i >= 0 && i < N;
-                  const on = product && i === active;
-                  const tick = (
-                    <motion.span
-                      className="g2f-ruler__tick"
-                      initial={false}
-                      animate={{
-                        width: on ? 24 : 12,
-                        backgroundColor: on ? "#6B4FFF" : product ? "#A093FD" : "#DDDCDA",
-                      }}
-                      transition={reduced ? { duration: 0 } : { duration: 0.3, ease: E }}
-                    />
-                  );
-                  const top = k * MINOR_STEP;
-                  return product ? (
-                    <button
-                      key={k}
-                      type="button"
-                      className="g2f-ruler__hit"
-                      style={{ top }}
-                      aria-label={FEATURES[i].name}
-                      aria-current={on ? "step" : undefined}
-                      onClick={() => goTo(i)}
-                    >
-                      {tick}
-                    </button>
-                  ) : (
-                    <span key={k} className="g2f-ruler__hit" style={{ top }} aria-hidden>
-                      {tick}
-                    </span>
-                  );
-                })}
-              </motion.div>
-            </div>
-          )}
-
-          <div className="g2f-panes">
-            {FEATURES.map((f, i) => (
-              <motion.div
-                key={f.id}
-                className="g2f-pane"
-                initial={false}
-                animate={{ opacity: i === active ? 1 : 0 }}
-                transition={reduced ? { duration: 0 } : FADE}
-                inert={i !== active}
-                aria-hidden={i !== active}
-              >
-                <FText feature={f} href={hrefs[f.id]} learnMoreLabel={learnMoreLabel} />
-              </motion.div>
-            ))}
+    <div ref={trackRef} className="g2f-pin">
+      <div ref={stageRef} className="g2f-stick">
+        <div ref={rowRef} className="g2f-row">
+          <div className="g2f-ruler">
+            <motion.div className="g2f-ruler__tk" style={{ y: rulerY }}>
+              {TICKS.map((i) => {
+                const j = (i - 11) / 4;
+                if ((i - 11) % 4 !== 0 || j < -2 || j > 7) return <i key={i} aria-hidden />;
+                const product = j >= 0 && j < N;
+                return <RulerMk key={i} pos={pos} j={j} onClick={product ? () => goTo(j) : undefined} />;
+              })}
+            </motion.div>
+            <i className="g2f-ruler__fdt" aria-hidden />
+            <i className="g2f-ruler__fdb" aria-hidden />
           </div>
 
-          <div className="g2f-pinned__visual">
-            {/* Deck swap: FCard swaps the whole front card (background + visual). */}
-            <FCard deck swapKey={FEATURES[active].id}>
-              <div className="g2f-vis">
+          <div className="g2f-main">
+            <div className="g2f-txs">
+              {FEATURES.map((f, i) => (
+                <motion.div
+                  key={f.id}
+                  className="g2f-pane"
+                  initial={false}
+                  animate={{ opacity: i === active ? 1 : 0 }}
+                  transition={reduced ? { duration: 0 } : FADE}
+                  style={{ pointerEvents: i === active ? "auto" : "none" }}
+                  inert={i !== active}
+                  aria-hidden={i !== active}
+                >
+                  <FText feature={f} href={hrefs[f.id]} learnMoreLabel={learnMoreLabel} />
+                </motion.div>
+              ))}
+            </div>
+
+            <div className="g2f-vis-col">
+              <FCard deck swapKey={FEATURES[active].id}>
                 <FVis id={FEATURES[active].id} />
-              </div>
-            </FCard>
+              </FCard>
+            </div>
           </div>
         </div>
       </div>
     </div>
   );
-}
-
-/** The classic pinned Features (vertical tick ruler), as used by `Gen2Features`. */
-export default function FeaturesPinned(props: FeaturesSectionProps) {
-  const track = useRef<HTMLDivElement>(null);
-  const { active, goTo } = useFeatureSteps(track, "floor");
-  return <FeaturesPinnedView {...props} trackRef={track} active={active} goTo={goTo} />;
 }

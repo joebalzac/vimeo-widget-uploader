@@ -4,7 +4,7 @@ import { MotionConfig, motion, useInView } from "framer-motion";
 import SectionHeading from "../SectionHeading";
 import { CSS_EASE, EZ, Reveal, useLoop } from "./shared";
 import { CRM_CONTACT, CRM_INBOUND, CRM_REPLY, CRM_TASK_COUNT, CRM_TASKS } from "./crm/crmData";
-import stageBg from "../../assets/gen2/crm/stage-bg.webp";
+import crmBg from "../../assets/gen2/crm/crm-bg.jpg";
 import avatarLia from "../../assets/gen2/crm/avatar-lia.jpg";
 import iconHistory from "../../assets/gen2/crm/icon-history.svg";
 import iconCaret from "../../assets/gen2/crm/icon-caret.svg";
@@ -20,6 +20,9 @@ export interface Gen2CrmProps {
   heading?: string;
   subtitle?: string;
 }
+
+/** Designer gradients package §4: `background: #f6f4f2 url(crm-bg.jpg) center / cover no-repeat`. */
+const STAGE_BG = { backgroundImage: `url("${crmBg}")` } as CSSProperties;
 
 /** Per-word fade stagger for the AI reply (handoff 06-crm step 4). */
 const WORD_MS = 34;
@@ -64,8 +67,7 @@ export default function Gen2Crm({
     <MotionConfig reducedMotion="user">
       <section className="g2c">
         <SectionHeading heading={heading} subtitle={subtitle} maxWidth={418} />
-        <Reveal className="g2c__stage">
-          <img className="g2c__bg" src={stageBg} alt="" aria-hidden draggable={false} />
+        <Reveal className="g2c__stage" style={STAGE_BG}>
           <div ref={stageRef} className="g2c__probe" aria-hidden />
           <motion.div
             className="g2c__win"

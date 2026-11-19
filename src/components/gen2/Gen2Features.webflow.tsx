@@ -5,7 +5,7 @@ import { declareComponent } from "@webflow/react";
 export default declareComponent(Gen2Features, {
   name: "Gen2 — Features",
   description:
-    "Six products (Leasing → Renewals). ≥1001px: the section is 6 screens tall and pins (position: sticky) while the ruler, text and animated visual step through the products. ≤1000px: stacked card + text pairs. Sticky only works if no ancestor (Section, Container, wrapper divs, body) sets overflow: hidden/auto/clip — leave overflow visible on every parent. Fills its container; set section padding in Webflow.",
+    "Six products (Leasing → Renewals). ≥1001px: the section is 5.6 screens tall and pins while the ruler, text and animated visual step through the products; it pulls itself up/in with negative margins so the card starts 195px below the section top and ends 60px above the next section (add the next section's top padding on top of that). It pins with position: sticky and falls back to position: fixed automatically if a parent's overflow breaks sticky (leaving overflow visible on parents is still best). ≤1000px: stacked card + text pairs. Fills its container; set section padding in Webflow.",
   group: "Gen2",
 
   props: {

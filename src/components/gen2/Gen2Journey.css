@@ -1,5 +1,6 @@
 /* Gen2Journey — The Ideal Renter Journey (port of the Final prototype's Journey3, looping ring).
-   No background and no vertical padding: it sits inside Gen2Hero, over the hero haze. */
+   No background colour and no section padding (the Webflow section provides them); the
+   prototype's grid/spoke pattern (.j3-bg) is drawn behind the ring across the full page width. */
 
 .g2j,
 .g2j * {
@@ -52,6 +53,29 @@
 .g2j-rv {
   position: absolute;
   inset: 0;
+}
+/* Pattern clip: spans the page width (left/width set inline from the component's position) and
+   the stage height, so the 1440-wide pattern never adds sideways scroll. */
+.g2j-bgclip {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+.g2j-bg {
+  position: absolute;
+  display: block;
+  overflow: hidden;
+  /* v124: band centred on the ring × left/right fade (prototype .j3-bg / gradients.css §8) */
+  -webkit-mask-image:
+    linear-gradient(to bottom, transparent 31%, #000 50%, #000 74%, transparent 89%),
+    linear-gradient(to right, transparent 2%, #000 22%, #000 78%, transparent 98%);
+  -webkit-mask-composite: source-in;
+  mask-image:
+    linear-gradient(to bottom, transparent 31%, #000 50%, #000 74%, transparent 89%),
+    linear-gradient(to right, transparent 2%, #000 22%, #000 78%, transparent 98%);
+  mask-composite: intersect;
 }
 .g2j-st {
   position: absolute;
@@ -173,11 +197,8 @@
   display: block;
 }
 
+/* The prototype's .gut gutter (16px, 24px ≤480) is the Webflow container's padding here. */
 @media (max-width: 767px) {
-  /* prototype .gut: 16px gutter, 24px at ≤480 */
-  .g2j-gut {
-    padding: 0 16px;
-  }
   .g2j-hd {
     gap: 16px;
   }
@@ -188,10 +209,5 @@
   .g2j-sub {
     font-size: 16px;
     color: #3f3e3c;
-  }
-}
-@media (max-width: 480px) {
-  .g2j-gut {
-    padding: 0 24px;
   }
 }

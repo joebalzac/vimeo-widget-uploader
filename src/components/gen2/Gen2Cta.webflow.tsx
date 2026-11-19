@@ -10,7 +10,7 @@ export default declareComponent(Gen2Cta, {
   props: {
     heading: props.Text({
       name: "Heading",
-      defaultValue: "Directly Drive Asset Performance with EliseAI",
+      defaultValue: "Transform Outcomes for Residents, Teams, and the Business with EliseAI",
       tooltip: "Leave empty to hide.",
     }),
     ctaLabel: props.Text({ name: "Button Label", defaultValue: "Get A Demo", tooltip: "Leave empty to hide." }),

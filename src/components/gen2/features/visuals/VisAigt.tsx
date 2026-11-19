@@ -1,42 +1,24 @@
 import { useRef, useState } from "react";
 import { motion } from "framer-motion";
 import "../../../../utils/interVariableFont";
-import { E, SPRING_POP } from "../../shared/motion";
+import { CSS_EASE, DRAW, EZ } from "../../shared/motion";
 import { useLoop } from "../../shared/useLoop";
 import mapImg from "../../../../assets/gen2/features/aigt/map.jpg";
 import aptImg from "../../../../assets/gen2/features/aigt/apt-6a.jpg";
-import pinSvg from "../../../../assets/gen2/features/aigt/pin.svg";
-import floorPinSvg from "../../../../assets/gen2/features/aigt/icon-floor-pin.svg";
-import floorHomeSvg from "../../../../assets/gen2/features/aigt/icon-floor-home.svg";
-import homeIndicatorSvg from "../../../../assets/gen2/features/aigt/home-indicator.svg";
-import bedSvg from "../../../../assets/gen2/features/aigt/icon-bed.svg";
-import dollarSvg from "../../../../assets/gen2/features/aigt/icon-dollar.svg";
-import sqftSvg from "../../../../assets/gen2/features/aigt/icon-sqft.svg";
-import dotSvg from "../../../../assets/gen2/features/aigt/dot.svg";
 import "./VisAigt.css";
 
 /**
- * AI Guided Tours visual (Figma 636:54096 → 636:55403). Oakview self-guided tour app in
- * an iPhone frame (drawn 1:1 in card space, x176 y40): header, aerial map with the Floor
- * pill and pins 1 and 2, the Welcome sheet (door code + Tour Itinerary). A touch cursor
- * presses the sheet handle and drags up; the Apt. 6A sheet rises from exactly where the
- * Welcome sheet sits to the top while a scrim fades in. Hold, fade, loop.
- *
- * Screen-space y values below are relative to the screen's padding box (card y = 45 + y).
+ * AI Guided Tours visual — port of the designer's Final prototype `VAigt`
+ * (Figma 636:54096 → 636:55403). Oakview self-guided tour app in the phone (360×751
+ * shell scaled .8583 at x176 y40): header, aerial map with the Floor pill and pins,
+ * the Welcome sheet. Loop: 1.6s rest → a touch dot appears low on the screen and
+ * presses (.3s) → it drags up while the Apt. 6A sheet rises (.75s) and a scrim fades in
+ * → the dot lifts off → 4s hold → the sheet drops back and the loop restarts.
+ * Reduced motion: the resting Welcome screen (no sheet, no touch), as in the prototype.
  */
 
-/** 0 frame 1 · 1 touch appears · 2 press · 3 drag up · 4 released, Apt. 6A on top (final) · 5 fade out */
-type Step = 0 | 1 | 2 | 3 | 4 | 5;
-const FINAL: Step = 4;
-
-/** Welcome sheet top (Figma: content top 49.48 + 181.13). */
-const WELCOME_TOP = 230.6;
-/** Apt. 6A sheet resting top (Figma 51.93; 1.4 higher so the Apply button border never peeks above it). */
-const SHEET_TOP = 50.5;
-/** Where the drag ends, a little below the resting top (spring settles the rest). */
-const DRAG_END_TOP = 72;
-/** Touch cursor sits on the handle (handle is 10.3 below the sheet top). */
-const HANDLE_Y = 11.6;
+/** Prototype `E` (strong ease-out). Not the shared `E`, which is a slightly different curve. */
+const E_PROTO = [0.22, 1, 0.36, 1] as const;
 
 const AMENITIES = [
   "Spacious Open-Concept Floor Plan",
@@ -49,206 +31,207 @@ const AMENITIES = [
   "Landscaped Courtyard Views",
 ];
 
-function Pin({ n, className }: { n: number; className?: string }) {
+const MAP_PIN = "M11.47 26.4C13.95 24.26 21.33 17.32 21.33 10.67A10.67 10.67 0 0 0 0 10.67C0 17.32 7.39 24.26 9.87 26.4a1 1 0 0 0 1.6 0Z";
+
+function MapPin({ n, left, top, opacity }: { n: string; left: number; top: number; opacity?: number }) {
   return (
-    <span className={["g2v-aigt-pin", className].filter(Boolean).join(" ")}>
-      <img src={pinSvg} alt="" width={18.29} height={22.86} className="g2v-aigt-pin__shape" />
-      <span className="g2v-aigt-pin__n">{n}</span>
+    <span className="g2v-aigt-mpin" style={{ left, top, opacity }}>
+      <svg viewBox="0 0 22 27" fill="#0E0D0C">
+        <path d={MAP_PIN} />
+      </svg>
+      <b>{n}</b>
     </span>
   );
 }
 
-function Fact({ icon, children }: { icon: string; children: string }) {
+function Pin({ n }: { n: string }) {
   return (
-    <span className="g2v-aigt-fact">
-      <img src={icon} alt="" width={12} height={12} />
-      {children}
+    <span className="g2v-aigt-pin">
+      <svg width="22" height="27" viewBox="0 0 21.3 26.7">
+        <path
+          d="M10.65 0C16.53 0 21.3 4.77 21.3 10.65c0 7.1-10.65 16.05-10.65 16.05S0 17.75 0 10.65C0 4.77 4.77 0 10.65 0Z"
+          fill="#0E0D0C"
+        />
+      </svg>
+      <b>{n}</b>
     </span>
   );
 }
+
+const Ic = { width: 14, height: 14, viewBox: "0 0 14 14", fill: "none", stroke: "#3F3E3C", strokeWidth: 1.17, strokeLinecap: "round" } as const;
+
+/** Touch dot keyframes per phase: 0 hidden low · 1 press · 2 drag up · 3 lift off. */
+const TOUCH = [
+  { opacity: 0, y: 267, scale: 1 },
+  { opacity: 1, y: 267, scale: 0.86 },
+  { opacity: 1, y: 58.5, scale: 0.86 },
+  { opacity: 0, y: 50, scale: 1.15 },
+] as const;
+const TOUCH_T = [
+  { duration: 0.35, ease: CSS_EASE },
+  { duration: 0.3, ease: EZ },
+  { y: { duration: 0.75, ease: E_PROTO }, opacity: { duration: 0.2 } },
+  { duration: 0.35, ease: CSS_EASE },
+];
 
 export default function VisAigt() {
   const ref = useRef<HTMLDivElement>(null);
-  const [s, setS] = useState<Step>(0);
+  const [up, setUp] = useState(false);
+  const [touch, setTouch] = useState(0);
 
-  const { reduced } = useLoop(ref, async ({ wait }) => {
-    const seq: [Step, number][] = [[1, 450], [2, 220], [3, 750], [4, 2800], [5, 500]];
-    for (;;) {
-      setS(0);
-      if (!(await wait(1400))) return;
-      for (const [step, ms] of seq) {
-        setS(step);
-        if (!(await wait(ms))) return;
+  const { reduced } = useLoop(
+    ref,
+    async ({ wait }) => {
+      for (;;) {
+        setUp(false);
+        setTouch(0);
+        if (!(await wait(1600))) return;
+        setTouch(1);
+        if (!(await wait(380))) return;
+        setTouch(2);
+        setUp(true);
+        if (!(await wait(760))) return;
+        setTouch(3);
+        if (!(await wait(4000))) return;
+        setTouch(0);
       }
-    }
-  });
+    },
+    { amount: 0.35 },
+  );
 
-  const step: Step = reduced ? FINAL : s;
-  const instant = reduced || step === 0;
-  const sheetTop = step <= 2 ? WELCOME_TOP : step === 3 ? DRAG_END_TOP : SHEET_TOP;
-  const sheetOn = step >= 3;
-  const touchTop = (step === 3 || step >= 4 ? DRAG_END_TOP : WELCOME_TOP) + HANDLE_Y;
+  const u = !reduced && up;
+  const tch = reduced ? 0 : touch;
 
   return (
-    <motion.div
-      ref={ref}
-      className="g2v-aigt"
-      aria-hidden
-      animate={{ opacity: step === 5 ? 0 : 1 }}
-      transition={{ duration: step === 5 ? 0.5 : 0 }}
-    >
-      {/* Side buttons */}
-      <span className="g2v-aigt-btn g2v-aigt-btn--l1" />
-      <span className="g2v-aigt-btn g2v-aigt-btn--l2" />
-      <span className="g2v-aigt-btn g2v-aigt-btn--l3" />
-      <span className="g2v-aigt-btn g2v-aigt-btn--r" />
+    <div ref={ref} className="g2v-aigt" aria-hidden>
+      <div className="g2v-aigt-ph">
+        <div className="g2v-aigt-bl">
+          <i style={{ top: 147, height: 23.6 }} />
+          <i style={{ top: 182, height: 42.4 }} />
+          <i style={{ top: 237, height: 42.4 }} />
+        </div>
+        <div className="g2v-aigt-body">
+          <div className="g2v-aigt-scr">
+            <b className="g2v-aigt-isl" />
 
-      <div className="g2v-aigt-body">
-        <div className="g2v-aigt-screen">
-          {/* App content */}
-          <div className="g2v-aigt-app">
-            <img className="g2v-aigt-map" src={mapImg} alt="" />
-
-            <div className="g2v-aigt-head">
-              <div className="g2v-aigt-head__text">
-                <p className="g2v-aigt-head__name">Oakview</p>
-                <p className="g2v-aigt-head__sub">Self-Guided Tour</p>
+            <div className="g2v-aigt-app">
+              <div className="g2v-aigt-hd">
+                <div>
+                  <b>Oakview</b>
+                  <span>Self-Guided Tour</span>
+                </div>
+                <span className="g2v-aigt-ap">Apply</span>
               </div>
-              <span className="g2v-aigt-head__apply">Apply</span>
-            </div>
 
-            <div className="g2v-aigt-maparea">
-              <div className="g2v-aigt-floor">
-                <span>Floor</span>
-                <span className="g2v-aigt-floor__items">
-                  <span className="g2v-aigt-floor__item">
-                    2
-                    <img src={floorPinSvg} alt="" width={10.29} height={10.29} />
-                  </span>
-                  <span className="g2v-aigt-floor__item">
-                    1
-                    <img src={floorHomeSvg} alt="" width={10.29} height={10.29} />
-                  </span>
-                </span>
-              </div>
-              <Pin n={1} className="g2v-aigt-maparea__pin1" />
-              <Pin n={2} className="g2v-aigt-maparea__pin2" />
-            </div>
-
-            <div className="g2v-aigt-blank g2v-aigt-blank--cta">
-              <span className="g2v-aigt-cta">Start Tour</span>
-            </div>
-            <div className="g2v-aigt-blank g2v-aigt-blank--home">
-              <img src={homeIndicatorSvg} alt="" width={71.82} height={3.06} />
-            </div>
-          </div>
-
-          {/* Welcome sheet */}
-          <div className="g2v-aigt-welcome" style={{ top: WELCOME_TOP }}>
-            <span className="g2v-aigt-handle" />
-            <div className="g2v-aigt-welcome__group">
-              <p className="g2v-aigt-h">Welcome</p>
-              <div className="g2v-aigt-code">
-                <p className="g2v-aigt-code__num">684020088</p>
-                <p className="g2v-aigt-code__hint">Enter the code on the lockbox.</p>
-              </div>
-            </div>
-            <div className="g2v-aigt-itin">
-              <p className="g2v-aigt-h">Tour Itinerary</p>
-              <div className="g2v-aigt-itin__list">
-                <div className="g2v-aigt-itin__row">
-                  <Pin n={1} />
-                  <div>
-                    <p className="g2v-aigt-itin__title">Leasing Office</p>
-                    <p className="g2v-aigt-itin__sub">Our leasing office is open Mon-Fri 9AM–9PM</p>
+              <div className="g2v-aigt-map">
+                <img className="g2v-aigt-map__img" src={mapImg} alt="" />
+                <div className="g2v-aigt-fl">
+                  Floor
+                  <div className="g2v-aigt-sgs">
+                    <span className="g2v-aigt-sg">
+                      2
+                      <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="#fff" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M6.3 10.9C7.23 10.1 10 7.5 10 5a4 4 0 0 0-8 0c0 2.5 2.77 5.1 3.7 5.9a.5.5 0 0 0 .6 0Z" />
+                        <circle cx="6" cy="5" r="1.5" />
+                      </svg>
+                    </span>
+                    <span className="g2v-aigt-sg">
+                      1
+                      <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="#fff" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M1.5 5c0-.3.13-.57.35-.76l3.5-3a1 1 0 0 1 1.3 0l3.5 3c.22.19.35.46.35.76v4.5a1 1 0 0 1-1 1h-7a1 1 0 0 1-1-1Z" />
+                      </svg>
+                    </span>
                   </div>
                 </div>
-                <div className="g2v-aigt-itin__row">
-                  <Pin n={2} />
-                  <div>
-                    <p className="g2v-aigt-itin__title">Apt. 6A</p>
-                    <p className="g2v-aigt-itin__sub">2 Bed 1 Bath Unit</p>
+                <MapPin n="1" left={176.37} top={72.36} opacity={0.45} />
+                <MapPin n="2" left={286.75} top={33.27} />
+              </div>
+
+              <div className="g2v-aigt-wel">
+                <i className="g2v-aigt-handle" />
+                <div className="g2v-aigt-blk">
+                  <b>Welcome</b>
+                  <div className="g2v-aigt-code">
+                    <span>684020088</span>
+                    <span className="g2v-aigt-hint">Enter the code on the lockbox.</span>
+                  </div>
+                </div>
+                <div className="g2v-aigt-blk">
+                  <b>Tour Itinerary</b>
+                  <div className="g2v-aigt-it">
+                    <div className="g2v-aigt-row">
+                      <Pin n="1" />
+                      <div>
+                        <span>Leasing Office</span>
+                        <small>Our leasing office is open Mon-Fri 9AM–9PM</small>
+                      </div>
+                    </div>
+                    <i className="g2v-aigt-hr" />
+                    <div className="g2v-aigt-row">
+                      <Pin n="2" />
+                      <div>
+                        <span>Apt. 6A</span>
+                        <small>2 Bed 1 Bath Unit</small>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
 
-          <motion.div
-            className="g2v-aigt-scrim"
-            initial={false}
-            animate={{ opacity: step >= 4 ? 1 : step === 3 ? 0.5 : 0 }}
-            transition={instant ? { duration: 0 } : { duration: step === 3 ? 0.75 : 0.4, ease: "easeOut" }}
-          />
-
-          {/* Apt. 6A sheet: starts exactly on the Welcome sheet, rises to the top. */}
-          <motion.div
-            className="g2v-aigt-apt"
-            initial={false}
-            animate={{ top: sheetTop, opacity: sheetOn ? 1 : 0 }}
-            transition={
-              instant
-                ? { duration: 0 }
-                : step === 3
-                  ? { top: { duration: 0.75, ease: [0.45, 0, 0.25, 1] }, opacity: { duration: 0.15 } }
-                  : { top: SPRING_POP, opacity: { duration: 0.2 } }
-            }
-          >
-            <span className="g2v-aigt-handle g2v-aigt-handle--abs" />
-            <motion.div
-              className="g2v-aigt-apt__content"
+            <motion.i
+              className="g2v-aigt-scrim"
               initial={false}
-              animate={{ opacity: step >= 3 ? 1 : 0 }}
-              transition={instant ? { duration: 0 } : { duration: 0.5, ease: E, delay: 0.15 }}
+              animate={{ opacity: u ? 1 : 0 }}
+              transition={{ duration: 0.4, ease: CSS_EASE }}
+            />
+            <motion.i className="g2v-aigt-touch" initial={false} animate={TOUCH[tch]} transition={TOUCH_T[tch]} />
+
+            <motion.div
+              className="g2v-aigt-sheet"
+              initial={false}
+              animate={{ y: u ? 0 : 208.7, opacity: u ? 1 : 0 }}
+              transition={{
+                y: { duration: u ? 0.75 : 0.55, ease: u ? E_PROTO : DRAW },
+                opacity: { duration: u ? 0.12 : 0.35, ease: CSS_EASE, delay: u ? 0 : 0.2 },
+              }}
             >
-              <div className="g2v-aigt-apt__top">
-                <p className="g2v-aigt-h">Apt. 6A</p>
-                <div className="g2v-aigt-apt__media">
-                  <img className="g2v-aigt-apt__photo" src={aptImg} alt="" />
-                  <div className="g2v-aigt-apt__facts">
-                    <Fact icon={bedSvg}>1bd/1ba</Fact>
-                    <img src={dotSvg} alt="" width={1.71} height={1.71} />
-                    <Fact icon={dollarSvg}>$2,400</Fact>
-                    <img src={dotSvg} alt="" width={1.71} height={1.71} />
-                    <Fact icon={sqftSvg}>925 sq.ft.</Fact>
-                  </div>
+              <i className="g2v-aigt-handle" />
+              <div className="g2v-aigt-in">
+                <b>Apt. 6A</b>
+                <img src={aptImg} alt="" />
+                <div className="g2v-aigt-facts">
+                  <svg {...Ic} strokeLinejoin="round">
+                    <path d="M1.75 11.08V6.42c0-.6.5-1.09 1.1-1.09h8.3c.6 0 1.1.49 1.1 1.09v4.66M2.92 5.33V3.5c0-.6.5-1.08 1.1-1.08h5.96c.6 0 1.1.48 1.1 1.08v1.83M1.75 9.33h10.5" />
+                  </svg>
+                  1bd/1ba
+                  <i className="g2v-aigt-dot" />
+                  <svg {...Ic}>
+                    <circle cx="7" cy="7" r="5.83" />
+                    <path d="M8.75 5.25c-.3-.6-1-.9-1.75-.9-1 0-1.75.5-1.75 1.25 0 1.8 3.5.9 3.5 2.7 0 .8-.8 1.3-1.75 1.3-.8 0-1.5-.3-1.8-.9M7 3.5v7" />
+                  </svg>
+                  $2,400
+                  <i className="g2v-aigt-dot" />
+                  <svg {...Ic}>
+                    <rect x="1.75" y="4.08" width="10.5" height="5.84" rx=".6" />
+                    <path d="M4.08 4.08v1.75M6.42 4.08v1.75M8.75 4.08v1.75M11.08 4.08v1.75" />
+                  </svg>
+                  925 sq.ft.
                 </div>
+                <ul>
+                  {AMENITIES.map((a) => (
+                    <li key={a}>{a}</li>
+                  ))}
+                </ul>
               </div>
-              <ul className="g2v-aigt-apt__amen">
-                {AMENITIES.map((a) => (
-                  <li key={a}>{a}</li>
-                ))}
-              </ul>
+              <i className="g2v-aigt-fd" />
             </motion.div>
-            <span className="g2v-aigt-apt__fade" />
-          </motion.div>
-
-          {/* Dynamic Island sits above everything */}
-          <span className="g2v-aigt-island" />
-
-          {/* Touch cursor */}
-          <motion.span
-            className="g2v-aigt-touch"
-            initial={false}
-            animate={
-              step === 0
-                ? { opacity: 0, top: touchTop + 32, scale: 1.1 }
-                : step === 1
-                  ? { opacity: 1, top: touchTop, scale: 1 }
-                  : step === 2 || step === 3
-                    ? { opacity: 1, top: touchTop, scale: 0.82 }
-                    : { opacity: 0, top: touchTop, scale: 1.15 }
-            }
-            transition={
-              instant
-                ? { duration: 0 }
-                : step === 3
-                  ? { duration: 0.75, ease: [0.45, 0, 0.25, 1] }
-                  : { duration: step === 2 ? 0.15 : 0.35, ease: E }
-            }
-          />
+          </div>
+        </div>
+        <div className="g2v-aigt-br">
+          <i style={{ top: 228, height: 70.6 }} />
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 }

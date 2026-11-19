@@ -5,7 +5,7 @@
 .g2a {
   position: relative;
   width: 100%;
-  overflow: hidden;
+  overflow: visible; /* the ring layer bleeds into the Webflow section padding and clips itself */
   padding: 0; /* vertical spacing comes from the Webflow section */
   box-sizing: border-box;
   color: #0e0d0c;
@@ -37,69 +37,86 @@
   color: #3f3e3c;
 }
 
-/* ---------- ring backdrop (handoff 05-apollo · Ring backdrop) ----------
-   A conic-gradient band masked to a soft ~140px ring that slowly rotates. The element is
-   laid out at 1/1.75 of the viewport width so scale 1.75 puts its edges at the screen
-   sides; RingBackdrop drives scale/opacity and the wrapper's blur (48 → 70px). The CSS
-   values below are the resting state used under reduced motion. */
-.g2a-ringwrap {
+/* ---------- ring backdrop (designer gradients package §2 · Apollo ring) ----------
+   The ring layer has the prototype SECTION's box: it bleeds out of this component by the
+   Webflow section's padding (the padding is outside the component), and RingBackdrop stretches
+   it to the viewport width. Its soft top/bottom mask fades the ring out instead of the component
+   edge cutting it. Override the bleed from the Webflow section with these custom properties
+   (they inherit into the shadow root). */
+.g2a-ring {
+  --g2a-bt: var(--g2a-ring-bleed-top, 60px);
+  --g2a-bb: var(--g2a-ring-bleed-bottom, 0px);
+  position: absolute;
+  top: calc(var(--g2a-bt) * -1);
+  bottom: calc(var(--g2a-bb) * -1);
+  left: 0;
+  right: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 140px, #000 calc(100% - 200px), transparent 100%);
+  mask-image: linear-gradient(180deg, transparent 0, #000 140px, #000 calc(100% - 200px), transparent 100%);
+}
+.g2a-ring__wrap {
   position: absolute;
   inset: 0;
-  z-index: 0;
-  overflow: hidden;
-  pointer-events: none;
-  filter: blur(70px);
+  transform-origin: 50% 631px;
+  will-change: transform, opacity, filter;
 }
-.g2a-ring {
-  --g2a-ring-d: calc(100vw / 1.75);
-  --g2a-ring-band: 80px; /* 140px once scaled ×1.75 */
+.g2a-ring__ring {
   position: absolute;
-  top: 57.8%;
   left: 50%;
-  width: var(--g2a-ring-d);
-  height: var(--g2a-ring-d);
-  margin: calc(var(--g2a-ring-d) / -2) 0 0 calc(var(--g2a-ring-d) / -2);
-  transform: scale(1.75);
-  will-change: transform, opacity;
+  top: 51px;
+  width: 1160px;
+  height: 1160px;
+  margin-left: -580px;
+  border-radius: 50%;
 }
 .g2a-ring__band {
   position: absolute;
   inset: 0;
   border-radius: 50%;
   background: conic-gradient(
-    from 0deg,
+    from 20deg,
     #b9b0fb 0deg,
-    #fcfcfb 45deg,
-    #a7cbff 95deg,
+    #fcfcfb 40deg,
+    #fcfcfb 70deg,
+    #a7cbff 110deg,
     #ffffff 150deg,
-    #c7befc 205deg,
-    #fcfcfb 255deg,
-    #9fc2ff 305deg,
+    #fcfcfb 185deg,
+    #c7befc 230deg,
+    #fcfcfb 265deg,
+    #fcfcfb 290deg,
+    #9fc2ff 325deg,
     #b9b0fb 360deg
   );
-  -webkit-mask: radial-gradient(
-    closest-side,
-    transparent calc(100% - var(--g2a-ring-band)),
-    #000 calc(100% - var(--g2a-ring-band) * 0.7),
-    #000 calc(100% - var(--g2a-ring-band) * 0.3),
-    transparent 100%
-  );
-  mask: radial-gradient(
-    closest-side,
-    transparent calc(100% - var(--g2a-ring-band)),
-    #000 calc(100% - var(--g2a-ring-band) * 0.7),
-    #000 calc(100% - var(--g2a-ring-band) * 0.3),
-    transparent 100%
-  );
-  animation: g2a-ring-spin 40s linear infinite;
+  -webkit-mask: radial-gradient(closest-side, transparent calc(100% - 140px), rgba(0, 0, 0, 0.6) calc(100% - 90px),
+    #000 calc(100% - 45px), rgba(0, 0, 0, 0.5) calc(100% - 12px), transparent 100%);
+  mask: radial-gradient(closest-side, transparent calc(100% - 140px), rgba(0, 0, 0, 0.6) calc(100% - 90px),
+    #000 calc(100% - 45px), rgba(0, 0, 0, 0.5) calc(100% - 12px), transparent 100%);
+  animation: g2a-ring-spin 24s linear infinite;
 }
 @keyframes g2a-ring-spin {
   to {
     transform: rotate(360deg);
   }
 }
+@media (max-width: 767px) {
+  .g2a-ring {
+    --g2a-bt: var(--g2a-ring-bleed-top, 48px);
+    --g2a-bb: var(--g2a-ring-bleed-bottom, 40px);
+  }
+  .g2a-ring__wrap {
+    transform-origin: 50% 350px;
+  }
+  .g2a-ring__ring {
+    width: 640px;
+    height: 640px;
+    margin-left: -320px;
+    top: 30px;
+  }
+}
 
-/* ---------- tabs (642:140909) ---------- */
 .g2a__tabs-wrap {
   position: relative;
   display: flex;
@@ -154,8 +171,8 @@
   margin: 0 auto;
   overflow: hidden;
   perspective: 1800px;
-  -webkit-mask: linear-gradient(#000 calc(100% - 80px), transparent);
-  mask: linear-gradient(#000 calc(100% - 80px), transparent);
+  -webkit-mask: linear-gradient(180deg, #000 0%, #000 calc(100% - 44px), transparent 100%);
+  mask: linear-gradient(180deg, #000 0%, #000 calc(100% - 44px), transparent 100%);
 }
 .g2a__stage {
   position: absolute;
@@ -534,9 +551,6 @@
   }
   .g2a .g2a__heading .sh__title + .sh__sub {
     margin-top: -4px;
-  }
-  .g2a-ring {
-    top: 60%;
   }
 
   .g2a__tabs-wrap {

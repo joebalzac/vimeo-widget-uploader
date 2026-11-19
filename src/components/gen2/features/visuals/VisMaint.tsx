@@ -1,211 +1,259 @@
-import { useRef, useState, type ReactNode } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { useRef, useState } from "react";
+import { AnimatePresence, animate, motion, useMotionValue, useTransform, type MotionValue } from "framer-motion";
 import "../../../../utils/interVariableFont";
-import { E, useLoop } from "../../shared";
-import turnSvg from "../../../../assets/gen2/features/maint/icon-turn.svg";
-import turnLgSvg from "../../../../assets/gen2/features/maint/icon-turn-lg.svg";
-import dotSvg from "../../../../assets/gen2/features/maint/dot.svg";
-import dividerSvg from "../../../../assets/gen2/features/maint/divider.svg";
-import caretMintSvg from "../../../../assets/gen2/features/maint/pill-caret.svg";
-import caretBlueSvg from "../../../../assets/gen2/features/maint/pill-caret-blue.svg";
-import checkSvg from "../../../../assets/gen2/features/maint/icon-check.svg";
-import spinnerSvg from "../../../../assets/gen2/features/maint/icon-spinner.svg";
+import { CSS_EASE, DRAW, useLoop } from "../../shared";
 import "./VisMaint.css";
 
 /**
- * Maintenance (Figma 636:54214 → 642:88989 → 636:56292): three turn cards, the centre one
- * "Unit 3A Turn" (the side cards are faded to 10%). Its 7-segment progress bar sweeps in
- * mint and stops on segment 6, which fills part-way in azure with a blue CLEANING pill
- * hanging under it; then the bar completes in mint, the pill becomes a mint COMPLETE pill
- * (check draws in) and the chip changes VACANT → READY. Handoff 04: pill and chip are
- * fixed size (pill 96 wide) and their contents crossfade in place; nothing moves.
+ * Maintenance — straight port of the Final prototype's `VMaint` / `TurnCard` / `SegI`.
+ * Three turn cards (side ones at 10%). Loop: the centre card's 7-segment bar rewinds,
+ * re-fills to part-way through segment 6 (azure + shimmer while in progress), a blue
+ * CLEANING tag drops in under the fill head, then the bar completes in mint with the tag
+ * riding along, the tag turns into a mint COMPLETE (check draws) and the chip VACANT → READY.
  */
 
-const SEGS = 7;
-/** Index of the segment the sweep stops on (segment 6). */
-const STOP = 5;
-/** Partial fill of the active segment (Figma 18.2 of 39.4). */
-const ACTIVE_FRAC = 18.215 / 39.43;
+/** Prototype's `E` (differs from the shared token). */
+const E = [0.22, 1, 0.36, 1] as const;
 
-type Phase = "none" | "cleaning" | "complete";
+const UNITS = [
+  ["Unit 1C Turn", "Building 1", "November 15", "November 10"],
+  ["Unit 3A Turn", "Building 1", "November 28", "November 20"],
+  ["Unit 2B Turn", "Building 2", "November 28", "November 20"],
+] as const;
+type U = (typeof UNITS)[number];
 
-/** Pill geometry in card space: 96 wide, centred under segment 6 (Figma CLEANING
- *  centre x420.6), caret top y301. Fixed for both states. */
-const PILL = { left: 420.63 - 48, width: 96 } as const;
+const SEGW = 39.4;
+const SEGG = 1.7;
+/** x (card content space) of the fill head for progress p ∈ [0, 7]. */
+const segX = (p: number) => {
+  const k = Math.min(6, Math.floor(p));
+  return k * (SEGW + SEGG) + Math.min(1, p - k) * SEGW;
+};
+const clamp = (v: number, a: number, b: number) => Math.max(a, Math.min(b, v));
+
+function TurnIcon({ s }: { s: number }) {
+  return (
+    <svg
+      width={s}
+      height={s}
+      viewBox="0 0 20 20"
+      fill="none"
+      stroke="#fff"
+      strokeWidth={s === 20 ? 1.67 : 1.66}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M3.33 10a6.67 6.67 0 1 0 2-4.76L3.33 7.22" />
+      <path d="M3.33 3.33v3.89h3.89" />
+    </svg>
+  );
+}
+
+function Seg({ p, i, az }: { p: MotionValue<number>; i: number; az: boolean }) {
+  const sx = useTransform(p, (v) => clamp(v - i, 0, 1));
+  const c = useTransform(p, (v) => (az && i === 5 && v < 6 ? "#2e95ff" : "#00b080"));
+  return (
+    <span>
+      <motion.i style={{ scaleX: sx, backgroundColor: c }} />
+      {az && i === 5 && <i className="g2v-maint-shim" />}
+    </span>
+  );
+}
 
 function TurnCard({
-  className,
-  unit,
-  building,
-  due,
-  moveOut,
-  children,
-  icon = "sm",
-  ready,
+  u,
+  center,
+  p,
+  az = false,
+  ready = false,
+  done,
 }: {
-  className: string;
-  unit: string;
-  building: string;
-  due: string;
-  moveOut: string;
-  children: ReactNode;
-  icon?: "sm" | "lg";
-  /** Animated chip (main card): crossfades VACANT → READY in a fixed-size chip. */
+  u: U;
+  center?: boolean;
+  p?: MotionValue<number> | null;
+  az?: boolean;
   ready?: boolean;
+  done?: boolean;
 }) {
   return (
-    <div className={`g2v-maint-card ${className}`}>
-      <div className="g2v-maint-card__head">
-        <span className="g2v-maint-card__icon">
-          {icon === "lg" ? (
-            <img src={turnLgSvg} alt="" width={20} height={20} />
-          ) : (
-            <img src={turnSvg} alt="" width={16} height={16} />
-          )}
+    <div className="g2v-maint-c">
+      <div className="g2v-maint-c__top">
+        <span className="g2v-maint-c__ic">
+          <TurnIcon s={center ? 20 : 16} />
         </span>
-        <div className="g2v-maint-card__headmain">
-          <div>
-            <p className="g2v-maint-card__title">{unit}</p>
-            <p className="g2v-maint-card__sub">
-              {building}
-              <img src={dotSvg} alt="" width={2} height={2} />
-              Aura Estates
-            </p>
-          </div>
-          {ready === undefined ? (
-            <span className="g2v-maint-chip">Vacant</span>
-          ) : (
-            <span className={`g2v-maint-chip g2v-maint-chip--swap${ready ? " is-ready" : ""}`}>
-              <span className="g2v-maint-chip__l g2v-maint-chip__l--vacant">Vacant</span>
-              <span className="g2v-maint-chip__l g2v-maint-chip__l--ready">Ready</span>
-            </span>
-          )}
+        <div className="g2v-maint-c__nm">
+          <b>{u[0]}</b>
+          <span>
+            {u[1]}
+            <i className="g2v-maint-dot" />
+            Aura Estates
+          </span>
         </div>
+        <span className="g2v-maint-chip">
+          <motion.span
+            className="g2v-maint-chip3 is-grey"
+            initial={false}
+            animate={{ opacity: ready ? 0 : 1 }}
+            transition={{ duration: 0.3, ease: CSS_EASE }}
+          >
+            Vacant
+          </motion.span>
+          <motion.span
+            className="g2v-maint-chip3 is-mint"
+            initial={false}
+            animate={{ opacity: ready ? 1 : 0 }}
+            transition={{ duration: 0.3, ease: CSS_EASE }}
+          >
+            Ready
+          </motion.span>
+        </span>
       </div>
-      <div className="g2v-maint-rows">
-        <img className="g2v-maint-divider" src={dividerSvg} alt="" width={288} height={0.5} />
-        <div className="g2v-maint-row">
+      <div className="g2v-maint-c__rows">
+        <i className="g2v-maint-hr" />
+        <div className="g2v-maint-c__r">
           <span>Due Date</span>
-          <span>{due}</span>
+          <em>{u[2]}</em>
         </div>
-        <img className="g2v-maint-divider" src={dividerSvg} alt="" width={288} height={0.5} />
-        <div className="g2v-maint-row">
+        <i className="g2v-maint-hr" />
+        <div className="g2v-maint-c__r">
           <span>Move-Out</span>
-          <span>{moveOut}</span>
+          <em>{u[3]}</em>
         </div>
       </div>
-      <div className="g2v-maint-bar">{children}</div>
+      <div className="g2v-maint-seg">
+        {p
+          ? Array.from({ length: 7 }, (_, i) => <Seg key={i} p={p} i={i} az={az} />)
+          : Array.from({ length: 7 }, (_, i) => (
+              <span key={i}>
+                <i
+                  style={{
+                    transform: `scaleX(${done ? 1 : i === 0 ? 1 : 0})`,
+                    background: done ? "#00b080" : "#1475e8",
+                  }}
+                />
+              </span>
+            ))}
+      </div>
     </div>
   );
 }
 
-function StaticSegs({ done, tone }: { done: number; tone: "mint" | "azure" }) {
-  return (
-    <>
-      {Array.from({ length: SEGS }, (_, i) => (
-        <span key={i} className={`g2v-maint-seg${i < done ? ` is-${tone}` : ""}`} />
-      ))}
-    </>
-  );
-}
+type Tag = "c" | "d" | null;
 
 export default function VisMaint() {
   const ref = useRef<HTMLDivElement>(null);
-  const [shown, setShown] = useState(true);
-  const [filled, setFilled] = useState(4.5);
-  const [phase, setPhase] = useState<Phase>("none");
+  const p = useMotionValue(7);
+  const [st, setSt] = useState<{ tag: Tag; az: boolean; ready: boolean }>({ tag: "d", az: false, ready: true });
+  const tagX = useTransform(p, (v) => 20 + segX(Math.min(v, 7)) - 44);
 
-  const { reduced } = useLoop(ref, async ({ wait, alive }) => {
-    while (alive()) {
-      // Reset while hidden so nothing visibly un-fills. Frame 1: 4½ segments done.
-      setShown(false);
-      if (!(await wait(400))) return;
-      setFilled(4.5);
-      setPhase("none");
-      setShown(true);
-      if (!(await wait(1100))) return;
-      // Finish segment 5, then stop on 6.
-      setFilled(STOP);
-      if (!(await wait(260))) return;
-      setPhase("cleaning");
-      if (!(await wait(2000))) return;
-      setFilled(SEGS);
-      setPhase("complete");
-      if (!(await wait(3500))) return;
-    }
-  });
+  const { reduced } = useLoop(
+    ref,
+    async ({ wait, alive }) => {
+      const S = (x: Partial<typeof st>) => setSt((y) => ({ ...y, ...x }));
+      while (alive()) {
+        S({ tag: null, az: true, ready: false });
+        await animate(p, 0, { duration: 0.55, ease: DRAW });
+        if (!alive()) return;
+        if (!(await wait(500))) return;
+        await animate(p, 5 + 18.2 / 39.4, { duration: 2.1, ease: [0.3, 0, 0.25, 1] });
+        if (!alive()) return;
+        S({ tag: "c" });
+        if (!(await wait(2000))) return;
+        await animate(p, 7, { duration: 1.1, ease: [0.5, 0, 0.2, 1] });
+        if (!alive()) return;
+        S({ az: false, tag: "d", ready: true });
+        if (!(await wait(2800))) return;
+        S({ tag: null });
+        if (!(await wait(250))) return;
+      }
+    },
+    { amount: 0.35 },
+  );
 
-  const f = reduced ? SEGS : filled;
-  const ph: Phase = reduced ? "complete" : phase;
+  const v = reduced ? { tag: "d" as Tag, az: false, ready: true } : st;
+  const cleaning = v.tag === "c";
 
   return (
     <div ref={ref} className="g2v-maint" aria-hidden>
-      <motion.div
-        className="g2v-maint-stage"
-        animate={{ opacity: shown || reduced ? 1 : 0 }}
-        transition={{ duration: 0.35, ease: "easeInOut" }}
-      >
-        <TurnCard className="g2v-maint-card--l" unit="Unit 1C Turn" building="Building 1" due="November 15" moveOut="November 10">
-          <StaticSegs done={SEGS} tone="mint" />
-        </TurnCard>
-        <TurnCard className="g2v-maint-card--r" unit="Unit 2B Turn" building="Building 1" due="November 28" moveOut="November 20">
-          <StaticSegs done={1} tone="azure" />
-        </TurnCard>
-
-        <TurnCard
-          className="g2v-maint-card--main"
-          unit="Unit 3A Turn"
-          building="Building 1"
-          due="November 28"
-          moveOut="November 20"
-          icon={ph === "complete" ? "sm" : "lg"}
-          ready={ph === "complete"}
-        >
-          {Array.from({ length: SEGS }, (_, i) => {
-            const active = ph === "cleaning" && i === STOP;
-            const frac = Math.max(0, Math.min(1, f - i));
-            return (
-              <span key={i} className="g2v-maint-seg">
-                <motion.span
-                  className={`g2v-maint-seg__fill${active ? " is-active" : ""}`}
-                  initial={false}
-                  animate={{ scaleX: active ? ACTIVE_FRAC : frac }}
-                  transition={reduced ? { duration: 0 } : { duration: 0.26, ease: E, delay: ph === "complete" ? (i - STOP) * 0.08 : 0 }}
-                />
-              </span>
-            );
-          })}
-        </TurnCard>
-
-        {/* Status pill: hangs under segment 6; CLEANING → COMPLETE crossfades in place. */}
+      <div className="g2v-maint-slot" style={{ left: -194, opacity: 0.1 }}>
+        <TurnCard u={UNITS[0]} done />
+      </div>
+      <div className="g2v-maint-slot" style={{ left: 526, opacity: 0.1 }}>
+        <TurnCard u={UNITS[2]} center={false} />
+      </div>
+      <div className="g2v-maint-slot" style={{ left: 166 }}>
+        <TurnCard u={UNITS[1]} center p={reduced ? null : p} az={v.az} ready={v.ready} done={reduced} />
         <AnimatePresence>
-          {ph !== "none" && (
-            <motion.div
-              className={`g2v-maint-pill is-${ph}`}
-              style={{ left: PILL.left, width: PILL.width }}
-              initial={reduced ? false : { opacity: 0, y: -4 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, transition: { duration: 0.2 } }}
-              transition={reduced ? { duration: 0 } : { duration: 0.45, ease: E }}
+          {v.tag && (
+            <motion.span
+              key="tag"
+              className={`g2v-maint-tag ${cleaning ? "is-az" : "is-ok"}`}
+              style={{ x: reduced ? 264 : tagX, left: 0 }}
+              initial={{ opacity: 0, y: -6, scale: 0.9 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -4, scale: 0.96 }}
+              transition={{ duration: 0.4, ease: E }}
             >
-              <span className="g2v-maint-pill__caret">
-                <img className="g2v-maint-pill__c g2v-maint-pill__c--blue" src={caretBlueSvg} alt="" width={9.75} height={4.5} />
-                <img className="g2v-maint-pill__c g2v-maint-pill__c--mint" src={caretMintSvg} alt="" width={9.75} height={4.5} />
-              </span>
-              <span className="g2v-maint-pill__body">
-                <span className="g2v-maint-pill__label g2v-maint-pill__label--cleaning">
-                  <img className="g2v-maint-spin" src={spinnerSvg} alt="" width={11.25} height={11.25} />
-                  Cleaning
+              <svg className="g2v-maint-tag__tip" width="10" height="5" viewBox="0 0 9.7 4.5">
+                <path d="M4.85 0 9.7 4.5H0Z" fill="currentColor" />
+              </svg>
+              <span className="g2v-maint-tag__pill">
+                <span className="g2v-maint-tag__ic">
+                  <motion.svg
+                    className="g2v-maint-spin"
+                    width="10"
+                    height="10"
+                    viewBox="0 0 10 10"
+                    fill="none"
+                    initial={false}
+                    animate={{ opacity: cleaning ? 1 : 0 }}
+                    transition={{ duration: 0.25, ease: CSS_EASE }}
+                  >
+                    <circle cx="5" cy="5" r="4.4" stroke="rgba(255,255,255,.5)" strokeWidth="1.25" />
+                    <path d="M9.4 5A4.4 4.4 0 0 0 5 .6" stroke="#fff" strokeWidth="1.25" strokeLinecap="round" />
+                  </motion.svg>
+                  <motion.svg
+                    width="12"
+                    height="12"
+                    viewBox="0 0 12 12"
+                    fill="none"
+                    initial={false}
+                    animate={{ opacity: cleaning ? 0 : 1 }}
+                    transition={{ duration: 0.25, ease: CSS_EASE }}
+                  >
+                    <motion.path
+                      d="M2.5 6.2 4.9 8.5 9.5 3.5"
+                      stroke="#fff"
+                      strokeWidth="1.2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      initial={false}
+                      animate={{ pathLength: cleaning ? 0 : 1 }}
+                      transition={{ duration: 0.4, ease: DRAW, delay: 0.1 }}
+                    />
+                  </motion.svg>
                 </span>
-                <span className="g2v-maint-pill__label g2v-maint-pill__label--complete">
-                  <img src={checkSvg} alt="" width={12} height={12} />
-                  Complete
+                <span className="g2v-maint-tag__lb">
+                  <motion.span
+                    initial={false}
+                    animate={{ opacity: cleaning ? 1 : 0 }}
+                    transition={{ duration: 0.25, ease: CSS_EASE }}
+                  >
+                    Cleaning
+                  </motion.span>
+                  <motion.span
+                    initial={false}
+                    animate={{ opacity: cleaning ? 0 : 1 }}
+                    transition={{ duration: 0.25, ease: CSS_EASE }}
+                  >
+                    Complete
+                  </motion.span>
                 </span>
               </span>
-            </motion.div>
+            </motion.span>
           )}
         </AnimatePresence>
-      </motion.div>
+      </div>
     </div>
   );
 }

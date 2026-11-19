@@ -1,0 +1,121 @@
+/* =============================================================================
+EliseAI Gen 2 — GRADIENTS (designer's Final source, Nov 2026 — source of truth)
+Every colour gradient on the page lives in this one file. Nothing else in
+the stylesheets sets a gradient background on a section.
+============================================================================= */
+/* 0 · PAGE SURFACES — every section is flat #FDFCFB. No section gradients. */
+.j3,
+.ap4-sec {
+  background: #fdfcfb;
+} /* hero: see §1 */
+/* 1 · HERO BACKGROUND
+The hero's soft lilac (left) / blue (right) light is a background image on the
+hero section itself, anchored to its bottom edge. Its edges fade to exactly #FDFCFB at
+top and bottom, so the next section meets it with no seam — no layer crosses into another section.
+Webflow: Hero section → Background: color #FDFCFB + image hero-bg-desktop.jpg,
+Position bottom center, Size 100% × 920px, No repeat.
+Mobile (≤767): image hero-bg-mobile.jpg, Size 100% × 680px. */
+.h3 {
+  background: #fdfcfb url(__HERO_BG__) center bottom / 100% 920px no-repeat;
+}
+@media (max-width: 767px) {
+  .h3 {
+    background-image: url(__HERO_BG_M__);
+    background-size: 100% 680px;
+  }
+}
+/* 2 · APOLLO RING ("More Power, More Simplicity with Apollo")
+desktop  scale .18 → 1.75 (4% → 42%), opacity 0 → .85 (4% → 18%) … .85 → 0 (86% → 98%)
+mobile   scale .18 → 3.4  (4% → 42%), opacity 0 → .85 → .45 → 0 (4% → 16% → 30% → 44%)
+blur     48px → 70px (4% → 42%)
+Section progress: useScroll({ target: section, offset: ['start end','end start'] }) → useSpring(stiffness 38, damping 24, mass 1). */
+.ap4-sec {
+  position: relative;
+  overflow: hidden;
+}
+.apollo-ring {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 140px, #000 calc(100% - 200px), transparent 100%);
+  mask-image: linear-gradient(180deg, transparent 0, #000 140px, #000 calc(100% - 200px), transparent 100%);
+}
+.apollo-ring__wrap {
+  position: absolute;
+  inset: 0;
+  transform-origin: 50% 631px;
+  will-change: transform, opacity, filter;
+}
+.apollo-ring__ring {
+  position: absolute;
+  left: 50%;
+  top: 51px;
+  width: 1160px;
+  height: 1160px;
+  margin-left: -580px;
+  border-radius: 50%;
+}
+.apollo-ring__band {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: conic-gradient(from 20deg, #b9b0fb 0deg, #fcfcfb 40deg, #fcfcfb 70deg, #a7cbff 110deg, #ffffff 150deg,
+    #fcfcfb 185deg, #c7befc 230deg, #fcfcfb 265deg, #fcfcfb 290deg, #9fc2ff 325deg, #b9b0fb 360deg);
+  -webkit-mask: radial-gradient(closest-side, transparent calc(100% - 140px), rgba(0, 0, 0, 0.6) calc(100% - 90px),
+    #000 calc(100% - 45px), rgba(0, 0, 0, 0.5) calc(100% - 12px), transparent 100%);
+  mask: radial-gradient(closest-side, transparent calc(100% - 140px), rgba(0, 0, 0, 0.6) calc(100% - 90px),
+    #000 calc(100% - 45px), rgba(0, 0, 0, 0.5) calc(100% - 12px), transparent 100%);
+  animation: apollo-ring-spin 24s linear infinite;
+}
+@keyframes apollo-ring-spin { to { transform: rotate(360deg); } }
+.ap4-sec > *:not(.apollo-ring) { position: relative; z-index: 2; }
+@media (max-width: 767px) {
+  .apollo-ring__wrap { transform-origin: 50% 350px; }
+  .apollo-ring__ring { width: 640px; height: 640px; margin-left: -320px; top: 30px; }
+}
+/* 3 · PRODUCT CARD BACKGROUND — product-card-bg.png (1320×920) fills each 660×460 visual + the two deck cards. */
+/* 4 · ELISECRM BACKGROUND — crm-bg.jpg, cover, center: */
+.crm2 { background: #f6f4f2 url(__CRMBG__) center / cover no-repeat; }
+/* 5 · GRADIENT TEXT — in-progress states (Figma 692:175315) */
+.hb-chip.prog em,
+.dq-st .send {
+  background: linear-gradient(100deg, #a093fd 0%, #1475e8 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+@keyframes lfch {
+  0% { opacity: 0; color: #1475e8; }
+  12% { opacity: 1; color: #2a7deb; }
+  45% { color: #a093fd; }
+  100% { opacity: 1; color: #0e0d0c; }
+}
+/* 6 · "ROUTED" PILL (Enabling) — purple → sky (turns solid mint .ok when done) */
+.en-pill { background: linear-gradient(90deg, #8571fc, #99ceff); }
+/* 7 · NEW TAG BEAM */
+@property --nb { syntax: '<angle>'; inherits: false; initial-value: 0deg; }
+.f3-new::after {
+  content: ''; position: absolute; inset: 0; border-radius: inherit; padding: 1px; pointer-events: none;
+  background: conic-gradient(from var(--nb), transparent 0deg, transparent 270deg, rgba(193, 186, 254, 0) 275deg,
+    rgba(193, 186, 254, 0.9) 310deg, #c1bafe 330deg, #99ceff 350deg, rgba(153, 206, 255, 0) 360deg);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+  animation: nbspin 2.8s linear infinite;
+}
+@keyframes nbspin { to { --nb: 360deg; } }
+/* 8 · RENTER-JOURNEY GRID FADE (mask on the grid-line SVG .j3-bg, centred on the ring) */
+.j3-bg {
+  -webkit-mask-image: linear-gradient(to bottom, transparent 31%, #000 50%, #000 74%, transparent 89%),
+    linear-gradient(to right, transparent 2%, #000 22%, #000 78%, transparent 98%);
+  mask-image: linear-gradient(to bottom, transparent 31%, #000 50%, #000 74%, transparent 89%),
+    linear-gradient(to right, transparent 2%, #000 22%, #000 78%, transparent 98%);
+  -webkit-mask-composite: source-in;
+  mask-composite: intersect;
+}
+@media (prefers-reduced-motion: reduce) {
+  .apollo-ring__band { animation: none; }
+  .f3-new::after { animation: none; opacity: 0; }
+}

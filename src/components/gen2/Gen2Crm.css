@@ -1,8 +1,7 @@
 /* Gen2 · 06 EliseCRM (Figma 642:57379, stage 642:57617; reply from 618:10310; mobile 642:139740). */
 
 .g2c {
-  width: 100%;
-  max-width: 1160px;
+  width: 100%; /* fills its Webflow container, like the prototype's .wrap (no own max-width) */
   margin: 0 auto;
   box-sizing: border-box;
   font-family: inter-variable, Inter, system-ui, sans-serif;
@@ -27,11 +26,11 @@
   color: #3f3e3c;
   font-feature-settings: "ss07" 1, "ss08" 1;
 }
-@media (max-width: 480px) {
+@media (max-width: 767px) {
   .g2c .sh {
     align-items: center;
     text-align: center;
-    gap: 6px;
+    gap: 12px; /* prototype: 12 between title and subtitle */
   }
   .g2c .sh__title + .sh__sub {
     margin-top: 0;
@@ -41,26 +40,19 @@
   }
 }
 
-/* ── Stage: card/primary + Figma image fill (60%) ─────────── */
+/* ── Stage (prototype .crm2): 600 tall (470 mobile), radius 12, inset 0.5px border.
+   Background per the designer's gradients package §4:
+   #f6f4f2 url(crm-bg.jpg) center / cover no-repeat (the image is set inline from the TSX). */
 .g2c__stage {
   position: relative;
   height: 600px;
   border-radius: 12px;
   overflow: hidden;
   isolation: isolate;
-  background: #f6f4f2;
-}
-/* Figma 642:57618: 1212×693 image, centred, 25px below centre (shader baked into the file) */
-.g2c__bg {
-  position: absolute;
-  left: -2.2526%;
-  top: -3.5882%;
-  width: 104.505%;
-  height: 115.581%;
-  object-fit: cover;
-  opacity: 0.6;
-  pointer-events: none;
-  user-select: none;
+  background-color: #f6f4f2;
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
 }
 .g2c__stage::after {
   content: "";
@@ -480,7 +472,8 @@
   flex-direction: column;
   justify-content: space-between;
   height: 140px;
-  padding: 20px;
+  /* prototype .crm2-comp: +24 at the bottom, the part of the window that runs off the stage */
+  padding: 20px 20px 44px;
 }
 .g2c__composer-top {
   display: flex;
@@ -539,10 +532,11 @@
 }
 
 /* ── Responsive ───────────────────────────────────────────── */
-@media (max-width: 1100px) {
+@media (max-width: 1000px) {
   .g2c__win {
-    left: 40px;
-    right: 40px;
+    top: 40px;
+    left: 24px;
+    right: 24px;
   }
 }
 @media (max-width: 900px) {
@@ -557,13 +551,8 @@
     height: 470px;
     border-radius: 10px;
   }
-  .g2c__bg {
-    inset: 0;
-    width: 100%;
-    height: 100%;
-  }
   .g2c__win {
-    top: 48px;
+    top: 24px;
     left: 24px;
     right: 24px;
   }

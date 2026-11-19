@@ -34,7 +34,7 @@ Gabby's direction: clockwise and outward, no dots (this replaced the counter-clo
 
 ## Responsive: Flatten/ruler is desktop only (≥1001px). Below that the journey keeps the looping ring animation and products stack; each product card carries a Plex Mono name tag above its headline (+ NEW on Tour Intelligence).
 
-## Option under review: "Flatten" (desktop ≥1001 only)
+## Not built: "Flatten" (an explored option, kept for later; not in Final)
 Journey pin 200vh; Features overlaps it (`margin-top:-120vh`, no background, z 3). `FlatRuler` runs off journey progress k:
 1. k 0→.30 — purple arc draws once around the ring (scroll-linked).
 2. k .26→.36 heading fades; k .30→.42 ring, names, dots and Apollo fade together. Names do NOT travel.

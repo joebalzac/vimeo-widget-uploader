@@ -1,7 +1,6 @@
 import type { CSSProperties } from "react";
 import NewTag from "../shared/NewTag";
 import arrow from "../../../assets/gen2/features/arrow-up-right.svg";
-import check from "../../../assets/gen2/features/check.svg";
 import type { Feature } from "./featuresData";
 
 export interface FTextProps {
@@ -12,28 +11,35 @@ export interface FTextProps {
 
 const ARROW = { "--g2f-arrow": `url("${arrow}")` } as CSSProperties;
 
+/** Prototype `ChkI`: 14px check, #3F3E3C. */
+const Check = () => (
+  <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden>
+    <path d="M2.9 7.3 5.6 10 11.1 4.2" stroke="#3f3e3c" strokeWidth="1.1" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
+
 /**
- * Text for one product (handoff 04 v109/v120): a Plex Mono caps name tag (+ NEW) above
- * the H3 headline, then the What's New list (14px checks) with Learn More ↗ under it.
- * Sizes come from the parent (`.g2f-pinned` 36/16, `.g2f-stack` 20/14).
+ * Text for one product (prototype `FText`): a Plex Mono caps eyebrow (name + NEW) above
+ * the H3, then the What's New list with Learn More ↗ under it. Sizes come from the parent
+ * (`.g2f-pin` 36, `.g2f-stack` 20).
  */
 export default function FText({ feature, href, learnMoreLabel = "Learn More" }: FTextProps) {
   return (
     <div className="g2f-text">
-      <div className="g2f-text__top">
-        <p className="g2f-text__name">
+      <div className="g2f-text__hd">
+        <p className="g2f-text__eb">
           {feature.name}
           {feature.isNew && <NewTag />}
         </p>
         <h3 className="g2f-text__title">{feature.title}</h3>
       </div>
-      <div className="g2f-text__bottom">
-        <div className="g2f-new-list">
-          <p className="g2f-new-list__label">What’s New</p>
-          <ul className="g2f-new-list__items">
+      <div className="g2f-text__wn">
+        <div className="g2f-ch">
+          <p className="g2f-ch__lb">What’s New</p>
+          <ul className="g2f-ch__ls">
             {feature.whatsNew.map((item) => (
               <li key={item}>
-                <img src={check} alt="" width={14} height={14} />
+                <Check />
                 {item}
               </li>
             ))}

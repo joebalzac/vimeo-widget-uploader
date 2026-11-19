@@ -1,231 +1,283 @@
-/* Maintenance visual (Figma 636:54214 / 642:88989 / 636:56292). 660×460 card space. */
+/* Maintenance visual — port of the Final prototype's VMaint (.mt3-*). 660×460 design space;
+   the Features card scales it. */
 .g2v-maint {
   position: absolute;
   inset: 0;
   overflow: hidden;
   font-family: inter-variable, Inter, system-ui, sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.4;
+  letter-spacing: -0.02em;
   font-variation-settings: "opsz" 32;
   font-feature-settings: "ss07" 1, "ss08" 1;
   color: #0e0d0c;
   -webkit-font-smoothing: antialiased;
 }
+.g2v-maint *,
+.g2v-maint *::before,
+.g2v-maint *::after {
+  box-sizing: border-box;
+}
 .g2v-maint p {
   margin: 0;
 }
-.g2v-maint img {
+.g2v-maint svg {
   display: block;
-  max-width: none;
-}
-.g2v-maint-stage {
-  position: absolute;
-  inset: 0;
 }
 
-/* ── Cards (328×172, centred at y 230) ─────────────────── */
-.g2v-maint-card {
+.g2v-maint-slot {
   position: absolute;
   top: 144px;
   width: 328px;
+}
+
+/* ── Turn card 328 × 172 ── */
+.g2v-maint-c {
+  width: 328px;
   height: 172px;
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 10px;
   padding: 20px 20px 24px;
-  overflow: hidden;
   border-radius: 8px;
   background: #fff;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.04), 0 0 0 0.5px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  box-shadow: 0 0 0 0.5px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.04), 0 2px 4px rgba(0, 0, 0, 0.04);
 }
-.g2v-maint-card--main { left: 166px; z-index: 1; }
-.g2v-maint-card--l { left: -194px; opacity: 0.1; }
-.g2v-maint-card--r { left: 526px; opacity: 0.1; }
-
-.g2v-maint-card__head {
+.g2v-maint-c__top {
   display: flex;
   align-items: center;
   gap: 12px;
-  height: 40px;
 }
-.g2v-maint-card__icon {
-  display: grid;
-  place-items: center;
-  flex: none;
+.g2v-maint-c__ic {
   width: 40px;
   height: 40px;
   border-radius: 50%;
   background: #131115;
+  display: grid;
+  place-items: center;
+  flex: none;
 }
-.g2v-maint-card__headmain {
+.g2v-maint-c__nm {
+  flex: 1;
   display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  width: 236px;
-  height: 100%;
+  flex-direction: column;
 }
-.g2v-maint-card__title {
+.g2v-maint-c__nm b {
+  display: block;
+  font-weight: 400;
   font-size: 16px;
   line-height: 1.2;
-  letter-spacing: -0.48px;
-  white-space: nowrap;
+  letter-spacing: -0.03em;
+  color: #0e0d0c;
 }
-.g2v-maint-card__sub {
+.g2v-maint-c__nm span {
   display: flex;
   align-items: center;
   gap: 6px;
   font-size: 14px;
   line-height: 1.4;
-  letter-spacing: -0.28px;
+  letter-spacing: -0.02em;
   color: #3f3e3c;
-  white-space: nowrap;
 }
-.g2v-maint-chip {
+.g2v-maint-dot {
+  display: block;
   flex: none;
+  width: 2px;
+  height: 2px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+/* VACANT / READY: fixed slot, chips stacked right-aligned, crossfade only. */
+.g2v-maint-chip {
+  position: relative;
+  display: inline-grid;
+  justify-items: end;
+  align-self: flex-start;
+  height: 25px;
+  min-width: 60px;
+}
+.g2v-maint-chip > * {
+  grid-area: 1 / 1;
+}
+.g2v-maint-chip3 {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  height: 25px;
   padding: 6px 8px;
   border-radius: 3px;
-  background: #f6f4f2;
-  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  overflow: hidden;
+  flex: none;
+  font-family: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
   font-size: 12px;
   font-weight: 500;
   line-height: 1.1;
+  letter-spacing: 0;
   text-transform: uppercase;
   font-feature-settings: "salt" 1;
+}
+.g2v-maint-chip3.is-grey {
+  background: #f6f4f2;
   color: #7a7977;
 }
-/* Main card: VACANT → READY crossfade; both labels share one grid cell so the chip
-   keeps the wider label's size. READY is mint. */
-.g2v-maint-chip--swap {
-  display: grid;
-  justify-items: center;
-  transition: background-color 0.3s ease;
+.g2v-maint-chip3.is-mint {
+  background: #edfdf5;
+  color: #00b080;
 }
-.g2v-maint-chip__l {
-  grid-area: 1 / 1;
-  transition: opacity 0.3s ease;
-}
-.g2v-maint-chip__l--ready { opacity: 0; color: #00b080; }
-.g2v-maint-chip--swap.is-ready { background: #eefdf8; }
-.g2v-maint-chip--swap.is-ready .g2v-maint-chip__l--vacant { opacity: 0; }
-.g2v-maint-chip--swap.is-ready .g2v-maint-chip__l--ready { opacity: 1; }
 
-/* ── Detail rows ───────────────────────────────────────── */
-.g2v-maint-rows {
+.g2v-maint-c__rows {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  width: 100%;
 }
-.g2v-maint-divider {
-  width: 100%;
+.g2v-maint-hr {
+  display: block;
   height: 0.5px;
-  margin-top: -0.5px;
+  background: #e6e5e3;
 }
-.g2v-maint-row {
+.g2v-maint-c__r {
   display: flex;
   justify-content: space-between;
   font-size: 14px;
   line-height: 1.4;
-  letter-spacing: -0.28px;
-  white-space: nowrap;
+  letter-spacing: -0.02em;
+}
+.g2v-maint-c__r span {
+  color: #7a7977;
+}
+.g2v-maint-c__r em {
+  font-style: normal;
   color: #3f3e3c;
 }
-.g2v-maint-row > :first-child { color: #7a7977; }
 
-/* ── Progress bar ──────────────────────────────────────── */
-.g2v-maint-bar {
+/* ── 7-segment progress ── */
+.g2v-maint-seg {
   display: flex;
   gap: 2px;
-  width: 100%;
   height: 4px;
 }
-.g2v-maint-seg {
+.g2v-maint-seg > span {
   position: relative;
-  flex: 1 0 0;
-  overflow: hidden;
+  flex: 1;
+  height: 4px;
   border-radius: 1000px;
   background: #f0eeec;
+  overflow: hidden;
 }
-.g2v-maint-seg.is-mint { background: #00b080; }
-.g2v-maint-seg.is-azure { background: #1475e8; }
-.g2v-maint-seg__fill {
-  position: absolute;
-  inset: 0;
+.g2v-maint-seg > span > i:first-child {
+  display: block;
+  height: 100%;
   border-radius: 1000px;
   transform-origin: 0 50%;
-  background: #00b080;
-  transition: background-color 0.3s ease;
+  will-change: transform;
+  background-image: linear-gradient(90deg, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.18));
+  transition: background-color 0.6s cubic-bezier(0.25, 0.1, 0.25, 1);
 }
-.g2v-maint-seg__fill.is-active { background: #2e95ff; }
-
-/* ── Status pill ───────────────────────────────────────── */
-.g2v-maint-pill {
+.g2v-maint-shim {
   position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.35) 50%, rgba(255, 255, 255, 0) 100%);
+  background-size: 120% 100%;
+  background-repeat: no-repeat;
+  mix-blend-mode: overlay;
+  filter: blur(1px);
+  animation: g2v-maint-shim 1.8s ease-in-out infinite;
+}
+@keyframes g2v-maint-shim {
+  0% {
+    background-position: -60% 0;
+  }
+  100% {
+    background-position: 160% 0;
+  }
+}
+
+/* ── Status tag hanging under the fill head (tip + 96-wide pill) ── */
+.g2v-maint-tag {
+  position: absolute;
+  left: 0;
+  top: 157px;
   z-index: 2;
-  top: 301px;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
 }
-.g2v-maint-pill__caret {
+.g2v-maint-tag.is-az {
+  color: #2e95ff;
+}
+.g2v-maint-tag.is-ok {
+  color: #00b080;
+}
+.g2v-maint-tag__tip {
   position: relative;
-  width: 9.75px;
-  height: 4.5px;
+  z-index: 1;
+  margin: 0 0 -1px 39px;
 }
-.g2v-maint-pill__c {
-  position: absolute;
-  inset: 0;
-  transition: opacity 0.3s ease;
+.g2v-maint-tag.is-ok .g2v-maint-tag__tip {
+  margin-left: 40px;
 }
-.g2v-maint-pill__body {
-  position: relative;
-  width: 100%;
-  height: 25.2px;
-  border-radius: 1000px;
-  background: #2e95ff;
-  transition: background-color 0.3s ease;
-}
-.g2v-maint-pill__label {
-  position: absolute;
-  inset: 0;
+.g2v-maint-tag__pill {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 4px;
-  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  width: 96px;
+  height: 25px;
+  padding: 0 8px;
+  border-radius: 1000px;
+  overflow: hidden;
+  color: #fff;
+  font-family: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
   font-size: 12px;
   font-weight: 500;
   line-height: 1.1;
+  letter-spacing: 0;
   text-transform: uppercase;
   font-feature-settings: "salt" 1;
-  color: #fff;
-  white-space: nowrap;
-  transition: opacity 0.3s ease;
+  transition: background-color 0.45s cubic-bezier(0.25, 0.1, 0.25, 1);
 }
-.g2v-maint-pill__label--cleaning img { margin: -0.625px; }
-.g2v-maint-pill__label--complete img {
-  clip-path: inset(0 100% 0 0);
-  transition: clip-path 0.4s cubic-bezier(0.16, 1, 0.3, 1) 0.15s;
+.g2v-maint-tag.is-az .g2v-maint-tag__pill {
+  background: #2e95ff;
 }
-.g2v-maint-spin { animation: g2v-maint-spin 0.9s linear infinite; }
-@keyframes g2v-maint-spin { to { transform: rotate(360deg); } }
-
-.g2v-maint-pill.is-cleaning .g2v-maint-pill__c--mint,
-.g2v-maint-pill.is-cleaning .g2v-maint-pill__label--complete,
-.g2v-maint-pill.is-complete .g2v-maint-pill__c--blue,
-.g2v-maint-pill.is-complete .g2v-maint-pill__label--cleaning {
-  opacity: 0;
+.g2v-maint-tag.is-ok .g2v-maint-tag__pill {
+  background: #00b080;
 }
-.g2v-maint-pill.is-complete .g2v-maint-pill__body { background: #00b080; }
-.g2v-maint-pill.is-complete .g2v-maint-pill__label--complete img { clip-path: inset(0 0 0 0); }
+.g2v-maint-tag__ic {
+  position: relative;
+  width: 12px;
+  height: 12px;
+  flex: none;
+  display: grid;
+  place-items: center;
+}
+.g2v-maint-tag__ic svg {
+  position: absolute;
+  inset: 0;
+  margin: auto;
+}
+.g2v-maint-spin {
+  width: 14px;
+  height: 14px;
+  flex: none;
+  animation: g2v-maint-spin 0.9s linear infinite;
+}
+@keyframes g2v-maint-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.g2v-maint-tag__lb {
+  display: grid;
+}
+.g2v-maint-tag__lb > * {
+  grid-area: 1 / 1;
+}
 
 @media (prefers-reduced-motion: reduce) {
-  .g2v-maint-seg__fill,
-  .g2v-maint-pill__body,
-  .g2v-maint-pill__label,
-  .g2v-maint-pill__c,
-  .g2v-maint-chip--swap,
-  .g2v-maint-chip__l,
-  .g2v-maint-pill__label--complete img { transition: none; }
-  .g2v-maint-spin { animation: none; }
+  .g2v-maint-shim,
+  .g2v-maint-spin {
+    animation: none;
+  }
 }

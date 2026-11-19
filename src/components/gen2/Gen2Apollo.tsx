@@ -51,7 +51,6 @@ export default function Gen2Apollo({
   className,
 }: Gen2ApolloProps) {
   const reduced = !!useReducedMotion();
-  const sectionRef = useRef<HTMLElement>(null);
   const clipRef = useRef<HTMLDivElement>(null);
   const tabsRef = useRef<HTMLDivElement>(null);
   const inView = useInView(clipRef, { amount: 0.3 });
@@ -128,8 +127,8 @@ export default function Gen2Apollo({
   };
 
   return (
-    <section ref={sectionRef} id={id || undefined} className={["g2a", className].filter(Boolean).join(" ")}>
-      <RingBackdrop target={sectionRef} reduced={reduced} />
+    <section id={id || undefined} className={["g2a", className].filter(Boolean).join(" ")}>
+      <RingBackdrop reduced={reduced} />
       <div className="g2a__inner">
         <SectionHeading heading={heading} subtitle={subtitle} maxWidth={headingMaxWidth} className="g2a__heading" />
 

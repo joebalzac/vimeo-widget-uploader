@@ -38,6 +38,12 @@ const J3P = J3.map((_, i) => {
 const J3_LOGO =
   '<path d="M53.8779 20.9648C56.3037 24.6934 57.7139 29.1431 57.7139 33.9229C57.7139 47.0641 47.0611 57.7177 33.9199 57.7178C29.1399 57.7178 24.6896 56.3069 20.9609 53.8809L22.1768 52.96C25.5901 55.07 29.6123 56.29 33.9199 56.29C46.2727 56.29 56.2861 46.2756 56.2861 33.9229C56.2861 29.6154 55.0679 25.5929 52.958 22.1797L53.8779 20.9648ZM33.9199 10.1289C38.0931 10.1289 42.015 11.2036 45.4248 13.0908L44.2139 14.0615C41.1325 12.4612 37.632 11.5567 33.9199 11.5566C21.5671 11.5566 11.5528 21.5701 11.5527 33.9229C11.5527 37.6349 12.4583 41.1354 14.0586 44.2168L13.0879 45.4277C11.2007 42.0179 10.125 38.0961 10.125 33.9229C10.125 20.7816 20.7787 10.1289 33.9199 10.1289Z" fill="white"/><path d="M54.6207 12.3454L41.4132 29.7866C39.4981 32.3155 39.3967 35.7804 41.1604 38.417L46.7051 46.7057L38.4164 41.1611C35.7798 39.3973 32.3149 39.4988 29.786 41.4138L12.3447 54.6214L25.8928 37.7115C27.9119 35.1913 28.0753 31.6565 26.2973 28.9608L21.1374 21.138L28.9602 26.2979C31.6559 28.0759 35.1907 27.9126 37.7109 25.8934L54.6207 12.3454Z" fill="white"/>';
 
+/* Background pattern (prototype `.j3-bg`, 1440×943, top-left at stage −400/−283): the six
+   spokes, centred on the ring at (720, 583). */
+const J3_SPOKES =
+  "M719.989 -69.9414V583.004L719.993 583.006L1502.05 131.485L1502.8 132.784L721.492 583.872L1502.05 1034.53L1501.3 1035.82L719.993 584.738L719.989 584.74V1092.93H718.489V585.606L-61.3105 1035.82L-62.0605 1034.53L718.489 583.874V583.869L-62.8145 132.784L-62.0645 131.485L718.489 582.138V-69.9414H719.989Z";
+const J3_GRID_X = [96.35, 200.38, 304.4, 408.43, 512.45, 616.48, 824.53, 928.55, 1032.58, 1136.6, 1240.62, 1344.65];
+
 const CIRC = 1256.64; // 2πr, r = 200
 
 /** Prototype Reveal: fade + 18px rise once in view. */
@@ -68,8 +74,9 @@ function Reveal({
 
 /**
  * The Ideal Renter Journey — port of the Final prototype's `Journey3` (looping ring path; the
- * "Flatten" option is not used). No background and no section padding of its own: rendered
- * inside Gen2Hero, where the hero haze sits behind it.
+ * "Flatten" option is not used). Includes the prototype's `.j3-bg` pattern (grid lines, spokes,
+ * radial fade, v124 band mask), which spans the full page width; no background colour and no
+ * section padding of its own (the Webflow section provides those).
  *
  * Loop while ≥30% in view: arc sweeps 0→1 over 3.4s lighting each product, holds 3s, rewinds
  * 1s, pauses 0.4s (plus 0.5s at the start of each pass).
@@ -82,17 +89,29 @@ export default function Gen2Journey({
   const uid = useId().replace(/:/g, "");
   const box = useRef<HTMLDivElement>(null);
   const stRef = useRef<HTMLDivElement>(null);
-  const [vw, setVw] = useState(1440);
+  /* vw: page width (the prototype scales off its full-width section, not the container);
+     l / w: this component's left edge and width, so the pattern can span the whole page. */
+  const [geo, setGeo] = useState({ vw: 1440, l: 0, w: 1440 });
   useLayoutEffect(() => {
     const el = box.current;
     if (!el) return;
-    const f = () => setVw(el.clientWidth);
+    const f = () => {
+      const vw = document.documentElement.clientWidth || window.innerWidth;
+      const l = el.getBoundingClientRect().left;
+      const w = el.clientWidth;
+      setGeo((g) => (g.vw === vw && g.l === l && g.w === w ? g : { vw, l, w }));
+    };
     f();
     const ro = new ResizeObserver(f);
     ro.observe(el);
-    return () => ro.disconnect();
+    ro.observe(document.documentElement);
+    window.addEventListener("resize", f);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener("resize", f);
+    };
   }, []);
-  const s = Math.min(1, vw / 687.8);
+  const s = Math.min(1, geo.vw / 687.8);
   const lf = 14;
   const arc = useMotionValue(0);
   const [on, setOn] = useState(1);
@@ -139,6 +158,32 @@ export default function Gen2Journey({
       </div>
       <div className="g2j-wrap" style={{ height: 560 * s }} ref={stRef}>
         <Reveal className="g2j-rv" delay={0.2}>
+          {/* Grid lines + spokes under a radial fade, masked to a band around the ring. Clipped to
+              the page width (not the container) so it never causes sideways scroll. */}
+          <div className="g2j-bgclip" style={{ left: -geo.l, width: geo.vw }} aria-hidden="true">
+            <svg
+              className="g2j-bg"
+              width={1440 * s}
+              height={943 * s}
+              viewBox="0 0 1440 943"
+              fill="none"
+              style={{ left: geo.l + geo.w / 2 - 720 * s, top: -283 * s }}
+            >
+              <g opacity=".4" stroke="#DDDCDA">
+                {J3_GRID_X.map((x) => (
+                  <line key={x} x1={x} y1="-17" x2={x} y2="1002" />
+                ))}
+              </g>
+              <path d={J3_SPOKES} fill="#DDDCDA" opacity=".4" />
+              <defs>
+                <radialGradient id={`${uid}fade`} cx="720" cy="583" r="997" gradientUnits="userSpaceOnUse">
+                  <stop offset="0" stopColor="#FDFCFB" stopOpacity="0" />
+                  <stop offset="1" stopColor="#FDFCFB" />
+                </radialGradient>
+              </defs>
+              <rect x="-400" y="-400" width="2240" height="1743" fill={`url(#${uid}fade)`} />
+            </svg>
+          </div>
           <div
             className="g2j-st"
             style={{ transform: `translateX(-50%) scale(${s})`, ["--lf" as string]: lf + "px" }}

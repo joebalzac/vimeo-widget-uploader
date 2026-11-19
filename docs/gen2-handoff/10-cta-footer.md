@@ -4,7 +4,7 @@
 
 ## CTA
 
-- H2: **Directly Drive Asset Performance with EliseAI**
+- H2: **Transform Outcomes for Residents, Teams, and the Business with EliseAI**
 - Button: **Get A Demo** (primary).
 - Padding: 120 desktop, 48 mobile. Centred. The H2 and button use `Reveal` (button +0.12s).
 
