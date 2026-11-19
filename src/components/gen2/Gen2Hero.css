@@ -4,9 +4,8 @@
 .g2h {
   position: relative;
   z-index: 2;
-  /* Figma's hero frame clips: the board runs under the azure fade and stops at the frame edge. */
+  /* Clip the board at the hero's edge; top spacing comes from the Webflow section. */
   overflow: clip;
-  padding: 144px 0 0;
   font-family: inter-variable, Inter, system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   color: #0e0d0c;
@@ -311,11 +310,8 @@
     0 1px 2px rgba(14, 13, 12, 0.06);
 }
 
-/* ── Mobile (Figma 642:139554: flat page colour, 96 top, 16px copy gaps, 852 tall) ── */
+/* ── Mobile (Figma 642:139554: 16px copy gaps). Top spacing comes from the Webflow section. ── */
 @media (max-width: 761px) {
-  .g2h {
-    padding-top: 96px;
-  }
   .g2h-copy {
     padding: 0 24px;
   }
