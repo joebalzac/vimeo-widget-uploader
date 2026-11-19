@@ -1,12 +1,11 @@
 import Gen2Hero from "./Gen2Hero";
-import { DEFAULT_JOURNEY_HEADING, DEFAULT_JOURNEY_SUBTITLE } from "./Gen2Journey";
 import { props } from "@webflow/data-types";
 import { declareComponent } from "@webflow/react";
 
 export default declareComponent(Gen2Hero, {
   name: "Gen2 — Hero",
   description:
-    "Hero + Renter Journey in one container (90% / max 90rem, 100rem ≥1440, 120rem ≥1920; full width on mobile), haze behind both. Centred copy above the Calendar / Prospects / Residents board, which plays Elise's actions once when scrolled into view; 120px below it (48 on mobile) The Ideal Renter Journey ring loops while in view. No background colour or vertical padding: set those on the Webflow section. Place it directly in the section, not inside a Container.",
+    "Hero in its own container (90% / max 90rem, 100rem ≥1440, 120rem ≥1920; full width on mobile) with the soft lilac/blue haze behind it. Centred copy above the Calendar / Prospects / Residents board, which plays Elise's actions once when scrolled into view. No background colour or vertical padding: set those on the Webflow section. Place it directly in the section, not inside a Container.",
   group: "Gen2",
 
   props: {
@@ -21,8 +20,6 @@ export default declareComponent(Gen2Hero, {
     }),
     ctaLabel: props.Text({ name: "CTA Label", defaultValue: "Get A Demo" }),
     ctaHref: props.Text({ name: "CTA URL", defaultValue: "#" }),
-    journeyHeading: props.Text({ name: "Journey Heading", defaultValue: DEFAULT_JOURNEY_HEADING }),
-    journeySubtitle: props.Text({ name: "Journey Subtitle", defaultValue: DEFAULT_JOURNEY_SUBTITLE }),
     id: props.Id({
       name: "ID",
       tooltip: "HTML id for the component root, e.g. gen2-hero, so links like #gen2-hero jump here.",

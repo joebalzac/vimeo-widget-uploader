@@ -1,6 +1,7 @@
 import "./App.css";
 import { Navbar } from "./components/Navbar";
 import Gen2Hero from "./components/gen2/Gen2Hero";
+import Gen2Journey from "./components/gen2/Gen2Journey";
 import Gen2Customers from "./components/gen2/Gen2Customers";
 import Gen2Features from "./components/gen2/features/Gen2Features";
 import Gen2Apollo from "./components/gen2/Gen2Apollo";
@@ -25,6 +26,8 @@ const PAD_APOLLO = { padding: PHONE ? "48px 0 40px" : "60px 0 0" };
 /* Hero (handoff 02): 144 top desktop, 96 mobile. Features: 60 top (Figma 618:6951). */
 const PAD_HERO = { padding: PHONE ? "96px 0 0" : "144px 0 0" };
 const PAD_FEATURES = { padding: PHONE ? "48px 0 0" : "60px 0 0" };
+/* Renter Journey (handoff 03): 120 top, no bottom (the stage keeps 60 below the ring). */
+const PAD_JOURNEY = { padding: PHONE ? "48px 0 0" : "120px 0 0" };
 /* Customers (handoff 02b): 120 / 40 desktop, 96 top ≤1000, 72 / 24 ≤767. */
 const PAD_CUSTOMERS = { padding: PHONE ? "72px 0 24px" : "120px 0 40px" };
 const PAD_STORIES = { padding: PHONE ? "48px 0" : "120px 0 60px" };
@@ -33,13 +36,18 @@ export default function Gen2Page() {
   return (
     <div style={{ background: "#fdfcfb" }}>
       <Navbar />
-      {/* Hero + Renter Journey in one component (Webflow container inside; haze behind both). */}
+      {/* Hero (Webflow container inside; haze behind it). */}
       <section style={PAD_HERO}>
         <Gen2Hero />
       </section>
       <section style={PAD_CUSTOMERS}>
         <div style={WRAP}>
           <Gen2Customers />
+        </div>
+      </section>
+      <section style={PAD_JOURNEY}>
+        <div style={WRAP}>
+          <Gen2Journey />
         </div>
       </section>
       {/* Features pins on scroll: nothing above it may set overflow hidden/auto/clip. */}

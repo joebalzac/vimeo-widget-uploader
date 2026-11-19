@@ -1,6 +1,6 @@
-/* Gen2Hero — Gen 2 hero + The Ideal Renter Journey in one container.
-   Port of the designer's Final prototype (.h3 / .hb-* / .h3-glow); journey styles live in
-   Gen2Journey.css. No background colour and no vertical padding (the Webflow section has them). */
+/* Gen2Hero — Gen 2 hero in a Webflow-style container, with the hero haze behind it.
+   Port of the designer's Final prototype (.h3 / .hb-* / .h3-glow). The Renter Journey is a separate
+   component (Gen2Journey). No background colour and no vertical padding (the Webflow section has them). */
 
 .g2h,
 .g2h * {
@@ -47,7 +47,7 @@
 }
 
 /* ── Hero haze (designer gradients package). Anchored to the bottom of the hero; bleeds 340px
-      (220 on mobile) down behind the journey. Spans the whole component width. ── */
+      (220 on mobile) below it. Spans the whole component width. ── */
 .g2h-haze {
   position: absolute;
   left: 50%;
@@ -449,13 +449,6 @@
   }
 }
 
-/* ── Journey: exactly 120px below the hero board (prototype .j3 padding-top) ── */
-.g2h-journey {
-  position: relative;
-  z-index: 1;
-  margin-top: 120px;
-}
-
 @media (max-width: 1000px) {
   .g2h-t {
     font-size: 52px;
@@ -561,11 +554,6 @@
   .g2h-spin {
     width: 10px;
     height: 10px;
-  }
-
-  /* prototype .j3 mobile padding-top */
-  .g2h-journey {
-    margin-top: 48px;
   }
 }
 @media (max-width: 480px) {

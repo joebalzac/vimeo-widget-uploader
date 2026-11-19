@@ -3,7 +3,6 @@ import "./Gen2Hero.css";
 import { MotionConfig, motion } from "framer-motion";
 import { E } from "./hero/protoHooks";
 import HeroBoard from "./hero/HeroBoard";
-import Gen2Journey, { DEFAULT_JOURNEY_HEADING, DEFAULT_JOURNEY_SUBTITLE } from "./Gen2Journey";
 
 export interface Gen2HeroProps {
   heading?: string;
@@ -11,8 +10,6 @@ export interface Gen2HeroProps {
   eyebrow?: string;
   ctaLabel?: string;
   ctaHref?: string;
-  journeyHeading?: string;
-  journeySubtitle?: string;
   /** HTML id on the component root, for anchor links. */
   id?: string;
   className?: string;
@@ -26,14 +23,13 @@ const HIN = (d: number, blur?: boolean) => ({
 });
 
 /**
- * Gen2Hero — the Gen 2 hero AND The Ideal Renter Journey in one Webflow-style container
+ * Gen2Hero — the Gen 2 hero in a Webflow-style container
  * (90% / max 90rem → 100rem ≥1440 → 120rem ≥1920; full width ≤767).
  *
- * Port of the designer's Final prototype: `Hero3` (copy), `Hero3Board` + `useHeroBoard`
- * ("Elise acting" story, plays once in view) and `Journey3` (looping ring). The hero haze
- * (gradients package) is anchored to the bottom of the hero and bleeds 340px (220 on mobile)
- * down behind the journey. No background colour or vertical section padding of its own:
- * the Webflow section supplies those.
+ * Port of the designer's Final prototype: `Hero3` (copy) and `Hero3Board` + `useHeroBoard`
+ * ("Elise acting" story, plays once in view), with the hero haze from the gradients package
+ * behind it. No background colour or vertical section padding of its own: the Webflow section
+ * supplies those. The Renter Journey is a separate component (Gen2Journey).
  */
 export default function Gen2Hero({
   heading = "The #1 AI Platform Transforming Multifamily Operations",
@@ -41,8 +37,6 @@ export default function Gen2Hero({
   eyebrow = "EliseAI Gen 2",
   ctaLabel = "Get A Demo",
   ctaHref = "#",
-  journeyHeading = DEFAULT_JOURNEY_HEADING,
-  journeySubtitle = DEFAULT_JOURNEY_SUBTITLE,
   id,
   className,
 }: Gen2HeroProps) {
@@ -83,7 +77,6 @@ export default function Gen2Hero({
             </div>
             <HeroBoard />
           </section>
-          <Gen2Journey className="g2h-journey" heading={journeyHeading} subtitle={journeySubtitle} />
         </div>
       </div>
     </MotionConfig>
