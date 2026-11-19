@@ -5,7 +5,7 @@ import FCard from "./FCard";
 import FText from "./FText";
 import FVis from "./FVis";
 import { FEATURES, type FeatureId } from "./featuresData";
-import { useFeatureSteps } from "./useFeatureSteps";
+import { useFeatureSteps, usePageScroll } from "./useFeatureSteps";
 
 export interface FeaturesSectionProps {
   hrefs?: Partial<Record<FeatureId, string>>;
@@ -59,7 +59,29 @@ export function FeaturesPinnedView({
 }: FeaturesPinnedViewProps) {
   const reduced = !!useReducedMotion();
   const gridRef = useRef<HTMLDivElement>(null);
+  const stageRef = useRef<HTMLDivElement>(null);
+  const shift = useRef(0);
   const [gridH, setGridH] = useState(0);
+
+  /* Pin fallback. The stage is `position: sticky`, but sticky silently stops working when an
+     ancestor sets overflow hidden/clip (common in Webflow: body overflow-x, sections, wrappers).
+     Each frame, compare where sticky would hold the stage with where it actually is, and make
+     up the difference with a transform. When sticky works the difference is 0. */
+  usePageScroll(() => {
+    const track = trackRef.current;
+    const stage = stageRef.current;
+    if (!track || !stage) return;
+    const r = track.getBoundingClientRect();
+    const h = stage.offsetHeight;
+    const want = r.top > 0 ? r.top : Math.min(0, r.bottom - h);
+    const natural = stage.getBoundingClientRect().top - shift.current;
+    let next = want - natural;
+    if (Math.abs(next) < 0.5) next = 0;
+    if (next !== shift.current) {
+      shift.current = next;
+      stage.style.transform = next ? `translate3d(0, ${next}px, 0)` : "";
+    }
+  });
 
   /* Flat: end the section at the card's bottom edge (handoff 05 v124: Products → Apollo
      spacing), i.e. drop the stage's empty space under the grid. */
@@ -80,7 +102,7 @@ export function FeaturesPinnedView({
       className={["g2f-pinned", flat && "g2f-pinned--flat", className].filter(Boolean).join(" ")}
       style={trackStyle}
     >
-      <div className="g2f-pinned__sticky">
+      <div ref={stageRef} className="g2f-pinned__sticky">
         {children}
         <div ref={gridRef} className="g2f-pinned__grid">
           {!flat && (
