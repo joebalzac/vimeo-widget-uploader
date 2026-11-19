@@ -4,8 +4,6 @@ import { animate, motion, useMotionValue, useMotionValueEvent, type MotionValue 
 import SectionHeading from "../SectionHeading";
 import { FEATURES } from "./features/featuresData";
 import { DRAW, E, Reveal, useLoop } from "./shared";
-import bgPatternUrl from "../../assets/gen2/journey/bg-pattern.svg";
-import fadeUrl from "../../assets/gen2/journey/ellipse.svg";
 import circleUrl from "../../assets/gen2/journey/circle.svg";
 import apolloMarkUrl from "../../assets/gen2/journey/apollo-mark.svg";
 import "./Gen2Journey.css";
@@ -134,9 +132,9 @@ function arcD(from: number, to: number, r = R) {
   return `M${p0.x} ${p0.y}A${r} ${r} 0 ${large} 1 ${p1.x} ${p1.y}`;
 }
 
-/** Fits the stage to the container; also reports the frame's top (for the background centre). */
+/** Fits the stage to the container. */
 function useFit(frameRef: React.RefObject<HTMLDivElement | null>) {
-  const [fit, setFit] = useState({ scale: 1, mobile: false, top: 0 });
+  const [fit, setFit] = useState({ scale: 1, mobile: false });
   useLayoutEffect(() => {
     const el = frameRef.current;
     if (!el) return;
@@ -145,7 +143,6 @@ function useFit(frameRef: React.RefObject<HTMLDivElement | null>) {
       setFit({
         scale: Math.min(1, (w + 48) / FIT_W),
         mobile: window.matchMedia("(max-width: 761px)").matches,
-        top: el.offsetTop,
       });
     };
     sync();
@@ -177,7 +174,7 @@ export default function Gen2Journey({
 }: Gen2JourneyProps) {
   const uid = useId().replace(/[^a-zA-Z0-9_-]/g, "");
   const frameRef = useRef<HTMLDivElement>(null);
-  const { scale, mobile, top } = useFit(frameRef);
+  const { scale, mobile } = useFit(frameRef);
   const stageH = mobile ? STAGE_H_MOB : STAGE_H_DESK;
 
   const ownProgress = useMotionValue(0);
@@ -249,21 +246,7 @@ export default function Gen2Journey({
 
   return (
     <div className={["g2j", className].filter(Boolean).join(" ")}>
-      {/* Background (Figma 697:176897): grid + grey spokes under a radial fade, centred on the
-          circle. Clipped to the section; bleeds past the container gutters on phones. */}
-      <motion.div className="g2j-bg" aria-hidden="true" style={{ opacity: scroll?.ring }}>
-        <div className="g2j-bg__scene" style={{ top: top + CY * scale, transform: `scale(${scale})` }}>
-          {/* v124: the grid's fades are centred on the ring (a 1440×940 box with the ring at 720,583). */}
-          <div className="g2j-bg__mask">
-            <img className="g2j-bg__pattern" src={bgPatternUrl} alt="" width={1665.4} height={1162.87} />
-            <img className="g2j-bg__fade" src={fadeUrl} alt="" width={1994.33} height={1994.33} />
-          </div>
-        </div>
-      </motion.div>
-
-      {/* Figma 697:176887: the hero's azure field continuing over the top of this frame. */}
-      <motion.div className="g2j-haze" aria-hidden="true" style={{ opacity: scroll?.heading }} />
-
+      {/* No background of its own: the Webflow section supplies the background image. */}
       <motion.div className="g2j-head" style={{ opacity: scroll?.heading }}>
         <SectionHeading heading={heading} subtitle={subtitle} align="center" maxWidth={520} />
       </motion.div>

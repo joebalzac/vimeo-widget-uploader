@@ -25,79 +25,6 @@
   color: #3f3e3c;
 }
 
-/* Background layer: clipped to the section */
-.g2j-bg {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 50%;
-  width: 100%;
-  transform: translateX(-50%);
-  overflow: hidden;
-  pointer-events: none;
-}
-/* Figma 697:176887: the azure field (#F2F5FF→#F5F8FF, 100px blur) that carries the hero's
-   tint over the top of this frame — starts at #F3F6FF and fades out by ~360px (the blurred edge
-   of the rect, which ends 164px down). Full-bleed via border-image outset, which is ink overflow
-   only, so it never adds horizontal scroll. Painted above the background (Figma layer order). */
-.g2j-haze {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 364px;
-  pointer-events: none;
-  border-image: linear-gradient(
-      180deg,
-      #f3f6ff 0,
-      rgba(243, 246, 255, 0.74) 100px,
-      rgba(243, 246, 255, 0.5) 164px,
-      rgba(243, 246, 255, 0.16) 264px,
-      rgba(243, 246, 255, 0) 364px
-    )
-    0 fill / 0 / 0 100vw;
-}
-.g2j-bg__scene {
-  position: absolute;
-  left: 50%;
-  width: 0;
-  height: 0;
-  transform-origin: 0 0;
-}
-/* v124: a 1440×940 box with the ring centre at (720,583); the grid fades in and out
-   vertically around the ring (fully clear before the section clips) and at the sides. */
-.g2j-bg__mask {
-  position: absolute;
-  left: -720px;
-  top: -583px;
-  width: 1440px;
-  height: 940px;
-  overflow: hidden;
-  -webkit-mask-image:
-    linear-gradient(to bottom, transparent 31%, #000 50%, #000 74%, transparent 89%),
-    linear-gradient(to right, transparent, #000 20%, #000 80%, transparent);
-  -webkit-mask-composite: source-in;
-  mask-image:
-    linear-gradient(to bottom, transparent 31%, #000 50%, #000 74%, transparent 89%),
-    linear-gradient(to right, transparent, #000 20%, #000 80%, transparent);
-  mask-composite: intersect;
-}
-.g2j-bg__pattern,
-.g2j-bg__fade {
-  position: absolute;
-  display: block;
-  max-width: none;
-}
-.g2j-bg__pattern {
-  left: -112.2px; /* scene (−832.2, −653) */
-  top: -70px;
-}
-/* Radial fade centred on the ring (v124; was 89.5px above it). */
-.g2j-bg__fade {
-  left: -277.17px; /* scene (−997.17, −997.17) */
-  top: -414.17px;
-}
-
 .g2j-fit {
   position: relative;
   z-index: 1;
@@ -228,13 +155,6 @@
 @media (max-width: 761px) {
   .g2j {
     padding-top: 0;
-  }
-  /* Bleed the background past the page gutters */
-  .g2j-bg {
-    width: 100vw;
-  }
-  .g2j-haze {
-    display: none; /* not in the mobile frame (642:139566); the mobile hero ends untinted */
   }
   .g2j .sh,
   .g2j .sh--center {
