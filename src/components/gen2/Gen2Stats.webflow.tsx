@@ -62,7 +62,7 @@ function statProps(n: number) {
 export default declareComponent(Gen2StatsAdapter, {
   name: "Gen2 — Stats (Dark)",
   description:
-    "Full-bleed dark section (#131115, own padding; turns the nav dark): heading + subtitle and three boxed stats that count up, each with a source logo. Stacks on mobile.",
+    "White-on-dark stats (set the Webflow section background to #131115 and its padding): heading + subtitle and three boxed stats that count up, each with a source logo. Stacks on mobile.",
   group: "Gen2",
 
   props: {

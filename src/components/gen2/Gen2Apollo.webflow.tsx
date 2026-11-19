@@ -5,7 +5,7 @@ import { declareComponent } from "@webflow/react";
 export default declareComponent(Gen2Apollo, {
   name: "Gen2 — Apollo",
   description:
-    "More Power, More Simplicity with Apollo: heading, scenario tabs and an animated Apollo phone chat over a scroll-linked ring. Tabs auto-advance until one is clicked. Full-bleed: place outside any Container. The ring bleeds into the section padding (60px above on desktop; 48 above / 40 below on mobile) and fades there; change with the CSS variables --g2a-ring-bleed-top / --g2a-ring-bleed-bottom on the section. Chat copy lives in gen2/apollo/gen2ApolloData.ts.",
+    "More Power, More Simplicity with Apollo: heading, scenario tabs and an animated Apollo phone chat over a scroll-linked ring. Tabs auto-advance until one is clicked. Full-bleed: place outside any Container. The ring bleeds into the section padding (120px above on desktop; 48 above / 40 below on mobile) and fades there; change with the CSS variables --g2a-ring-bleed-top / --g2a-ring-bleed-bottom on the section. Chat copy lives in gen2/apollo/gen2ApolloData.ts.",
   group: "Gen2",
 
   props: {

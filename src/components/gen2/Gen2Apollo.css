@@ -44,7 +44,7 @@
    edge cutting it. Override the bleed from the Webflow section with these custom properties
    (they inherit into the shadow root). */
 .g2a-ring {
-  --g2a-bt: var(--g2a-ring-bleed-top, 60px);
+  --g2a-bt: var(--g2a-ring-bleed-top, 120px);
   --g2a-bb: var(--g2a-ring-bleed-bottom, 0px);
   position: absolute;
   top: calc(var(--g2a-bt) * -1);

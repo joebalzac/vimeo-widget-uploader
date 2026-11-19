@@ -24,7 +24,7 @@ const WRAP = { width: PHONE ? "100%" : "min(100%, 1192px)", margin: "0 auto", pa
 const PAD = { padding: PHONE ? "48px 0" : "120px 0" };
 /* Figma spacing: Journey and Apollo have no bottom padding, Stories has 60. */
 /* Apollo (handoff v124/v125): 60 top on desktop; 48 top / 40 bottom on mobile. */
-const PAD_APOLLO = { padding: PHONE ? "48px 0 40px" : "60px 0 0" };
+const PAD_APOLLO = { padding: PHONE ? "48px 0 40px" : "120px 0 0" };
 /* Hero (handoff 02): 144 top desktop, 96 mobile. Features: 60 top (Figma 618:6951). */
 /* Hero section background = the gradients package image, as set on the Webflow section
    (gradients.css §1): bottom center, 100% × 920px (mobile 100% × 680px), over #FDFCFB. */

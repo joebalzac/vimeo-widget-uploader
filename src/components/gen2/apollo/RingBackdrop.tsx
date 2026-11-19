@@ -26,7 +26,7 @@ function useIsMobile() {
  *
  * Webflow: the section padding lives OUTSIDE this component, so the ring layer bleeds out of the
  * component box by `--g2a-ring-bleed-top/bottom` (default = the prototype's section padding:
- * 60/0 desktop, 48/40 mobile) and is stretched horizontally to the viewport (measured, so it
+ * 120/0 desktop, 48/40 mobile) and is stretched horizontally to the viewport (measured, so it
  * never causes horizontal scroll). The prototype's soft top/bottom mask then sits on that layer,
  * so the ring fades out instead of being cut at the component's edge. Not rendered under
  * reduced motion (same as the prototype).
